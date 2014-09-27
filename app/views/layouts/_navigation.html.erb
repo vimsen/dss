@@ -1,19 +1,11 @@
- <div class="navbar-default sidebar" role="navigation">
-   <div class="sidebar-nav navbar-collapse">
-     <%= render_navigation  :expand_all => true, :renderer => :bootstrap %>
-       
-   </div>  <!-- /.sidebar-collapse -->
-  
- </div> <!-- /.navbar-static-side -->
-
-</nav>
-
-<script>
-  $(function() {
-    // Hack to make the menu not a dropdown
-        
-    $('#side-menu').metisMenu();
-    $('.sidebar').find('.dropdown-menu').removeClass('dropdown-menu');
-    $('div.navbar-collapse').addClass('collapse') // This collapses the menu on mobile screen
-});	
-</script>
+  	
+  <div class="col-sm-3 col-md-2 sidebar">
+     <ul class="nav nav-sidebar" id="navigation-menu">
+        <li id="nav-item-1" onclick="highlightNavigation(this);"><a href="/home">Home</a></li>
+        <li id="nav-item-2" onclick="highlightNavigation(this);"><a href="/machines">Machines</a></li>
+        <li id="nav-item-3" onclick="highlightNavigation(this);"><a href="#">Reasons</a></li>
+		<hr>
+	    <li id="nav-item-4" onclick="highlightNavigation(this);"><a href="#">Item ...</a></li>
+     </ul>
+</div>
+               

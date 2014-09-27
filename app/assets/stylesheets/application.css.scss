@@ -11,13 +11,8 @@
  * file per style scope.
  *
  *= require bootstrap.min
- *= require bootstrap_navbar_split_dropdowns
- *= require bootstrap-table.min
  *= require_tree .
  *= require_self
- *= require jquery.datetimepicker
- *= require font-awesome
- *= require jquery.dynatable
  */
 
 @font-face {
@@ -28,45 +23,3 @@
        url('../assets/glyphicons-halflings-regular.ttf') format('truetype'), 
        url('../assets/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
 }
-
-
-.navbar-header-img{
-    margin-top:5px;
-    margin-left:20px;
-}
-
-.navbar-header-text{
-   margin-left:10px;
-   margin-top:5px;
-   font-size:18px;
-}
-
-/*
-.equal, .equal > div[class*='col-'] {
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  flex:1 1 auto;
-}
-*/
-
-
-
-@media (min-width: 992px) {
-  .equal > .col-md-6 > .panel > .panel-body {
-    height: 270px;
-    overflow-y: auto;
-//    min-height: 270px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .equal > .col-lg-6 > .panel > .panel-body {
-    height: 270px;
-    overflow-y: auto;
-//    min-height: 270px;
-  }
-}
-

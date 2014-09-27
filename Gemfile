@@ -2,9 +2,8 @@ source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.1.6'
-# Use postgres instead of sqlite
-gem 'pg'
-
+# Use sqlite3 as the database for Active Record
+gem 'sqlite3'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.3'
 # Use Uglifier as compressor for JavaScript assets
@@ -44,32 +43,3 @@ gem 'bcrypt', '~> 3.1.7'
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
-# Bunny is a ruby implementation of rabbitmq
-gem 'bunny'
-
-# Puma is a server that serve streaming content
-gem 'puma'
-
-#font awesome
-gem "font-awesome-rails"
-
-gem 'devise'     # for authentication
-gem 'cancancan'  # for authorizaton
-gem 'rolify'     # for role management
-
-gem 'will_paginate-bootstrap' # Pagination
-
-gem 'simple-navigation-bootstrap' # For the menu
-
-gem 'gmaps4rails' # For google maps
-gem 'underscore-rails' # dito
-
-gem "activerecord-import", ">= 0.2.0" # For loading multiple records to db at once
-
-group :development, :test do
-  gem 'rails-erd' # use `bundle exec erd` to genera ERD diagram
-  gem 'railroady' # Use `rake diagram:all` for generating all diagrams
-end
-
-gem 'darwinning' # For genetic algorithms
-gem "ai4r" # ditto
