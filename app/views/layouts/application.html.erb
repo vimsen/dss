@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= t('application.name') %> - Dashboard</title>
+    <meta name="description" content="<%= content_for?(:description) ? yield(:description) : "Dashboard" %>">
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+    <%= csrf_meta_tags %>
+  </head>
+  <body>
+    <header>
+      <%= render 'layouts/header' %>
+    </header>
+     
+    <!-- main part -->
+    <div class="container-fluid">
+       <div class="row">
+      	 <%= render 'layouts/navigation' %>
+      	 <%= render 'layouts/content' %>
+       </div>
+    </div>
+    <!-- end main part -->
+
+  </body>
+</html>

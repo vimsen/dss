@@ -1,0 +1,13 @@
+ <div class="container">
+
+      <form class="form-signin" role="form" method="post" action="/login/signin" >
+        <h2 class="form-signin-heading">Please Sign in</h2>
+        <input type="email" class="form-control" placeholder="Email address" required autofocus value="***REMOVED***">
+        <input type="password" class="form-control" placeholder="Password" required>
+
+        <input type="hidden" name="csrf_token" id="signin_csrf_token" value="<%= form_authenticity_token.to_s %>">
+
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      </form>
+
+</div>
