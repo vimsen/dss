@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @prosumer.name %>
+</p>
+
+<p>
+  <strong>Location:</strong>
+  <%= @prosumer.location %>
+</p>
+
+<%= link_to 'Edit', edit_prosumer_path(@prosumer) %> |
+<%= link_to 'Back', prosumers_path %>

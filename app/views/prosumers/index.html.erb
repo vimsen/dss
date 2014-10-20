@@ -1,0 +1,27 @@
+<h1>Listing prosumers</h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Location</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @prosumers.each do |prosumer| %>
+      <tr>
+        <td><%= prosumer.name %></td>
+        <td><%= prosumer.location %></td>
+        <td><%= link_to 'Show', prosumer %></td>
+        <td><%= link_to 'Edit', edit_prosumer_path(prosumer) %></td>
+        <td><%= link_to 'Destroy', prosumer, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Prosumer', new_prosumer_path %>
