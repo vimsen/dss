@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  timeslot: 2014-10-20 13:07:33
+  power: 1.5
+  prosumer_id: 1
+
+two:
+  timeslot: 2014-10-20 13:07:33
+  power: 1.5
+  prosumer_id: 1
