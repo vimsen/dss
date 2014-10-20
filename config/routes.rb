@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  resources :prosumers
+
   #login page
   get 'login' => 'login#index'
   get 'login/index' => 'login#index'
