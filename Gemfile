@@ -44,3 +44,8 @@ gem 'bcrypt', '~> 3.1.7'
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
+# Bunny is a ruby implementation of rabbitmq
+gem 'bunny'
+
+# Puma is a server that serve streaming content
+gem 'puma'

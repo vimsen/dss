@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
 
+  get 'stream/:id/addevent' => 'stream#addevent'
+
+  get 'stream/:id/realtime' => 'stream#realtime'
+
   resources :measurements
 
   resources :prosumers
