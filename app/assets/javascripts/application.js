@@ -14,4 +14,6 @@
 //= require jquery_ujs
 //= require bootstrap.min
 //= require turbolinks
+//= require jquery.flot.min
+//= require jquery.flot.time.min
 //= require_tree .

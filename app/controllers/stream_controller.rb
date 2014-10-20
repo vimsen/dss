@@ -7,8 +7,10 @@ class StreamController < ApplicationController
 
     raise "Missing prosumer" if params[:id].nil?
 
+    raise "Invalid prosumer id" if Prosumer.find_by_id(params[:id]).nil?
+
     power = rand(-100..100)
-    measurement = Measurement.new(timeslot: DateTime.now, power: power, prosumer_id: params[:prosumer] )
+    measurement = Measurement.new(timeslot: DateTime.now, power: power, prosumer_id: params[:id] )
     measurement.save
 
     x = $bunny_channel.fanout("prosumer.#{params[:id]}")
