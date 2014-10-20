@@ -1,11 +1,8 @@
 require 'test_helper'
 
 class ProsumersControllerTest < ActionController::TestCase
-  
   setup do
     @prosumer = prosumers(:one)
-    User.first.add_role "admin"
-    sign_in User.first
   end
 
   test "should get index" do
@@ -21,9 +18,7 @@ class ProsumersControllerTest < ActionController::TestCase
 
   test "should create prosumer" do
     assert_difference('Prosumer.count') do
-      pr = post :create, prosumer: { location: @prosumer.location, 
-                                     name: @prosumer.name, 
-                                     intelen_id: Prosumer.maximum('intelen_id') + 1 }
+      post :create, prosumer: { location: @prosumer.location, name: @prosumer.name }
     end
 
     assert_redirected_to prosumer_path(assigns(:prosumer))

@@ -3,9 +3,7 @@
 one:
   name: MyString
   location: MyString
-  intelen_id: 1
 
 two:
   name: MyString
   location: MyString
-  intelen_id: 2

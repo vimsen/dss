@@ -1,4 +1,4 @@
-<%= form_for setup_prosumer(@prosumer), html: {class: "form-horizontal"} do |f| %>
+<%= form_for(@prosumer) do |f| %>
   <% if @prosumer.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@prosumer.errors.count, "error") %> prohibited this prosumer from being saved:</h2>
@@ -11,100 +11,15 @@
     </div>
   <% end %>
 
-  <div class="form-group">
-    <%= f.label :name, class: "col-sm-2 control-label" %>
-    <div class="col-sm-10">
-      <%= f.text_field :name, class: 'form-control' %>
-    </div>
+  <div class="field">
+    <%= f.label :name %><br>
+    <%= f.text_field :name %>
   </div>
-  <div class="form-group">
-    <%= f.label "intelen id", class: "col-sm-2 control-label" %>
-    <div class="col-sm-10">
-      <%= f.text_field :intelen_id, class: 'form-control' %>
-    </div>
-  </div>
-  <div class="form-group">
-    <%= f.label :location, class: "col-sm-2 control-label" %>
-    <div class="col-sm-10">
-      <%= f.text_field :location, class: 'form-control' %>
-    </div>
-  </div>
-  <div class="form-group">
-    <%= f.label :location_x, class: "col-sm-2 control-label" %>
-    <div class="col-sm-10">
-      <%= f.text_field :location_x, class: 'form-control' %>
-    </div>
-  </div>
-  <div class="form-group">
-    <%= f.label :location_y, class: "col-sm-2 control-label" %>
-    <div class="col-sm-10">
-      <%= f.text_field :location_y, class: 'form-control' %>
-    </div>
-  </div>
-  <div class="form-group">
-    <%= f.label :cluster_id, class: "col-sm-2 control-label" %>
-    <div class="col-sm-10">
-      <%= collection_select(:prosumer, :cluster_id, Cluster.all, :id, :name, {include_blank: true}, {class: "form-control"}) %>
-    </div>
-  </div>
-  <div class="form-group">
-    <%= f.label :building_type_id, class: "col-sm-2 control-label" %>
-    <div class="col-sm-10">
-      <%= collection_select(:prosumer, :building_type_id, BuildingType.all, :id, :name, {include_blank: true}, {class: "form-control"}) %>
-    </div>
-  </div>
-  <div class="form-group">
-    <%= f.label :connection_type_id, class: "col-sm-2 control-label" %>
-    <div class="col-sm-10">
-      <%= collection_select(:prosumer, :connection_type_id, ConnectionType.all, :id, :name, {include_blank: true}, {class: "form-control"}) %>
-    </div>
-  </div>  
-  <div class="form-group">
-    <%= f.label :users, class: "col-sm-2 control-label" %>
-    <div class="col-sm-10">
-      <%= select_tag "users", 
-            options_from_collection_for_select(User.all, 
-                'id', 'email', @prosumer.users.map{ |j| j.id }), 
-                :multiple => true, class: "form-control", :prompt => "Please select" %>
-    </div>
-  </div>
-  <div class="form-group">
-    <%= f.label :energy_types, class: "col-sm-2 control-label" %>
-    <div class="col-sm-10">
-      <table>
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>&nbsp;&nbsp;&nbsp;</th>
-            <th>Capacity</th>
-          </tr>
-        </thead>
-        <tbody>
-        <%= f.fields_for :energy_type_prosumers do |ff| %>
-          <tr>
-            <td><%= ff.label :_destroy, ff.object.energy_type.name %></td>
-            <td>&nbsp;&nbsp;<%= ff.check_box :_destroy,
-                       {:checked => ff.object.persisted?},
-                       '0', '1' 
-                %>&nbsp;&nbsp;</td>
-            <td><%= ff.text_field :power, disabled: !ff.object.persisted?, class: 'form-control'  %>
-                <%= ff.hidden_field :energy_type_id %></td>
-          </tr>
-        <% end %>
-        </tbody>
-      </table>
-    </div>
+  <div class="field">
+    <%= f.label :location %><br>
+    <%= f.text_field :location %>
   </div>
   <div class="actions">
-    <%= f.submit class: "btn btn-primary" %>
+    <%= f.submit %>
   </div>
 <% end %>
-<script>
-  $(function(){
-    $("[id^=prosumer_energy_type_prosumers_attributes_][id$=__destroy]").click(function() {
-      var id = this.id.match(/\d+/); 
-      $("#prosumer_energy_type_prosumers_attributes_"+id+"_power").attr('disabled', !this.checked);
-    });
-  });
-</script>
-

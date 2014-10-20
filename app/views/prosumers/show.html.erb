@@ -1,87 +1,14 @@
-<div class="row">
-  <div class="col-lg-12">
-    <h3 class="page-header"><small>Prosumer:</small> <%= @prosumer.name -%>   
-      <small> 
-        | <%= link_to 'Edit', edit_prosumer_path(@prosumer) ,class: 'btn btn-info btn-xs' %> 
-        | <%= link_to 'All prosumers', prosumers_path ,class: 'btn btn-warning btn-xs'%>
-      </small>
-    </h3>
-  </div>
-  <!-- /.col-lg-12 -->
-</div>
+<p id="notice"><%= notice %></p>
 
-<div class="row equal">
-  <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        Prosumer info
-      </div>
-      <div class="panel-body">
-        <dl class="dl-horizontal">
-          <dt>Name:</dt>
-          <dd><%= @prosumer.name -%></dd>
-        
-          <dt>Intelen id:</dt>
-          <dd><%= @prosumer.intelen_id -%></dd>
-        
-          <dt>Location:</dt>
-          <dd><%= @prosumer.location -%></dd>
-          
-          <dt>Location X:</dt>
-          <dd><%= @prosumer.location_x -%></dd>
-          
-          <dt>Location Y:</dt>
-          <dd><%= @prosumer.location_y -%></dd>
-          
-          <dt>Cluster:</dt>
-          <dd><%= link_to(@prosumer.cluster.name, @prosumer.cluster) if @prosumer.cluster -%></dd>
-        
-          <dt>Building Type:</dt>
-          <dd><%= link_to(@prosumer.building_type.name, @prosumer.building_type) if @prosumer.building_type -%></dd>
-        
-          <dt>Connection Type:</dt>
-          <dd><%= link_to(@prosumer.connection_type.name, @prosumer.connection_type) if @prosumer.connection_type -%></dd>
-        
-          <dt>Users:</dt>
-          <dd><%= render(partial: "users/username", spacer_template: "common/comma_spacer", collection: @prosumer.users, as: :user) || "No users" -%></dd>
-        
-          <dt>Power capacity:</dt>
-          <dd>
-            <%= render(partial: "energy_type_prosumers/short",
-                       spacer_template: "common/comma_spacer",
-                       collection: @prosumer.energy_type_prosumers,
-                       as: :energy_type_prosumer) || "No entry" %>
-          </dd>
-          
-          <dt>Day-ahead forecasts:</dt>
-          <dd><%= render(partial: "day_aheads/date", spacer_template: "common/comma_spacer", collection: @prosumer.day_aheads, as: :day_ahead) || "No forecasts" -%></dd>
-        
-        </dl>
-      </div>
-    </div>
-    
-    
-  </div>
-  <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        Prosumer location
-      </div>
-      <div class="panel-body">
-        <%= render partial: "charts/map", 
-          locals: {
-            prosumers: [@prosumer],
-            clustering: nil,
-            height: "230px"
-          }
-        %>
-      </div>
-    </div>
-          
-  </div>
-</div>
-<div class="row">
-  <div class="col-md-12">
-    <%= render partial: "charts/chart", :locals => {:stream => "/stream/#{@prosumer.id}/prosumer", :provider => @prosumer} %>
-  </div>
-</div>
+<p>
+  <strong>Name:</strong>
+  <%= @prosumer.name %>
+</p>
+
+<p>
+  <strong>Location:</strong>
+  <%= @prosumer.location %>
+</p>
+
+<%= link_to 'Edit', edit_prosumer_path(@prosumer) %> |
+<%= link_to 'Back', prosumers_path %>
