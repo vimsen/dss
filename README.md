@@ -24,6 +24,7 @@ Things to be implemented
 - Cluster aggregate feed and UI
 - Alerts
 - Short/Medium term forecasting
+- Make a responsive menu
 
 How it works
 ------------
