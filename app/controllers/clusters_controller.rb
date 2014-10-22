@@ -61,6 +61,22 @@ class ClustersController < ApplicationController
     end
   end
 
+  def addprosumer  
+   
+    prosumer = Prosumer.find_by(id: params[:prosumer][:prosumer_id]);
+    @cluster = Cluster.find_by(id: params[:id])
+    
+    respond_to do |format|
+      if prosumer.update(cluster_id: @cluster.id)
+        format.html { redirect_to @cluster, notice: 'Prosumer was successfully added.' }
+        format.json { render :show, status: :ok, location: @cluster }
+      else
+        format.html { render :edit }
+        format.json { render json: @cluster.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+  
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_cluster

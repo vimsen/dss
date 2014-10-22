@@ -40,7 +40,6 @@ class ProsumersController < ApplicationController
   # PATCH/PUT /prosumers/1
   # PATCH/PUT /prosumers/1.json
   def update
-    puts prosumer_params
     respond_to do |format|
       if @prosumer.update(prosumer_params)
         format.html { redirect_to @prosumer, notice: 'Prosumer was successfully updated.' }
@@ -62,6 +61,21 @@ class ProsumersController < ApplicationController
     end
   end
 
+  def removefromcluster
+    @prosumer = Prosumer.find_by(id: params[:id])
+    @cluster = @prosumer.cluster
+    
+    respond_to do |format|
+      if @prosumer.update(cluster_id: nil)
+        format.html { redirect_to @cluster, notice: 'Prosumer was successfully removed.' }
+        format.json { render :show, status: :ok, location: @cluster }
+      else
+        format.html { render :edit }
+        format.json { render json: @cluster.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+   
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_prosumer

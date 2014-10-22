@@ -1,0 +1,6 @@
+  <%= form_for @cluster,  :url => {:controller => "clusters", :action => "addprosumer"} do |f| %>
+    <%= f.label "Add prosumer" %><br>
+    <%= collection_select(:prosumer, :prosumer_id, @cluster.getNotMembers, :id, :name) %>
+    
+    <%= f.submit "Add", data: { confirm: 'Are you sure?' } %>
+  <% end %>

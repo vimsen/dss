@@ -10,5 +10,11 @@
   <%= @cluster.description %>
 </p>
 
+<strong>Cluster members:</strong>
+
+<%= render partial: "prosumers/removefromcluster", collection: @cluster.prosumers, as: :prosumer %>
+<br>
+<%= render partial: "addprosumer"%>
+<br>
 <%= link_to 'Edit', edit_cluster_path(@cluster) %> |
 <%= link_to 'Back', clusters_path %>
