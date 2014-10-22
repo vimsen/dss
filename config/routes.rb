@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  resources :clusters
+
   get 'stream/:id/addevent' => 'stream#addevent'
 
   get 'stream/:id/realtime' => 'stream#realtime'

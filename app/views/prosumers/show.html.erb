@@ -10,6 +10,11 @@
   <%= @prosumer.location %>
 </p>
 
+<p>
+  <strong>Cluster:</strong>
+  <%= @prosumer.cluster.name if @prosumer.cluster %>
+</p>
+
 <%= render "prosumers/chart" %>
 
 <%= link_to 'Edit', edit_prosumer_path(@prosumer) %> |

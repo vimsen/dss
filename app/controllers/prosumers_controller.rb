@@ -40,6 +40,7 @@ class ProsumersController < ApplicationController
   # PATCH/PUT /prosumers/1
   # PATCH/PUT /prosumers/1.json
   def update
+    puts prosumer_params
     respond_to do |format|
       if @prosumer.update(prosumer_params)
         format.html { redirect_to @prosumer, notice: 'Prosumer was successfully updated.' }
@@ -69,6 +70,6 @@ class ProsumersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def prosumer_params
-      params.require(:prosumer).permit(:name, :location)
+      params.require(:prosumer).permit(:name, :location, :cluster_id)
     end
 end
