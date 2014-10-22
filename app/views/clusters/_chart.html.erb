@@ -1,0 +1,11 @@
+
+<%= javascript_include_tag "chart" %>
+
+<div id="placeholder" style="width:100%;height:400px;min-width=600px">
+</div>
+<script>
+$(document).ready(function() {
+  drawChart(<%= @cluster.id %> + "/clusterfeed");
+});
+</script>
+
