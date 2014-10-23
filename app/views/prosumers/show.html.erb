@@ -15,7 +15,7 @@
   <%= @prosumer.cluster.name if @prosumer.cluster %>
 </p>
 
-<%= render "prosumers/chart" %>
+<%= render partial: "charts/chart", :locals => {:stream => "/stream/#{@prosumer.id}/realtime"} %>
 
 <%= link_to 'Edit', edit_prosumer_path(@prosumer) %> |
 <%= link_to 'Back', prosumers_path %>

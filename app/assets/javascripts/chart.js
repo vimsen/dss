@@ -1,6 +1,6 @@
 var drawChart = function(stream) {
 
-  var source = new EventSource('/stream/' + stream);
+  var source = new EventSource(stream);
   var data = [];
   var data_helper = {};
   var changed = false;
