@@ -13,10 +13,11 @@
 <strong>Cluster members:</strong>
 
 <%= render partial: "prosumers/removefromcluster", collection: @cluster.prosumers, as: :prosumer %>
-<br>
+<br/>
 <%= render partial: "addprosumer"%>
-<br>
+<br/>
 <%= render partial: "charts/chart", :locals => {:stream => "/stream/#{@cluster.id}/clusterfeed"} %>
-<br>
+<br/>
+
 <%= link_to 'Edit', edit_cluster_path(@cluster) %> |
 <%= link_to 'Back', clusters_path %>

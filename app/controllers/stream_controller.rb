@@ -27,9 +27,13 @@ class StreamController < ApplicationController
     sse = Streamer::SSE.new(response.stream)
     
     cluster = Cluster.find(params[:id])
+
+    startdate = (params[:startdate].nil?) ? (Time.now - 2.days) : params[:startdate].to_time
+    enddate = (params[:enddate].nil?) ? (Time.now + 1.days) : params[:enddate].to_time
+   # puts date
     consumers = []
     cluster.prosumers.each do |p|
-      p.measurements.where(timeslot: (Time.now - 2.days)..(Time.now + 1.day)).order(timeslot: :asc).last(200).each do |m|
+      p.measurements.where(timeslot: startdate..enddate).order(timeslot: :asc).last(200).each do |m|
         sse.write({:id => m.id, :prosumer_id => p.id, :X => m.timeslot.to_i, :Y => m.power}.to_json, event: 'messages.create');
       end
       x = $bunny_channel.fanout("prosumer.#{p.id}")
@@ -51,7 +55,7 @@ class StreamController < ApplicationController
   ensure
     consumers.each do |c|
       c.cancel unless c.nil?  
-    end
+    end unless consumers.nil?
     
     sse.close
     puts "Stream closed."
@@ -62,7 +66,11 @@ class StreamController < ApplicationController
     sse = Streamer::SSE.new(response.stream)
 
     prosumer = Prosumer.find(params[:id])
-    prosumer.measurements.where(timeslot: (Time.now - 2.days)..(Time.now + 1.day)).order(timeslot: :asc).last(200).each do |p|
+    
+    startdate = (params[:startdate].nil?) ? (Time.now - 2.days) : params[:startdate].to_time
+    enddate = (params[:enddate].nil?) ? (Time.now + 1.days) : params[:enddate].to_time
+    
+    prosumer.measurements.where(timeslot: startdate..enddate).order(timeslot: :asc).last(200).each do |p|
       sse.write({'id' => p.id, :prosumer_id => prosumer.id, 'X' => p.timeslot.to_i, 'Y' => p.power}.to_json, event: 'messages.create');
     end
 
