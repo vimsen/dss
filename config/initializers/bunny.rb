@@ -1,8 +1,11 @@
 require 'yaml'
 config = YAML.load_file('config/rabbitmq.yml')
  
-puts "Conncting to RabbitMQ server at host: #{config[Rails.env]["host"]}"
-$bunny = Bunny.new(config[Rails.env].with_indifferent_access)
+$bunny = Bunny.new(:host => config[Rails.env]["host"],
+        :vhost => config[Rails.env]["vhost"],
+        :user => config[Rails.env]["user"],
+        :password => config[Rails.env]["password"],
+)
 
 $bunny.start
-puts "Connected."
+$bunny_channel = $bunny.create_channel
