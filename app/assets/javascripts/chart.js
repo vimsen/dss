@@ -1,6 +1,5 @@
 var drawChart = function(stream) {
 
-  console.log(stream);
   var source = new EventSource('/stream/' + stream);
   var data = [];
   var data_helper = {};
@@ -44,7 +43,6 @@ var drawChart = function(stream) {
   source.addEventListener('messages.create', function(e) {
     message = JSON.parse(e.data);
     var pros_id = message.prosumer_id;
-    console.log(message, message.prosumer_id);
     var temp = [message.X * 1000, message.Y];
     if (pros_id > 0) {
       if (data[pros_id] == null) {

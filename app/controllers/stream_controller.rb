@@ -63,7 +63,7 @@ class StreamController < ApplicationController
 
     prosumer = Prosumer.find(params[:id])
     prosumer.measurements.where(timeslot: (Time.now - 2.days)..(Time.now + 1.day)).order(timeslot: :asc).last(200).each do |p|
-      sse.write({'id' => p.id, :procumer_id => prosumer.id, 'X' => p.timeslot.to_i, 'Y' => p.power}.to_json, event: 'messages.create');
+      sse.write({'id' => p.id, :prosumer_id => prosumer.id, 'X' => p.timeslot.to_i, 'Y' => p.power}.to_json, event: 'messages.create');
     end
 
     ActiveRecord::Base.connection.close
