@@ -16,4 +16,5 @@
 //= require turbolinks
 //= require jquery.flot.min
 //= require jquery.flot.time.min
+//= require jquery.datetimepicker
 //= require_tree .

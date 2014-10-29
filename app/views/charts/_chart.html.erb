@@ -1,43 +1,47 @@
 <%= javascript_include_tag "chart" %>
 <div>
   <div id="placeholder" style="width:100%;height:400px;min-width=600px"></div>
-  <div>
-    <%
-      if (params["dates"].nil?)
-        start_datetime = 3.days.ago
-        end_datetime = DateTime.now
-      else
-        start_datetime = DateTime.new params["dates"]["start_datetime(1i)"].to_i,
-        params["dates"]["start_datetime(2i)"].to_i,
-        params["dates"]["start_datetime(3i)"].to_i,
-        params["dates"]["start_datetime(4i)"].to_i,
-        params["dates"]["start_datetime(5i)"].to_i
-        end_datetime = DateTime.new params["dates"]["end_datetime(1i)"].to_i,
-        params["dates"]["end_datetime(2i)"].to_i,
-        params["dates"]["end_datetime(3i)"].to_i,
-        params["dates"]["end_datetime(4i)"].to_i,
-        params["dates"]["end_datetime(5i)"].to_i
-        stream += "?startdate=" + start_datetime.to_s + "&enddate=" + end_datetime.to_s
-      end
-
-%>
-
-    <%= form_for :dates, method: "get" do |f| %>
-    <%= f.label "Start Date:" %>
-    <%= f.datetime_select(:start_datetime, default: start_datetime) %>
-    <%= f.label "End Date:" %>
-    <%= f.datetime_select(:end_datetime, default: end_datetime) %>
-
-    <%= f.submit "set" %>
-    <%= link_to "<button>Reset</button>".html_safe, url_for(params.except(:dates)) %>
-    <% end %>
+  <div id="controls">
+    <input id="startDate" type="text" />
+    <input id="endDate" type="text"/><br/">
+    <strong>Real-time updates?</strong>
+    <input id="realtime" type="checkbox" checked>
+    <button id="subDates"> Set </button>
+    <br/>
   </div>
-  dates: <%= start_datetime %> - <%= end_datetime %>
-  <br/>
 </div>
 <script>
     $(document).ready(function() {
-        drawChart("<%= stream %>" );
+        plotHelper.drawChart("<%= stream %>");
+        $('#startDate').datetimepicker();
+        $('#endDate').datetimepicker();
+        $('#endDate').prop('disabled', true);
+        $('#subDates').click(function () {
+            var s = $('#startDate').val();
+            var e = $('#endDate').prop("disabled") ? '' : $('#endDate').val();
+            var params= '';
+            if (s || e ) {
+              params += '?';
+            } 
+            if (s) {
+              params += 'startdate=' + s;
+              if (e) {
+                params += '&';
+              }
+            }
+            if (e) {
+              params += 'enddate=' + e
+            }
+            plotHelper.drawChart("<%= stream %>" + params);
+        });
+        $('#realtime').change(function () {
+            console.log(this.checked);
+            if (this.checked) {
+              $('#endDate').prop( "disabled", true );
+            } else {
+              $('#endDate').prop( "disabled", false );
+            }
+        });
     });
 </script>
 

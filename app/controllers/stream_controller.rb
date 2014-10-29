@@ -36,21 +36,26 @@ class StreamController < ApplicationController
       p.measurements.where(timeslot: startdate..enddate).order(timeslot: :asc).last(200).each do |m|
         sse.write({:id => m.id, :prosumer_id => p.id, :X => m.timeslot.to_i, :Y => m.power}.to_json, event: 'messages.create');
       end
-      x = $bunny_channel.fanout("prosumer.#{p.id}")
-      q = $bunny_channel.queue("", :exclusive => false)
-      q.bind(x)
-  
-      c = q.subscribe(:block => false) do |delivery_info, properties, data|
-        sse.write(data, event: 'messages.create')
+    end
+    
+    if params[:enddate].nil?
+      cluster.prosumers.each do |p|
+        x = $bunny_channel.fanout("prosumer.#{p.id}")
+        q = $bunny_channel.queue("", :exclusive => false)
+        q.bind(x)
+        puts "Subscribing to: prosumer.#{p.id}"  
+        c = q.subscribe(:block => false) do |delivery_info, properties, data|
+          sse.write(data, event: 'messages.create')
+        end
+        consumers.push(c)
       end
-      consumers.push(c)
     end
     
     loop do
       sleep 10;
       sse.write("OK".to_json, event: 'messages.keepalive')
     end
-      
+          
   rescue IOError
   ensure
     consumers.each do |c|
@@ -75,15 +80,16 @@ class StreamController < ApplicationController
     end
 
     ActiveRecord::Base.connection.close
-
-    x = $bunny_channel.fanout("prosumer.#{params[:id]}")
-    q = $bunny_channel.queue("", :exclusive => false)
-    q.bind(x)
-
-    consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
-      sse.write(data, event: 'messages.create')
+    
+    if params[:enddate].nil?
+      x = $bunny_channel.fanout("prosumer.#{params[:id]}")
+      q = $bunny_channel.queue("", :exclusive => false)
+      q.bind(x)
+      puts "Subscribing to: prosumer.#{params[:id]}"
+      consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
+        sse.write(data, event: 'messages.create')
+      end
     end
-
     loop do
       sleep 10;
       sse.write("OK".to_json, event: 'messages.keepalive')
