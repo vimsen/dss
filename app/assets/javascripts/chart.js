@@ -67,6 +67,7 @@ var plotHelper = (function() {
 
         window.setTimeout(redraw, 100);
       });
+      replot();
     }
   };
 })();
