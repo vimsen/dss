@@ -47,7 +47,7 @@ var plotHelper = (function() {
       console.log("Connecting to " + stream);
       console.log(source);
       data = [];
-      changed = false;
+      changed = true;
 
       $(window).on('resize orientationChanged', function() {
         replot();
@@ -67,7 +67,8 @@ var plotHelper = (function() {
 
         window.setTimeout(redraw, 100);
       });
-      replot();
+      
+      redraw();
     }
   };
 })();
