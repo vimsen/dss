@@ -1,16 +1,19 @@
-
 <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="container-fluid">
-     <div class="navbar-header">
-        <%= image_tag("vimsen_logo_small.png") %> <span class="navbar-header-text"> Virtual Microgrids for Smart Energy Networks </span> 
-     </div>
-     <div class="navbar-collapse collapse">
-        <ul class="nav navbar-nav navbar-right header-links">
-           <li><a href="#">Settings</a></li>
-           <li><a href="#">Profile</a></li>
-           <li><a href="#">Help</a></li>
-           <li><a href="/login/signout">Log out</a></li>
-        </ul>
-     </div>
+    <div class="navbar-header">
+      <%= image_tag("vimsen_logo_small.png") %> <span class="navbar-header-text"> Virtual Microgrids for Smart Energy Networks </span>
+    </div>
+    <div class="navbar-collapse collapse">
+      <p class="navbar-header-text pull-right nav navbar-nav navbar-right header-links">
+        <% if user_signed_in? %>
+        Logged in as <strong><%= current_user.email %></strong>.
+        <%= link_to 'Edit profile', edit_user_registration_path %> |
+        <%= link_to "Logout", destroy_user_session_path, method: :delete %>
+        <% else %>
+        <%= link_to "Sign up", new_user_registration_path %> |
+        <%= link_to "Login", new_user_session_path %>
+        <% end %>
+      </p>        
+    </div>
   </div>
 </div>

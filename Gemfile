@@ -49,3 +49,7 @@ gem 'bunny'
 
 # Puma is a server that serve streaming content
 gem 'puma'
+
+gem 'devise'
+gem 'cancancan'
+gem 'rolify'
