@@ -1,5 +1,6 @@
 class MeasurementsController < ApplicationController
   before_action :set_measurement, only: [:show, :edit, :update, :destroy]
+  load_and_authorize_resource
 
   # GET /measurements
   # GET /measurements.json

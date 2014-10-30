@@ -1,5 +1,6 @@
 class ProsumersController < ApplicationController
   before_action :set_prosumer, only: [:show, :edit, :update, :destroy]
+  load_and_authorize_resource
 
   # GET /prosumers
   # GET /prosumers.json
