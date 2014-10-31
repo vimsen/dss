@@ -1,0 +1,10 @@
+<h1>Editing role</h1>
+
+<%= render 'form' %>
+
+<%= render partial: "users/removerole", collection: @role.users, as: :user %>
+
+<%= render partial: "adduser"%>
+
+<%= link_to 'Show', @role %> |
+<%= link_to 'Back', roles_path %>

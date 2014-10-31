@@ -1,0 +1,6 @@
+  <%= form_for @role,  :url => {:controller => "roles", :action => "adduser"} do |f| %>
+    <%= f.label "Add user" %><br>
+    <%= collection_select(:user, :user_id, @role.getNotMembers, :id, :email) %>
+    
+    <%= f.submit "Add", data: { confirm: 'Are you sure?' } %>
+  <% end %>

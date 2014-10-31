@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141029124412) do
+ActiveRecord::Schema.define(version: 20141031072332) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -38,6 +38,13 @@ ActiveRecord::Schema.define(version: 20141029124412) do
     t.datetime "updated_at"
     t.integer  "cluster_id"
   end
+
+  create_table "prosumers_users", id: false, force: true do |t|
+    t.integer "prosumer_id"
+    t.integer "user_id"
+  end
+
+  add_index "prosumers_users", ["prosumer_id", "user_id"], name: "index_prosumers_users_on_prosumer_id_and_user_id", using: :btree
 
   create_table "roles", force: true do |t|
     t.string   "name"

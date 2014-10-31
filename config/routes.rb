@@ -2,6 +2,8 @@ Rails.application.routes.draw do
 
   devise_for :users
   resources :clusters
+  resources :users
+  resources :roles
 
   get 'stream/:id/addevent' => 'stream#addevent'
 
@@ -10,6 +12,9 @@ Rails.application.routes.draw do
 
   patch 'prosumers/:id/removefromcluster' => 'prosumers#removefromcluster'
   patch 'clusters/:id/addprosumer' => 'clusters#addprosumer'
+  
+  patch 'roles/:id/adduser' => 'roles#adduser'
+  patch 'roles/:id/removeuser' => 'roles#removeuser'
 
   resources :measurements
 
