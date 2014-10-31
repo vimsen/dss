@@ -49,3 +49,6 @@ gem 'bunny'
 
 # Puma is a server that serve streaming content
 gem 'puma'
+
+#font awesome
+gem "font-awesome-rails"

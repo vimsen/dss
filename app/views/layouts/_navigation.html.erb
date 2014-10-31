@@ -1,20 +1,42 @@
-  	
-  <div class="col-sm-3 col-md-2 sidebar">
-     <ul class="nav nav-sidebar" id="navigation-menu">
-        <li id="nav-item-1" onclick="highlightNavigation(this);"><a href="/home">Home</a></li>
-        <li id="nav-item-2" onclick="highlightNavigation(this);">
-          <%= link_to "Prosumers", prosumers_path %>
-        </li>
-        <li id="nav-item-3" onclick="highlightNavigation(this);">
-          <%= link_to "Measurements", measurements_path %>
-        </li>
-        <li id="nav-item-4" onclick="highlightNavigation(this);">
-          <%= link_to "Clusters", clusters_path %>
-        </li>
-        <li id="nav-item-5" onclick="highlightNavigation(this);"><a href="/machines">Machines</a></li>
-        <li id="nav-item-6" onclick="highlightNavigation(this);"><a href="#">Reasons</a></li>
-		<hr>
-	    <li id="nav-item-7" onclick="highlightNavigation(this);"><a href="#">Item ...</a></li>
-     </ul>
-</div>
-               
+           <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                        <li class="sidebar-search">
+                            <div class="input-group custom-search-form">
+                                <input type="text" class="form-control" placeholder="Portal Search...">
+                                <span class="input-group-btn">
+                                <button class="btn btn-default" type="button">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            </div>
+                            <!-- /input-group -->
+                        </li>
+                        <li>
+                            <a class="btn btn-default" href="/home"><i class="fa fa-home fa-fw"></i> Home</a>
+                        </li>
+                        <li>
+                        	<a class="btn btn-default" href="/prosumers"><i class="fa fa-plug fa-fw"></i> Prosumers</a>
+                        </li>
+                        <li>
+                            <a class="btn btn-default" href="/measurements"><i class="fa fa-bar-chart-o fa-fw"></i> Measurements<span class="fa arrow"></span></a>                          
+                        </li>
+                        <li>
+                            <a class="btn btn-default" href="/clusters"><i class="fa fa-sitemap fa-fw"></i> Clusters<span class="fa arrow"></span></a>                      
+                        </li>
+                        
+                    	 <li>
+                            <a class="btn btn-default" href="/machines"><i class="fa fa-cog fa-spin"></i> MACHINES</a>
+                        </li>
+                         <li>
+                            <a class="btn btn-default" href="/#"><i class="fa fa-history fa-fw"></i> HISTORY</a>
+                        </li>
+                        
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            
+ 
+ 
+ 						
