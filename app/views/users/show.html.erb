@@ -7,7 +7,7 @@
 
 <p>
   <strong>Roles:</strong>
-  <%= @user.roles %>
+  <%= render partial: "roles/rolename", spacer_template: "common/comma_spacer", collection: @user.roles, as: :role %>
 </p>
 
 <p>

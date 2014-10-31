@@ -84,7 +84,11 @@ class RolesController < ApplicationController
     
     respond_to do |format|
       if user.remove_role @role.name
-        format.html { redirect_to edit_role_path(@role), notice: 'User was successfully removed.' }
+        if Role.find_by(id: params[:id])
+          format.html { redirect_to edit_role_path(@role), notice: 'User was successfully removed.' }
+        else
+          format.html { redirect_to roles_url, notice: 'User was successfully removed.' }
+        end
         format.json { render :show, status: :ok, location: @role }       
       else
         format.html { render :edit }

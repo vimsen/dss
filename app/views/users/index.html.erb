@@ -14,12 +14,7 @@
     <% @users.each do |user| %>
     <tr>
       <td><%= user.email %></td>
-      <td> 
-        <% user.roles.each do |role| %>
-        <%= role.name %>
-        <br/>
-      <% end %> 
-      </td>
+      <td><%= render partial: "roles/rolename", spacer_template: "common/comma_spacer", collection: user.roles, as: :role %></td>
       <td>
         <%= render partial: "prosumers/showname", collection: user.prosumers, as: :prosumer %>
       </td>
