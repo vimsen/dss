@@ -62,6 +62,37 @@ class UsersController < ApplicationController
     end
   end
 
+  def addrole  
+   
+    role = Role.find_by(id: params[:role][:role_id]);
+    @user = User.find_by(id: params[:id])
+    
+    respond_to do |format|
+      if @user.add_role role.name
+        format.html { redirect_to edit_user_path(@user), notice: 'Role was successfully added.' }
+        format.json { render :show, status: :ok, location: @role }
+      else
+        format.html { render :edit }
+        format.json { render json: @role.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def removerole
+    role = Role.find_by(id: params[:role])
+    @user = User.find_by(id: params[:id])
+    
+    respond_to do |format|
+      if @user.remove_role role.name
+        format.html { redirect_to edit_user_path(@user), notice: 'Role was successfully removed.' }
+        format.json { render :show, status: :ok, location: @role }       
+      else
+        format.html { render :edit }
+        format.json { render json: @role.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user

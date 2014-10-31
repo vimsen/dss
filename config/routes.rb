@@ -15,6 +15,9 @@ Rails.application.routes.draw do
   
   patch 'roles/:id/adduser' => 'roles#adduser'
   patch 'roles/:id/removeuser' => 'roles#removeuser'
+  
+  patch 'users/:id/addrole' => 'users#addrole'
+  patch 'users/:id/removerole' => 'users#removerole'
 
   resources :measurements
 

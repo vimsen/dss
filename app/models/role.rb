@@ -3,6 +3,7 @@ class Role < ActiveRecord::Base
   belongs_to :resource, :polymorphic => true
 
   scopify
+  
   def getNotMembers
     result = User.all
     return result.reject { |u| u.has_role? self.name }

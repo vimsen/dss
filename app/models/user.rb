@@ -7,4 +7,8 @@ class User < ActiveRecord::Base
          
   has_and_belongs_to_many :prosumers
 
+  def getNotAssignedRoles
+    result = Role.all
+    return result.reject { |r| self.has_role? r.name }
+  end
 end

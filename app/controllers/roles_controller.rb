@@ -95,7 +95,6 @@ class RolesController < ApplicationController
         format.json { render json: @role.errors, status: :unprocessable_entity }
       end
     end
-    
   end
   
   private

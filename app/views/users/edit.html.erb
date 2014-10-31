@@ -2,5 +2,10 @@
 
 <%= render 'form' %>
 
+<label for="user_Add role">Roles:</label><br>
+<%= render(partial: "roles/removeuser", collection: @user.roles, as: :role) || "No roles" %>
+
+<%= render partial: "addrole"%>
+
 <%= link_to 'Show', @user %> |
 <%= link_to 'Back', users_path %>
