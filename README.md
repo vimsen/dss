@@ -34,6 +34,12 @@ The Puma web server is set as the testing server as it supports streaming respon
 
 The posting and subscription to events happens using the `bunny` RabbitMQ client for ruby.
 
+How to test
+-----------
+
+ - visit the url: http://vimsen.herokuapp.com
+ - to connect as a registered user, use the following: user: `***REMOVED***`, passwod: `***REMOVED***`
+ - to connect as an administrator, use the following: user: `***REMOVED***`, passwod: `***REMOVED***` 
 
 
 

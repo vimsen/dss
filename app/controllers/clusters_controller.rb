@@ -1,6 +1,9 @@
 class ClustersController < ApplicationController
   before_action :set_cluster, only: [:show, :edit, :update, :destroy]
+#   before_action :authenticate_user!
+  load_and_authorize_resource
 
+  
   # GET /clusters
   # GET /clusters.json
   def index

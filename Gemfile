@@ -52,3 +52,8 @@ gem 'puma'
 
 #font awesome
 gem "font-awesome-rails"
+
+gem 'devise'
+gem 'cancancan'
+gem 'rolify'
+
