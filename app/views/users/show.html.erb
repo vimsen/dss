@@ -7,12 +7,12 @@
 
 <p>
   <strong>Roles:</strong>
-  <%= render partial: "roles/rolename", spacer_template: "common/comma_spacer", collection: @user.roles, as: :role %>
+  <%= render(partial: "roles/rolename", spacer_template: "common/comma_spacer", collection: @user.roles, as: :role) || "No roles"  %> 
 </p>
 
 <p>
   <strong>Prosumers:</strong>
-  <%= @user.prosumers %>
+  <%= render(partial: "prosumers/prosumername", spacer_template: "common/comma_spacer", collection: @user.prosumers, as: :prosumer) || "No Prosumers" %>  
 </p>
 
 <%= link_to 'Edit', edit_user_path(@user) %> |

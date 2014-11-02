@@ -17,7 +17,9 @@
   </div>
   <div class="field">
     <%= f.label :prosumers %><br>
-    <%= f.text_field :prosumers %>
+    
+    <%= select_tag "prosumers", options_from_collection_for_select(Prosumer.all, 'id', 'name',@user.prosumers.map{ |j| j.id }), :multiple => true, :prompt => "Please select" %>
+    
   </div>
   <div class="actions">
     <%= f.submit %>

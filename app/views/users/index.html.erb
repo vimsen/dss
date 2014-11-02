@@ -15,9 +15,7 @@
     <tr>
       <td><%= user.email %></td>
       <td><%= render partial: "roles/rolename", spacer_template: "common/comma_spacer", collection: user.roles, as: :role %></td>
-      <td>
-        <%= render partial: "prosumers/showname", collection: user.prosumers, as: :prosumer %>
-      </td>
+      <td><%= render(partial: "prosumers/prosumername", spacer_template: "common/comma_spacer", collection: user.prosumers, as: :prosumer) || "No Prosumers" %></td>
       <td><%= link_to 'Show', user %></td>
       <td><%= link_to 'Edit', edit_user_path(user) %></td>
       <td><%= link_to 'Destroy', user, method: :delete, data: { confirm: 'Are you sure?' } %></td>

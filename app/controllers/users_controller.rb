@@ -26,6 +26,8 @@ class UsersController < ApplicationController
   # POST /users.json
   def create
     @user = User.new(user_params)
+    @prosumers = Prosumer.where(:id => params[:prosumers])
+    @user.prosumers << @prosumers
 
     respond_to do |format|
       if @user.save
@@ -41,6 +43,11 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1
   # PATCH/PUT /users/1.json
   def update
+    
+    @prosumers = Prosumer.where(:id => params[:prosumers])
+    @user.prosumers.destroy_all
+    @user.prosumers << @prosumers
+    
     respond_to do |format|
       if @user.update(user_params)
         format.html { redirect_to @user, notice: 'User was successfully updated.' }
@@ -92,7 +99,7 @@ class UsersController < ApplicationController
       end
     end
   end
-
+  
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user
