@@ -26,7 +26,9 @@ class ProsumersController < ApplicationController
   # POST /prosumers.json
   def create
     @prosumer = Prosumer.new(prosumer_params)
-
+    @users = User.where(:id => params[:users])
+    @prosumer.users << @users
+    
     respond_to do |format|
       if @prosumer.save
         format.html { redirect_to @prosumer, notice: 'Prosumer was successfully created.' }
@@ -41,6 +43,11 @@ class ProsumersController < ApplicationController
   # PATCH/PUT /prosumers/1
   # PATCH/PUT /prosumers/1.json
   def update
+
+    @users = User.where(:id => params[:users])
+    @prosumer.users.destroy_all
+    @prosumer.users << @users    
+    
     respond_to do |format|
       if @prosumer.update(prosumer_params)
         format.html { redirect_to @prosumer, notice: 'Prosumer was successfully updated.' }

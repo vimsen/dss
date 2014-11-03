@@ -12,8 +12,14 @@
 
 <p>
   <strong>Cluster:</strong>
-  <%= @prosumer.cluster.name if @prosumer.cluster %>
+  <%= link_to(@prosumer.cluster.name, @prosumer.cluster) if @prosumer.cluster %>
 </p>
+
+<p>
+  <strong>Users:</strong>
+  <%= render(partial: "users/username", spacer_template: "common/comma_spacer", collection: @prosumer.users, as: :user) || "No users" %>
+</p>
+
 
 <%= render partial: "charts/chart", :locals => {:stream => "/stream/#{@prosumer.id}/realtime"} %>
 

@@ -23,6 +23,13 @@
     <%= f.label :cluster_id %><br>
     <%= collection_select(:prosumer, :cluster_id, Cluster.all, :id, :name, :include_blank => true) %>
   </div>
+    <div class="field">
+    <%= f.label :users %><br>
+    <%= select_tag "users", 
+            options_from_collection_for_select(User.all, 
+                'id', 'email', @prosumer.users.map{ |j| j.id }), 
+                :multiple => true, :prompt => "Please select" %>
+  </div>
   <div class="actions">
     <%= f.submit %>
   </div>

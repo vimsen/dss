@@ -5,6 +5,7 @@
     <tr>
       <th>Name</th>
       <th>Location</th>
+      <th>Cluster</th>
       <th>Users</th>
       <th colspan="3"></th>
     </tr>
@@ -15,6 +16,7 @@
       <tr>
         <td><%= prosumer.name %></td>
         <td><%= prosumer.location %></td>
+        <td><%= link_to prosumer.cluster.name, prosumer.cluster %></td>
         <td><%= render(partial: "users/username", spacer_template: "common/comma_spacer", collection: prosumer.users, as: :user) || "No users" %></td>
         <td><%= link_to 'Show', prosumer %></td>
         <td><%= link_to 'Edit', edit_prosumer_path(prosumer) %></td>
