@@ -5,6 +5,7 @@
     <tr>
       <th>Name</th>
       <th>Description</th>
+      <th>Prosumers</th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -14,6 +15,7 @@
       <tr>
         <td><%= cluster.name %></td>
         <td><%= cluster.description %></td>
+        <td><%= render(partial: "prosumers/prosumername", spacer_template: "common/comma_spacer", collection: cluster.prosumers, as: :prosumer) || "No Prosumers" %></td>
         <td><%= link_to 'Show', cluster %></td>
         <td><%= link_to 'Edit', edit_cluster_path(cluster) %></td>
         <td><%= link_to 'Destroy', cluster, method: :delete, data: { confirm: 'Are you sure?' } %></td>
