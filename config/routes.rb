@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  get 'intellen_mock/getdata'
+
   devise_for :users
   resources :clusters
   resources :users
