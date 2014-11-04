@@ -1,7 +1,0 @@
-  <%= form_for @user,  :url => {:controller => "users", :action => "addrole"} do |f| %>
-    <%= f.label "Add role" %><br>
-    <%= collection_select(:role, :role_id, @user.getNotAssignedRoles, :id, :name) %>
-    
-    <%= f.submit "Add", data: { confirm: 'Are you sure?' } %>
-  <% end %>
-  

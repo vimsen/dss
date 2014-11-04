@@ -1,7 +1,0 @@
-<p> 
-  <%= form_for user, :url => {:controller => "roles",  :id => @role.id, :action => "removeuser"} do |f| %>
-    <%= user.email %>
-    <%= hidden_field_tag 'user', user.id %>
-    <%= f.submit "Remove", data: { confirm: 'Are you sure?' } %>
-  <% end %>
-</p>

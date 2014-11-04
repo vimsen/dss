@@ -26,7 +26,9 @@ class RolesController < ApplicationController
   # POST /roles.json
   def create
     @role = Role.new(role_params)
-
+    @users = User.where(:id => params[:users])
+    @role.users << @users
+    
     respond_to do |format|
       if @role.save
         format.html { redirect_to @role, notice: 'Role was successfully created.' }
@@ -41,6 +43,11 @@ class RolesController < ApplicationController
   # PATCH/PUT /roles/1
   # PATCH/PUT /roles/1.json
   def update
+    
+    @users = User.where(:id => params[:users])
+    @role.users.destroy_all
+    @role.users << @users
+    
     respond_to do |format|
       if @role.update(role_params)
         format.html { redirect_to @role, notice: 'Role was successfully updated.' }
@@ -62,41 +69,6 @@ class RolesController < ApplicationController
     end
   end
 
-  def adduser  
-   
-    user = User.find_by(id: params[:user][:user_id]);
-    @role = Role.find_by(id: params[:id])
-    
-    respond_to do |format|
-      if user.add_role @role.name
-        format.html { redirect_to edit_role_path(@role), notice: 'User was successfully added.' }
-        format.json { render :show, status: :ok, location: @role }
-      else
-        format.html { render :edit }
-        format.json { render json: @role.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  def removeuser
-    user = User.find_by(id: params[:user])
-    @role = Role.find_by(id: params[:id])
-    
-    respond_to do |format|
-      if user.remove_role @role.name
-        if Role.find_by(id: params[:id])
-          format.html { redirect_to edit_role_path(@role), notice: 'User was successfully removed.' }
-        else
-          format.html { redirect_to roles_url, notice: 'User was successfully removed.' }
-        end
-        format.json { render :show, status: :ok, location: @role }       
-      else
-        format.html { render :edit }
-        format.json { render json: @role.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-  
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_role

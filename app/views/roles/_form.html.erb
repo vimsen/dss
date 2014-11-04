@@ -15,6 +15,13 @@
     <%= f.label :name %><br>
     <%= f.text_field :name %>
   </div>
+  <div class="field">
+    <%= f.label :users %><br>
+    <%= select_tag "users", 
+            options_from_collection_for_select(User.all, 
+                'id', 'email',@role.users.map{ |j| j.id }), 
+                :multiple => true, :prompt => "Please select" %>
+  </div>
   <div class="actions">
     <%= f.submit %>
   </div>

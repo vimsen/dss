@@ -12,12 +12,6 @@ Rails.application.routes.draw do
 
   patch 'prosumers/:id/removefromcluster' => 'prosumers#removefromcluster'
   patch 'clusters/:id/addprosumer' => 'clusters#addprosumer'
-  
-  patch 'roles/:id/adduser' => 'roles#adduser'
-  patch 'roles/:id/removeuser' => 'roles#removeuser'
-  
-  patch 'users/:id/addrole' => 'users#addrole'
-  patch 'users/:id/removerole' => 'users#removerole'
 
   resources :measurements
 

@@ -28,6 +28,9 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
     @prosumers = Prosumer.where(:id => params[:prosumers])
     @user.prosumers << @prosumers
+    
+    @roles = Role.where(:id => params[:roles])
+    @user.roles << @roles
 
     respond_to do |format|
       if @user.save
@@ -48,6 +51,10 @@ class UsersController < ApplicationController
     @user.prosumers.destroy_all
     @user.prosumers << @prosumers
     
+    @roles = Role.where(:id => params[:roles])
+    @user.roles.destroy_all
+    @user.roles << @roles
+    
     respond_to do |format|
       if @user.update(user_params)
         format.html { redirect_to @user, notice: 'User was successfully updated.' }
@@ -66,37 +73,6 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.html { redirect_to users_url, notice: 'User was successfully destroyed.' }
       format.json { head :no_content }
-    end
-  end
-
-  def addrole  
-   
-    role = Role.find_by(id: params[:role][:role_id]);
-    @user = User.find_by(id: params[:id])
-    
-    respond_to do |format|
-      if @user.add_role role.name
-        format.html { redirect_to edit_user_path(@user), notice: 'Role was successfully added.' }
-        format.json { render :show, status: :ok, location: @role }
-      else
-        format.html { render :edit }
-        format.json { render json: @role.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  def removerole
-    role = Role.find_by(id: params[:role])
-    @user = User.find_by(id: params[:id])
-    
-    respond_to do |format|
-      if @user.remove_role role.name
-        format.html { redirect_to edit_user_path(@user), notice: 'Role was successfully removed.' }
-        format.json { render :show, status: :ok, location: @role }       
-      else
-        format.html { render :edit }
-        format.json { render json: @role.errors, status: :unprocessable_entity }
-      end
     end
   end
   

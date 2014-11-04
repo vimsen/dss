@@ -16,6 +16,13 @@
     <%= f.text_field :email %>
   </div>
   <div class="field">
+    <%= f.label :roles %><br>
+    <%= select_tag "roles", 
+            options_from_collection_for_select(Role.all, 
+                'id', 'name',@user.roles.map{ |j| j.id }), 
+                :multiple => true, :prompt => "Please select" %>
+  </div>
+  <div class="field">
     <%= f.label :prosumers %><br>
     <%= select_tag "prosumers", 
             options_from_collection_for_select(Prosumer.all, 
