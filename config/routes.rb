@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  resources :intervals
+
   get 'intellen_mock/getdata'
 
   devise_for :users
