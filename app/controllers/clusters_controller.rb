@@ -28,6 +28,8 @@ class ClustersController < ApplicationController
   # POST /clusters.json
   def create
     @cluster = Cluster.new(cluster_params)
+    @prosumers = Prosumer.where(:id => params[:prosumers])
+    @cluseter.prosumers << @prosumers
 
     respond_to do |format|
       if @cluster.save
@@ -43,6 +45,14 @@ class ClustersController < ApplicationController
   # PATCH/PUT /clusters/1
   # PATCH/PUT /clusters/1.json
   def update
+
+    @prosumers = Prosumer.where(:id => params[:prosumers])
+    @cluster.prosumers.each do |p|
+      p.cluster = nil
+      p.save
+    end
+    @cluster.prosumers << @prosumers    
+    
     respond_to do |format|
       if @cluster.update(cluster_params)
         format.html { redirect_to @cluster, notice: 'Cluster was successfully updated.' }

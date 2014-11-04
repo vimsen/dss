@@ -19,6 +19,13 @@
     <%= f.label :description %><br>
     <%= f.text_area :description %>
   </div>
+  <div class="field">
+    <%= f.label :prosumers %><br>
+    <%= select_tag "prosumers", 
+            options_from_collection_for_select(Prosumer.all, 
+                'id', 'name',@cluster.prosumers.map{ |j| j.id }), 
+                :multiple => true, :prompt => "Please select" %>
+  </div>
   <div class="actions">
     <%= f.submit %>
   </div>
