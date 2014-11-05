@@ -1,0 +1,1 @@
+json.extract! @data_point, :id, :prosumer_id, :interval_id, :timestamp, :production, :consumption, :storage, :f_timestamp, :f_production, :f_consumption, :f_storage, :dr, :reliability, :created_at, :updated_at

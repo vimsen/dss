@@ -21,7 +21,7 @@
 </p>
 
 
-<%= render partial: "charts/chart", :locals => {:stream => "/stream/#{@prosumer.id}/realtime"} %>
+<%= render partial: "charts/chart", :locals => {:stream => "/stream/#{@prosumer.id}/realtime", :prosumer => @prosumer} %>
 
 <%= link_to 'Edit', edit_prosumer_path(@prosumer) %> |
 <%= link_to 'Back', prosumers_path %>

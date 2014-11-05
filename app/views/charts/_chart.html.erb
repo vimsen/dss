@@ -3,16 +3,21 @@
   <div id="placeholder" style="width:100%;height:400px;min-width=600px"></div>
   <div id="controls">
     <input id="startDate" type="text" />
-    <input id="endDate" type="text"/><br/">
+    <input id="endDate" type="text"/><br/>
     <strong>Real-time updates?</strong>
     <input id="realtime" type="checkbox" checked>
     <button id="subDates"> Set </button>
     <br/>
   </div>
 </div>
-<script>
+<script>  
+   
+    var idata = <%= prosumer.request_cached(1, (DateTime.now - 2.days), DateTime.now).to_json.html_safe %>;
+    
+    console.log(idata);
+
     $(document).ready(function() {
-        plotHelper.drawChart("<%= stream %>");
+        plotHelper.drawChart("<%= stream %>", idata);
         $('#startDate').datetimepicker();
         $('#endDate').datetimepicker();
         $('#endDate').prop('disabled', true);

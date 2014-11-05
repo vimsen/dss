@@ -1,0 +1,65 @@
+<%= form_for(@data_point) do |f| %>
+  <% if @data_point.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@data_point.errors.count, "error") %> prohibited this data_point from being saved:</h2>
+
+      <ul>
+      <% @data_point.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :prosumer_id %><br>
+    <%= f.number_field :prosumer_id %>
+  </div>
+  <div class="field">
+    <%= f.label :interval_id %><br>
+    <%= f.number_field :interval_id %>
+  </div>
+  <div class="field">
+    <%= f.label :timestamp %><br>
+    <%= f.datetime_select :timestamp %>
+  </div>
+  <div class="field">
+    <%= f.label :production %><br>
+    <%= f.text_field :production %>
+  </div>
+  <div class="field">
+    <%= f.label :consumption %><br>
+    <%= f.text_field :consumption %>
+  </div>
+  <div class="field">
+    <%= f.label :storage %><br>
+    <%= f.text_field :storage %>
+  </div>
+  <div class="field">
+    <%= f.label :f_timestamp %><br>
+    <%= f.datetime_select :f_timestamp %>
+  </div>
+  <div class="field">
+    <%= f.label :f_production %><br>
+    <%= f.text_field :f_production %>
+  </div>
+  <div class="field">
+    <%= f.label :f_consumption %><br>
+    <%= f.text_field :f_consumption %>
+  </div>
+  <div class="field">
+    <%= f.label :f_storage %><br>
+    <%= f.text_field :f_storage %>
+  </div>
+  <div class="field">
+    <%= f.label :dr %><br>
+    <%= f.text_field :dr %>
+  </div>
+  <div class="field">
+    <%= f.label :reliability %><br>
+    <%= f.text_field :reliability %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

@@ -1,0 +1,29 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  prosumer_id: 1
+  interval_id: 1
+  timestamp: 2014-11-05 12:42:06
+  production: 1.5
+  consumption: 1.5
+  storage: 1.5
+  f_timestamp: 2014-11-05 12:42:06
+  f_production: 1.5
+  f_consumption: 1.5
+  f_storage: 1.5
+  dr: 1.5
+  reliability: 1.5
+
+two:
+  prosumer_id: 1
+  interval_id: 1
+  timestamp: 2014-11-05 12:42:06
+  production: 1.5
+  consumption: 1.5
+  storage: 1.5
+  f_timestamp: 2014-11-05 12:42:06
+  f_production: 1.5
+  f_consumption: 1.5
+  f_storage: 1.5
+  dr: 1.5
+  reliability: 1.5

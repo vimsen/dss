@@ -16,5 +16,6 @@ module Streamer
     def close
       @io.close
     end
+    
   end
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141104121618) do
+ActiveRecord::Schema.define(version: 20141105104206) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -19,6 +19,23 @@ ActiveRecord::Schema.define(version: 20141104121618) do
   create_table "clusters", force: true do |t|
     t.string   "name"
     t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "data_points", force: true do |t|
+    t.integer  "prosumer_id"
+    t.integer  "interval_id"
+    t.datetime "timestamp"
+    t.float    "production"
+    t.float    "consumption"
+    t.float    "storage"
+    t.datetime "f_timestamp"
+    t.float    "f_production"
+    t.float    "f_consumption"
+    t.float    "f_storage"
+    t.float    "dr"
+    t.float    "reliability"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

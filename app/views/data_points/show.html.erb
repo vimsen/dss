@@ -1,0 +1,64 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Prosumer:</strong>
+  <%= @data_point.prosumer_id %>
+</p>
+
+<p>
+  <strong>Interval:</strong>
+  <%= @data_point.interval_id %>
+</p>
+
+<p>
+  <strong>Timestamp:</strong>
+  <%= @data_point.timestamp %>
+</p>
+
+<p>
+  <strong>Production:</strong>
+  <%= @data_point.production %>
+</p>
+
+<p>
+  <strong>Consumption:</strong>
+  <%= @data_point.consumption %>
+</p>
+
+<p>
+  <strong>Storage:</strong>
+  <%= @data_point.storage %>
+</p>
+
+<p>
+  <strong>F timestamp:</strong>
+  <%= @data_point.f_timestamp %>
+</p>
+
+<p>
+  <strong>F production:</strong>
+  <%= @data_point.f_production %>
+</p>
+
+<p>
+  <strong>F consumption:</strong>
+  <%= @data_point.f_consumption %>
+</p>
+
+<p>
+  <strong>F storage:</strong>
+  <%= @data_point.f_storage %>
+</p>
+
+<p>
+  <strong>Dr:</strong>
+  <%= @data_point.dr %>
+</p>
+
+<p>
+  <strong>Reliability:</strong>
+  <%= @data_point.reliability %>
+</p>
+
+<%= link_to 'Edit', edit_data_point_path(@data_point) %> |
+<%= link_to 'Back', data_points_path %>

@@ -7,7 +7,7 @@ var plotHelper = (function() {
     var dataset = [];
     $.each(data, function(index, value) {
       dataset.push({
-        label : "Prosumer " + index,
+        label : index,
         data : value /*,
          color : "#00FF00"*/
       });
@@ -32,9 +32,24 @@ var plotHelper = (function() {
     }
   };
 
+  var readData = function(idata) {
+    var result = {};
+    
+    $.each(idata, function(index, value) {
+      var pros_id = value.prosumer_id;
+      var label = "Prosumer " + pros_id + ": production";
+      if (result[label] == null) {
+        result[label] = [];
+      }
+      var temp = [value.timestamp * 1000, value.actual.production];  
+      result[label].push(temp);
+    });
+    return result;
+  };
+
   return {
-    drawChart : function(stream) {
-      
+    drawChart : function(stream, idata) {
+
       if (source != null) {
         console.log(source.OPEN);
         if (source.OPEN) {
@@ -43,10 +58,10 @@ var plotHelper = (function() {
           console.log("Closed source");
         }
       }
-      source = new EventSource(stream);
+      source = new EventSource ("test");//(stream);
       console.log("Connecting to " + stream);
       console.log(source);
-      data = [];
+      data = readData(idata);
       changed = true;
 
       $(window).on('resize orientationChanged', function() {
@@ -67,7 +82,7 @@ var plotHelper = (function() {
 
         window.setTimeout(redraw, 100);
       });
-      
+
       redraw();
     }
   };

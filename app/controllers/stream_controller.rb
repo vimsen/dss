@@ -66,6 +66,28 @@ class StreamController < ApplicationController
     puts "Stream closed."
   end
 
+  def prosumer
+    response.headers['Content-Type'] = 'text/event-stream'
+    sse = Streamer::SSE.new(response.stream)
+    
+    prosumer = Prosumer.find(params[:id])
+    startdate = (params[:startdate].nil?) ? (Time.now - 2.days) : params[:startdate].to_time
+    enddate = (params[:enddate].nil?) ? (Time.now + 1.days) : params[:enddate].to_time
+    interval = (params[:interval])
+    
+    prosumer.actuals.where(timestamp: startdate..enddate).order(timestamp: :asc).each do |a|
+       sse.write(a.to_json, event: 'datapoint')
+    end
+    
+    head :ok
+    
+  rescue IOError
+  ensure
+    # consumer.cancel unless consumer.nil?
+    sse.close
+    puts "Stream closed."    
+  end
+
   def realtime
     response.headers['Content-Type'] = 'text/event-stream'
     sse = Streamer::SSE.new(response.stream)

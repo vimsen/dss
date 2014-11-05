@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  resources :data_points
+
   resources :intervals
 
   get 'intellen_mock/getdata'
@@ -12,6 +14,7 @@ Rails.application.routes.draw do
   get 'stream/:id/addevent' => 'stream#addevent'
 
   get 'stream/:id/realtime' => 'stream#realtime'
+  get 'stream/:id/prosumer' => 'stream#prosumer'
   get 'stream/:id/clusterfeed' => 'stream#clusterfeed'
 
   patch 'prosumers/:id/removefromcluster' => 'prosumers#removefromcluster'
