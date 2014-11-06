@@ -73,17 +73,33 @@ class StreamController < ApplicationController
     prosumer = Prosumer.find(params[:id])
     startdate = (params[:startdate].nil?) ? (Time.now - 2.days) : params[:startdate].to_time
     enddate = (params[:enddate].nil?) ? (Time.now + 1.days) : params[:enddate].to_time
-    interval = (params[:interval])
+    interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
     
-    prosumer.actuals.where(timestamp: startdate..enddate).order(timestamp: :asc).each do |a|
-       sse.write(a.to_json, event: 'datapoint')
+    idata = prosumer.request_cached(interval, startdate, enddate)
+    
+    idata.each do |d|
+      sse.write(d.to_json, event: 'datapoint')  
     end
     
-    head :ok
+ 
+    x = $bunny_channel.fanout("prosumer.#{params[:id]}")
+    q = $bunny_channel.queue("", :exclusive => false)
+    q.bind(x)
+    puts "Subscribing to: prosumer.#{params[:id]}"
+    consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
+      puts "sending: ", data
+      sse.write(data, event: 'datapoint')
+    end
+ 
+    ActiveRecord::Base.connection.close
     
+    loop do
+      sleep 10;
+      sse.write("OK".to_json, event: 'messages.keepalive')
+    end
   rescue IOError
   ensure
-    # consumer.cancel unless consumer.nil?
+    consumer.cancel unless consumer.nil?
     sse.close
     puts "Stream closed."    
   end

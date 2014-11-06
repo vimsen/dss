@@ -6,9 +6,13 @@ var plotHelper = (function() {
   var replot = function() {
     var dataset = [];
     $.each(data, function(index, value) {
+      var single = [];
+      $.each(value, function(ind, val) {
+          single.push(val);
+      });
       dataset.push({
         label : index,
-        data : value /*,
+        data : single  /*,
          color : "#00FF00"*/
       });
     });
@@ -34,15 +38,15 @@ var plotHelper = (function() {
 
   var readData = function(idata) {
     var result = {};
-    
+
     $.each(idata, function(index, value) {
       var pros_id = value.prosumer_id;
       var label = "Prosumer " + pros_id + ": production";
       if (result[label] == null) {
-        result[label] = [];
+        result[label] = {};
       }
-      var temp = [value.timestamp * 1000, value.actual.production];  
-      result[label].push(temp);
+      var temp = [value.timestamp * 1000, value.actual.production];
+      result[label][value.timestamp] = temp;
     });
     return result;
   };
@@ -58,7 +62,7 @@ var plotHelper = (function() {
           console.log("Closed source");
         }
       }
-      source = new EventSource ("test");//(stream);
+      source = new EventSource(stream);
       console.log("Connecting to " + stream);
       console.log(source);
       data = readData(idata);
@@ -68,17 +72,18 @@ var plotHelper = (function() {
         replot();
       });
 
-      source.addEventListener('messages.create', function(e) {
+      source.addEventListener('datapoint', function(e) {
+        console.log("Datapoint received ", e);
         var message = JSON.parse(e.data);
         var pros_id = message.prosumer_id;
-        var temp = [message.X * 1000, message.Y];
-        if (pros_id > 0) {
-          if (data[pros_id] == null) {
-            data[pros_id] = [];
-          }
-          data[pros_id].push(temp);
-          changed = true;
+        var label = "Prosumer " + pros_id + ": production";
+        if (data[label] == null) {
+          data[label] = [];
         }
+        var temp = [message.timestamp * 1000, message.actual.production];
+        data[label][message.timestamp] = temp;
+        console.log("received: ", temp, data);
+        changed = true;
 
         window.setTimeout(redraw, 100);
       });

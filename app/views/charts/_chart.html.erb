@@ -12,7 +12,7 @@
 </div>
 <script>  
    
-    var idata = <%= prosumer.request_cached(1, (DateTime.now - 2.days), DateTime.now).to_json.html_safe %>;
+    var idata = <%= prosumer.request_cached(3, (DateTime.now - 2.days), DateTime.now).to_json.html_safe %>;
     
     console.log(idata);
 
@@ -37,7 +37,7 @@
             if (e) {
               params += 'enddate=' + e
             }
-            plotHelper.drawChart("<%= stream %>" + params);
+            plotHelper.drawChart("<%= stream %>" + params, idata);
         });
         $('#realtime').change(function () {
             console.log(this.checked);
