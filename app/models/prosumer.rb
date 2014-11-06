@@ -55,9 +55,7 @@ class Prosumer < ActiveRecord::Base
       
       result = JSON.parse(uri.open.read)
       datareceived(result)
-      
-      
-      
+
       puts "done"
     end
   end

@@ -37,7 +37,7 @@
             if (e) {
               params += 'enddate=' + e
             }
-            plotHelper.drawChart("<%= stream %>" + params, idata);
+            plotHelper.drawChart("<%= stream %>" + params, null);
         });
         $('#realtime').change(function () {
             console.log(this.checked);
