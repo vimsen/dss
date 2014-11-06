@@ -87,18 +87,19 @@ class StreamController < ApplicationController
     q.bind(x)
     puts "Subscribing to: prosumer.#{params[:id]}"
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
-      puts "sending: ", data
+      # puts "sending: ", data
       sse.write(data, event: 'datapoint')
     end
  
     ActiveRecord::Base.connection.close
     
     loop do
-      sleep 10;
+      sleep 1;
       sse.write("OK".to_json, event: 'messages.keepalive')
     end
   rescue IOError
   ensure
+    ActiveRecord::Base.connection.close
     consumer.cancel unless consumer.nil?
     sse.close
     puts "Stream closed."    

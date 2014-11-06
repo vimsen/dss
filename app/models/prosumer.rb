@@ -40,7 +40,9 @@ class Prosumer < ActiveRecord::Base
   
   def fetch_from_intelen(interval, startdate, enddate)
     Thread.new do
-      sleep 10;
+      ActiveRecord::Base.connection.close
+      sleep 5;
+      
       puts "fetching data, #{interval}, #{startdate}, #{enddate}"
      
       uri = URI.parse('http://localhost:3000/intellen_mock/getdata');
@@ -48,12 +50,14 @@ class Prosumer < ActiveRecord::Base
                 :startdate => startdate.to_i,
                 :enddate => enddate.to_i,
                 :interval => Interval.find(interval).duration}
+      ActiveRecord::Base.connection.close                
       uri.query = URI.encode_www_form(params);
       
       result = JSON.parse(uri.open.read)
       datareceived(result)
       
-      ActiveRecord::Base.connection.close
+      
+      
       puts "done"
     end
   end
@@ -67,11 +71,47 @@ class Prosumer < ActiveRecord::Base
 
     x = $bunny_channel.fanout("prosumer.#{self.id}")
     
-
+    puts "Received something"
     data.each do |d|
-      x.publish(d.to_json)
+      puts "Message! #{d}"
+      t = d["timestamp"].to_i
+      i = d["interval"].to_i
+      intervalid = Interval.where(duration: i).first
+      s = Time.at(t - i).to_datetime
+      e = Time.at(t + i).to_datetime
+      datapoint = DataPoint.where(timestamp: s..e, interval_id: intervalid, prosumer: self).first
+
+      
+      if (datapoint.nil?)
+        puts "No datapoint"
+        
+        h = {timestamp: Time.at(t).to_datetime, 
+              prosumer: self,
+              interval: intervalid,
+              production: d["actual"]["production"],
+              consumption: d["actual"]["consumption"],
+              storage: d["actual"]["storage"],
+              f_timestamp: Time.at(d["forecast"]["timestamp"]).to_datetime,
+              f_production: d["forecast"]["production"],
+              f_consumption: d["forecast"]["consumption"],
+              f_storage: d["forecast"]["storage"],
+              dr: d["dr"],
+              reliability: d["reliability"]
+              }
+        
+        puts "h=", h
+        datapoint = DataPoint.new(h)
+        puts "Crated DataPoint: #{datapoint}"
+        datapoint.save
+        puts "Saved DataPoint"
+        x.publish(d.to_json)
+        puts "Published DataPoint"
+      else 
+        puts "Datapoint found"
+      end
      #  puts "published message", d
     end
+    ActiveRecord::Base.connection.close
 
   end
   
