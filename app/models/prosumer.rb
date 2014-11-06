@@ -75,8 +75,8 @@ class Prosumer < ActiveRecord::Base
       t = d["timestamp"].to_i
       i = d["interval"].to_i
       intervalid = Interval.where(duration: i).first
-      s = Time.at(t - i).to_datetime
-      e = Time.at(t + i).to_datetime
+      s = Time.at(t - i/2).to_datetime
+      e = Time.at(t + i/2).to_datetime
       datapoint = DataPoint.where(timestamp: s..e, interval_id: intervalid, prosumer: self).first
 
       

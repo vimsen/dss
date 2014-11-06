@@ -25,7 +25,9 @@ var plotHelper = (function() {
         xaxis : {
           mode : "time",
           timeformat : "%Y/%m/%d<br/>%h:%M:%S",
-          timezone : "browser" /*,
+          timezone : "browser",
+          min: Date.parse($('#startDate').val()),
+          max: Date.parse($('#endDate').val()) /*,
            timeformat : "%y/%m/%d-%h:%M:%S",
            tickSize : [12, "hour"]*/
         }

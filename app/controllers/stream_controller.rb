@@ -71,8 +71,8 @@ class StreamController < ApplicationController
     sse = Streamer::SSE.new(response.stream)
     
     prosumer = Prosumer.find(params[:id])
-    startdate = (params[:startdate].nil?) ? (Time.now - 2.days) : params[:startdate].to_time
-    enddate = (params[:enddate].nil?) ? (Time.now + 1.days) : params[:enddate].to_time
+    startdate = (params[:startdate].nil?) ? (Time.now - 7.days) : params[:startdate].to_time
+    enddate = (params[:enddate].nil?) ? (Time.now) : params[:enddate].to_time
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
     
     idata = prosumer.request_cached(interval, startdate, enddate)
