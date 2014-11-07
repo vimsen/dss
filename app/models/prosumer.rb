@@ -40,7 +40,6 @@ class Prosumer < ActiveRecord::Base
   
   def fetch_from_intelen(interval, startdate, enddate)
     Thread.new do
-      ActiveRecord::Base.connection.close
       sleep 5;
       
       puts "fetching data, #{interval}, #{startdate}, #{enddate}"
@@ -50,7 +49,7 @@ class Prosumer < ActiveRecord::Base
                 :startdate => startdate.to_i,
                 :enddate => enddate.to_i,
                 :interval => Interval.find(interval).duration}
-      ActiveRecord::Base.connection.close                
+      ActiveRecord::Base.connection.close
       uri.query = URI.encode_www_form(params);
       
       result = JSON.parse(uri.open.read)
