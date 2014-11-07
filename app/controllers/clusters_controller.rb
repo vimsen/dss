@@ -29,7 +29,7 @@ class ClustersController < ApplicationController
   def create
     @cluster = Cluster.new(cluster_params)
     @prosumers = Prosumer.where(:id => params[:prosumers])
-    @cluseter.prosumers << @prosumers
+    @cluster.prosumers << @prosumers
 
     respond_to do |format|
       if @cluster.save
