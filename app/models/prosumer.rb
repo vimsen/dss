@@ -1,5 +1,4 @@
-require 'uri'
-require 'open-uri'
+require 'fetch_asynch/download_and_publish'
 
 class Prosumer < ActiveRecord::Base
   has_many :measurements, dependent: :destroy
@@ -33,8 +32,10 @@ class Prosumer < ActiveRecord::Base
         :reliability => dp.reliability
       })  
     end
-     
-    fetch_from_intelen(interval, startdate, enddate)
+    
+    
+    FetchAsynch::DownloadAndPublish.new(self.id, interval, startdate, enddate, "prosumer.#{self.id}") 
+   
     return result      
   end
   
@@ -45,7 +46,7 @@ class Prosumer < ActiveRecord::Base
       puts "fetching data, #{interval}, #{startdate}, #{enddate}"
      
       uri = URI.parse('http://localhost:3000/intellen_mock/getdata');
-      params = {:prosumer => self.id,
+      params = {:prosumers => self.id,
                 :startdate => startdate.to_i,
                 :enddate => enddate.to_i,
                 :interval => Interval.find(interval).duration}

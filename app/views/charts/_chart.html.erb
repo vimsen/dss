@@ -17,7 +17,8 @@
 </div>
 <script>  
    
-    var idata = <%= prosumer.request_cached(3, startDate, endDate).to_json.html_safe %>;
+    var idata = <%= provider.request_cached(3, startDate, endDate).to_json.html_safe %>;
+    
     
     console.log(idata);
 
