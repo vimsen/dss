@@ -11,7 +11,7 @@ module FetchAsynch
         
         puts "fetching data: #{prosumers}, #{interval}, #{startdate}, #{enddate}"
        
-        uri = URI.parse('http://localhost:3000/intellen_mock/getdata');
+        uri = URI.parse('http://vimsen.herokuapp.com/intellen_mock/getdata');
         params = {:prosumers => prosumers,
                   :startdate => startdate.to_i,
                   :enddate => enddate.to_i,
