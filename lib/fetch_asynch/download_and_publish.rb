@@ -37,6 +37,7 @@ module FetchAsynch
           else
             puts "Datapoint found"
           end
+          ActiveRecord::Base.connection.close
         end
         ActiveRecord::Base.connection.close
       end
@@ -45,11 +46,16 @@ module FetchAsynch
         puts "===== In newData ======"
         t = d["timestamp"].to_i
         i = d["interval"].to_i
-        intervalid = Interval.where(duration: i).first
-        puts "===== intervalid : #{intervalid} =========="
         s = Time.at(t - i/2).to_datetime
         e = Time.at(t + i/2).to_datetime
-        datapoint = DataPoint.where(timestamp: s..e, interval_id: intervalid, prosumer: Prosumer.find(d["prosumer_id"].to_i)).first
+        
+        puts d
+        
+        datapoint = DataPoint.where(
+                           timestamp: s..e, 
+                           interval_id: Interval.where(duration: i).first, 
+                           prosumer: Prosumer.find(d["prosumer_id"].to_i)
+                           ).first
         puts "===== Result : #{datapoint.nil?} =========="
         return datapoint.nil? 
     

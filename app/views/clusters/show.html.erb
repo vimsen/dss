@@ -16,7 +16,7 @@
 <br/>
 <%= render partial: "addprosumer"%>
 <br/>
-<%= render partial: "charts/chart", :locals => {:stream => "/stream/#{@cluster.id}/clusterfeed"} %>
+<%= render partial: "charts/chart", :locals => {:stream => "/stream/#{@cluster.id}/clusterfeed", :provider => @cluster} %>
 <br/>
 
 <%= link_to 'Edit', edit_cluster_path(@cluster) %> |

@@ -9,6 +9,7 @@ class IntellenMockController < ApplicationController
     startdate = params[:startdate].to_i
     enddate = params[:enddate].to_i
     interval = params[:interval].to_i
+    puts "prosumers: #{prosumers}"
     puts "startdate: #{startdate}"
     puts "enddate  : #{enddate}"
     puts "interval: #{interval}"
