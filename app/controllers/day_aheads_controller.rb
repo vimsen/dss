@@ -1,3 +1,6 @@
+require 'fetch_asynch/download_day_ahead'
+
+
 class DayAheadsController < ApplicationController
   before_action :set_day_ahead, only: [:show, :edit, :update, :destroy]
   respond_to :json, :html
@@ -21,6 +24,8 @@ class DayAheadsController < ApplicationController
 
   def create
     @day_ahead = DayAhead.new(day_ahead_params)
+    
+    FetchAsynch::DownloadDayAhead.new day_ahead_params[:prosumer_id], @day_ahead, day_ahead_params[:date]
     @day_ahead.save
     respond_with(@day_ahead)
   end

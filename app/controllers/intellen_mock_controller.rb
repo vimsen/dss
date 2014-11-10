@@ -1,4 +1,28 @@
 class IntellenMockController < ApplicationController
+  
+  def getdayahead
+    response.headers['Content-Type'] = 'application/json'
+    
+    prosumers = params[:prosumers]
+    date = params[:date]
+    
+    
+    result = prosumers.split(",").map do |p|
+      {
+            :prosumer_id => p.to_i,
+            :date => date,
+            :points => 0.upto(23).map do |t|
+              {
+                :time => t,
+                :production => rand * 100,
+                :consumption => rand * 100
+              }
+            end
+      }
+    end
+    render :text => result.to_json
+  end
+  
   def getdata
     
     puts "========= IN GETDATA =================="
@@ -23,18 +47,18 @@ class IntellenMockController < ApplicationController
           :prosumer_id => p.to_i,
           :interval => interval,
           :actual => {
-            :production => rand(0..100),
-            :consumption => rand(0..100),
-            :storage => rand(0..100)
+            :production => rand * 100,
+            :consumption => rand * 100,
+            :storage => rand * 100
           },
           :forecast => {
             :timestamp => t + interval,
-            :production => rand(0..100),
-            :consumption => rand(0..100),
-            :storage => rand(0..100)
+            :production =>  rand * 100,
+            :consumption =>  rand * 100,
+            :storage =>  rand * 100
           },
-          :dr => rand(0..1),
-          :reliability => rand(0..1)
+          :dr => rand,
+          :reliability => rand
         })  
       end
     end

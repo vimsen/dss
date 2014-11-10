@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   resources :intervals
 
   get 'intellen_mock/getdata'
+  get 'intellen_mock/getdayahead'
 
   devise_for :users
   resources :clusters
