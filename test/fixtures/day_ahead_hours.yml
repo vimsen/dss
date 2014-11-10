@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  day_ahead_id: 
+  time: 1
+  production: 1.5
+  consumption: 1.5
+
+two:
+  day_ahead_id: 
+  time: 1
+  production: 1.5
+  consumption: 1.5

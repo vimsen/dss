@@ -1,0 +1,35 @@
+<p id="notice">
+	<%= notice %>
+</p>
+
+<p>
+	<strong>Prosumer:</strong>
+	<%= link_to @day_ahead.prosumer.name, @day_ahead.prosumer unless @day_ahead.prosumer.nil? %>
+</p>
+
+<p>
+	<strong>Date:</strong>
+	<%= @day_ahead.date %>
+</p>
+
+<%= link_to 'Edit', edit_day_ahead_path(@day_ahead) %> |
+<%= link_to 'Back', day_aheads_path %>
+
+<div id="placeholder" style="width:100%;height:400px;min-width=600px" />
+
+<script>
+	$(function(){
+		var prod = <%= @day_ahead.day_ahead_hours.map {|dah| [dah.time, dah.production] }.to_json.html_safe %>;
+		
+		dataset = [{
+			"label": "Day ahead production forecast",
+			"data" : prod 
+			}];
+		
+		$.plot($("#placeholder"), dataset, {});
+		
+		
+		console.log(dataset);
+	});
+</script>
+

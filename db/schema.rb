@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141105104206) do
+ActiveRecord::Schema.define(version: 20141110101710) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,6 +39,26 @@ ActiveRecord::Schema.define(version: 20141105104206) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "day_ahead_hours", force: true do |t|
+    t.integer  "day_ahead_id"
+    t.integer  "time"
+    t.float    "production"
+    t.float    "consumption"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "day_ahead_hours", ["day_ahead_id"], name: "index_day_ahead_hours_on_day_ahead_id", using: :btree
+
+  create_table "day_aheads", force: true do |t|
+    t.integer  "prosumer_id"
+    t.date     "date"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "day_aheads", ["prosumer_id"], name: "index_day_aheads_on_prosumer_id", using: :btree
 
   create_table "intervals", force: true do |t|
     t.integer  "duration"

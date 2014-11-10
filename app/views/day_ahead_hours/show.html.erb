@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Day ahead:</strong>
+  <%= @day_ahead_hour.day_ahead %>
+</p>
+
+<p>
+  <strong>Time:</strong>
+  <%= @day_ahead_hour.time %>
+</p>
+
+<p>
+  <strong>Production:</strong>
+  <%= @day_ahead_hour.production %>
+</p>
+
+<p>
+  <strong>Consumption:</strong>
+  <%= @day_ahead_hour.consumption %>
+</p>
+
+<%= link_to 'Edit', edit_day_ahead_hour_path(@day_ahead_hour) %> |
+<%= link_to 'Back', day_ahead_hours_path %>

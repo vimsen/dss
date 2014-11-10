@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
 
+  resources :day_ahead_hours
+
+  resources :day_aheads
+
   resources :data_points
 
   resources :intervals

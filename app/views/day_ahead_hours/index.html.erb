@@ -1,0 +1,31 @@
+<h1>Listing day_ahead_hours</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Day ahead</th>
+      <th>Time</th>
+      <th>Production</th>
+      <th>Consumption</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @day_ahead_hours.each do |day_ahead_hour| %>
+      <tr>
+        <td><%= day_ahead_hour.day_ahead %></td>
+        <td><%= day_ahead_hour.time %></td>
+        <td><%= day_ahead_hour.production %></td>
+        <td><%= day_ahead_hour.consumption %></td>
+        <td><%= link_to 'Show', day_ahead_hour %></td>
+        <td><%= link_to 'Edit', edit_day_ahead_hour_path(day_ahead_hour) %></td>
+        <td><%= link_to 'Destroy', day_ahead_hour, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Day ahead hour', new_day_ahead_hour_path %>

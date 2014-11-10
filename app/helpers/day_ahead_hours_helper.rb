@@ -1,0 +1,2 @@
+module DayAheadHoursHelper
+end

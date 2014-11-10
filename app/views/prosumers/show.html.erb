@@ -1,27 +1,33 @@
-<p id="notice"><%= notice %></p>
-
-<p>
-  <strong>Name:</strong>
-  <%= @prosumer.name %>
+<p id="notice">
+	<%= notice %>
 </p>
 
 <p>
-  <strong>Location:</strong>
-  <%= @prosumer.location %>
+	<strong>Name:</strong>
+	<%= @prosumer.name %>
 </p>
 
 <p>
-  <strong>Cluster:</strong>
-  <%= link_to(@prosumer.cluster.name, @prosumer.cluster) if @prosumer.cluster %>
+	<strong>Location:</strong>
+	<%= @prosumer.location %>
 </p>
 
 <p>
-  <strong>Users:</strong>
-  <%= render(partial: "users/username", spacer_template: "common/comma_spacer", collection: @prosumer.users, as: :user) || "No users" %>
+	<strong>Cluster:</strong>
+	<%= link_to(@prosumer.cluster.name, @prosumer.cluster) if @prosumer.cluster %>
 </p>
 
+<p>
+	<strong>Users:</strong>
+	<%= render(partial: "users/username", spacer_template: "common/comma_spacer", collection: @prosumer.users, as: :user) || "No users" %>
+</p>
 
 <%= render partial: "charts/chart", :locals => {:stream => "/stream/#{@prosumer.id}/prosumer", :provider => @prosumer} %>
+
+<p>
+	<strong>Day-ahead forecasts:</strong>
+	<%= render(partial: "day_aheads/date", spacer_template: "common/comma_spacer", collection: @prosumer.day_aheads, as: :day_ahead) || "No forecasts" %>
+</p>
 
 <%= link_to 'Edit', edit_prosumer_path(@prosumer) %> |
 <%= link_to 'Back', prosumers_path %>

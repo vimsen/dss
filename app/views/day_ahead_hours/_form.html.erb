@@ -1,0 +1,33 @@
+<%= form_for(@day_ahead_hour) do |f| %>
+  <% if @day_ahead_hour.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@day_ahead_hour.errors.count, "error") %> prohibited this day_ahead_hour from being saved:</h2>
+
+      <ul>
+      <% @day_ahead_hour.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :day_ahead_id %><br>
+    <%= f.text_field :day_ahead_id %>
+  </div>
+  <div class="field">
+    <%= f.label :time %><br>
+    <%= f.number_field :time %>
+  </div>
+  <div class="field">
+    <%= f.label :production %><br>
+    <%= f.text_field :production %>
+  </div>
+  <div class="field">
+    <%= f.label :consumption %><br>
+    <%= f.text_field :consumption %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
