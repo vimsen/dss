@@ -1,6 +1,6 @@
 <h1>Listing day_aheads</h1>
 
-<table>
+<table class="table">
   <thead>
     <tr>
       <th>Prosumer</th>
@@ -12,7 +12,7 @@
   <tbody>
     <% @day_aheads.each do |day_ahead| %>
       <tr>
-        <td><%= day_ahead.prosumer %></td>
+        <td><%= render(partial: "prosumers/prosumername", :locals => { :prosumer => day_ahead.prosumer}) || "No Prosumers" %></td>
         <td><%= day_ahead.date %></td>
         <td><%= link_to 'Show', day_ahead %></td>
         <td><%= link_to 'Edit', edit_day_ahead_path(day_ahead) %></td>

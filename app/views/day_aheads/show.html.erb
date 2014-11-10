@@ -4,7 +4,7 @@
 
 <p>
 	<strong>Prosumer:</strong>
-	<%= link_to @day_ahead.prosumer.name, @day_ahead.prosumer unless @day_ahead.prosumer.nil? %>
+	<%= render(partial: "prosumers/prosumername", :locals => { :prosumer => @day_ahead.prosumer}) || "No Prosumers" %>
 </p>
 
 <p>
@@ -12,10 +12,13 @@
 	<%= @day_ahead.date %>
 </p>
 
+
+<div>
+	<div id="placeholder" style="width:100%;height:400px;min-width=600px" />
+</div>
+
 <%= link_to 'Edit', edit_day_ahead_path(@day_ahead) %> |
 <%= link_to 'Back', day_aheads_path %>
-
-<div id="placeholder" style="width:100%;height:400px;min-width=600px" />
 
 <script>
 	$(function(){
