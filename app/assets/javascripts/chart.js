@@ -3,10 +3,10 @@ var plotHelper = (function() {
   var data = {};
   var chaanged = false;
 
-  var replot = function() {
+  var replot = function(d) {
     var dataset = [];
-    if (data != null) {
-      $.each(data, function(index, value) {
+    if (d != null) {
+      $.each(d, function(index, value) {
         var single = [];
         $.each(value, function(ind, val) {
           single.push(val);
@@ -20,14 +20,17 @@ var plotHelper = (function() {
       });
 
       console.log("Dataset: ", dataset);
+      
+      var s = $( "#startDate" ).length ? Date.parse($('#startDate').val()) : null;
+      var e = $( "#endDate" ).length ? Date.parse($('#endDate').val()) : null;
 
       $.plot($("#placeholder"), dataset, {
         xaxis : {
           mode : "time",
           timeformat : "%Y/%m/%d<br/>%h:%M:%S",
           timezone : "browser",
-          min: Date.parse($('#startDate').val()),
-          max: Date.parse($('#endDate').val()) /*,
+          min: s,
+          max: e /*,
            timeformat : "%y/%m/%d-%h:%M:%S",
            tickSize : [12, "hour"]*/
         }
@@ -35,9 +38,9 @@ var plotHelper = (function() {
     }
   };
 
-  var redraw = function() {
+  var redraw = function(d) {
     if (changed) {
-      replot();
+      replot(d);
       changed = false;
     }
   };
@@ -62,6 +65,8 @@ var plotHelper = (function() {
   };
 
   return {
+    replot : replot,
+    readData : readData,
     drawChart : function(stream, idata) {
 
       if (source != null) {
@@ -75,11 +80,11 @@ var plotHelper = (function() {
       source = new EventSource(stream);
       console.log("Connecting to " + stream);
       console.log(source);
-      data = readData(idata);
+      data = idata;
       changed = true;
 
       $(window).on('resize orientationChanged', function() {
-        replot();
+        replot(data);
       });
 
       source.addEventListener('datapoint', function(e) {
@@ -95,10 +100,10 @@ var plotHelper = (function() {
         console.log("received: ", temp, data);
         changed = true;
 
-        window.setTimeout(redraw, 100);
+        window.setTimeout(redraw, 100, data);
       });
 
-      redraw();
+      redraw(data);
     }
   };
 })();

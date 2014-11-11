@@ -22,17 +22,35 @@
 
 <script>
 	$(function(){
-		var prod = <%= @day_ahead.day_ahead_hours.map {|dah| [dah.time, dah.production] }.to_json.html_safe %>;
+	  <% 
+	     startdate =  DateTime.parse(@day_ahead.date.to_s).change(:offset => "+0200")
+	     enddate = startdate + 23.hours
+	  %>
+	  
+	  
+		var prod = <%= @day_ahead.day_ahead_hours.map {|dah| [ (startdate +  dah.time.hours).to_i * 1000, dah.production] }.to_json.html_safe %>;
+		var idata = <%= @day_ahead.prosumer.request_cached(2, startdate , enddate).to_json.html_safe %>;
+		
+		console.log("prod:", prod);
+    console.log("idata:", idata);
 		
 		dataset = [{
-			"label": "Day ahead production forecast",
+		  "label": "Day ahead production forecast",
 			"data" : prod 
-			}];
+		}];
 		
-		$.plot($("#placeholder"), dataset, {});
-		
-		
-		console.log(dataset);
-	});
+    var data = plotHelper.readData(idata);
+    
+    var daf = {};
+    
+    $.each(prod, function(i, d) {
+      daf[d[0]] = d;
+    });
+    
+    data["day ahead forecast"] = daf;
+    
+    plotHelper.drawChart("<%= "/stream/#{@day_ahead.prosumer.id}/prosumer?startdate=#{startdate}&enddate=#{enddate}&interval=3600" %>",data);
+    console.log("data:", data);
+ 	});
 </script>
 

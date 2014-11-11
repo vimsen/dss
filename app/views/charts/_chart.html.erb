@@ -23,7 +23,7 @@
     console.log(idata);
 
     $(function(){
-        plotHelper.drawChart("<%= stream %>", idata);
+        plotHelper.drawChart("<%= stream %>", plotHelper.readData(idata));
         $('#startDate').datetimepicker();
         $('#endDate').datetimepicker();
         $('#endDate').prop('disabled', true);
@@ -43,7 +43,7 @@
             if (e) {
               params += 'enddate=' + e
             }
-            plotHelper.drawChart("<%= stream %>" + params, null);
+            plotHelper.drawChart("<%= stream %>" + params, {});
         });
         $('#realtime').change(function () {
             console.log(this.checked);
