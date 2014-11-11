@@ -12,8 +12,8 @@
   <% end %>
 
   <div class="field">
-    <%= f.label :prosumer_id %><br>
-    <%= f.text_field :prosumer_id %>
+    <%= f.label :prosumer_id  %><br>
+    <%= collection_select(:day_ahead, :prosumer_id, Prosumer.all, :id, :name, :include_blank => false) %>
   </div>
   <div class="field">
     <%= f.label :date %><br>
