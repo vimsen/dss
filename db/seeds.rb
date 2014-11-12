@@ -18,4 +18,6 @@ Interval.create([{ id: 1, duration: 900, name: '15 minutes'},
 clusters = Cluster.create([{name: "Cluster 1", description: "A testing cluster"}])
 
 Prosumer.create([{name: "Prosumer 1", location: "Rio, Patras", cluster: clusters.first }, 
-                 {name: "Prosumer 2", location: "Athens", cluster: clusters.first}]) 
+                 {name: "Prosumer 2", location: "Athens", cluster: clusters.first}])
+                 
+EnergyType.create([{name: 'solar'},{name: 'wind'},{name: 'hydro'},{name: 'geothermal'} ]) 

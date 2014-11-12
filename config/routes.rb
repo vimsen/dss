@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  resources :energy_types
+
   resources :day_ahead_hours
 
   resources :day_aheads
