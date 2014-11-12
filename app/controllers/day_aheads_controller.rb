@@ -4,6 +4,7 @@ require 'fetch_asynch/download_day_ahead'
 class DayAheadsController < ApplicationController
   before_action :set_day_ahead, only: [:show, :edit, :update, :destroy]
   respond_to :json, :html
+  load_and_authorize_resource
 
   def index
     @day_aheads = DayAhead.all

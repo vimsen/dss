@@ -1,6 +1,7 @@
 class DataPointsController < ApplicationController
   before_action :set_data_point, only: [:show, :edit, :update, :destroy]
   respond_to :json, :html
+  load_and_authorize_resource
   
   def index
     @data_points = DataPoint.all

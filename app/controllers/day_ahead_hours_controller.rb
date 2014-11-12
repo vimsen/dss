@@ -1,6 +1,7 @@
 class DayAheadHoursController < ApplicationController
   before_action :set_day_ahead_hour, only: [:show, :edit, :update, :destroy]
   respond_to :json, :html
+  load_and_authorize_resource
 
   def index
     @day_ahead_hours = DayAheadHour.all

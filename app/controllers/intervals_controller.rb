@@ -1,6 +1,7 @@
 class IntervalsController < ApplicationController
   before_action :set_interval, only: [:show, :edit, :update, :destroy]
   respond_to :json, :html
+  load_and_authorize_resource
 
   def index
     @intervals = Interval.all
