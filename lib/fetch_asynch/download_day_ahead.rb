@@ -5,7 +5,7 @@ require 'json'
 module FetchAsynch
   class DownloadDayAhead
     def initialize prosumers, dayahead, date
-      uri = URI.parse('http://localhost:3000/intellen_mock/getdayahead');
+      uri = URI.parse('http://vimsen.herokuapp.com/intellen_mock/getdayahead');
       params = {:prosumers => prosumers,
                 :date => date}
       uri.query = URI.encode_www_form(params);
