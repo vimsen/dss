@@ -1,13 +1,11 @@
-<p id="notice"><%= notice %></p>
-
 <p>
   <strong>Prosumer:</strong>
-  <%= @data_point.prosumer_id %>
+  <%= render partial: "prosumers/prosumername", :locals => { :prosumer => @data_point.prosumer } %>
 </p>
 
 <p>
   <strong>Interval:</strong>
-  <%= @data_point.interval_id %>
+  <%= @data_point.interval.name %>
 </p>
 
 <p>
@@ -17,17 +15,17 @@
 
 <p>
   <strong>Production:</strong>
-  <%= @data_point.production %>
+  <%= @data_point.production.round(2) %>
 </p>
 
 <p>
   <strong>Consumption:</strong>
-  <%= @data_point.consumption %>
+  <%= @data_point.consumption.round(2) %>
 </p>
 
 <p>
   <strong>Storage:</strong>
-  <%= @data_point.storage %>
+  <%= @data_point.storage.round(2) %>
 </p>
 
 <p>
@@ -37,22 +35,22 @@
 
 <p>
   <strong>F production:</strong>
-  <%= @data_point.f_production %>
+  <%= @data_point.f_production.round(2) %>
 </p>
 
 <p>
   <strong>F consumption:</strong>
-  <%= @data_point.f_consumption %>
+  <%= @data_point.f_consumption.round(2) %>
 </p>
 
 <p>
   <strong>F storage:</strong>
-  <%= @data_point.f_storage %>
+  <%= @data_point.f_storage.round(2) %>
 </p>
 
 <p>
   <strong>Dr:</strong>
-  <%= @data_point.dr %>
+  <%= @data_point.dr.round(2) %>
 </p>
 
 <p>

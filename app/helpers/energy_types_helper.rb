@@ -1,0 +1,2 @@
+module EnergyTypesHelper
+end
