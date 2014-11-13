@@ -29,5 +29,6 @@
 	<%= render(partial: "day_aheads/date", spacer_template: "common/comma_spacer", collection: @prosumer.day_aheads, as: :day_ahead) || "No forecasts" %>
 </p>
 
-<%= link_to 'Edit', edit_prosumer_path(@prosumer) %> |
-<%= link_to 'Back', prosumers_path %>
+
+<td><%= link_to 'Edit', edit_prosumer_path(@prosumer) ,class: 'btn btn-info btn-xs' %></td>  |
+<td><%= link_to 'Back', prosumers_path ,class: 'btn btn-warning btn-xs'%></td>

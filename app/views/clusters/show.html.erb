@@ -19,5 +19,5 @@
 <%= render partial: "charts/chart", :locals => {:stream => "/stream/#{@cluster.id}/clusterfeed", :provider => @cluster} %>
 <br/>
 
-<%= link_to 'Edit', edit_cluster_path(@cluster) %> |
-<%= link_to 'Back', clusters_path %>
+<td><%= link_to 'Edit',edit_cluster_path(@cluster),class: 'btn btn-info btn-xs' %></td> |
+<td><%= link_to 'Back', clusters_path ,class: 'btn btn-warning btn-xs'%> </td>

@@ -17,9 +17,9 @@
         <td><%= measurement.power %></td>
         <td><%= link_to measurement.prosumer.name, prosumer_path(measurement.prosumer) %></td>
         
-        <td><%= link_to 'Show', measurement,class: 'btn btn-success btn xs' %></td>
-		<td><%= link_to 'Edit', edit_measurement_path(measurement) ,class: 'btn btn-info btn xs'%></td>		       
-        <td><%= link_to 'Destroy', measurement, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn xs'%></td>
+        <td><%= link_to 'Show', measurement,class: 'btn btn-success btn-xs' %></td>
+		<td><%= link_to 'Edit', edit_measurement_path(measurement) ,class: 'btn btn-info btn-xs'%></td>		       
+        <td><%= link_to 'Destroy', measurement, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-xs'%></td>
       </tr>
     <% end %>
   </tbody>
@@ -27,4 +27,4 @@
 
 <br>
 
- <%= link_to 'New Measurement', new_measurement_path,class: 'btn btn-default btn-lg'%> 
+ <%= link_to 'New Measurement', new_measurement_path,class: 'btn btn-default btn-xs'%> 
