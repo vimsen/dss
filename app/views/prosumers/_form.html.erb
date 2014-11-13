@@ -1,4 +1,4 @@
-<%= form_for(@prosumer) do |f| %>
+<%= form_for(setup_prosumer(@prosumer)) do |f| %>
   <% if @prosumer.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@prosumer.errors.count, "error") %> prohibited this prosumer from being saved:</h2>
@@ -23,14 +23,37 @@
     <%= f.label :cluster_id %><br>
     <%= collection_select(:prosumer, :cluster_id, Cluster.all, :id, :name, :include_blank => true) %>
   </div>
-    <div class="field">
+  <div class="field">
     <%= f.label :users %><br>
     <%= select_tag "users", 
             options_from_collection_for_select(User.all, 
                 'id', 'email', @prosumer.users.map{ |j| j.id }), 
                 :multiple => true, :prompt => "Please select" %>
   </div>
+  <div>
+    <%= f.label :energy_types %>
+    <%= f.fields_for :energy_type_prosumers do |ff| %>
+      <div>
+        <%= ff.label :_destroy, ff.object.energy_type.name %>
+        <%= ff.check_box :_destroy,
+              {:checked => ff.object.persisted?},
+              '0', '1' 
+        %>
+        <%= ff.text_field :power, disabled: !ff.object.persisted? %>
+        <%= ff.hidden_field :energy_type_id %>
+      </div>
+    <% end %>
+  </div>
   <div class="actions">
     <%= f.submit %>
   </div>
 <% end %>
+<script>
+  $(function(){
+    $("[id^=prosumer_energy_type_prosumers_attributes_][id$=__destroy]").click(function() {
+      var id = this.id.match(/\d+/); 
+      $("#prosumer_energy_type_prosumers_attributes_"+id+"_power").attr('disabled', !this.checked);
+    });
+  });
+</script>
+

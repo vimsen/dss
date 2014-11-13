@@ -7,6 +7,7 @@
       <th>Location</th>
       <th>Cluster</th>
       <th>Users</th>
+      <th>Capacity</th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -18,6 +19,7 @@
         <td><%= prosumer.location %></td>
         <td><%= link_to prosumer.cluster.name, prosumer.cluster unless prosumer.cluster.nil?  %></td>
         <td><%= render(partial: "users/username", spacer_template: "common/comma_spacer", collection: prosumer.users, as: :user) || "No users" %></td>
+        <td><%= render(partial: "energy_type_prosumers/short", spacer_template: "common/comma_spacer", collection: prosumer.energy_type_prosumers, as: :energy_type_prosumer) || "No power" %></td>
         <td><%= link_to 'Show', prosumer %></td>
         <td><%= link_to 'Edit', edit_prosumer_path(prosumer) %></td>
         <td><%= link_to 'Destroy', prosumer, method: :delete, data: { confirm: 'Are you sure?' } %></td>

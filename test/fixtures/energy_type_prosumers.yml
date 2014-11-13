@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  power: 1.5
+  energy_type_id: 
+  prosumer_id: 
+
+two:
+  power: 1.5
+  energy_type_id: 
+  prosumer_id: 

@@ -22,6 +22,14 @@
 	<%= render(partial: "users/username", spacer_template: "common/comma_spacer", collection: @prosumer.users, as: :user) || "No users" %>
 </p>
 
+<p>
+  <strong>Power capasity</strong>
+  <%= render(partial: "energy_type_prosumers/short", 
+             spacer_template: "common/comma_spacer", 
+             collection: @prosumer.energy_type_prosumers, 
+             as: :energy_type_prosumer) || "No entry" %>
+</p>
+
 <%= render partial: "charts/chart", :locals => {:stream => "/stream/#{@prosumer.id}/prosumer", :provider => @prosumer} %>
 
 <p>
