@@ -5,13 +5,13 @@
     <tr>
       <th>Prosumer</th>
       <th>Interval</th>
-      <th>Timestamp</th>
-      <th>Production</th>
-      <th>Consumption</th>
+      <th>Time</th>
+      <th>Prod.</th>
+      <th>Cons.</th>
       <th>Storage</th>
-      <th>F timestamp</th>
-      <th>F production</th>
-      <th>F consumption</th>
+      <th>F time</th>
+      <th>F prod.</th>
+      <th>F cons.</th>
       <th>F storage</th>
       <th>Dr</th>
       <th>Reliability</th>
@@ -22,18 +22,18 @@
   <tbody>
     <% @data_points.each do |data_point| %>
       <tr>
-        <td><%= data_point.prosumer_id %></td>
-        <td><%= data_point.interval_id %></td>
+        <td><%= render partial: "prosumers/prosumername", :locals => { :prosumer => data_point.prosumer } %></td>
+        <td><%= data_point.interval.name %></td>
         <td><%= data_point.timestamp %></td>
-        <td><%= data_point.production %></td>
-        <td><%= data_point.consumption %></td>
-        <td><%= data_point.storage %></td>
+        <td><%= data_point.production.round(2) %></td>
+        <td><%= data_point.consumption.round(2) %></td>
+        <td><%= data_point.storage.round(2) %></td>
         <td><%= data_point.f_timestamp %></td>
-        <td><%= data_point.f_production %></td>
-        <td><%= data_point.f_consumption %></td>
-        <td><%= data_point.f_storage %></td>
-        <td><%= data_point.dr %></td>
-        <td><%= data_point.reliability %></td>
+        <td><%= data_point.f_production.round(2) %></td>
+        <td><%= data_point.f_consumption.round(2) %></td>
+        <td><%= data_point.f_storage.round(2) %></td>
+        <td><%= data_point.dr.round(2) %></td>
+        <td><%= data_point.reliability.round(2) %></td>
         <td><%= link_to 'Show', data_point %></td>
         <td><%= link_to 'Edit', edit_data_point_path(data_point) %></td>
         <td><%= link_to 'Destroy', data_point, method: :delete, data: { confirm: 'Are you sure?' } %></td>
