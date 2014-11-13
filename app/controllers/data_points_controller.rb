@@ -2,10 +2,11 @@ class DataPointsController < ApplicationController
   before_action :set_data_point, only: [:show, :edit, :update, :destroy]
   respond_to :json, :html
   load_and_authorize_resource
+  helper_method :sort_column, :sort_direction
   
   def index
     # @data_points = DataPoint.all
-    @data_points = DataPoint.paginate(:page => params[:page])
+    @data_points = DataPoint.joins(:prosumer, :interval).order(sort_column + ' ' + sort_direction).paginate(:page => params[:page])
     respond_with(@data_points)
   end
 
@@ -44,5 +45,13 @@ class DataPointsController < ApplicationController
 
     def data_point_params
       params.require(:data_point).permit(:prosumer_id, :interval_id, :timestamp, :production, :consumption, :storage, :f_timestamp, :f_production, :f_consumption, :f_storage, :dr, :reliability)
+    end
+      
+    def sort_column
+      (DataPoint.column_names+ ["prosumers.name", "intervals.duration"]).include?(params[:sort]) ? params[:sort] : "timestamp"
+    end
+  
+    def sort_direction
+      %w[asc desc].include?(params[:direction]) ?  params[:direction] : "asc"
     end
 end
