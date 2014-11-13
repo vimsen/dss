@@ -32,17 +32,28 @@
   </div>
   <div>
     <%= f.label :energy_types %>
-    <%= f.fields_for :energy_type_prosumers do |ff| %>
-      <div>
-        <%= ff.label :_destroy, ff.object.energy_type.name %>
-        <%= ff.check_box :_destroy,
-              {:checked => ff.object.persisted?},
-              '0', '1' 
-        %>
-        <%= ff.text_field :power, disabled: !ff.object.persisted? %>
-        <%= ff.hidden_field :energy_type_id %>
-      </div>
-    <% end %>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>&nbsp;&nbsp;&nbsp;</th>
+          <th>Capacity</th>
+        </tr>
+      </thead>
+      <tbody>
+      <%= f.fields_for :energy_type_prosumers do |ff| %>
+        <tr>
+          <td><%= ff.label :_destroy, ff.object.energy_type.name %></td>
+          <td>&nbsp;&nbsp;<%= ff.check_box :_destroy,
+                     {:checked => ff.object.persisted?},
+                     '0', '1' 
+              %>&nbsp;&nbsp;</td>
+          <td><%= ff.text_field :power, disabled: !ff.object.persisted? %>
+              <%= ff.hidden_field :energy_type_id %></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
   </div>
   <div class="actions">
     <%= f.submit %>
