@@ -1,6 +1,7 @@
 class EnergyTypesController < ApplicationController
   before_action :set_energy_type, only: [:show, :edit, :update, :destroy]
   respond_to :json, :html
+  load_and_authorize_resource
   
   def index
     @energy_types = EnergyType.all
