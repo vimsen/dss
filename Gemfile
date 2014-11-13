@@ -53,7 +53,9 @@ gem 'puma'
 #font awesome
 gem "font-awesome-rails"
 
-gem 'devise'
-gem 'cancancan'
-gem 'rolify'
+gem 'devise'     # for authentication
+gem 'cancancan'  # for authorizaton
+gem 'rolify'     # for role management
+# gem 'will_paginate', '~>3.0'
+gem 'will_paginate-bootstrap'
 

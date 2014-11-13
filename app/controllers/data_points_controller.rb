@@ -4,7 +4,8 @@ class DataPointsController < ApplicationController
   load_and_authorize_resource
   
   def index
-    @data_points = DataPoint.all
+    # @data_points = DataPoint.all
+    @data_points = DataPoint.paginate(:page => params[:page])
     respond_with(@data_points)
   end
 

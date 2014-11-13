@@ -42,6 +42,7 @@
   </tbody>
 </table>
 
+<%= will_paginate @data_points, renderer: BootstrapPagination::Rails %>
 <br>
 
 <%= link_to 'New Data point', new_data_point_path %>
