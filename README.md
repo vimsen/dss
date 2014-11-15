@@ -41,5 +41,3 @@ How to test
  - to connect as a registered user, use the following: user: `***REMOVED***`, passwod: `***REMOVED***`
  - to connect as an administrator, use the following: user: `***REMOVED***`, passwod: `***REMOVED***` 
 
-
-    
