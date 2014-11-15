@@ -14,7 +14,9 @@
 //= require jquery_ujs
 //= require bootstrap.min
 //= require turbolinks
-//= require jquery.flot.min
-//= require jquery.flot.time.min
-//= require jquery.datetimepicker
+//= require sb-admin-2
+//= require plugins/metisMenu/metisMenu.min
+//= require plugins/dataTables/jquery.dataTables
+//= require plugins/dataTables/dataTables.bootstrap
 //= require_tree .
+
