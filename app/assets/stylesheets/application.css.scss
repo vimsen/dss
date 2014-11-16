@@ -11,6 +11,7 @@
  * file per style scope.
  *
  *= require bootstrap.min
+ *= require bootstrap_navbar_split_dropdowns
  *= require_tree .
  *= require_self
  *= require jquery.datetimepicker

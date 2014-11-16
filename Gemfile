@@ -56,6 +56,8 @@ gem "font-awesome-rails"
 gem 'devise'     # for authentication
 gem 'cancancan'  # for authorizaton
 gem 'rolify'     # for role management
-# gem 'will_paginate', '~>3.0'
-gem 'will_paginate-bootstrap'
+
+gem 'will_paginate-bootstrap' # Pagination
+
+gem 'simple-navigation-bootstrap' # For the menu
 

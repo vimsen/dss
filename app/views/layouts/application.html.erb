@@ -9,16 +9,16 @@
     <%= csrf_meta_tags %>
   </head>
   <body>
-    <header>
+    <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
       <%= render 'layouts/header' %>
-    </header>
-     
-    <!-- main part -->
-    <div class="container-fluid">
-       <div class="row">
-      	 <%= render 'layouts/navigation' %>
-      	 <%= render 'layouts/content' %>
-       </div>
+      <%= render 'layouts/navigation' %>
+    </nav>
+
+    <div id="page-wrapper">
+      <div class="row">
+        <%#= render 'layouts/navigation' %>
+        <%= render 'layouts/content' %>
+      </div>
     </div>
     <!-- end main part -->
 
