@@ -37,6 +37,7 @@ $(document).ready(function() {
             }
         };
 
+/*
         var plotObj = $.plot($("#prosumption-line-chart"), [{
                 data: sin,
                 label: "Production"
@@ -44,7 +45,8 @@ $(document).ready(function() {
                 data: cos,
                 label: "Consumption"
             }],
-            options);
+            options);*/
+
     }
 });
 
