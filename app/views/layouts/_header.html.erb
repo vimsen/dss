@@ -209,7 +209,8 @@
                     <ul class="dropdown-menu dropdown-user">
                     <% if user_signed_in? %>
                     <li>
-                      Logged in as <strong><%= current_user.email %></strong>
+                      <a href="#">
+                      Logged in as <strong><%= current_user.email %></strong></a>
                     </li>
                     <li>
                       <%= link_to user_path(current_user) do %>
