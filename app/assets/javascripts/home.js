@@ -48,6 +48,7 @@ $(document).ready(function() {
     }
 });
 
+/*
 //Flot Pie Chart
 $(function() {
 
@@ -85,6 +86,7 @@ $(function() {
             defaultTheme: false
         }
     });
+*/
 
 
 console.log(":P");
