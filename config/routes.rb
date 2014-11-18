@@ -37,8 +37,12 @@ Rails.application.routes.draw do
   post 'login/signin' => 'login#signin'
   get 'login/signout' => 'login#signout'
 
-  resources :home
+  get 'home' => 'home#index'
+  get 'home/energyType' => 'home#energyType'
+  get 'home/energyPrice' => 'home#energyPrice'
+
   resources :machines
+  
 
   root :to => 'home#index'
  # devise_scope :user do

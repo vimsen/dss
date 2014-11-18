@@ -30,8 +30,8 @@ class IntellenMockController < ApplicationController
     response.headers['Content-Type'] = 'application/json'
 
     prosumers = params[:prosumers]
-    startdate = params[:startdate].to_i
-    enddate = params[:enddate].to_i
+    startdate = DateTime.parse(params[:startdate])
+    enddate = DateTime.parse(params[:enddate])
     interval = params[:interval].to_i
     puts "prosumers: #{prosumers}"
     puts "startdate: #{startdate}"
@@ -40,10 +40,10 @@ class IntellenMockController < ApplicationController
 
     result = []
 
-    (startdate .. enddate).step(interval) do |t|
+    (startdate.to_i .. enddate.to_i).step(interval) do |t|
       prosumers.split(",").each do |p|
         result.push({
-          :timestamp => t,
+          :timestamp => Time.at(t).to_datetime,
           :prosumer_id => p.to_i,
           :interval => interval,
           :actual => {
@@ -52,7 +52,7 @@ class IntellenMockController < ApplicationController
             :storage => rand * 100
           },
           :forecast => {
-            :timestamp => t + interval,
+            :timestamp => Time.at(t + interval).to_datetime,
             :production =>  rand * 100,
             :consumption =>  rand * 100,
             :storage =>  rand * 100
