@@ -62,10 +62,16 @@ SimpleNavigation::Configuration.run do |navigation|
     #
 
     primary.item :home, 'Home', '/', :icon => ['fa fa-home fa-fw'] # class: 'fa fa-home fa-fw'
-    primary.item :prosumers, 'Prosumers', prosumers_path, :icon => ['fa fa-plug fa-fw']
-    # primary.item :clusters, 'Clusters', clusters_path, :icon => ['fa fa-sitemap fa-fw'], :split => false do |sub_nav|
-    primary.item :clusters, 'Clusters' do |sub_nav|
-      sub_nav.item :clusters_sub, "cluster list", clusters_path
+    primary.item :prosumers, 'Prosumers', prosumers_path, :icon => ['fa fa-plug fa-fw'], :split => false do |sub_nav|
+      sub_nav.item :prosumers_sub, "Prosumer list", prosumers_path
+      Prosumer.all.each do |prosumer|
+        sub_nav.item "prosumer#{prosumer.id}", prosumer.name, prosumer_url(prosumer)  
+      end
+       sub_nav.dom_class = 'nav nav-second-level collapse'
+    end
+    primary.item :clusters, 'Clusters', clusters_path, :icon => ['fa fa-sitemap fa-fw'], :split => false do |sub_nav|
+    # primary.item :clusters, 'Clusters' do |sub_nav|
+      sub_nav.item :clusters_sub, "Cluster list", clusters_path
       Cluster.all.each do |cluster|
         sub_nav.item "cluster#{cluster.id}", cluster.name, cluster_url(cluster)  
       end
