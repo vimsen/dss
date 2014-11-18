@@ -40,6 +40,7 @@ SimpleNavigation::Configuration.run do |navigation|
 # Define the primary navigation
   navigation.items do |primary|
 
+    primary.dom_id = 'side-menu'
     primary.dom_class = 'nav nav-pills nav-stacked'
 
     # Add an item to the primary navigation. The following params apply:
@@ -62,11 +63,13 @@ SimpleNavigation::Configuration.run do |navigation|
 
     primary.item :home, 'Home', '/', :icon => ['fa fa-home fa-fw'] # class: 'fa fa-home fa-fw'
     primary.item :prosumers, 'Prosumers', prosumers_path, :icon => ['fa fa-plug fa-fw']
-    primary.item :clusters, 'Clusters', clusters_path, :icon => ['fa fa-sitemap fa-fw'], :split => false do |sub_nav|
-#      sub_nav.item :clusters_sub, "cluster list", clusters_path
+    # primary.item :clusters, 'Clusters', clusters_path, :icon => ['fa fa-sitemap fa-fw'], :split => false do |sub_nav|
+    primary.item :clusters, 'Clusters' do |sub_nav|
+      sub_nav.item :clusters_sub, "cluster list", clusters_path
       Cluster.all.each do |cluster|
         sub_nav.item "cluster#{cluster.id}", cluster.name, cluster_url(cluster)  
       end
+       sub_nav.dom_class = 'nav nav-second-level collapse in'
     end
     primary.item :data_points, 'Data points', data_points_path, :icon => ['fa fa-bar-chart-o fa-fw']
     primary.item :day_aheads, 'Day-ahead forecasts', day_aheads_path, :icon => ['fa fa-bar-chart-o fa-fw']

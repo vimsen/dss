@@ -9,18 +9,23 @@
     <%= csrf_meta_tags %>
   </head>
   <body>
-    <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-      <%= render 'layouts/header' %>
-      <%= render 'layouts/navigation' %>
-    </nav>
+    <div id="wrapper">
 
-    <div id="page-wrapper">
-      <div class="row">
-        <%#= render 'layouts/navigation' %>
-        <%= render 'layouts/content' %>
-      </div>
-    </div>
-    <!-- end main part -->
+	    <!-- Start Header Section -->
+   			<%= render "layouts/header" %>
+   		<!-- End Header Section -->
+			
+		<!-- Start Navigation Section -->
+			<%= render "layouts/navigation" %>
+		<!-- End Navigation Section -->
 
+		<!-- Start Main Content Section -->
+        	<div id="page-wrapper">
+        		<%= render "layouts/content" %>
+        	</div> <!-- /#page-wrapper -->
+
+		<!-- End Main Content Section -->
+
+    </div> <!-- /#wrapper -->
   </body>
 </html>
