@@ -69,7 +69,7 @@ SimpleNavigation::Configuration.run do |navigation|
       Cluster.all.each do |cluster|
         sub_nav.item "cluster#{cluster.id}", cluster.name, cluster_url(cluster)  
       end
-       sub_nav.dom_class = 'nav nav-second-level collapse in'
+       sub_nav.dom_class = 'nav nav-second-level collapse'
     end
     primary.item :data_points, 'Data points', data_points_path, :icon => ['fa fa-bar-chart-o fa-fw']
     primary.item :day_aheads, 'Day-ahead forecasts', day_aheads_path, :icon => ['fa fa-bar-chart-o fa-fw']
