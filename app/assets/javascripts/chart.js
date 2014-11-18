@@ -27,7 +27,7 @@ var plotHelper = (function() {
       $.plot($("#placeholder"), dataset, {
         xaxis : {
           mode : "time",
-          timeformat : "%Y/%m/%d<br/>%h:%M:%S",
+          timeformat : "%y/%m/%d<br/>%h:%M:%S",
           timezone : "browser",
           min: s,
           max: e /*,

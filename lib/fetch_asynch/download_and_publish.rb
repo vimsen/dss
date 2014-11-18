@@ -1,6 +1,7 @@
 require 'uri'
 require 'open-uri'
 require 'json'
+require 'yaml'
 
 module FetchAsynch
   class DownloadAndPublish
@@ -9,15 +10,18 @@ module FetchAsynch
         ActiveRecord::Base.connection.close
         sleep 5;
         
-        puts "fetching data: #{prosumers}, #{interval}, #{startdate}, #{enddate}"
+        u = YAML.load_file('config/config.yml')[Rails.env]["intellen_host"]
+        puts "fetching data: #{prosumers}, #{interval}, #{startdate}, #{enddate}, #{u}"
        
-        uri = URI.parse('http://vimsen.herokuapp.com/intellen_mock/getdata');
+        uri = URI.parse(u);
         params = {:prosumers => prosumers,
-                  :startdate => startdate.to_i,
-                  :enddate => enddate.to_i,
+                  :startdate => startdate.to_s,
+                  :enddate => enddate.to_s,
                   :interval => Interval.find(interval).duration}
         ActiveRecord::Base.connection.close
         uri.query = URI.encode_www_form(params);
+        
+        puts "Connecting to: #{uri}"
         
         result = JSON.parse(uri.open.read)
         datareceived(result, channel)
@@ -33,7 +37,7 @@ module FetchAsynch
         data.each do |d|
           if newdata? d
             dbinsert d
-            x.publish(d.to_json)
+            x.publish(prepare d)
           else
             puts "Datapoint found"
           end
@@ -44,12 +48,10 @@ module FetchAsynch
          
       def newdata? d 
         puts "===== In newData ======"
-        t = d["timestamp"].to_i
+        t = DateTime.parse(d["timestamp"])
         i = d["interval"].to_i
-        s = Time.at(t - i/2).to_datetime
-        e = Time.at(t + i/2).to_datetime
-        
-        puts d
+        s = Time.at(t.to_i - i/2).to_datetime
+        e = Time.at(t.to_i + i/2).to_datetime
         
         datapoint = DataPoint.where(
                            timestamp: s..e, 
@@ -65,13 +67,13 @@ module FetchAsynch
         puts "New datapoint"
         puts Interval.where(duration: d["interval"].to_i).first
         puts "===="
-        h = {timestamp: Time.at(d["timestamp"]).to_datetime, 
+        h = {timestamp: DateTime.parse(d["timestamp"]), 
               prosumer: Prosumer.find(d["prosumer_id"].to_i),
               interval: Interval.where(duration: d["interval"].to_i).first,
               production: d["actual"]["production"],
               consumption: d["actual"]["consumption"],
               storage: d["actual"]["storage"],
-              f_timestamp: Time.at(d["forecast"]["timestamp"]).to_datetime,
+              f_timestamp: DateTime.parse(d["forecast"]["timestamp"]),
               f_production: d["forecast"]["production"],
               f_consumption: d["forecast"]["consumption"],
               f_storage: d["forecast"]["storage"],
@@ -85,5 +87,11 @@ module FetchAsynch
         datapoint.save
         puts "Saved DataPoint"
       end
-    end
+      
+      def prepare d
+        d["timestamp"] = DateTime.parse(d["timestamp"]).to_i;
+        d["forecast"]["timestamp"] = DateTime.parse(d["forecast"]["timestamp"]).to_i;
+        d.to_json
+      end
+  end
 end
