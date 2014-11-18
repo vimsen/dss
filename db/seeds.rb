@@ -20,4 +20,4 @@ clusters = Cluster.create([{name: "Cluster 1", description: "A testing cluster"}
 Prosumer.create([{name: "Prosumer 1", location: "Rio, Patras", cluster: clusters.first }, 
                  {name: "Prosumer 2", location: "Athens", cluster: clusters.first}])
                  
-EnergyType.create([{name: 'solar'},{name: 'wind'},{name: 'hydro'},{name: 'geothermal'} ]) 
+EnergyType.create([{name: 'solar'},{name: 'wind'},{name: 'hydro'},{name: 'geothermal'},{name: 'biomass'} ]) 
