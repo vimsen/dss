@@ -19,6 +19,9 @@
 //= require plugins/dataTables/jquery.dataTables
 //= require plugins/dataTables/dataTables.bootstrap
 //= require plugins/flot/jquery.flot
+//= require plugins/flot/jquery.flot.pie
+//= require plugins/flot/jquery.flot.resize
+//= require plugins/flot/jquery.flot.tooltip.min
 //= require jquery.datetimepicker
 //= require_tree .
 
