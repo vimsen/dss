@@ -10,7 +10,11 @@
 
 <strong>Cluster members:</strong>
 
-<%= render partial: "prosumers/removefromcluster", collection: @cluster.prosumers, as: :prosumer %>
+<table>
+  <tbody>
+  <%= render partial: "prosumers/removefromcluster", collection: @cluster.prosumers, as: :prosumer %>
+  </tbody>
+</table>
 <br/>
 <%= render partial: "addprosumer"%>
 <br/>
