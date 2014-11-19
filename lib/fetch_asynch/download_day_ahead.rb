@@ -1,11 +1,13 @@
 require 'uri'
 require 'open-uri'
 require 'json'
+require 'yaml'
 
 module FetchAsynch
   class DownloadDayAhead
     def initialize prosumers, dayahead, date
-      uri = URI.parse('http://vimsen.herokuapp.com/intellen_mock/getdayahead');
+      u = YAML.load_file('config/config.yml')[Rails.env]["intellen_host"]
+      uri = URI.parse(u+'/getdayahead');
       params = {:prosumers => prosumers,
                 :date => date}
       uri.query = URI.encode_www_form(params);

@@ -13,7 +13,7 @@ module FetchAsynch
         u = YAML.load_file('config/config.yml')[Rails.env]["intellen_host"]
         puts "fetching data: #{prosumers}, #{interval}, #{startdate}, #{enddate}, #{u}"
        
-        uri = URI.parse(u);
+        uri = URI.parse(u+"/getdata");
         params = {:prosumers => prosumers,
                   :startdate => startdate.to_s,
                   :enddate => enddate.to_s,
