@@ -6,6 +6,7 @@ class DataPoint < ActiveRecord::Base
     return {
         :timestamp => self.timestamp.to_i,
         :prosumer_id => self.prosumer_id,
+        :prosumer_name => self.prosumer.name,
         :interval => self.interval.duration,
         :actual => {
           :production => self.production,

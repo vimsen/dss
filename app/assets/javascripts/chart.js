@@ -48,8 +48,17 @@ var plotHelper = (function() {
       changed = false;
     }
   };
+  
+  var readSingle = function(d, t, res) {
+    var label = d.prosumer_name + ": " + t;
+    if (res[label] == null) {
+      res[label] = {};
+    }
+    res[label][d.timestamp] = [d.timestamp * 1000, d.actual[t]];
+    return res;
+  };
 
-  var readData = function(idata) {
+  var readData = function(idata, type) {
     var result = {};
 
     if (idata == null) {
@@ -57,13 +66,7 @@ var plotHelper = (function() {
     }
 
     $.each(idata, function(index, value) {
-      var pros_id = value.prosumer_id;
-      var label = "Prosumer " + pros_id + ": production";
-      if (result[label] == null) {
-        result[label] = {};
-      }
-      var temp = [value.timestamp * 1000, value.actual.production];
-      result[label][value.timestamp] = temp;
+      result = readSingle(value, type, result);
     });
     return result;
   };
@@ -71,7 +74,7 @@ var plotHelper = (function() {
   return {
     replot : replot,
     readData : readData,
-    drawChart : function(stream, idata) {
+    drawChart : function(stream, idata, type) {
 
       if (source != null) {
         console.log(source.OPEN);
@@ -94,16 +97,8 @@ var plotHelper = (function() {
       source.addEventListener('datapoint', function(e) {
         console.log("Datapoint received ", e);
         var message = JSON.parse(e.data);
-        var pros_id = message.prosumer_id;
-        var label = "Prosumer " + pros_id + ": production";
-        if (data[label] == null) {
-          data[label] = {};
-        }
-        var temp = [message.timestamp * 1000, message.actual.production];
-        data[label][message.timestamp] = temp;
-        console.log("received: ", temp, data);
+        data = readSingle(message, type, data);
         changed = true;
-
         window.setTimeout(redraw, 100, data);
       });
 

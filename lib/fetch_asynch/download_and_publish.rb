@@ -90,6 +90,7 @@ module FetchAsynch
       
       def prepare d
         d["timestamp"] = DateTime.parse(d["timestamp"]).to_i;
+        d[:prosumer_name] = Prosumer.find(d["prosumer_id"]).name;
         d["forecast"]["timestamp"] = DateTime.parse(d["forecast"]["timestamp"]).to_i;
         d.to_json
       end
