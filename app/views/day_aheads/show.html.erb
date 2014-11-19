@@ -35,7 +35,7 @@
 			"data" : prod 
 		}];
 		
-    var data = plotHelper.readData(idata, "production");
+    var data = plotHelper.readData(idata, "production", false);
     
     var daf = {};
     
@@ -45,7 +45,7 @@
     
     data["day ahead forecast"] = daf;
     
-    plotHelper.drawChart("<%= "/stream/#{@day_ahead.prosumer.id}/prosumer?startdate=#{startdate}&enddate=#{enddate}&interval=3600" %>",data, "production");
+    plotHelper.drawChart("<%= "/stream/#{@day_ahead.prosumer.id}/prosumer?startdate=#{startdate}&enddate=#{enddate}&interval=3600" %>",data, "production", false);
     console.log("data:", data);
  	});
 </script>

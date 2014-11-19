@@ -49,16 +49,25 @@ var plotHelper = (function() {
     }
   };
   
-  var readSingle = function(d, t, res) {
-    var label = d.prosumer_name + ": " + t;
+  var readSingle = function(d, type, forecast, res) {
+    var label = d.prosumer_name + ": " + type;
     if (res[label] == null) {
       res[label] = {};
     }
-    res[label][d.timestamp] = [d.timestamp * 1000, d.actual[t]];
+    res[label][d.timestamp] = [d.timestamp * 1000, d.actual[type]];
+    
+    if (forecast) {
+      var label = d.prosumer_name + ": " + type + ", forecast";
+      if (res[label] == null) {
+        res[label] = {};
+      }
+      res[label][d.timestamp] = [d.forecast.timestamp * 1000, d.forecast[type]];
+    }
+    
     return res;
   };
 
-  var readData = function(idata, type) {
+  var readData = function(idata, type, forecast) {
     var result = {};
 
     if (idata == null) {
@@ -66,7 +75,7 @@ var plotHelper = (function() {
     }
 
     $.each(idata, function(index, value) {
-      result = readSingle(value, type, result);
+      result = readSingle(value, type, forecast, result);
     });
     return result;
   };
@@ -74,7 +83,7 @@ var plotHelper = (function() {
   return {
     replot : replot,
     readData : readData,
-    drawChart : function(stream, idata, type) {
+    drawChart : function(stream, idata, type, forecast) {
 
       if (source != null) {
         console.log(source.OPEN);
@@ -97,7 +106,7 @@ var plotHelper = (function() {
       source.addEventListener('datapoint', function(e) {
         console.log("Datapoint received ", e);
         var message = JSON.parse(e.data);
-        data = readSingle(message, type, data);
+        data = readSingle(message, type, forecast, data);
         changed = true;
         window.setTimeout(redraw, 100, data);
       });

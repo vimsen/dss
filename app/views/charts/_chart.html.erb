@@ -16,6 +16,8 @@
       <option value="consumption">Consumption</option>
       <option value="storage">Storage</option>
     </select>
+    <strong>Forecast?</strong>
+    <input id="forecast" type="checkbox">
     <button id="subDates"> Set </button>
     <br/>
   </div>
@@ -28,29 +30,36 @@
     console.log(idata);
 
     $(function(){
-        plotHelper.drawChart("<%= stream %>", plotHelper.readData(idata, $('#type').val()), $('#type').val());
+        plotHelper.drawChart(
+                "<%= stream %>", 
+                plotHelper.readData(
+                      idata, 
+                      $('#type').val(),
+                      $('#forecast').is(':checked')), 
+                $('#type').val(), 
+                $('#forecast').is(':checked'));
         $('#startDate').datetimepicker();
         $('#endDate').datetimepicker();
         $('#endDate').prop('disabled', true);
         $('#subDates').click(function () {
          
-        var s = $('#startDate').val();
-        var e = $('#endDate').prop("disabled") ? '' : $('#endDate').val();
-        
-          
-        var paramObj = {};
-        
-        if (s) {
-          paramObj.startdate = s;
-        }
-        if (e) {
-          paramObj.enddate = e;
-        }
-         
-        var url = "<%= stream %>?" + $.param(paramObj);
-        console.log("Conncting to stream: ", url);
-        
-        plotHelper.drawChart(url, {}, $('#type').val());
+            var s = $('#startDate').val();
+            var e = $('#endDate').prop("disabled") ? '' : $('#endDate').val();
+            
+              
+            var paramObj = {};
+            
+            if (s) {
+              paramObj.startdate = s;
+            }
+            if (e) {
+              paramObj.enddate = e;
+            }
+             
+            var url = "<%= stream %>?" + $.param(paramObj);
+            console.log("Conncting to stream: ", url);
+            
+            plotHelper.drawChart(url, {}, $('#type').val(), $('#forecast').is(':checked'));
       });
       $('#realtime').change(function () {
           console.log(this.checked);
