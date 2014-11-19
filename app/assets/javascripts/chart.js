@@ -23,14 +23,18 @@ var plotHelper = (function() {
       
       var s = $( "#startDate" ).length ? Date.parse($('#startDate').val()) : null;
       var e = $( "#endDate" ).length ? Date.parse($('#endDate').val()) : null;
-
+      
+      // Reduce number of ticks when width is small, to avoid overlapping
+      var t = $("#placeholder").width() < 450 ? 3 : null; 
+      
       $.plot($("#placeholder"), dataset, {
         xaxis : {
           mode : "time",
           timeformat : "%y/%m/%d<br/>%h:%M:%S",
           timezone : "browser",
           min: s,
-          max: e /*,
+          max: e,
+          ticks: t /*,
            timeformat : "%y/%m/%d-%h:%M:%S",
            tickSize : [12, "hour"]*/
         }
