@@ -23,7 +23,7 @@ class Prosumer < ActiveRecord::Base
     self.data_points.where(timestamp: startdate..enddate, interval: interval).order(timestamp: :asc).each do |dp|
       result.push( dp.clientFormat )  
     end
-    FetchAsynch::DownloadAndPublish.new(self.id, interval, startdate, enddate, "prosumer.#{self.id}") 
+    FetchAsynch::DownloadAndPublish.new(self.intelen_id, interval, startdate, enddate, "prosumer.#{self.id}") 
    
     return result      
   end

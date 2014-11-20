@@ -8,7 +8,7 @@ module FetchAsynch
     def initialize prosumers, interval, startdate, enddate, channel
       Thread.new do
         ActiveRecord::Base.connection.close
-        sleep 5;
+        # sleep 5; 
         
         u = YAML.load_file('config/config.yml')[Rails.env]["intellen_host"]
         puts "fetching data: #{prosumers}, #{interval}, #{startdate}, #{enddate}, #{u}"
@@ -53,12 +53,15 @@ module FetchAsynch
         s = Time.at(t.to_i - i/2).to_datetime
         e = Time.at(t.to_i + i/2).to_datetime
         
+        # procumer should be changed to prosumer (by intelen)
+        p = Prosumer.where(intelen_id: d["procumer_id"].to_i).first
+        
         datapoint = DataPoint.where(
                            timestamp: s..e, 
                            interval_id: Interval.where(duration: i).first, 
-                           prosumer: Prosumer.find(d["prosumer_id"].to_i)
+                           prosumer: p
                            ).first
-        puts "===== Result : #{datapoint.nil?} =========="
+        puts "===== Result : #{d["prosumer_id"]}, #{p}, #{datapoint.nil?} =========="
         return datapoint.nil? 
     
       end
@@ -68,7 +71,7 @@ module FetchAsynch
         puts Interval.where(duration: d["interval"].to_i).first
         puts "===="
         h = {timestamp: DateTime.parse(d["timestamp"]), 
-              prosumer: Prosumer.find(d["prosumer_id"].to_i),
+              prosumer: Prosumer.where(intelen_id: d["procumer_id"].to_i).first,
               interval: Interval.where(duration: d["interval"].to_i).first,
               production: d["actual"]["production"],
               consumption: d["actual"]["consumption"],
@@ -90,7 +93,8 @@ module FetchAsynch
       
       def prepare d
         d["timestamp"] = DateTime.parse(d["timestamp"]).to_i;
-        d[:prosumer_name] = Prosumer.find(d["prosumer_id"]).name;
+        d[:prosumer_id] = Prosumer.where(intelen_id: d["procumer_id"]).first.id
+        d[:prosumer_name] = Prosumer.where(intelen_id: d["procumer_id"]).first.name
         d["forecast"]["timestamp"] = DateTime.parse(d["forecast"]["timestamp"]).to_i;
         d.to_json
       end

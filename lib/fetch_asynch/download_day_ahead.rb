@@ -11,6 +11,7 @@ module FetchAsynch
       params = {:prosumers => prosumers,
                 :date => date}
       uri.query = URI.encode_www_form(params);
+      puts uri, prosumers, date
       result = JSON.parse(uri.open.read)
       datareceived result, dayahead
     end
@@ -18,7 +19,7 @@ module FetchAsynch
     private
       def datareceived data, dayahead
         data.each do |d|
-          unless Prosumer.find(d["prosumer_id"].to_i).nil?
+          unless Prosumer.where(intelen_id: d["prosumer_id"].to_i).first.nil?
             d["points"].each do |p|
               dahh = DayAheadHour.new(
                 :day_ahead => dayahead,

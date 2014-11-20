@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141113083033) do
+ActiveRecord::Schema.define(version: 20141120104250) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -98,7 +98,10 @@ ActiveRecord::Schema.define(version: 20141113083033) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "cluster_id"
+    t.integer  "intelen_id"
   end
+
+  add_index "prosumers", ["intelen_id"], name: "index_prosumers_on_intelen_id", unique: true, using: :btree
 
   create_table "prosumers_users", id: false, force: true do |t|
     t.integer "prosumer_id"
