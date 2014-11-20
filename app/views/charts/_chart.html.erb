@@ -25,10 +25,6 @@
 <script>  
    
     var idata = <%= provider.request_cached(3, startDate, endDate).to_json.html_safe %>;
-    
-    
-    console.log(idata);
-
     $(function(){
         plotHelper.drawChart(
                 "<%= stream %>", 
@@ -41,6 +37,7 @@
         $('#startDate').datetimepicker();
         $('#endDate').datetimepicker();
         $('#endDate').prop('disabled', true);
+               
         $('#subDates').click(function () {
          
             var s = $('#startDate').val();
@@ -62,7 +59,6 @@
             plotHelper.drawChart(url, {}, $('#type').val(), $('#forecast').is(':checked'));
       });
       $('#realtime').change(function () {
-          console.log(this.checked);
           if (this.checked) {
             $('#endDate').prop( "disabled", true );
           } else {
