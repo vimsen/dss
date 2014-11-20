@@ -14,6 +14,7 @@ module FetchAsynch
       puts uri, prosumers, date
       result = JSON.parse(uri.open.read)
       datareceived result, dayahead
+      ActiveRecord::Base.connection.close
     end
     
     private

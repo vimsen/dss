@@ -8,7 +8,7 @@ module FetchAsynch
     def initialize prosumers, interval, startdate, enddate, channel
       Thread.new do
         ActiveRecord::Base.connection.close
-        # sleep 5; 
+        sleep 1; 
         
         u = YAML.load_file('config/config.yml')[Rails.env]["intellen_host"]
         puts "fetching data: #{prosumers}, #{interval}, #{startdate}, #{enddate}, #{u}"
@@ -37,6 +37,7 @@ module FetchAsynch
         data.each do |d|
           if newdata? d
             dbinsert d
+            puts "Publishing to channel: #{channel}"
             x.publish(prepare d)
           else
             puts "Datapoint found"
@@ -61,7 +62,7 @@ module FetchAsynch
                            interval_id: Interval.where(duration: i).first, 
                            prosumer: p
                            ).first
-        puts "===== Result : #{d["prosumer_id"]}, #{p}, #{datapoint.nil?} =========="
+        puts "===== Result : #{d["procumer_id"]}, #{p}, #{datapoint.nil?} =========="
         return datapoint.nil? 
     
       end

@@ -26,8 +26,10 @@ class DayAheadsController < ApplicationController
   def create
     @day_ahead = DayAhead.new(day_ahead_params)
     intelen_id = Prosumer.find(day_ahead_params[:prosumer_id].to_i).intelen_id
-    puts "date: #{day_ahead_params[:date]}"
-    FetchAsynch::DownloadDayAhead.new intelen_id, @day_ahead, day_ahead_params[:date]
+    puts "params: #{day_ahead_params}"
+    date = "#{day_ahead_params["date(1i)"]}/#{day_ahead_params["date(2i)"]}/#{day_ahead_params["date(3i)"]}"
+    
+    FetchAsynch::DownloadDayAhead.new intelen_id, @day_ahead, date
     @day_ahead.save
     respond_with(@day_ahead)
   end
