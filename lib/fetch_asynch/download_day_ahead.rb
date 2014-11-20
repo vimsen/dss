@@ -12,6 +12,7 @@ module FetchAsynch
                 :date => date}
       uri.query = URI.encode_www_form(params);
       puts uri, prosumers, date
+      ActiveRecord::Base.connection.close
       result = JSON.parse(uri.open.read)
       datareceived result, dayahead
       ActiveRecord::Base.connection.close
@@ -31,6 +32,7 @@ module FetchAsynch
               dahh.save
             end
           end
+          ActiveRecord::Base.connection.close
         end
       end
   end
