@@ -16,6 +16,7 @@ class Prosumer < ActiveRecord::Base
   accepts_nested_attributes_for :energy_type_prosumers,
     :allow_destroy => true
 
+  validates :intelen_id, uniqueness: true
   
   def request_cached(interval, startdate, enddate)
     result = []
