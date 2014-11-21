@@ -3,8 +3,8 @@ function loadHomeCharts(){
 	energyTypeChart();
 	energyPriceChart();
 	totalProsumptionChart();
-	topConsumers();
-	topProducers();
+	top5ConsumersChart();
+	top5ProducersChart();
 }
 
 function energyTypeChart(){
@@ -20,7 +20,6 @@ function energyTypeChart(){
 }      
 
 function loadEnergyTypeChart(data){ 
-
 
    var plotObj = $.plot($("#energy-type-pie-chart"), data, {
         series: {
@@ -44,7 +43,58 @@ function loadEnergyTypeChart(data){
 }
 
 function energyPriceChart(){
-     	
+   $.ajax({
+  	 	url: "/home/energyPrice",
+   }).done(function( data ) {
+    	loadEnergyPriceChart(data);
+   }).error(function(data){
+  		console.log(data);
+   });
+}
+
+
+
+function loadEnergyPriceChart(data){
+  
+
+        var options = {
+            series: {
+                lines: {
+                    show: true,
+                     fill: true,
+            fillColor: { colors: [{ opacity: 0.7 }, { opacity: 0.1}] }
+
+                },
+                points: {
+                    show: true
+                }
+            },
+            grid: {
+                hoverable: true //IMPORTANT! this is needed for tooltip to work
+            },
+            xaxis:
+			{                
+    			tickDecimals: 0
+			},
+            yaxis: {
+                min: 0,
+                tickDecimals: 2
+
+            },
+            tooltip: true,
+            tooltipOpts: {
+                content: "'%s' at %x is %y.2",
+                shifts: {
+                    x: -60,
+                    y: 25
+                }
+            },
+            colors:["#70b08ff"]
+        };
+
+        var plotObj = $.plot($("#energy-price-line-chart"), data, options);
+
+  
 }
 
 function totalProsumptionChart(){
@@ -100,10 +150,22 @@ function totalProsumptionChart(){
   
 }
 
-function topConsumers(){
+function top5Consumers(){
 	
 }
 
-function topProducers(){
+function top5producersChart(){
+	
+   $.ajax({
+  	 	url: "/home/top5Producers",
+   }).done(function( data ) {
+    	loadtop5Producers(data);
+   }).error(function(data){
+  		console.log(data);
+   });
+
+}      
+
+function loadtop5Producers(){
 	
 }

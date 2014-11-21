@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  date: 2014-11-20 15:09:18
+  dayhour: 1
+  price: 1.5
+
+two:
+  date: 2014-11-20 15:09:18
+  dayhour: 1
+  price: 1.5

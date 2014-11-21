@@ -27,6 +27,10 @@ body {
     }
 }
 
+.page-header{
+	margin-top:10px;
+}
+
 .navbar-top-links {
     margin-right: 0;
 }

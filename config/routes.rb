@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  resources :energy_prices
+
   resources :energy_types
 
   resources :day_ahead_hours
@@ -40,6 +42,10 @@ Rails.application.routes.draw do
   get 'home' => 'home#index'
   get 'home/energyType' => 'home#energyType'
   get 'home/energyPrice' => 'home#energyPrice'
+  get 'home/totalProsumption' => 'home#totalProsumption'
+  get 'home/top5Production' => 'home#top5Producers'
+  get 'home/top5Consumption' => 'home#top5Consumers'
+
 
   resources :machines
   

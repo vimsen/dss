@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Date:</strong>
+  <%= @energy_price.date %>
+</p>
+
+<p>
+  <strong>Dayhour:</strong>
+  <%= @energy_price.dayhour %>
+</p>
+
+<p>
+  <strong>Price:</strong>
+  <%= @energy_price.price %>
+</p>
+
+<%= link_to 'Edit', edit_energy_price_path(@energy_price) %> |
+<%= link_to 'Back', energy_prices_path %>

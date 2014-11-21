@@ -1,0 +1,29 @@
+<%= form_for(@energy_price) do |f| %>
+  <% if @energy_price.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@energy_price.errors.count, "error") %> prohibited this energy_price from being saved:</h2>
+
+      <ul>
+      <% @energy_price.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :date %><br>
+    <%= f.datetime_select :date %>
+  </div>
+  <div class="field">
+    <%= f.label :dayhour %><br>
+    <%= f.number_field :dayhour %>
+  </div>
+  <div class="field">
+    <%= f.label :price %><br>
+    <%= f.text_field :price %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
