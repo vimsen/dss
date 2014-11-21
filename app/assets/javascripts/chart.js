@@ -33,6 +33,14 @@ var plotHelper = (function() {
           }
         },
         grid: { hoverable: true, clickable: true },
+        tooltip: true,
+        tooltipOpts: {
+            content: "'%s' at %x is %y",
+            shifts: {
+                x: -60,
+                y: 25
+            }
+        },
         xaxis : {
           mode : "time",
           timeformat : "%y/%m/%d<br/>%h:%M:%S",
@@ -44,34 +52,6 @@ var plotHelper = (function() {
            tickSize : [12, "hour"]*/
         }
       });
-
-      // Only the first time we run
-      if($('#tooltip').length == 0) {
-        $("<div id='tooltip'></div>").css({
-            position: "absolute",
-            display: "none",
-            border: "1px solid #fdd",
-            padding: "2px",
-            "background-color": "#fee",
-            opacity: 0.80
-        }).appendTo("body");
-
-
-        $("#placeholder").bind("plothover", function (event, pos, item) {
-
-
-          if (item) {
-            var x = item.datapoint[0],
-                y = item.datapoint[1].toFixed(2);
-
-            $("#tooltip").html(new Date(x+0)+ ": "+ item.series.label + ", " + y)
-                .css({top: item.pageY+5, left: item.pageX+5})
-                .fadeIn(200);
-          } else {
-            $("#tooltip").hide();
-          }
-        });
-      }
     }
   };
 
