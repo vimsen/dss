@@ -16,11 +16,3 @@
 /tmp
 *.bak
 
-# Ignore compiled assets 
-/public/assets/application-*.gz
-/public/assets/application-*.js
-/public/assets/application-*.css
-/public/assets/chart-*.js
-/public/assets/chart-*.gz
-
-
