@@ -24,3 +24,5 @@ Prosumer.create([{name: "Prosumer 1", location: "Rio, Patras",cluster: clusters.
 EnergyType.create([{name: 'solar'},{name: 'wind'},{name: 'hydro'},{name: 'geothermal'},{name: 'biomass'} ])
 
 BuildingType.create([{name: 'School'},{name: 'House'}]) 
+
+ConnectionType.create([{name: '2G'},{name: '3G'},{name: '4G'},{name: 'ADSL'},{name: 'Cable'}])

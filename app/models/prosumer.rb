@@ -7,6 +7,8 @@ class Prosumer < ActiveRecord::Base
 
   belongs_to :cluster
   belongs_to :building_type
+  belongs_to :connection_type
+  
   resourcify
 
   has_and_belongs_to_many :users

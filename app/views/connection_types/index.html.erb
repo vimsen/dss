@@ -1,0 +1,25 @@
+<h1>Listing connection_types</h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @connection_types.each do |connection_type| %>
+      <tr>
+        <td><%= connection_type.name %></td>
+        <td><%= link_to 'Show', connection_type %></td>
+        <td><%= link_to 'Edit', edit_connection_type_path(connection_type) %></td>
+        <td><%= link_to 'Destroy', connection_type, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Connection type', new_connection_type_path %>

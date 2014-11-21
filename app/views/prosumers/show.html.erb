@@ -22,6 +22,11 @@
 </p>
 
 <p>
+  <strong>Connection Type:</strong>
+  <%= link_to(@prosumer.connection_type.name, @prosumer.connection_type) if @prosumer.connection_type %>
+</p>
+
+<p>
 	<strong>Users:</strong>
 	<%= render(partial: "users/username", spacer_template: "common/comma_spacer", collection: @prosumer.users, as: :user) || "No users" -%>
 </p>

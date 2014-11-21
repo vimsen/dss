@@ -92,7 +92,7 @@ class ProsumersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def prosumer_params
-      params.require(:prosumer).permit(:name, :location, :cluster_id, :building_type_id, :intelen_id,
+      params.require(:prosumer).permit(:name, :location, :cluster_id, :building_type_id, :connection_type_id, :intelen_id,
         :energy_type_prosumers_attributes => [:id, :power, :energy_type_id, :_destroy])
     end
 end
