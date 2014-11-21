@@ -15,7 +15,7 @@ class Cluster < ActiveRecord::Base
       end
     end  
     
-    prosumerlist = self.prosumers.map { |d| d.id }.join(",")
+    prosumerlist = self.prosumers.map { |d| d.intelen_id }.join(",")
     
     puts "prosumerlist: ", prosumerlist
     

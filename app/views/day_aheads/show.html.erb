@@ -24,18 +24,18 @@
 	  %>
 	  
 	  
-		var prod = <%= @day_ahead.day_ahead_hours.map {|dah| [ (startdate +  dah.time.hours).to_i * 1000, dah.production] }.to_json.html_safe %>;
+		var prod = <%= @day_ahead.day_ahead_hours.map {|dah| [ (startdate +  dah.time.hours).to_i * 1000, dah.consumption] }.to_json.html_safe %>;
 		var idata = <%= @day_ahead.prosumer.request_cached(2, startdate , enddate).to_json.html_safe %>;
 		
 		console.log("prod:", prod);
     console.log("idata:", idata);
 		
 		dataset = [{
-		  "label": "Day ahead production forecast",
+		  "label": "Day ahead consumption forecast",
 			"data" : prod 
 		}];
 		
-    var data = plotHelper.readData(idata);
+    var data = plotHelper.readData(idata, "consumption", false);
     
     var daf = {};
     
@@ -45,7 +45,7 @@
     
     data["day ahead forecast"] = daf;
     
-    plotHelper.drawChart("<%= "/stream/#{@day_ahead.prosumer.id}/prosumer?startdate=#{startdate}&enddate=#{enddate}&interval=3600" %>",data);
+    plotHelper.drawChart("<%= "/stream/#{@day_ahead.prosumer.id}/prosumer?startdate=#{startdate}&enddate=#{enddate}&interval=3600" %>",data, "consumption", false);
     console.log("data:", data);
  	});
 </script>

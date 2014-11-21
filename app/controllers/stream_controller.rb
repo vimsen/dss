@@ -92,6 +92,7 @@ class StreamController < ApplicationController
     loop do
       sleep 1;
       sse.write("OK".to_json, event: 'messages.keepalive')
+      ActiveRecord::Base.connection.close
     end
   rescue IOError
   ensure

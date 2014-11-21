@@ -8,9 +8,16 @@
   <div id="placeholder" style="width:100%;height:400px;min-width=600px"></div>
   <div id="controls">
     <input id="startDate" type="text" value="<%= startDate %>"/>
-    <input id="endDate" type="text" value="<%= endDate %>"/> <br/>
+    <input id="endDate" type="text" value="<%= endDate %>"/> 
     <strong>Real-time updates?</strong>
     <input id="realtime" type="checkbox" checked>
+    <select id="type">
+      <option value="production">Production</option>
+      <option value="consumption" selected="true">Consumption</option>
+      <option value="storage">Storage</option>
+    </select>
+    <strong>Forecast?</strong>
+    <input id="forecast" type="checkbox">
     <button id="subDates"> Set </button>
     <br/>
   </div>
@@ -18,41 +25,46 @@
 <script>  
    
     var idata = <%= provider.request_cached(3, startDate, endDate).to_json.html_safe %>;
-    
-    
-    console.log(idata);
-
     $(function(){
-        plotHelper.drawChart("<%= stream %>", plotHelper.readData(idata));
+        plotHelper.drawChart(
+                "<%= stream %>", 
+                plotHelper.readData(
+                      idata, 
+                      $('#type').val(),
+                      $('#forecast').is(':checked')), 
+                $('#type').val(), 
+                $('#forecast').is(':checked'));
         $('#startDate').datetimepicker();
         $('#endDate').datetimepicker();
         $('#endDate').prop('disabled', true);
+               
         $('#subDates').click(function () {
+         
             var s = $('#startDate').val();
             var e = $('#endDate').prop("disabled") ? '' : $('#endDate').val();
-            var params= '';
-            if (s || e ) {
-              params += '?';
-            } 
+            
+              
+            var paramObj = {};
+            
             if (s) {
-              params += 'startdate=' + s;
-              if (e) {
-                params += '&';
-              }
+              paramObj.startdate = s;
             }
             if (e) {
-              params += 'enddate=' + e
+              paramObj.enddate = e;
             }
-            plotHelper.drawChart("<%= stream %>" + params, {});
-        });
-        $('#realtime').change(function () {
-            console.log(this.checked);
-            if (this.checked) {
-              $('#endDate').prop( "disabled", true );
-            } else {
-              $('#endDate').prop( "disabled", false );
-            }
-        });
+             
+            var url = "<%= stream %>?" + $.param(paramObj);
+            console.log("Conncting to stream: ", url);
+            
+            plotHelper.drawChart(url, {}, $('#type').val(), $('#forecast').is(':checked'));
+      });
+      $('#realtime').change(function () {
+          if (this.checked) {
+            $('#endDate').prop( "disabled", true );
+          } else {
+            $('#endDate').prop( "disabled", false );
+          }
+      });
     });
 </script>
 

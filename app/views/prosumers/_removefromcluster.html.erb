@@ -1,6 +1,9 @@
-<p> 
-  <%= form_for prosumer, :url => {:controller => "prosumers",  :id => prosumer.id, :action => "removefromcluster"} do |f| %>
-    <%= prosumer.name %>
-    <%= f.submit "Remove", data: { confirm: 'Are you sure?' } %>
-  <% end %>
-</p>
+<tr> 
+  <td><%= prosumer.name %></td>
+  <td>
+    <%= form_for prosumer, :url => {:controller => "prosumers",  :id => prosumer.id, :action => "removefromcluster"} do |f| %>
+      <%= f.submit "Remove", data: { confirm: 'Are you sure?' } %>
+    <% end %>
+  </td>
+  
+</tr>

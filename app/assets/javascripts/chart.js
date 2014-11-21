@@ -1,5 +1,4 @@
 var plotHelper = (function() {
-  var source = {};
   var data = {};
   var chaanged = false;
 
@@ -11,7 +10,6 @@ var plotHelper = (function() {
         $.each(value, function(ind, val) {
           single.push(val);
         });
-        console.log("single: ", single);
         dataset.push({
           label : index,
           data : single /*,
@@ -19,22 +17,61 @@ var plotHelper = (function() {
         });
       });
 
-      console.log("Dataset: ", dataset);
-      
-      var s = $( "#startDate" ).length ? Date.parse($('#startDate').val()) : null;
-      var e = $( "#endDate" ).length ? Date.parse($('#endDate').val()) : null;
+      var s = $("#startDate").length ? Date.parse($('#startDate').val()) : null;
+      var e = $("#endDate").length ? Date.parse($('#endDate').val()) : null;
+
+      // Reduce number of ticks when width is small, to avoid overlapping
+      var t = $("#placeholder").width() < 450 ? 3 : null;
 
       $.plot($("#placeholder"), dataset, {
+        series: {
+          lines: {
+            show: true
+          },
+          points: {
+            show: true
+          }
+        },
+        grid: { hoverable: true, clickable: true },
         xaxis : {
           mode : "time",
           timeformat : "%y/%m/%d<br/>%h:%M:%S",
           timezone : "browser",
-          min: s,
-          max: e /*,
+          min : s,
+          max : e,
+          ticks : t /*,
            timeformat : "%y/%m/%d-%h:%M:%S",
            tickSize : [12, "hour"]*/
         }
       });
+
+      // Only the first time we run
+      if($('#tooltip').length == 0) {
+        $("<div id='tooltip'></div>").css({
+            position: "absolute",
+            display: "none",
+            border: "1px solid #fdd",
+            padding: "2px",
+            "background-color": "#fee",
+            opacity: 0.80
+        }).appendTo("body");
+
+
+        $("#placeholder").bind("plothover", function (event, pos, item) {
+
+
+          if (item) {
+            var x = item.datapoint[0],
+                y = item.datapoint[1].toFixed(2);
+
+            $("#tooltip").html(new Date(x+0)+ ": "+ item.series.label + ", " + y)
+                .css({top: item.pageY+5, left: item.pageX+5})
+                .fadeIn(200);
+          } else {
+            $("#tooltip").hide();
+          }
+        });
+      }
     }
   };
 
@@ -45,7 +82,25 @@ var plotHelper = (function() {
     }
   };
 
-  var readData = function(idata) {
+  var readSingle = function(d, type, forecast, res) {
+    var label = d.prosumer_name + ": " + type;
+    if (res[label] == null) {
+      res[label] = {};
+    }
+    res[label][d.timestamp] = [d.timestamp * 1000, d.actual[type]];
+
+    if (forecast) {
+      var label = d.prosumer_name + ": " + type + ", forecast";
+      if (res[label] == null) {
+        res[label] = {};
+      }
+      res[label][d.timestamp] = [d.forecast.timestamp * 1000, d.forecast[type]];
+    }
+
+    return res;
+  };
+
+  var readData = function(idata, type, forecast) {
     var result = {};
 
     if (idata == null) {
@@ -53,13 +108,7 @@ var plotHelper = (function() {
     }
 
     $.each(idata, function(index, value) {
-      var pros_id = value.prosumer_id;
-      var label = "Prosumer " + pros_id + ": production";
-      if (result[label] == null) {
-        result[label] = {};
-      }
-      var temp = [value.timestamp * 1000, value.actual.production];
-      result[label][value.timestamp] = temp;
+      result = readSingle(value, type, forecast, result);
     });
     return result;
   };
@@ -67,10 +116,13 @@ var plotHelper = (function() {
   return {
     replot : replot,
     readData : readData,
-    drawChart : function(stream, idata) {
+    drawChart : function(stream, idata, type, forecast) {
 
-      if (source != null) {
-        console.log(source.OPEN);
+      // We set source as global, otherwise we were left
+      // with sources remaining open after visiting internal
+      // pages
+      if (typeof source != "undefined" && source != null) {
+        console.log(source);
         if (source.OPEN) {
           source.removeEventListener('datapoint', arguments.callee, false);
           source.close();
@@ -78,8 +130,9 @@ var plotHelper = (function() {
         }
       }
       source = new EventSource(stream);
+      
       console.log("Connecting to " + stream);
-      console.log(source);
+   //   console.log(source);
       data = idata;
       changed = true;
 
@@ -88,18 +141,10 @@ var plotHelper = (function() {
       });
 
       source.addEventListener('datapoint', function(e) {
-        console.log("Datapoint received ", e);
+     //   console.log("Datapoint received ", e);
         var message = JSON.parse(e.data);
-        var pros_id = message.prosumer_id;
-        var label = "Prosumer " + pros_id + ": production";
-        if (data[label] == null) {
-          data[label] = {};
-        }
-        var temp = [message.timestamp * 1000, message.actual.production];
-        data[label][message.timestamp] = temp;
-        console.log("received: ", temp, data);
+        data = readSingle(message, type, forecast, data);
         changed = true;
-
         window.setTimeout(redraw, 100, data);
       });
 
