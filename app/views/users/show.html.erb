@@ -13,5 +13,6 @@
   <%= render(partial: "prosumers/prosumername", spacer_template: "common/comma_spacer", collection: @user.prosumers, as: :prosumer) || "No Prosumers" %>  
 </p>
 
-<%= link_to 'Edit', edit_user_path(@user) %> |
-<%= link_to 'Back', users_path %>
+
+<td><%= link_to 'Edit',edit_user_path(@user),class: 'btn btn-info btn-xs' %></td> |
+<td><%= link_to 'Back', users_path ,class: 'btn btn-warning btn-xs'%> </td>

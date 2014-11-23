@@ -34,9 +34,9 @@
         <td><%= data_point.f_storage.round(2) %></td>
         <td><%= data_point.dr.round(2) %></td>
         <td><%= data_point.reliability.round(2) %></td>
-        <td><%= link_to 'Show', data_point %></td>
-        <td><%= link_to 'Edit', edit_data_point_path(data_point) %></td>
-        <td><%= link_to 'Destroy', data_point, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to 'Show', data_point,class: 'btn btn-success btn-xs'  %></td>
+        <td><%= link_to 'Edit', edit_data_point_path(data_point),class: 'btn btn-info btn-xs'%></td>
+        <td><%= link_to 'Destroy', data_point, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-xs'%></td>
       </tr>
     <% end %>
   </tbody>
@@ -45,4 +45,7 @@
 <%= will_paginate @data_points, renderer: BootstrapPagination::Rails %>
 <br>
 
-<%= link_to 'New Data point', new_data_point_path %>
+<%= link_to 'New Data point', new_data_point_path,class: 'btn btn-default btn-xs' %>
+
+
+  

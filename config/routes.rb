@@ -43,7 +43,7 @@ Rails.application.routes.draw do
   get 'home/energyType' => 'home#energyType'
   get 'home/energyPrice' => 'home#energyPrice'
   get 'home/totalProsumption' => 'home#totalProsumption'
-  get 'home/top5Production' => 'home#top5Producers'
+  get 'home/top5Producers' => 'home#top5Producers'
   get 'home/top5Consumption' => 'home#top5Consumers'
 
 

@@ -3,7 +3,7 @@ function loadHomeCharts(){
 	energyTypeChart();
 	energyPriceChart();
 	totalProsumptionChart();
-	top5ConsumersChart();
+	//top5ConsumersChart();
 	top5ProducersChart();
 }
 
@@ -150,11 +150,8 @@ function totalProsumptionChart(){
   
 }
 
-function top5Consumers(){
-	
-}
 
-function top5producersChart(){
+function top5ProducersChart(){
 	
    $.ajax({
   	 	url: "/home/top5Producers",
@@ -164,8 +161,65 @@ function top5producersChart(){
   		console.log(data);
    });
 
-}      
+}     
 
-function loadtop5Producers(){
-	
+
+function loadtop5Producers(data){
+	//console.log(data);
+	 var barOptions = {
+        series: {
+        	 color: '#D27D10',
+        	 
+            bars: {
+            show: true,
+            barWidth: 0.3,
+            align: "center",
+            lineWidth: 0,
+            fill:.75,
+                      
+            }
+        },        
+        xaxis: {
+            min: 0,
+            max: 6,
+            labelWidth: 0.1,
+            axisLabelPadding: 3,
+    		//tickColor: "#5E5E5E",       
+    		color:"grey",
+    		axisLabel: "VP name",
+            axisLabelUseCanvas: true,
+            axisLabelFontSizePixels: 12,
+            axisLabelFontFamily: 'Verdana, Arial',
+            axisLabelPadding: 10,
+			autoscaleMargin: .10
+            
+        },
+        yaxis:{
+       	axisLabel: "Total Energy",
+    	axisLabelFontSizePixels: 12,
+   		axisLabelFontFamily: 'Verdana, Arial',
+    	axisLabelPadding: 3,
+    	//tickColor: "#5E5E5E",       
+    	color:"black"
+    	
+
+        },
+        
+        grid: {
+            hoverable: true,
+            backgroundColor: { colors: ["#ffffff", "#EDF5FF"] }
+        },
+        legend: {
+            show: false
+        },
+        tooltip: true,
+        tooltipOpts: {
+            content: "x: %x, y: %y"
+        }
+                   
+    };
+  
+    $.plot($("#top5-producers-bar-chart"), data, barOptions);
 }
+
+ 
