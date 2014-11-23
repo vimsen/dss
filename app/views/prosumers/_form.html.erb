@@ -28,6 +28,14 @@
     <%= collection_select(:prosumer, :cluster_id, Cluster.all, :id, :name, :include_blank => true) %>
   </div>
   <div class="field">
+    <%= f.label :building_type_id %><br>
+    <%= collection_select(:prosumer, :building_type_id, BuildingType.all, :id, :name, :include_blank => true) %>
+  </div>
+  <div class="field">
+    <%= f.label :connection_type_id %><br>
+    <%= collection_select(:prosumer, :connection_type_id, ConnectionType.all, :id, :name, :include_blank => true) %>
+  </div>  
+  <div class="field">
     <%= f.label :users %><br>
     <%= select_tag "users", 
             options_from_collection_for_select(User.all, 

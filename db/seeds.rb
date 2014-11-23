@@ -17,8 +17,12 @@ Interval.create([{ id: 1, duration: 900, name: '15 minutes'},
  
 clusters = Cluster.create([{name: "Cluster 1", description: "A testing cluster"}])
 
-Prosumer.create([{name: "Prosumer 1", location: "Rio, Patras", cluster: clusters.first, intelen_id: 1 }, 
+Prosumer.create([{name: "Prosumer 1", location: "Rio, Patras",cluster: clusters.first, intelen_id: 1 }, 
                  {name: "Prosumer 2", location: "Athens", cluster: clusters.first, intelen_id: 2}, 
                  {name: "Prosumer 3", location: "Athens", cluster: clusters.first, intelen_id: 3}])
                  
-EnergyType.create([{name: 'solar'},{name: 'wind'},{name: 'hydro'},{name: 'geothermal'},{name: 'biomass'} ]) 
+EnergyType.create([{name: 'solar'},{name: 'wind'},{name: 'hydro'},{name: 'geothermal'},{name: 'biomass'} ])
+
+BuildingType.create([{name: 'School'},{name: 'House'}]) 
+
+ConnectionType.create([{name: '2G'},{name: '3G'},{name: '4G'},{name: 'ADSL'},{name: 'Cable'}])

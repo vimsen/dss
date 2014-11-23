@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
 
+  resources :connection_types
+
+  resources :building_types
+
   resources :energy_prices
 
   resources :energy_types

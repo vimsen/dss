@@ -11,14 +11,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141120170120) do
+ActiveRecord::Schema.define(version: 20141121132740) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "building_types", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "clusters", force: true do |t|
     t.string   "name"
     t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "connection_types", force: true do |t|
+    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -108,8 +120,12 @@ ActiveRecord::Schema.define(version: 20141120170120) do
     t.datetime "updated_at"
     t.integer  "cluster_id"
     t.integer  "intelen_id"
+    t.integer  "building_type_id"
+    t.integer  "connection_type_id"
   end
 
+  add_index "prosumers", ["building_type_id"], name: "index_prosumers_on_building_type_id", using: :btree
+  add_index "prosumers", ["connection_type_id"], name: "index_prosumers_on_connection_type_id", using: :btree
   add_index "prosumers", ["intelen_id"], name: "index_prosumers_on_intelen_id", unique: true, using: :btree
 
   create_table "prosumers_users", id: false, force: true do |t|

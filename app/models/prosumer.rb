@@ -6,6 +6,9 @@ class Prosumer < ActiveRecord::Base
   has_many :day_aheads, dependent: :destroy
 
   belongs_to :cluster
+  belongs_to :building_type
+  belongs_to :connection_type
+  
   resourcify
 
   has_and_belongs_to_many :users

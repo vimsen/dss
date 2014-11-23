@@ -17,6 +17,16 @@
 </p>
 
 <p>
+  <strong>Building Type:</strong>
+  <%= link_to(@prosumer.building_type.name, @prosumer.building_type) if @prosumer.building_type %>
+</p>
+
+<p>
+  <strong>Connection Type:</strong>
+  <%= link_to(@prosumer.connection_type.name, @prosumer.connection_type) if @prosumer.connection_type %>
+</p>
+
+<p>
 	<strong>Users:</strong>
 	<%= render(partial: "users/username", spacer_template: "common/comma_spacer", collection: @prosumer.users, as: :user) || "No users" -%>
 </p>
