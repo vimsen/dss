@@ -56,7 +56,7 @@ class HomeController < ApplicationController
         data = []
         @top5prosumers.each do |production|
       
-           data.push([production.prosumer.name, production.consumption])
+           data.push([production.prosumer.id, production.consumption])
         end
       
           chartData.push({"data"=>data,"label"=>"Total Energy Production"})
