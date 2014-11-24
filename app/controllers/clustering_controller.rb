@@ -4,6 +4,7 @@ class ClusteringController < ApplicationController
 
   def confirm
     @clusters = run_algorithm params[:algorithm]
+    puts @clusters
   end
 
   def save
@@ -48,7 +49,25 @@ class ClusteringController < ApplicationController
     end
     
     def run_energy_type
-      return "energy"
+      result = {}
+      cl = Cluster.new(name: "No renewable info")
+      result[:none] = cl
+      EnergyType.all.each do |et|
+        cl = Cluster.new(name: et.name)
+        result[et.id] = cl
+      end
+      
+      Prosumer.all.each do |p|
+        etp = p.energy_type_prosumers.order("power DESC").first
+        if etp.nil?
+          result[:none].prosumers.push(p)
+        else
+          etid = etp.energy_type.id
+          result[etid].prosumers.push(p)   
+        end
+      end
+      
+      return result.values
     end
     
     def run_connection_type
