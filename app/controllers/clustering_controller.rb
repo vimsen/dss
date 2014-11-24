@@ -1,5 +1,5 @@
 class ClusteringController < ApplicationController
-  def algorithm
+  def select
   end
 
   def confirm

@@ -1,8 +1,8 @@
 require 'test_helper'
 
 class ClusteringControllerTest < ActionController::TestCase
-  test "should get algorithm" do
-    get :algorithm
+  test "should get select" do
+    get :select
     assert_response :success
   end
 
