@@ -1,3 +1,4 @@
+
 <p>
   <strong>Prosumer:</strong>
   <%= render partial: "prosumers/prosumername", :locals => { :prosumer => @data_point.prosumer } %>
@@ -58,5 +59,7 @@
   <%= @data_point.reliability %>
 </p>
 
-<%= link_to 'Edit', edit_data_point_path(@data_point) %> |
-<%= link_to 'Back', data_points_path %>
+
+<td><%= link_to 'Edit', edit_data_point_path(@data_point),class: 'btn btn-info btn-xs' %></td> |
+<td><%= link_to 'Back', data_points_path ,class: 'btn btn-warning btn-xs'%> </td>
+
