@@ -1,6 +1,7 @@
 class BuildingTypesController < ApplicationController
   before_action :set_building_type, only: [:show, :edit, :update, :destroy]
-
+  load_and_authorize_resource
+  
   def index
     @building_types = BuildingType.all
     respond_with(@building_types)
