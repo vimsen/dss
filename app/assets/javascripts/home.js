@@ -164,59 +164,64 @@ function top5ProducersChart(){
 }     
 
 
+
 function loadtop5Producers(data){
-	//console.log(data);
+	console.log(data[1].names[0]);
+	console.log(data[1].names[1]);
+	console.log(data[1].names[2]);
+	
 	 var barOptions = {
+	 		 	
+		
+   		series: {lines:{show: true}},
+
         series: {
-        	 color: '#D27D10',
         	 
             bars: {
             show: true,
-            barWidth: 0.3,
+            barWidth: 0.5,
             align: "center",
-            lineWidth: 0,
-            fill:.75,
-                      
+            lineWidth: 0.7,
+            fill:.9,                      
             }
         },        
         xaxis: {
+        	
+        	ticks: [data[1].names[0], data[1].names[1],  data[1].names[2], data[1].names[3],  data[1].names[4], data[1].names[5], data[1].names[6], data[1].names[7], data[1].names[8], data[1].names[9]],
             min: 0,
             max: 6,
-            labelWidth: 0.1,
-            axisLabelPadding: 3,
-    		//tickColor: "#5E5E5E",       
-    		color:"grey",
-    		axisLabel: "VP name",
-            axisLabelUseCanvas: true,
-            axisLabelFontSizePixels: 12,
-            axisLabelFontFamily: 'Verdana, Arial',
+            axisLabel: "VP name",
             axisLabelPadding: 10,
-			autoscaleMargin: .10
+    		tickDecimals:0,
+    	//	show: true,       
+    		color:"grey",
+    	//	axisLabelUseCanvas: true,
+          	size: 5,
+       //     axisLabelFontFamily: 'Verdana, Arial',
+			autoscaleMargin: 3,
+		
             
         },
         yaxis:{
-       	axisLabel: "Total Energy",
-    	axisLabelFontSizePixels: 12,
-   		axisLabelFontFamily: 'Verdana, Arial',
-    	axisLabelPadding: 3,
-    	//tickColor: "#5E5E5E",       
-    	color:"black"
-    	
+        	tickDecimals:1,
+       		axisLabel: "Total Energy",
+    		axisLabelFontSizePixels: 12,
+   			axisLabelFontFamily: 'Verdana, Arial',
+    		axisLabelPadding: 3,     
+    		color:"black"
 
         },
         
         grid: {
             hoverable: true,
-            backgroundColor: { colors: ["#ffffff", "#EDF5FF"] }
+            backgroundColor: { colors: ["#ffffff", "#EDF5FF"] },
+            clickable: true
         },
         legend: {
-            show: false
+            show:true
         },
-        tooltip: true,
-        tooltipOpts: {
-            content: "x: %x, y: %y"
-        }
-                   
+        
+          tooltip:true         
     };
   
     $.plot($("#top5-producers-bar-chart"), data, barOptions);
