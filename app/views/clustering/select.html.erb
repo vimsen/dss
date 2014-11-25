@@ -1,0 +1,12 @@
+<h1>Clustering#select</h1>
+<p>Find me in app/views/clustering/select.html.erb</p>
+
+<%= form_tag "/clustering/confirm" do %>
+  <div class="field">
+    <%= label_tag :algorithm %><br>
+    <%= select_tag "algorithm", options_for_select(algorithms.collect {|p| [ p[:name], p[:string] ] }) %>
+    
+  <div class="actions">
+    <%= submit_tag %>
+  </div>
+<% end %>

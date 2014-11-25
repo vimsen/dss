@@ -1,5 +1,11 @@
 Rails.application.routes.draw do
 
+  get 'clustering/select'
+
+  post 'clustering/confirm'
+
+  post 'clustering/save'
+
   resources :connection_types
 
   resources :building_types

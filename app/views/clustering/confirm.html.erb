@@ -1,0 +1,23 @@
+<h1>Clustering#confirm</h1>
+<p>Find me in app/views/clustering/confirm.html.erb</p>
+
+<% @clusters.each do |cl| %>
+    
+  <% if cl.prosumers.size > 0 %>  
+    Name: <%= cl.name %>, 
+    Prosumers: <%= cl.prosumers.map {|p| p.name}.join(",") %><br/>
+  <% end %>
+<% end%>
+
+<%= form_tag "/clustering/save" do %>
+  <% @clusters.each do |cl| %>
+    <% if cl.prosumers.size > 0 %>
+      <%= hidden_field_tag "clusterprosumers[]", cl.prosumers.map {|p| p.id}.join(",")%>
+      <%= hidden_field_tag "clusternames[]", cl.name %>
+    <% end %>
+  <% end %>
+    
+  <div class="actions">
+    <%= submit_tag %>
+  </div>
+<% end %>

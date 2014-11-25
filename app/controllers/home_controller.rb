@@ -62,6 +62,8 @@ class HomeController < ApplicationController
            i=i+1
            data.push([i, production.consumption])
            names.push([i,production.prosumer.name])
+      
+           data.push([production.prosumer.id, production.consumption])
         end
       
           chartData.push({"data"=>data,"label"=>"Total Energy Production"},{"names"=>names,"label"=>"Producers Names"})

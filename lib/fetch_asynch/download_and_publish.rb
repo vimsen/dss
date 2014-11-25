@@ -50,6 +50,12 @@ module FetchAsynch
       def newdata? d 
         puts "===== In newData ======"
         t = DateTime.parse(d["timestamp"])
+        
+        # Intelen sends us data for the future for some reaason
+        if t.future?
+          return false
+        end 
+        
         i = d["interval"].to_i
         s = Time.at(t.to_i - i/2).to_datetime
         e = Time.at(t.to_i + i/2).to_datetime
@@ -93,6 +99,7 @@ module FetchAsynch
       end
       
       def prepare d
+        puts "------------------- #{d["timestamp"]} #{DateTime.parse(d["timestamp"]).to_i}"
         d["timestamp"] = DateTime.parse(d["timestamp"]).to_i;
         d[:prosumer_id] = Prosumer.where(intelen_id: d["procumer_id"]).first.id
         d[:prosumer_name] = Prosumer.where(intelen_id: d["procumer_id"]).first.name

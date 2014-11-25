@@ -187,7 +187,7 @@ function loadtop5Producers(data){
         },        
         xaxis: {
         	
-        	ticks: [data[1].names[0], data[1].names[1],  data[1].names[2], data[1].names[3],  data[1].names[4], data[1].names[5], data[1].names[6], data[1].names[7], data[1].names[8], data[1].names[9]],
+            ticks: [data[1].names[0], data[1].names[1],  data[1].names[2], data[1].names[3],  data[1].names[4]],
             min: 0,
             max: 6,
             axisLabel: "VP name",
