@@ -22,12 +22,33 @@ class Prosumer < ActiveRecord::Base
   validates :intelen_id, uniqueness: true
   
   def request_cached(interval, startdate, enddate)
-    result = []
-    puts "#{interval}, #{startdate}, #{enddate}"
-    self.data_points.where(timestamp: startdate..enddate, interval: interval).order(timestamp: :asc).each do |dp|
-      result.push( dp.clientFormat )  
-    end
-    FetchAsynch::DownloadAndPublish.new(self.intelen_id, interval, startdate, enddate, "prosumer.#{self.id}") 
+    
+    dps = self.data_points.where(timestamp: startdate..enddate, interval: interval).order(timestamp: :asc)
+    
+    result = dps.map { |dp| dp.clientFormat }
+    
+    # Below calculations are for determininig if all needed points are in the db
+    
+    if dps.count > 0
+      int_secs = Interval.find(interval).duration
+      
+      cached_startdate = dps.first.timestamp
+      cached_enddate = dps.last.timestamp
+      
+      i_gaps = (cached_enddate.to_i - cached_startdate.to_i) / int_secs  
+      
+      s_gap = cached_startdate.to_i - startdate.to_i
+      e_gap = enddate.to_i - cached_enddate.to_i
+      
+      points = dps.count    
+      
+      puts "-------- #{points} #{i_gaps} #{s_gap} #{int_secs} #{e_gap}"
+      
+    end 
+    
+    if dps.count == 0 || points < i_gaps + 1 || s_gap > int_secs || e_gap > int_secs 
+      FetchAsynch::DownloadAndPublish.new(self.intelen_id, interval, startdate, enddate, "prosumer.#{self.id}")
+    end 
    
     return result      
   end
