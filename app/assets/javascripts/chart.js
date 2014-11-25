@@ -39,7 +39,7 @@ var plotHelper = (function() {
         grid: { hoverable: true, clickable: true },
         tooltip: true,
         tooltipOpts: {
-            content: "'%s' at %x is %y",
+            content: "'%s'<br/>%x<br/>%y",
             shifts: {
                 x: -60,
                 y: 25
