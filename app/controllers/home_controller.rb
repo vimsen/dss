@@ -50,17 +50,28 @@ class HomeController < ApplicationController
      
       currentTime = Time.new
       chartData = Array.new 
-      
+      top5producersNames=Array.new
+     
   #  @top5prosumers=DataPoint.joins(:prosumer).order(consumption: :desc).where(timestamp: currentTime.strftime("%Y-%m-%d")).limit(5)
-        @top5prosumers=DataPoint.joins(:prosumer).order(consumption: :desc).limit(5)
+        @top5prosumers=DataPoint.joins(:prosumer).order(consumption: :desc).where(interval: 3).where("timestamp >= ?",Time.zone.now.beginning_of_day).limit(5)
         data = []
+        names= []
+        i=0
         @top5prosumers.each do |production|
+           #data.push([production.prosumer.name, production.consumption])
+           i=i+1
+           data.push([i, production.consumption])
+           names.push([i,production.prosumer.name])
       
            data.push([production.prosumer.id, production.consumption])
         end
       
-          chartData.push({"data"=>data,"label"=>"Total Energy Production"})
+          chartData.push({"data"=>data,"label"=>"Total Energy Production"},{"names"=>names,"label"=>"Producers Names"})
           
-          render :json => chartData
+          render :json => chartData 
     end
+    
+     def top5Consumers
+       
+     end
 end
