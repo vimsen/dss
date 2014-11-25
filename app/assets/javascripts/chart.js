@@ -18,7 +18,11 @@ var plotHelper = (function() {
       });
 
       var s = $("#startDate").length ? Date.parse($('#startDate').val()) : null;
-      var e = $("#endDate").length ? Date.parse($('#endDate').val()) : null;
+      var e = $('#realtime').prop('checked')
+                  ? Date.now()
+                  : $("#endDate").length   
+                      ? Date.parse($('#endDate').val()) 
+                      : null;
 
       // Reduce number of ticks when width is small, to avoid overlapping
       var t = $("#placeholder").width() < 450 ? 3 : null;
