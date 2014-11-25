@@ -25,15 +25,15 @@
         <td><%= render partial: "prosumers/prosumername", :locals => { :prosumer => data_point.prosumer } %></td>
         <td><%= data_point.interval.name %></td>
         <td><%= data_point.timestamp %></td>
-        <td><%= data_point.production.round(2) %></td>
-        <td><%= data_point.consumption.round(2) %></td>
-        <td><%= data_point.storage.round(2) %></td>
+        <td><%= round_or_null data_point.production, 2 %></td>
+        <td><%= round_or_null data_point.consumption, 2 %></td>
+        <td><%= round_or_null data_point.storage, 2 %></td>
         <td><%= data_point.f_timestamp %></td>
-        <td><%= data_point.f_production.round(2) %></td>
-        <td><%= data_point.f_consumption.round(2) %></td>
-        <td><%= data_point.f_storage.round(2) %></td>
-        <td><%= data_point.dr.round(2) %></td>
-        <td><%= data_point.reliability.round(2) %></td>
+        <td><%= round_or_null data_point.f_production, 2 %></td>
+        <td><%= round_or_null data_point.f_consumption, 2 %></td>
+        <td><%= round_or_null data_point.f_storage, 2 %></td>
+        <td><%= round_or_null data_point.dr, 2 %></td>
+        <td><%= round_or_null data_point.reliability, 2 %></td>
         <td><%= link_to 'Show', data_point,class: 'btn btn-success btn-xs'  %></td>
         <td><%= link_to 'Edit', edit_data_point_path(data_point),class: 'btn btn-info btn-xs'%></td>
         <td><%= link_to 'Destroy', data_point, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-xs'%></td>

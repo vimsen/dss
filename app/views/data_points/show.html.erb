@@ -16,17 +16,17 @@
 
 <p>
   <strong>Production:</strong>
-  <%= @data_point.production.round(2) %>
+  <%= round_or_null @data_point.production, 2 %>
 </p>
 
 <p>
   <strong>Consumption:</strong>
-  <%= @data_point.consumption.round(2) %>
+  <%= round_or_null @data_point.consumption, 2 %>
 </p>
 
 <p>
   <strong>Storage:</strong>
-  <%= @data_point.storage.round(2) %>
+  <%= round_or_null @data_point.storage, 2 %>
 </p>
 
 <p>
@@ -36,22 +36,22 @@
 
 <p>
   <strong>F production:</strong>
-  <%= @data_point.f_production.round(2) %>
+  <%= round_or_null @data_point.f_production, 2 %>
 </p>
 
 <p>
   <strong>F consumption:</strong>
-  <%= @data_point.f_consumption.round(2) %>
+  <%= round_or_null @data_point.f_consumption, 2 %>
 </p>
 
 <p>
   <strong>F storage:</strong>
-  <%= @data_point.f_storage.round(2) %>
+  <%= round_or_null @data_point.f_storage, 2 %>
 </p>
 
 <p>
   <strong>Dr:</strong>
-  <%= @data_point.dr.round(2) %>
+  <%= round_or_null @data_point.dr, 2 %>
 </p>
 
 <p>
