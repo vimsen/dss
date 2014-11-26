@@ -46,24 +46,20 @@ class HomeController < ApplicationController
     def totalProsumption
     end
   
-    def top5Producers
-     
-      currentTime = Time.new
+    def top5Producers   
       chartData = Array.new 
       top5producersNames=Array.new
      
   #  @top5prosumers=DataPoint.joins(:prosumer).order(consumption: :desc).where(timestamp: currentTime.strftime("%Y-%m-%d")).limit(5)
-        @top5prosumers=DataPoint.joins(:prosumer).order(consumption: :desc).where(interval: 3).where("timestamp >= ?",Time.zone.now.beginning_of_day).limit(5)
+        @top5prosumers=DataPoint.joins(:prosumer).order(consumption: :desc).where(interval: 3).where("timestamp >= ?",Time.zone.now - 1.day).limit(5)
         data = []
         names= []
         i=0
         @top5prosumers.each do |production|
            #data.push([production.prosumer.name, production.consumption])
            i=i+1
-           data.push([i, production.consumption])
+           data.push([i, production.production])
            names.push([i,production.prosumer.name])
-      
-           data.push([production.prosumer.id, production.consumption])
         end
       
           chartData.push({"data"=>data,"label"=>"Total Energy Production"},{"names"=>names,"label"=>"Producers Names"})
@@ -71,7 +67,23 @@ class HomeController < ApplicationController
           render :json => chartData 
     end
     
-     def top5Consumers
-       
+    def top5Consumers     
+      chartData = Array.new 
+      top5consumersNames=Array.new
+     
+        @top5consumers=DataPoint.joins(:prosumer).order(consumption: :desc).where(interval: 3).where("timestamp >= ?",Time.zone.now - 1.day).limit(5)
+        data = []
+        names= []
+        i=0
+        @top5consumers.each do |consumption|
+           #data.push([production.prosumer.name, production.consumption])
+           i=i+1
+           data.push([i, consumption.consumption])
+           names.push([i,consumption.prosumer.name])
+        end
+      
+          chartData.push({"data"=>data,"label"=>"Total Energy Consumption"},{"names"=>names,"label"=>"Consumers Names"})
+          
+          render :json => chartData 
      end
 end

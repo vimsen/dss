@@ -3,8 +3,8 @@ function loadHomeCharts(){
 	energyTypeChart();
 	energyPriceChart();
 	totalProsumptionChart();
-	//top5ConsumersChart();
 	top5ProducersChart();
+	top5ConsumersChart();
 }
 
 function energyTypeChart(){
@@ -73,11 +73,14 @@ function loadEnergyPriceChart(data){
                 hoverable: true //IMPORTANT! this is needed for tooltip to work
             },
             xaxis:
-			{                
+			{       
+				min:1,    
+				ticks:20,     
     			tickDecimals: 0
+    			
 			},
             yaxis: {
-                min: 0,
+                min: 1,
                 tickDecimals: 2
 
             },
@@ -129,7 +132,7 @@ function totalProsumptionChart(){
             },
             tooltip: true,
             tooltipOpts: {
-                content: "'%s' of %x.1 is %y.4",
+            content: "'%s' <br/> DayHour: %x<br/> Hourly Production (KWh): %y",
                 shifts: {
                     x: -60,
                     y: 25
@@ -165,10 +168,7 @@ function top5ProducersChart(){
 
 
 
-function loadtop5Producers(data){
-	console.log(data[1].names[0]);
-	console.log(data[1].names[1]);
-	console.log(data[1].names[2]);
+function loadtop5Producers(data){	
 	
 	 var barOptions = {
 	 		 	
@@ -187,7 +187,7 @@ function loadtop5Producers(data){
         },        
         xaxis: {
         	
-            ticks: [data[1].names[0], data[1].names[1],  data[1].names[2], data[1].names[3],  data[1].names[4]],
+        	ticks: [data[1].names[0], data[1].names[1],  data[1].names[2], data[1].names[3],  data[1].names[4]],
             min: 0,
             max: 6,
             axisLabel: "VP name",
@@ -221,10 +221,100 @@ function loadtop5Producers(data){
             show:true
         },
         
-          tooltip:true         
+          tooltip:true ,
+          tooltipOpts: {
+            content: "'%s' <br/> Prosumer Ranking: %x<br/> Energy Production (KWh): %y",
+            shifts: {
+                x: -60,
+                y: 25
+            }
+          }     
     };
   
     $.plot($("#top5-producers-bar-chart"), data, barOptions);
 }
 
+
+ function top5ConsumersChart(){
+	
+   $.ajax({
+  	 	url: "/home/top5Consumers",
+   }).done(function( data ) {
+    	loadtop5Consumers(data);
+   }).error(function(data){
+  		console.log(data);
+   });
+
+}     
+
+
+function loadtop5Consumers(data){	
+	console.log(data);
+	
+	 var barOptions = {
+	 		 	
+   		series: {lines:{show: true}},
+
+        series: {
+        	 
+            bars: {
+            show: true,
+            barWidth: 0.5,
+            align: "center",
+            lineWidth: 0.7,
+            fill:.9,                      
+            }
+        },        
+        xaxis: {
+        	
+        	ticks: [data[1].names[0], data[1].names[1],  data[1].names[2], data[1].names[3],  data[1].names[4]],
+            min: 0,
+            max: 6,
+            axisLabel: "VP name",
+            axisLabelPadding: 10,
+    		tickDecimals:0,
+    		show: true,       
+    		color:"grey",
+    	//	axisLabelUseCanvas: true,
+          	size: 5,
+       //     axisLabelFontFamily: 'Verdana, Arial',
+			autoscaleMargin: 3,
+		
+            
+        },
+        yaxis:{
+        	tickDecimals:1,
+       		axisLabel: "Total Energy",
+    		axisLabelFontSizePixels: 12,
+   			axisLabelFontFamily: 'Verdana, Arial',
+    		axisLabelPadding: 3,     
+    		color:"black"
+
+        },
+        
+        grid: {
+            hoverable: true,
+            backgroundColor: { colors: ["#ffffff", "#EDF5FF"] },
+            clickable: true
+        },
+        legend: {
+            show:true
+        },
+        
+          tooltip:true,
+          tooltipOpts: {
+            content: "'%s' <br/> Prosumer Ranking: %x<br/> Energy Consumption (KWh): %y",
+            shifts: {
+                x: -60,
+                y: 25
+            }
+          }           
+             
+    };
+  	console.log(barOptions);
+
+    $.plot($("#top5-consumers-bar-chart"), data, barOptions);
+}
+
  
+
