@@ -215,7 +215,7 @@ body {
 }
 
 .login-panel {
-    margin-top: 25%;
+    margin-top: 15%;
 }
 
 .flot-chart {
@@ -350,4 +350,17 @@ table.dataTable thead .sorting:after {
 
 .panel-yellow a:hover {
     color: #df8a13;
+}
+
+.devise-logo-row{
+ text-align: center;
+ margin-top:25px;
+}
+
+.devise-logo-text{
+	font-size:20px;
+}
+
+.devise-spacer{
+	margin-bottom:5px;
 }
