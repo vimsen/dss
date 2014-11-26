@@ -1,0 +1,25 @@
+
+  <div class="panel-heading">
+      <h3 class="panel-title">Please Sign In</h3>
+  </div>
+   
+  <div class="panel-body">
+	<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+  
+  	  	<div class="devise-spacer"><%= f.label :email %><br />
+  		<%= f.email_field :email, autofocus: true,  :class=> "form-control", required: true %></div>
+
+		<div class="devise-spacer"><%= f.label :password %><br/>
+		<%= f.password_field :password, autocomplete: "off", :class => "form-control", required:true %></div>
+
+		<% if devise_mapping.rememberable? -%>
+    	  <div class="devise-spacer"><%= f.check_box :remember_me %> <%= f.label :remember_me %></div>
+  		<% end -%>
+
+  		<div class="devise-spacer"><%= f.submit "Log in", :class=>"btn btn-primary" %></div>
+	<% end %>
+				
+	<%= render "users/shared/links" %>
+	
+  </div>
+       
