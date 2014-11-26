@@ -27,7 +27,7 @@ class StreamController < ApplicationController
     sse = Streamer::SSE.new(response.stream)
     
     cluster = Cluster.find(params[:id])
-    startdate = (params[:startdate].nil?) ? (Time.now - 7.days) : params[:startdate].to_time - 1.day
+    startdate = (params[:startdate].nil?) ? (Time.now - 7.days) : params[:startdate].to_time
     enddate = (params[:enddate].nil?) ? (Time.now) : params[:enddate].to_time 
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
 
@@ -67,7 +67,7 @@ class StreamController < ApplicationController
     sse = Streamer::SSE.new(response.stream)
     
     prosumer = Prosumer.find(params[:id])
-    startdate = (params[:startdate].nil?) ? (Time.now - 7.days) : params[:startdate].to_time - 1.day
+    startdate = (params[:startdate].nil?) ? (Time.now - 7.days) : params[:startdate].to_time
     enddate = (params[:enddate].nil?) ? (Time.now) : params[:enddate].to_time 
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
     

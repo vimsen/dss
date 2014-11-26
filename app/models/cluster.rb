@@ -2,6 +2,8 @@ class Cluster < ActiveRecord::Base
   has_many :prosumers
   resourcify
   
+  include FindGaps
+  
   def getNotMembers
     return Prosumer.where("cluster_id IS ? OR cluster_id != ?", nil, self.id)
   end
@@ -11,8 +13,12 @@ class Cluster < ActiveRecord::Base
     aggregate = {}
     count = {}
     puts "#{interval}, #{startdate}, #{enddate}"
+    missing_data = false
+    
     self.prosumers.each do |p| 
-      p.data_points.where(timestamp: startdate..enddate, interval: interval).order(timestamp: :asc).each do |dp|
+      dps = p.data_points.where(timestamp: startdate..enddate, interval: interval).order(timestamp: :asc)
+      
+      dps.each do |dp|
         result.push( dp.clientFormat )
         if aggregate[dp.timestamp].nil?
           aggregate[dp.timestamp] = DataPoint.new
@@ -22,6 +28,11 @@ class Cluster < ActiveRecord::Base
         count[dp.timestamp] += 1
         aggregate[dp.timestamp].add_data_doint dp
       end
+      
+      if find_gaps dps, startdate, enddate, Interval.find(interval).duration
+        missing_data = true
+      end
+      
     end
     
     num = self.prosumers.count
@@ -41,7 +52,9 @@ class Cluster < ActiveRecord::Base
     
     puts "prosumerlist: ", prosumerlist
     
-    FetchAsynch::DownloadAndPublish.new(prosumerlist, interval, startdate, enddate, "cluster.#{self.id}") 
+    if (missing_data)
+      FetchAsynch::DownloadAndPublish.new(prosumerlist, interval, startdate, enddate, "cluster.#{self.id}")
+    end   
    
     return result      
   end
