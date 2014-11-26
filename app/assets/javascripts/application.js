@@ -23,6 +23,7 @@
 //= require plugins/flot/jquery.flot.pie
 //= require plugins/flot/jquery.flot.resize
 //= require plugins/flot/jquery.flot.tooltip.min
+//= require plugins/flot/jquery.flot.time
 //= require jquery.datetimepicker
 //= require_tree .
 
