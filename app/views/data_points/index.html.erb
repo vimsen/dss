@@ -1,51 +1,67 @@
-<h1>Listing data_points</h1>
+<!-- /.row -->
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Listing data_points
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered table-hover" id="dataTables-data-points">
+            <thead>
+              <tr>
+                <th><%= sortable "prosumers.name", "Prosumer" %></th>
+                <th><%= sortable "intervals.duration", "Interval" %></th>
+                <th><%= sortable "timestamp", "Time" %></th>
+                <th><%= sortable "production", "Prod." %></th>
+                <th><%= sortable "consumption", "Cons." %></th>
+                <th><%= sortable "storage", "Storage" %></th>
+                <th><%= sortable "f_timestamp", "F time" %></th>
+                <th><%= sortable "f_production", "F prod." %></th>
+                <th><%= sortable "f_consumption", "F cons." %></th>
+                <th><%= sortable "f_storage", "F storage" %></th>
+                <th><%= sortable "Dr" %></th>
+                <th><%= sortable "Reliability" %></th>
+                <th colspan="3"></th>
+              </tr>
+            </thead>
 
-<table class="table">
-  <thead>
-    <tr>
-      <th><%= sortable "prosumers.name", "Prosumer" %></th>
-      <th><%= sortable "intervals.duration", "Interval" %></th>
-      <th><%= sortable "timestamp", "Time" %></th>
-      <th><%= sortable "production", "Prod." %></th>
-      <th><%= sortable "consumption", "Cons." %></th>
-      <th><%= sortable "storage", "Storage" %></th>
-      <th><%= sortable "f_timestamp", "F time" %></th>
-      <th><%= sortable "f_production", "F prod." %></th>
-      <th><%= sortable "f_consumption", "F cons." %></th>
-      <th><%= sortable "f_storage", "F storage" %></th>
-      <th><%= sortable "Dr" %></th>
-      <th><%= sortable "Reliability" %></th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @data_points.each do |data_point| %>
-      <tr>
-        <td><%= render partial: "prosumers/prosumername", :locals => { :prosumer => data_point.prosumer } %></td>
-        <td><%= data_point.interval.name %></td>
-        <td><%= data_point.timestamp %></td>
-        <td><%= round_or_null data_point.production, 2 %></td>
-        <td><%= round_or_null data_point.consumption, 2 %></td>
-        <td><%= round_or_null data_point.storage, 2 %></td>
-        <td><%= data_point.f_timestamp %></td>
-        <td><%= round_or_null data_point.f_production, 2 %></td>
-        <td><%= round_or_null data_point.f_consumption, 2 %></td>
-        <td><%= round_or_null data_point.f_storage, 2 %></td>
-        <td><%= round_or_null data_point.dr, 2 %></td>
-        <td><%= round_or_null data_point.reliability, 2 %></td>
-        <td><%= link_to 'Show', data_point,class: 'btn btn-success btn-xs'  %></td>
-        <td><%= link_to 'Edit', edit_data_point_path(data_point),class: 'btn btn-info btn-xs'%></td>
-        <td><%= link_to 'Destroy', data_point, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-xs'%></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<%= will_paginate @data_points, renderer: BootstrapPagination::Rails %>
+            <tbody>
+              <% @data_points.each do |data_point| %>
+              <tr>
+                <td><%= render partial: "prosumers/prosumername", :locals => { :prosumer => data_point.prosumer } %></td>
+                <td><%= data_point.interval.name %></td>
+                <td><%= data_point.timestamp %></td>
+                <td><%= round_or_null data_point.production, 2 %></td>
+                <td><%= round_or_null data_point.consumption, 2 %></td>
+                <td><%= round_or_null data_point.storage, 2 %></td>
+                <td><%= data_point.f_timestamp %></td>
+                <td><%= round_or_null data_point.f_production, 2 %></td>
+                <td><%= round_or_null data_point.f_consumption, 2 %></td>
+                <td><%= round_or_null data_point.f_storage, 2 %></td>
+                <td><%= round_or_null data_point.dr, 2 %></td>
+                <td><%= round_or_null data_point.reliability, 2 %></td>
+                <td><%= link_to 'Show', data_point, class: 'btn btn-success btn-xs'  %></td>
+                <td><%= link_to 'Edit', edit_data_point_path(data_point), class: 'btn btn-info btn-xs'%></td>
+                <td><%= link_to 'Destroy', data_point, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-xs'%></td>
+              </tr>
+              <% end %>
+            </tbody>
+          </table>
+          <%= will_paginate @data_points, renderer: BootstrapPagination::Rails %>
+        </div>
+        <!-- /.table-responsive -->
+        <%= link_to 'New Data point', new_data_point_path,class: 'btn btn-default btn-xs' %>
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
 <br>
 
-<%= link_to 'New Data point', new_data_point_path,class: 'btn btn-default btn-xs' %>
 
 
-  
