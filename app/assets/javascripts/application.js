@@ -25,5 +25,7 @@
 //= require plugins/flot/jquery.flot.tooltip.min
 //= require plugins/flot/jquery.flot.time
 //= require jquery.datetimepicker
+//= require underscore
+//= require gmaps/google
 //= require_tree .
 
