@@ -5,4 +5,10 @@ module ProsumersHelper
     end
     prosumer
   end
+  
+  def color(i)
+    numcolors = Cluster.count
+    last = 0xFFFFFF
+    sprintf("%06X", last * (numcolors - i) / (numcolors))
+  end
 end
