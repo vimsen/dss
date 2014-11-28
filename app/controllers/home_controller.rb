@@ -43,8 +43,24 @@ class HomeController < ApplicationController
         
     end
   
+  
+  
     def totalProsumption
+      chartData = Array.new  
+      Time.zone = 'Athens'
+      print("Tiiiiime::")
+      print(Time.zone.now-1.day)
+        @totalConsumption=DataPoint.order(timestamp: :asc).where(interval:2).where("timestamp >= ?",Time.zone.now - 1.day).group(:timestamp).select("timestamp, sum(consumption)").map {|dp| {time: dp["timestamp"], sum: dp["sum"]} }
+      
+        @totalConsumption.each do |consumption|
+         consumption_data= Hash.new  
+         consumption_data[:label]= "total consumption"
+         consumption_data[:data]= consumption[:sum]
+         chartData.push(consumption_data)
+        end
+      render :json => chartData
     end
+  
   
     def top5Producers   
       chartData = Array.new 

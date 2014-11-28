@@ -100,7 +100,20 @@ function loadEnergyPriceChart(data){
   
 }
 
+
+
 function totalProsumptionChart(){
+   $.ajax({
+  	 	url: "/home/totalProsumption",
+   }).done(function( data ) {
+    	loadProsumptionChart(data);
+   }).error(function(data){
+  		console.log(data);
+   });
+}
+
+function loadProsumptionChart(data){
+console.log(data);
 
     var offset = 0;
 
@@ -152,6 +165,8 @@ function totalProsumptionChart(){
     }
   
 }
+
+
 
 
 function top5ProducersChart(){
@@ -233,6 +248,7 @@ function loadtop5Producers(data){
   
     $.plot($("#top5-producers-bar-chart"), data, barOptions);
 }
+
 
 
  function top5ConsumersChart(){

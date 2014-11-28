@@ -55,6 +55,7 @@ Rails.application.routes.draw do
   get 'home/totalProsumption' => 'home#totalProsumption'
   get 'home/top5Producers' => 'home#top5Producers'
   get 'home/top5Consumers' => 'home#top5Consumers'
+ 
 
 
   resources :machines
