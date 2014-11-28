@@ -10,7 +10,14 @@
 	<strong>Location:</strong>
 	<%= @prosumer.location %>
 </p>
-
+<p>
+  <strong>Location X:</strong>
+  <%= @prosumer.location_x %>
+</p>
+<p>
+  <strong>Location Y:</strong>
+  <%= @prosumer.location_y %>
+</p>
 <p>
 	<strong>Cluster:</strong>
 	<%= link_to(@prosumer.cluster.name, @prosumer.cluster) if @prosumer.cluster %>

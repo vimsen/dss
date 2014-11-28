@@ -24,6 +24,14 @@
     <%= f.text_field :location %>
   </div>
   <div class="field">
+    <%= f.label :location_x %><br>
+    <%= f.text_field :location_x %>
+  </div>
+  <div class="field">
+    <%= f.label :location_y %><br>
+    <%= f.text_field :location_y %>
+  </div>
+  <div class="field">
     <%= f.label :cluster_id %><br>
     <%= collection_select(:prosumer, :cluster_id, Cluster.all, :id, :name, :include_blank => true) %>
   </div>

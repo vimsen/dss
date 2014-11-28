@@ -61,3 +61,6 @@ gem 'will_paginate-bootstrap' # Pagination
 
 gem 'simple-navigation-bootstrap' # For the menu
 
+gem 'gmaps4rails' # For google maps
+gem 'underscore-rails' # dito
+

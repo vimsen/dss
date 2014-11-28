@@ -58,5 +58,9 @@ class Cluster < ActiveRecord::Base
    
     return result      
   end
+  
+  def get_icon_index
+    Cluster.all.index(self)
+  end
 
 end
