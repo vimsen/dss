@@ -37,7 +37,7 @@ class HomeController < ApplicationController
              priceData.push(hour_price)
          end
 
-         chartData.push({"data"=>priceData,"label"=>"Energy Price"})
+         chartData.push({"data"=>priceData,"label"=>"Energy Price Per DayHour"})
          
          render :json => chartData
         
@@ -51,7 +51,7 @@ class HomeController < ApplicationController
       top5producersNames=Array.new
      
   #  @top5prosumers=DataPoint.joins(:prosumer).order(consumption: :desc).where(timestamp: currentTime.strftime("%Y-%m-%d")).limit(5)
-        @top5prosumers=DataPoint.joins(:prosumer).order(consumption: :desc).where(interval: 3).where("timestamp >= ?",Time.zone.now - 1.day).limit(5)
+        @top5prosumers=DataPoint.joins(:prosumer).order(production: :desc).where(interval: 3).where("timestamp >= ?",Time.zone.now - 1.day).limit(5)
         data = []
         names= []
         i=0

@@ -86,7 +86,7 @@ function loadEnergyPriceChart(data){
             },
             tooltip: true,
             tooltipOpts: {
-                content: "'%s' at %x is %y.2",
+                content: "'%s' at %x  dayhour is: %y.2",
                 shifts: {
                     x: -60,
                     y: 25
@@ -107,11 +107,11 @@ function totalProsumptionChart(){
     plot();
 
     function plot() {
-        var sin = [],
-            cos = [];
-        for (var i = 0; i < 12; i += 0.2) {
-            sin.push([i, Math.sin(i + offset)]);
-            cos.push([i, Math.cos(i + offset)]);
+        var consumption = [],
+            production = [];
+        for (var i = 0; i < 26; i += 1) {
+           consumption.push([i, Math.sin(i + offset)]);
+            production.push([i, Math.cos(i + offset)]);
         }
 
         var options = {
@@ -141,10 +141,10 @@ function totalProsumptionChart(){
         };
 
         var plotObj = $.plot($("#prosumption-line-chart"), [{
-                data: sin,
+                data: production,
                 label: "Production"
             }, {
-                data: cos,
+                data: consumption,
                 label: "Consumption"
             }],
             options);
