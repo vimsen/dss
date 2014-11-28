@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title><%= t('application.name') %></title>
+     <meta name="description" content="">
+     
+	 <%= javascript_include_tag "devise" %>
+     <%= stylesheet_link_tag "bootstrap.min" %>
+	 <%= stylesheet_link_tag "sb-admin-2" %>
+	 <%= stylesheet_link_tag "font-awesome" %>
+    
+     <%= csrf_meta_tags %>
+     <%= favicon_link_tag 'favicon.ico' %>
+     
+  </head>
+  
+  <body>
+      
+	<div class="container">
+	    <div class="row">
+		   <div class="span12 devise-logo-row">
+			  <%= image_tag("vimsen_logo_small.png",:class=>"devise-logo-img") %> <span class="devise-logo-text"> Virtual Microgrids for Smart Energy Networks - <%= t('application.name') %> </span>
+		   </div>
+	    </div>
+   
+   	    <div class="row">
+   	       <div class="col-md-4 col-md-offset-4">
+              <div class="login-panel panel panel-default">
+  				   <%= yield %>	
+          	  </div>        
+     		</div>
+		</div>
+	</div>
+    
+  </body>
+</html>

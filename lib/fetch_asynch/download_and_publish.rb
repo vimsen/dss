@@ -23,6 +23,7 @@ module FetchAsynch
         
         puts "Connecting to: #{uri}"
         
+        ActiveRecord::Base.connection.close
         result = JSON.parse(uri.open.read)
         datareceived(result, channel)
   
