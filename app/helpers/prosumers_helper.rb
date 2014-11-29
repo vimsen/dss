@@ -6,9 +6,12 @@ module ProsumersHelper
     prosumer
   end
   
-  def color(i)
+  def color(cluster)
+    if cluster.nil?
+      return '000000'
+    end
     numcolors = Cluster.count
     last = 0xFFFFFF
-    sprintf("%06X", last * (numcolors - i) / (numcolors))
+    sprintf("%06X", last * (numcolors - cluster.get_icon_index) / (numcolors))
   end
 end
