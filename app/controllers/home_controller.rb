@@ -47,17 +47,31 @@ class HomeController < ApplicationController
   
     def totalProsumption
       chartData = Array.new  
-      Time.zone = 'Athens'
-      print("Tiiiiime::")
-      print(Time.zone.now-1.day)
-        @totalConsumption=DataPoint.order(timestamp: :asc).where(interval:2).where("timestamp >= ?",Time.zone.now - 1.day).group(:timestamp).select("timestamp, sum(consumption)").map {|dp| {time: dp["timestamp"], sum: dp["sum"]} }
+     # Time.zone = 'Athens'
+   #   print("Tiiiiime::")
+   #   print(Time.zone.now-1.day)
+        @totalConsumption=DataPoint.order(timestamp: :asc).where(interval:2).where("timestamp >= ?",Time.zone.now.beginning_of_day - 1.day).group(:timestamp).select("timestamp, sum(consumption)").map {|dp| {time: dp["timestamp"], sum: dp["sum"]} }
+         totalconsumption = []
+         
+        @totalProduction=DataPoint.order(timestamp: :asc).where(interval:2).where("timestamp >= ?",Time.zone.now.beginning_of_day - 1.day).group(:timestamp).select("timestamp, sum(production)").map {|dp| {time: dp["timestamp"], sum: dp["sum"]} }
+         totalproduction =[]
       
         @totalConsumption.each do |consumption|
          consumption_data= Hash.new  
-         consumption_data[:label]= "total consumption"
+         consumption_data[:label]= "Total Consumption"
          consumption_data[:data]= consumption[:sum]
-         chartData.push(consumption_data)
+        totalconsumption.push(consumption_data)
         end
+        
+        @totalProduction.each do |production|
+         production_data= Hash.new  
+         production_data[:label]= "Total Production"
+         production_data[:data]= production[:sum]
+         totalproduction.push(production_data)
+        end
+        
+      chartData.push({"data"=>totalconsumption,"label"=>"Total Consumption"},{"data"=>totalproduction,"label"=>"Total Production"})
+      
       render :json => chartData
     end
   
