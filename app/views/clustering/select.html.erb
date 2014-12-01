@@ -2,11 +2,25 @@
 <p>Find me in app/views/clustering/select.html.erb</p>
 
 <%= form_tag "/clustering/confirm" do %>
-  <div class="field">
-    <%= label_tag :algorithm %><br>
-    <%= select_tag "algorithm", options_for_select(algorithms.collect {|p| [ p[:name], p[:string] ] }) %>
-    
-  <div class="actions">
-    <%= submit_tag %>
+  <%= label_tag :algorithm %> <br>
+  <%= select_tag "algorithm", options_for_select(algorithms.collect {|p| [ p[:name], p[:string] ] }) %><br>
+  <div id="k_parameter" >
+    <%= label_tag :kappa %>
+    <%= text_field_tag :kappa, 5 %>
   </div>
+  <div class="actions">
+    <%= submit_tag "Select" %>
+  </div>
+  <script>
+    $(function(){
+      $("#k_parameter").hide();
+      $("#algorithm").change(function() {
+        if ($(this).find('option:selected').val() == "location") {
+          $("#k_parameter").show();
+        } else {
+          $("#k_parameter").hide();
+        }
+      });
+    });
+  </script>
 <% end %>

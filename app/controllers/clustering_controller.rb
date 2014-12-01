@@ -7,7 +7,7 @@ class ClusteringController < ApplicationController
   end
 
   def confirm
-    @clusters = run_algorithm params[:algorithm]
+    @clusters = run_algorithm params[:algorithm], params[:kappa]
     puts @clusters
   end
 
@@ -49,7 +49,9 @@ class ClusteringController < ApplicationController
         {:string => :building_type,
           :name => 'By building type'},
         {:string => :connection_type,
-          :name => 'By connection type'}]
+          :name => 'By connection type'},
+        {:string => :location,
+          :name => 'By location'}]
     end
     
     def run_energy_type
@@ -103,7 +105,89 @@ class ClusteringController < ApplicationController
       return result
     end
     
-    def run_algorithm algo
+    def get_center(cluster)
+      sum_x = 0
+      sum_y = 0
+      count = 0
+      cluster.each do |c|
+        p = Prosumer.find(c)
+        unless p.location_x.nil? || p.location_y.nil?
+          sum_x += p.location_x  
+          sum_y += p.location_y
+          count += 1
+        end
+      end
+      { 
+        x: sum_x / count,
+        y: sum_y / count
+      }
+    end
+    
+    def distance(prosumer, cluster)
+      center = get_center(cluster)
+      puts center
+      (prosumer.location_x - center[:x]) ** 2 + (prosumer.location_y - center[:y]) ** 2
+    end
+    
+    
+    def findClosest(prosumer, allocation)
+      min = Float::MAX
+      closest = nil
+      allocation.each_with_index do |cluster, i|
+        d = distance(prosumer, cluster)
+        if d < min
+          min = d
+          closest = i
+        end
+      end
+      return closest
+    end
+    
+    
+    
+    def run_location(kappa)
+      if kappa >= Prosumer.count
+        # If kappa is large every prosumer gets its own cluster
+        allocation = Prosumer.all.map { |p| [ Prosumer.all.index(p) ] }
+      else
+        allocation = []
+        # Randomly generate initial clusters
+        
+        allocation = Prosumer.all.sample(5)
+        
+        1.upto kappa do |i|
+          allocation.push [ Prosumer.all.sample.id ]
+        end
+        
+        puts "Allocation: #{allocation}"
+        
+        new_allocation = []
+        
+        Prosumer.all.each do |p|
+          cl = findClosest p, allocation
+          # puts "Prosumer: #{p.id}, cluster: #{cl}, #{allocation[cl]}"
+          if new_allocation[cl].nil?
+            new_allocation[cl] = []
+          end
+          new_allocation[cl].push p.id
+          
+        end
+        
+        allocation = new_allocation
+        
+        puts "Allocation: #{allocation}"
+        
+        
+        
+      end
+      
+      
+      
+         
+      
+    end
+    
+    def run_algorithm(algo, param)
       case algo
       when "energy_type"
         return run_energy_type
@@ -111,6 +195,8 @@ class ClusteringController < ApplicationController
         return run_building_type
       when "connection_type"
         return run_connection_type
+      when "location"
+        return run_location param.to_i
       else
         return nil
       end
