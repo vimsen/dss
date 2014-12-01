@@ -5,7 +5,11 @@
         Prosumer locations
       </div>
       <div class="panel-body">
-        <%= render partial: "charts/map", :locals => {:prosumers => Prosumer.all} %>
+        <%= render partial: "charts/map", 
+          :locals => {
+            :prosumers => Prosumer.where("location_x IS NOT NULL and location_y IS NOT NULL") 
+          }
+        %>
       </div>
     </div>
   </div>
