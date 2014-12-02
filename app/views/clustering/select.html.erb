@@ -13,7 +13,9 @@
   </div>
   <script>
     $(function(){
-      $("#k_parameter").hide();
+      if ($("#algorithm").find('option:selected').val() != "location") {
+        $("#k_parameter").hide();
+      }
       $("#algorithm").change(function() {
         if ($(this).find('option:selected').val() == "location") {
           $("#k_parameter").show();
