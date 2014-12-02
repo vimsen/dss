@@ -105,85 +105,83 @@ class ClusteringController < ApplicationController
       return result
     end
     
-    def get_center(cluster)
+    def get_centroid(cluster)
       sum_x = 0
       sum_y = 0
       count = 0
-      cluster.each do |c|
-        p = Prosumer.find(c)
-        unless p.location_x.nil? || p.location_y.nil?
-          sum_x += p.location_x  
-          sum_y += p.location_y
-          count += 1
-        end
+      cluster.prosumers.each do |p|
+        raise "Found prosumer without location" if p.location_x.nil? || p.location_y.nil? 
+        sum_x += p.location_x  
+        sum_y += p.location_y
+        count += 1  
       end
       { 
         x: sum_x / count,
-        y: sum_y / count
+        y: sum_y / count,
+        cluster: cluster
       }
     end
     
-    def distance(prosumer, cluster)
-      center = get_center(cluster)
-      puts center
-      (prosumer.location_x - center[:x]) ** 2 + (prosumer.location_y - center[:y]) ** 2
+    def distance(prosumer, centroid)
+      (prosumer.location_x - centroid[:x]) ** 2 + (prosumer.location_y - centroid[:y]) ** 2
     end
     
     
-    def findClosest(prosumer, allocation)
+    def findClosest(prosumer, centroids)
       min = Float::MAX
       closest = nil
-      allocation.each_with_index do |cluster, i|
-        d = distance(prosumer, cluster)
+      centroids.each_with_index do |centroid, i|
+        d = distance(prosumer, centroid)
         if d < min
           min = d
-          closest = i
+          closest = centroid[:cluster]
         end
       end
-      return closest
+      closest
     end
     
-    
+    def different(centroids, old_centroids)
+      if centroids.count != old_centroids.count
+        return true
+      end
+      centroids.each_with_index do |c, i|
+        if c[:x] != old_centroids[i][:x] || c[:y] != old_centroids[i][:y]
+          return true
+        end 
+      end
+      false
+    end
     
     def run_location(kappa)
-      if kappa >= Prosumer.count
-        # If kappa is large every prosumer gets its own cluster
-        allocation = Prosumer.all.map { |p| [ Prosumer.all.index(p) ] }
-      else
-        allocation = []
-        # Randomly generate initial clusters
-        
-        allocation = Prosumer.all.sample(5)
-        
-        1.upto kappa do |i|
-          allocation.push [ Prosumer.all.sample.id ]
-        end
-        
-        puts "Allocation: #{allocation}"
-        
-        new_allocation = []
-        
-        Prosumer.all.each do |p|
-          cl = findClosest p, allocation
-          # puts "Prosumer: #{p.id}, cluster: #{cl}, #{allocation[cl]}"
-          if new_allocation[cl].nil?
-            new_allocation[cl] = []
-          end
-          new_allocation[cl].push p.id
-          
-        end
-        
-        allocation = new_allocation
-        
-        puts "Allocation: #{allocation}"
-        
-        
-        
+      
+      result = Prosumer.with_locations.sample(kappa).map.with_index do |p, i|
+        cl = Cluster.new(name: "Location based cluster #{i}")
+        cl.prosumers.push p
+        cl
       end
-      
-      
-      
+
+      centroids = result.map { |cl| get_centroid(cl) }
+      begin
+        old_centroids = Array.new(centroids)
+        
+        result.each { |cl| cl.prosumers.clear }
+        Prosumer.with_locations.each do |p|
+          findClosest(p, centroids).prosumers.push p
+        end
          
+        centroids = result.map { |cl| get_centroid(cl) }
+        puts "centroids: #{centroids}"
+      end while different(centroids, old_centroids)
+
+      without_location = Prosumer.all - Prosumer.with_locations
+      
+      if without_location.count > 0
+        cl = Cluster.new(name: "No location info")
+        cl.prosumers << without_location
+        result.push cl
+      end      
+      
+      return result
       
     end
     
