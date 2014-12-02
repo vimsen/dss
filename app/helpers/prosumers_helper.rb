@@ -15,6 +15,13 @@ module ProsumersHelper
     sprintf("%06X", last * (numcolors - cluster.get_icon_index) / (numcolors))
   end
   
+  def letter(cluster)
+    if cluster.nil?
+      return 'N'
+    end
+    cluster.get_icon_index
+  end
+  
   def prosumers_with_locations
     Prosumer.where("location_x IS NOT NULL and location_y IS NOT NULL") 
   end

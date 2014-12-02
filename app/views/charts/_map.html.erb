@@ -17,7 +17,7 @@
                                   lat: p.location_x, 
                                   lng: p.location_y,
                                   picture: {
-                                    url: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=P|#{color(p.cluster)}|000000",
+                                    url: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=#{letter(p.cluster)}|#{color(p.cluster)}|000000",
                                     width: 36,
                                     height: 36
                                   },
