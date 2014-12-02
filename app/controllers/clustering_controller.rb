@@ -140,18 +140,6 @@ class ClusteringController < ApplicationController
       closest
     end
     
-    def different(centroids, old_centroids)
-      if centroids.count != old_centroids.count
-        return true
-      end
-      centroids.each_with_index do |c, i|
-        if c[:x] != old_centroids[i][:x] || c[:y] != old_centroids[i][:y]
-          return true
-        end 
-      end
-      false
-    end
-    
     def run_location(kappa)
       
       result = Prosumer.with_locations.sample(kappa).map.with_index do |p, i|
@@ -171,7 +159,7 @@ class ClusteringController < ApplicationController
          
         centroids = result.map { |cl| get_centroid(cl) }
         puts "centroids: #{centroids}"
-      end while different(centroids, old_centroids)
+      end until centroids <=> old_centroids
 
       without_location = Prosumer.all - Prosumer.with_locations
       
