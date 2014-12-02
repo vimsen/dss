@@ -39,4 +39,9 @@ class Prosumer < ActiveRecord::Base
     
     return result      
   end
+  
+  def self.with_locations
+    Prosumer.where("location_x IS NOT NULL and location_y IS NOT NULL") 
+  end
+  
 end

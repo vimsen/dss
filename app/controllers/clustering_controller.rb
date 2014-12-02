@@ -7,7 +7,7 @@ class ClusteringController < ApplicationController
   end
 
   def confirm
-    @clusters = run_algorithm params[:algorithm]
+    @clusters = run_algorithm params[:algorithm], params[:kappa]
     puts @clusters
   end
 
@@ -49,7 +49,9 @@ class ClusteringController < ApplicationController
         {:string => :building_type,
           :name => 'By building type'},
         {:string => :connection_type,
-          :name => 'By connection type'}]
+          :name => 'By connection type'},
+        {:string => :location,
+          :name => 'By location'}]
     end
     
     def run_energy_type
@@ -103,7 +105,87 @@ class ClusteringController < ApplicationController
       return result
     end
     
-    def run_algorithm algo
+    def get_centroid(cluster)
+      sum_x = 0
+      sum_y = 0
+      count = 0
+      cluster.prosumers.each do |p|
+        raise "Found prosumer without location" if p.location_x.nil? || p.location_y.nil? 
+        sum_x += p.location_x  
+        sum_y += p.location_y
+        count += 1  
+      end
+      { 
+        x: sum_x / count,
+        y: sum_y / count,
+        cluster: cluster
+      }
+    end
+    
+    def distance(prosumer, centroid)
+      (prosumer.location_x - centroid[:x]) ** 2 + (prosumer.location_y - centroid[:y]) ** 2
+    end
+    
+    
+    def findClosest(prosumer, centroids)
+      min = Float::MAX
+      closest = nil
+      centroids.each_with_index do |centroid, i|
+        d = distance(prosumer, centroid)
+        if d < min
+          min = d
+          closest = centroid[:cluster]
+        end
+      end
+      closest
+    end
+    
+    def different(centroids, old_centroids)
+      if centroids.count != old_centroids.count
+        return true
+      end
+      centroids.each_with_index do |c, i|
+        if c[:x] != old_centroids[i][:x] || c[:y] != old_centroids[i][:y]
+          return true
+        end 
+      end
+      false
+    end
+    
+    def run_location(kappa)
+      
+      result = Prosumer.with_locations.sample(kappa).map.with_index do |p, i|
+        cl = Cluster.new(name: "Location based cluster #{i}")
+        cl.prosumers.push p
+        cl
+      end
+
+      centroids = result.map { |cl| get_centroid(cl) }
+      begin
+        old_centroids = Array.new(centroids)
+        
+        result.each { |cl| cl.prosumers.clear }
+        Prosumer.with_locations.each do |p|
+          findClosest(p, centroids).prosumers.push p
+        end
+         
+        centroids = result.map { |cl| get_centroid(cl) }
+        puts "centroids: #{centroids}"
+      end while different(centroids, old_centroids)
+
+      without_location = Prosumer.all - Prosumer.with_locations
+      
+      if without_location.count > 0
+        cl = Cluster.new(name: "No location info")
+        cl.prosumers << without_location
+        result.push cl
+      end      
+      
+      return result
+      
+    end
+    
+    def run_algorithm(algo, param)
       case algo
       when "energy_type"
         return run_energy_type
@@ -111,6 +193,8 @@ class ClusteringController < ApplicationController
         return run_building_type
       when "connection_type"
         return run_connection_type
+      when "location"
+        return run_location param.to_i
       else
         return nil
       end

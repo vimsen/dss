@@ -5,7 +5,7 @@
     
   <% if cl.prosumers.size > 0 %>  
     Name: <%= cl.name %>, 
-    Prosumers: <%= cl.prosumers.map {|p| p.name}.join(",") %><br/>
+    Prosumers: <%= cl.prosumers.map {|p| p.name}.sort.join(",") %><br/>
   <% end %>
 <% end%>
 
