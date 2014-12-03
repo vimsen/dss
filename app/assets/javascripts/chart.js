@@ -12,7 +12,7 @@ var plotHelper = (function() {
         });
         dataset.push({
           label : index,
-          data : single /*,
+          data : single.sort() /*,
            color : "#00FF00"*/
         });
       });
