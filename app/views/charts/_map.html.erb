@@ -1,5 +1,5 @@
 <div style='width: 100%;'>
-  <div id="map" style='width: 100%; height: 400px;'></div>
+  <div id="map" style='width: 100%; height: <%= defined?(height) ? height : "400px" -%>;'></div>
 </div>
 <script>
   $(function() {
@@ -24,6 +24,9 @@
      
       handler.bounds.extendWith(markers);
       handler.fitMapToBounds();
+      <% if prosumers.count == 1 %>
+          handler.getMap().setZoom(9);
+      <% end %>
     });
   });
 
