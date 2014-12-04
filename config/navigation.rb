@@ -1,3 +1,5 @@
+require 'hier_menu/hier_menu'
+
 # -*- coding: utf-8 -*-
 # Configures your navigation
 SimpleNavigation::Configuration.run do |navigation|
@@ -64,9 +66,10 @@ SimpleNavigation::Configuration.run do |navigation|
     primary.item :home, 'Home', '/', :icon => ['fa fa-home fa-fw'] # class: 'fa fa-home fa-fw'
     primary.item :prosumers, 'Prosumers', prosumers_path, :icon => ['fa fa-plug fa-fw'], :split => false do |sub_nav|
       sub_nav.item :prosumers_sub, "Prosumer list", prosumers_path
-      Prosumer.all.each do |prosumer|
-        sub_nav.item "prosumer#{prosumer.id}", prosumer.name, prosumer_url(prosumer)  
-      end
+      HierMenu::HierMenu.new sub_nav, Prosumer.all.order(name: :asc), "name", Proc.new { |p| prosumer_url(p) }
+      # Prosumer.all.order(name: :asc).each do |prosumer|
+        # sub_nav.item "prosumer#{prosumer.id}", prosumer.name, prosumer_url(prosumer)  
+      # end
        sub_nav.dom_class = 'nav nav-second-level collapse'
     end
     primary.item :clusters, 'Clusters', clusters_path, :icon => ['fa fa-sitemap fa-fw'], :split => false do |sub_nav|
