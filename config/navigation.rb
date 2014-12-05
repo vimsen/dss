@@ -66,19 +66,17 @@ SimpleNavigation::Configuration.run do |navigation|
     primary.item :home, 'Home', '/', :icon => ['fa fa-home fa-fw'] # class: 'fa fa-home fa-fw'
     primary.item :prosumers, 'Prosumers', prosumers_path, :icon => ['fa fa-plug fa-fw'], :split => false do |sub_nav|
       sub_nav.item :prosumers_sub, "Prosumer list", prosumers_path
-      HierMenu.make_menu sub_nav, Prosumer.all.order(name: :asc), "name", Proc.new { |p| prosumer_url(p) }
-      # Prosumer.all.order(name: :asc).each do |prosumer|
-        # sub_nav.item "prosumer#{prosumer.id}", prosumer.name, prosumer_url(prosumer)  
-      # end
-       sub_nav.dom_class = 'nav nav-second-level collapse'
+      HierMenu::HierMenu.new("prosumers_hier", 
+                             Proc.new { |p| prosumer_url(p) }
+                            ).fill_node sub_nav, Prosumer.all.order(name: :asc) 
+      sub_nav.dom_class = 'nav nav-second-level collapse'
     end
     primary.item :clusters, 'Clusters', clusters_path, :icon => ['fa fa-sitemap fa-fw'], :split => false do |sub_nav|
     # primary.item :clusters, 'Clusters' do |sub_nav|
       sub_nav.item :clusters_sub, "Cluster list", clusters_path
-      Cluster.all.each do |cluster|
-        sub_nav.item "cluster#{cluster.id}", cluster.name, cluster_url(cluster)  
-      end
       sub_nav.item :auto_cluster, "Automatic clustering", "/clustering/select"
+      HierMenu::HierMenu.new("clusters_hier", Proc.new { |p| cluster_url(p) }, nil, 4
+                            ).fill_node sub_nav, Cluster.all.order(name: :asc) 
       sub_nav.dom_class = 'nav nav-second-level collapse'
     end
     primary.item :data_points, 'Data points', data_points_path, :icon => ['fa fa-bar-chart-o fa-fw']
