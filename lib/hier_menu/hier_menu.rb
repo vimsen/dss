@@ -21,7 +21,9 @@ module HierMenu
                         @url_proc.call(item)
         end
       else
-        collection.each_slice(collection.count / (@max_width - 1)) do |slice|
+        sz = slice_size collection.count
+        puts "slice size: #{sz}, #{level}, #{collection.count}"
+        collection.each_slice(sz) do |slice|
           @item_id += 1
           if slice.count == 1
             nav_item.item "#{@menu_id}_#{@item_id}", 
@@ -44,7 +46,17 @@ module HierMenu
     
     def to_word(number)
       ["zero", "first", "second", "third", "fourth", "fifth", "sixth"][number]
-    end    
+    end   
+    
+    def slice_size(num_items)
+      result = 1
+      loop do
+        if (result * @max_width >= num_items)
+          return result
+        end
+        result *= @max_width
+      end
+    end 
     
   end
 
