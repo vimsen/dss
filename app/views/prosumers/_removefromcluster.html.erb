@@ -1,9 +1,8 @@
-<tr> 
-  <td><%= prosumer.name %></td>
-  <td>
+<li>
     <%= form_for prosumer, :url => {:controller => "prosumers",  :id => prosumer.id, :action => "removefromcluster"} do |f| %>
-      <%= f.submit "Remove", data: { confirm: 'Are you sure?' } %>
+      <%= button_tag(type: 'submit', class: "btn btn-xs btn-danger", data: { confirm: 'Are you sure?' }) do %>
+       <i class="fa fa-remove fa-fw fa-dannger"></i><%= prosumer.name %>
+      <% end %>
+      <%#= f.submit '<i class="icon-remove-sign"></i>Remove', data: { confirm: 'Are you sure?' } %>
     <% end %>
-  </td>
-  
-</tr>
+</li>

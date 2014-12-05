@@ -1,25 +1,69 @@
-<p>
-  <strong>Name:</strong>
-  <%= @cluster.name %>
-</p>
+<div class="row">
+  <div class="col-lg-12">
+    <h3 class="page-header"><small>Cluster:</small> <%= @cluster.name -%>   
+      <small> 
+        | <%= link_to 'Edit', edit_cluster_path(@cluster),class: 'btn btn-info btn-xs' %> 
+        | <%= link_to 'All clusters', clusters_path ,class: 'btn btn-warning btn-xs'%>
+      </small>
+    </h3>
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
 
-<p>
-  <strong>Description:</strong>
-  <%= @cluster.description %>
-</p>
-
-<strong>Cluster members:</strong>
-
-<table>
-  <tbody>
-  <%= render partial: "prosumers/removefromcluster", collection: @cluster.prosumers, as: :prosumer %>
-  </tbody>
-</table>
-<br/>
-<%= render partial: "addprosumer"%>
-<br/>
-<%= render partial: "charts/chart", :locals => {:stream => "/stream/#{@cluster.id}/clusterfeed", :provider => @cluster} %>
-<br/>
-
-<td><%= link_to 'Edit',edit_cluster_path(@cluster),class: 'btn btn-info btn-xs' %></td> |
-<td><%= link_to 'Back', clusters_path ,class: 'btn btn-warning btn-xs'%> </td>
+<div class="row equal">
+  <div class="col-lg-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Cluster info
+      </div>
+      <div class="panel-body">
+        <dl class="dl-horizontal">
+          <dt>Name:</dt>
+          <dd><%= @cluster.name -%></dd>
+          
+          <dt>Description:</dt>
+          <dd><%= @cluster.description -%></dd>
+          
+          <dt>Cluster members:</dt>
+          <dd>
+            <ul class="nav navbar-top-links">
+            <%= render partial: "prosumers/removefromcluster", collection: @cluster.prosumers, as: :prosumer %>
+            </ul>
+          </dd>
+          <dt>Add prosumer</dt>
+          <dd><%= render partial: "addprosumer" -%></dd>          
+        </dl>
+      </div>
+    </div>
+    
+    
+  </div>
+  <div class="col-lg-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Prosumer location
+      </div>
+      <div class="panel-body">
+        <%= render partial: "charts/map", 
+          :locals => {
+            :prosumers => Prosumer.with_locations.where(cluster: @cluster),
+            :height => "230px" 
+          }
+        %>
+      </div>
+    </div>
+          
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Prosumption Data
+      </div>
+      <div class="panel-body">
+        <%= render partial: "charts/chart", :locals => {:stream => "/stream/#{@cluster.id}/clusterfeed", :provider => @cluster} %>
+      </div>
+    </div>
+  </div>
+</div>

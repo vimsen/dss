@@ -38,3 +38,15 @@
    margin-top:5px;
    font-size:18px;
 }
+
+@media (min-width: 992px) {
+  .equal > .col-md-6 > .panel > .panel-body {
+    min-height: 270px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .equal > .col-lg-6 > .panel > .panel-body {
+    min-height: 270px;
+  }
+}
