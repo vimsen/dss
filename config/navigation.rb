@@ -66,6 +66,7 @@ SimpleNavigation::Configuration.run do |navigation|
     primary.item :home, 'Home', '/', :icon => ['fa fa-home fa-fw'] # class: 'fa fa-home fa-fw'
     primary.item :prosumers, 'Prosumers', prosumers_path, :icon => ['fa fa-plug fa-fw'], :split => false do |sub_nav|
       sub_nav.item :prosumers_sub, "Prosumer list", prosumers_path
+      sub_nav.item :prosumer_new, "New Prosumer", new_prosumer_path
       HierMenu::HierMenu.new("prosumers_hier", 
                              Proc.new { |p| prosumer_url(p) }
                             ).fill_node sub_nav, Prosumer.all.order(name: :asc) 
