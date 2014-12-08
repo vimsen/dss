@@ -2,13 +2,11 @@ class ClusteringController < ApplicationController
   
   authorize_resource :class => false
 
-  
   def select
   end
 
   def confirm
     @clusters = run_algorithm params[:algorithm], params[:kappa]
-    puts @clusters
   end
 
   def save
@@ -56,10 +54,12 @@ class ClusteringController < ApplicationController
     
     def run_energy_type
       result = {}
-      cl = Cluster.new(name: "No renewable info")
+      cl = Cluster.new name: "No ren.",
+                       description: "No info about renewable energy."
       result[:none] = cl
       EnergyType.all.each do |et|
-        cl = Cluster.new(name: et.name)
+        cl = Cluster.new name: "CL: #{et.name}",
+                         description: "Prosumers with primarily #{et.name} energy production" 
         result[et.id] = cl
       end
       
@@ -78,12 +78,15 @@ class ClusteringController < ApplicationController
     
     def run_connection_type
       result = []
-      cl = Cluster.new(name: "No connection type") 
+      cl = Cluster.new name: "No con. info.", 
+                       description: "No connection info." 
       cl.prosumers << Prosumer.where(connection_type: nil)
       result.push(cl) 
             
       ConnectionType.all.each do |bt|
-        cl = Cluster.new(name: "with #{bt.name}")
+        cl = Cluster.new name: "CL: #{bt.name}", 
+                         description: "Prosumers with #{bt.name} connection."
+          
         cl.prosumers << Prosumer.where(connection_type: bt)
         result.push(cl)
       end      
@@ -92,12 +95,15 @@ class ClusteringController < ApplicationController
     
     def run_building_type
       result = []
-      cl = Cluster.new(name: "No buiding type") 
+      cl = Cluster.new name: "No buil. info",
+                       description: "No building type info."
+                       
       cl.prosumers << Prosumer.where(building_type: nil)
       result.push(cl) 
             
       BuildingType.all.each do |bt|
-        cl = Cluster.new(name: "with #{bt.name}")
+        cl = Cluster.new name: "CL: #{bt.name}",
+                         description: "Prosumers with #{bt.name} building type."
         cl.prosumers << Prosumer.where(building_type: bt)
  
         result.push(cl)
@@ -143,7 +149,8 @@ class ClusteringController < ApplicationController
     def run_location(kappa)
       
       result = Prosumer.with_locations.sample(kappa).map.with_index do |p, i|
-        cl = Cluster.new(name: "Location based cluster #{i}")
+        cl = Cluster.new name: "Loc: #{i}", 
+                         description: "Location based cluster #{i}."
         cl.prosumers.push p
         cl
       end
@@ -164,7 +171,8 @@ class ClusteringController < ApplicationController
       without_location = Prosumer.all - Prosumer.with_locations
       
       if without_location.count > 0
-        cl = Cluster.new(name: "No location info")
+        cl = Cluster.new name: "No loc.", 
+                         description: "Prosumers with no Location info available."
         cl.prosumers << without_location
         result.push cl
       end      

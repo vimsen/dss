@@ -7,7 +7,7 @@
     Name: <%= cl.name %>, 
     Prosumers: <%= cl.prosumers.map {|p| p.name}.sort.join(",") %><br/>
   <% end %>
-<% end%>
+<% end %>
 
 <%= form_tag "/clustering/save" do %>
   <% @clusters.each do |cl| %>
