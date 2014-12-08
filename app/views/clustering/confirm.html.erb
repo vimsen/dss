@@ -14,7 +14,7 @@
       <div class="panel-body">
 
         <%= form_tag "/clustering/save", class: "form-inline" do %>
-          <% @clusters.each do |cl| %>
+          <% @clusters.each_with_index do |cl, i| %>
             <% if cl.prosumers.size > 0 %>
               <div class="form-group">
                 <div class="input-group">
@@ -29,11 +29,11 @@
                   <%= label_tag "Prosumers:", nil, class: "control-label" %>
                   <ul class="list-inline connectedSortable" >
                     <% cl.prosumers.each do |p| %>
-                      <li><%= p.name -%></li>
+                      <li><%= p.name -%><div style="visibility: hidden;"><%= p.id -%></div></li>
                     <% end %>
                   </ul>
                 </div>                  
-                <%= hidden_field_tag "clusterprosumers[]", cl.prosumers.map {|p| p.id}.join(",")%>
+                <%= hidden_field_tag "clusterprosumers[]", cl.prosumers.map {|p| p.id}.join(","), id: "hidden_#{i}" %>
               </div>    
             <% end %>
             
@@ -51,6 +51,21 @@
 </div>
 <script>
 $(function() {
+    
+    var sortList = function (list) {
+      $(list).children('li').sort(function (a,b) {
+        return $(a).text().toUpperCase().localeCompare($(b).text().toUpperCase());
+      }).appendTo($(list));
+    };
+    
+    var getIds = function(list) {
+      var a = [];
+      $(list).children('li').children('div').each(function(index, item) {
+        a[index] = $(item).text();
+      });
+      return a.join(',');
+    }
+      
     var itemclone, idx;
     $(".connectedSortable").sortable({
         start: function(event, ui) {
@@ -80,6 +95,11 @@ $(function() {
 
             //Once Finish Sort, remove Clone Li from current list
             $(this).find("li:eq(" + idx + ")").remove();
+            $('.connectedSortable').each(function(index, listItem) {
+              sortList(listItem);
+              $("#hidden_"+index).val(getIds(listItem));
+            });
+            
         },
         connectWith: ".connectedSortable"
 
