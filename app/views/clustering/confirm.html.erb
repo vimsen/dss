@@ -1,23 +1,89 @@
-<h1>Clustering#confirm</h1>
-<p>Find me in app/views/clustering/confirm.html.erb</p>
-
-<% @clusters.each do |cl| %>
-    
-  <% if cl.prosumers.size > 0 %>  
-    Name: <%= cl.name %>, 
-    Prosumers: <%= cl.prosumers.map {|p| p.name}.sort.join(",") %><br/>
-  <% end %>
-<% end %>
-
-<%= form_tag "/clustering/save" do %>
-  <% @clusters.each do |cl| %>
-    <% if cl.prosumers.size > 0 %>
-      <%= hidden_field_tag "clusterprosumers[]", cl.prosumers.map {|p| p.id}.join(",")%>
-      <%= hidden_field_tag "clusternames[]", cl.name %>
-    <% end %>
-  <% end %>
-    
-  <div class="actions">
-    <%= submit_tag %>
+<div class="row">
+  <div class="col-lg-12">
+    <h3 class="page-header"><small>Automatic Clustering:</small> Confirm clustering</h3>
   </div>
-<% end %>
+  <!-- /.col-lg-12 -->
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        confitm clustering
+      </div>
+      <div class="panel-body">
+
+        <%= form_tag "/clustering/save", class: "form-inline" do %>
+          <% @clusters.each do |cl| %>
+            <% if cl.prosumers.size > 0 %>
+              <div class="form-group">
+                <div class="input-group">
+                  <%= label_tag "Name:", nil, class: "control-label" %>
+                  <%= text_field_tag "clusternames[]", cl.name, {class: "form-control"} %>
+                </div>
+                <div class="input-group"> 
+                  <%= label_tag "Description:", nil, class: "control-label" %>
+                  <%= text_field_tag "clusterdescriptions[]", cl.description, {class: "form-control"} %>
+                 </div>
+                <div class="input-group">
+                  <%= label_tag "Prosumers:", nil, class: "control-label" %>
+                  <ul class="list-inline connectedSortable" >
+                    <% cl.prosumers.each do |p| %>
+                      <li><%= p.name -%></li>
+                    <% end %>
+                  </ul>
+                </div>                  
+                <%= hidden_field_tag "clusterprosumers[]", cl.prosumers.map {|p| p.id}.join(",")%>
+              </div>    
+            <% end %>
+            
+          <% end %>
+            
+          <div class="actions">
+            <%= submit_tag %>
+          </div>
+        <% end %>
+
+      </div>
+    </div>
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<script>
+$(function() {
+    var itemclone, idx;
+    $(".connectedSortable").sortable({
+        start: function(event, ui) {
+
+            //create clone of current seletected li
+            itemclone = $(ui.item).clone();
+            //get current li index position in list
+            idx = $(ui.item).index();
+            //If first li then prepend clone on first position 
+            if (idx === 0) {
+                itemclone.css('opacity', '0.5');
+                $(this).prepend(itemclone);
+            }
+            //Else Append Clone on its original position
+            else {
+                itemclone.css('opacity', '0.7');
+                $(this).find("li:eq(" + (idx - 1) + ")").after(itemclone);
+            }
+
+        },
+        change: function(event, ui) {
+            //alert('change');
+            //While Change event set clone position as relative
+            //$(this).find("li:eq(" + idx + ")").css('position', 'relative');
+        },
+        stop: function() {
+
+            //Once Finish Sort, remove Clone Li from current list
+            $(this).find("li:eq(" + idx + ")").remove();
+        },
+        connectWith: ".connectedSortable"
+
+    }).disableSelection();
+});
+
+</script>
