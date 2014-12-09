@@ -13,16 +13,18 @@ module Clustering
   def self.run_algorithm(algo, param)
     case algo
     when "energy_type"
-      return run_energy_type
+      result = run_energy_type
     when "building_type"
-      return run_building_type
+      result = run_building_type
     when "connection_type"
-      return run_connection_type
+      result = run_connection_type
     when "location"
-      return run_location param.to_i
+      result = run_location param.to_i
     else
-    return nil
+      return nil
     end
+     
+    result.select { |cl| cl.prosumers.size > 0 }
   end
 
   private
