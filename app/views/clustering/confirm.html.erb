@@ -15,26 +15,36 @@
 
         <%= form_tag "/clustering/save", class: "form-inline" do %>
           <% @clusters.each_with_index do |cl, i| %>
+            <% if i > 0 -%><hr/><% end -%>
             <% if cl.prosumers.size > 0 %>
-              <div class="form-group">
-                <div class="input-group">
-                  <%= label_tag "Name:", nil, class: "control-label" %>
-                  <%= text_field_tag "clusternames[]", cl.name, {class: "form-control"} %>
-                </div>
-                <div class="input-group"> 
-                  <%= label_tag "Description:", nil, class: "control-label" %>
-                  <%= text_field_tag "clusterdescriptions[]", cl.description, {class: "form-control"} %>
-                 </div>
-                <div class="input-group">
-                  <%= label_tag "Prosumers:", nil, class: "control-label" %>
-                  <ul class="list-inline connectedSortable", id: "<%= "prosummer_list_#{i}" -%>" >
-                    <% cl.prosumers.each do |p| %>
-                      <li><%= p.name -%><div style="visibility: hidden;"><%= p.id -%></div></li>
-                    <% end %>
-                  </ul>
-                </div>                  
-                <%= hidden_field_tag "clusterprosumers[]", cl.prosumers.map {|p| p.id}.join(","), id: "hidden_#{i}" %>
-              </div>    
+              <div class="row">
+                <div class="col-md-8">
+                  <div class="form-group">
+                    <div class="input-group">
+                      <%= label_tag "Name:", nil, class: "control-label" %>
+                      <%= text_field_tag "clusternames[]", cl.name, {class: "form-control"} %>
+                    </div>
+                    <div class="input-group"> 
+                      <%= label_tag "Description:", nil, class: "control-label" %>
+                      <%= text_field_tag "clusterdescriptions[]", cl.description, {class: "form-control"} %>
+                     </div>
+                    <div class="input-group">
+                      <%= label_tag "Prosumers:", nil, class: "control-label" %>
+                      <ul class="list-inline connectedSortable", id: "<%= "prosummer_list_#{i}" -%>" >
+                        <% cl.prosumers.each do |p| %>
+                          <li><%= p.name -%><div style="visibility: hidden;"><%= p.id -%></div></li>
+                        <% end %>
+                      </ul>
+                      
+                    </div>
+                    
+                    <%= hidden_field_tag "clusterprosumers[]", cl.prosumers.map {|p| p.id}.join(","), id: "hidden_#{i}" %>
+                  </div>
+                </div>  
+                <div class="col-md-4">
+                  <div id="chart_#{i}" style="height: 150px;width:200px;background-color: blue" ></div>
+                </div>  
+              </div>
             <% end %>
             
           <% end %>
@@ -51,6 +61,30 @@
 </div>
 <script>
 $(function() {
+  
+    var energy_production = <%= Prosumer.all.map { |p| {id: p.id, dps: p.data_points.where(interval: 3, timestamp: (Time.now - 7.days)..Time.now).map { |dp| {time: dp.timestamp.to_i, value: dp.consumption} } } }.to_json.html_safe -%>;
+    
+    var addArrays = function(arr1, arr2) {
+      var result = arr1;
+
+      $.each(arr2, function(index, value) {
+        result[value.time] += value.value;
+      });
+      return result;
+    };
+    
+    var rePlot = function(clusterOf) {
+      var data_temp = [];
+      $.each(energy_production, function(index, value) {
+        var cl = clusterOf[value.id];
+        if (data_temp[cl] == null) {
+          data_temp[cl] = value.dps;
+        } else {
+          data_temp[cl] = addArrays(data_temp[cl], value.dps)
+        }
+      });
+      
+    }
     
     var sortList = function (list) {
       $(list).children('li').sort(function (a,b) {
@@ -63,14 +97,20 @@ $(function() {
       $(list).children('li').children('div').each(function(index, item) {
         a[index] = $(item).text();
       });
-      return a.join(',');
+      return a;
     }
     
     var refreshLists = function() {
+      var clusterOf = [];
       $('.connectedSortable').each(function(index, listItem) {
         sortList(listItem);
-        $("#hidden_"+index).val(getIds(listItem));
+        clusterIds = getIds(listItem);
+        $.each(clusterIds, function(idx,val) {
+          clusterOf[val] = index;
+        });
+        $("#hidden_"+index).val(clusterIds.join(','));
       });
+      rePlot(clusterOf);
     };
       
     var itemclone, idx;
