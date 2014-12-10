@@ -100,17 +100,17 @@ $(function() {
       var aggr = [];
       var thresh = [];
       if (arr != null) {
-        $.each(arr, function(index, value){
+        $.each(arr, function(index, value) {
           aggr.push([index * 1000.0, value]);
           thresh.push([index * 1000.0, threshold]);
         });
       }
       return [{
         label: "Consumption",
-        data: aggr
+        data: aggr.sort()
       },{
         label: "Threshold",
-        data: thresh
+        data: thresh.sort()
       }];
     };
     
