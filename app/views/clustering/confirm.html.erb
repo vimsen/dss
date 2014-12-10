@@ -42,7 +42,7 @@
                   </div>
                 </div>  
                 <div class="col-md-4">
-                  <div id="chart_#{i}" style="height: 150px;width:200px;background-color: blue" ></div>
+                  <div id="<%= "chart_#{i}" -%>" style="height: 150px;width:200px" ></div>
                 </div>  
               </div>
             <% end %>
@@ -64,27 +64,81 @@ $(function() {
   
     var energy_production = <%= Prosumer.all.map { |p| {id: p.id, dps: p.data_points.where(interval: 3, timestamp: (Time.now - 7.days)..Time.now).map { |dp| {time: dp.timestamp.to_i, value: dp.consumption} } } }.to_json.html_safe -%>;
     
-    var addArrays = function(arr1, arr2) {
-      var result = arr1;
-
+    var sumArrays = function(arr1, arr2) {
+      result = {};
+      if (arr1 == null) {
+        $.each(arr2, function(index, value) {
+          result[value.time] = 0;
+        });  
+      } else {
+        result = arr1;  
+      }
       $.each(arr2, function(index, value) {
-        result[value.time] += value.value;
+        if (typeof result[value.time] == 'undefined') {
+          result[value.time] = value.value;
+        } else {
+          result[value.time] += value.value;
+        }
       });
+      
+      return result
+    };
+    
+    var format = function(arr) {
+      result = [];
+      if (arr != null) {
+        $.each(arr, function(index, value){
+          result.push([index * 1000.0, value]);
+        });
+      }
       return result;
     };
     
     var rePlot = function(clusterOf) {
-      var data_temp = [];
+      var data_table = [];
       $.each(energy_production, function(index, value) {
         var cl = clusterOf[value.id];
-        if (data_temp[cl] == null) {
-          data_temp[cl] = value.dps;
-        } else {
-          data_temp[cl] = addArrays(data_temp[cl], value.dps)
-        }
+        data_table[cl] = sumArrays(data_table[cl], value.dps);
       });
       
-    }
+      $.each(data_table, function(index, value){
+        plot_data = [{
+          label: "Production",
+          data: format(value)
+        }];
+        
+        $.plot($("#chart_" + index), plot_data, {
+          series: {
+            lines: {
+              show: true
+            },
+            points: {
+              show: true
+            }
+          },
+          grid: { hoverable: true, clickable: true },
+          tooltip: true,
+          tooltipOpts: {
+              content: "'%s'<br/>%x<br/>%y.2",
+              shifts: {
+                  x: -60,
+                  y: 25
+              }
+          },
+          xaxis : {
+            mode : "time",
+            timeformat : "%y/%m/%d<br/>%h:%M:%S",
+            timezone : "browser",
+            ticks : 3 /*,
+             timeformat : "%y/%m/%d-%h:%M:%S",
+             tickSize : [12, "hour"]*/
+          },
+          yaxis : {
+            tickDecimals: 2
+          }
+        });
+      });
+    };
     
     var sortList = function (list) {
       $(list).children('li').sort(function (a,b) {
