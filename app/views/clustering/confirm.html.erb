@@ -16,41 +16,51 @@
         <%= form_tag "/clustering/save", class: "form-inline" do %>
           <% @clusters.each_with_index do |cl, i| %>
             <% if i > 0 -%><hr/><% end -%>
-            <% if cl.prosumers.size > 0 %>
-              <div class="row">
-                <div class="col-md-8">
-                  <div class="form-group">
-                    <div class="input-group">
-                      <%= label_tag "Name:", nil, class: "control-label" %>
-                      <%= text_field_tag "clusternames[]", cl.name, {class: "form-control"} %>
-                    </div>
-                    <div class="input-group"> 
-                      <%= label_tag "Description:", nil, class: "control-label" %>
-                      <%= text_field_tag "clusterdescriptions[]", cl.description, {class: "form-control"} %>
-                     </div>
-                    <div class="input-group">
-                      <%= label_tag "Prosumers:", nil, class: "control-label" %>
-                      <ul class="list-inline connectedSortable", id: "<%= "prosummer_list_#{i}" -%>" >
-                        <% cl.prosumers.each do |p| %>
-                          <li><%= p.name -%><div style="visibility: hidden;"><%= p.id -%></div></li>
-                        <% end %>
-                      </ul>
-                      
-                    </div>
-                    
-                    <%= hidden_field_tag "clusterprosumers[]", cl.prosumers.map {|p| p.id}.join(","), id: "hidden_#{i}" %>
+            <div class="row">
+              <div class="col-md-8">
+                <div class="form-group">
+                  <div class="input-group">
+                    <%= label_tag "Name:", nil, class: "control-label" %>
+                    <%= text_field_tag "clusternames[]", cl.name, {class: "form-control"} %>
                   </div>
-                </div>  
-                <div class="col-md-4">
-                  <div id="<%= "chart_#{i}" -%>" style="height: 150px;width:200px" ></div>
-                </div>  
-              </div>
-            <% end %>
-            
+                  <div class="input-group"> 
+                    <%= label_tag "Description:", nil, class: "control-label" %>
+                    <%= text_field_tag "clusterdescriptions[]", cl.description, {class: "form-control"} %>
+                   </div>
+                  <div class="input-group">
+                    <%= label_tag "Prosumers:", nil, class: "control-label" %>
+                    <ul class="list-inline connectedSortable", id: "<%= "prosummer_list_#{i}" -%>" >
+                      <% cl.prosumers.each do |p| %>
+                        <li><%= p.name -%><div style="visibility: hidden;"><%= p.id -%></div></li>
+                      <% end %>
+                    </ul>
+                    
+                  </div>
+                  
+                  <%= hidden_field_tag "clusterprosumers[]", cl.prosumers.map {|p| p.id}.join(","), id: "hidden_#{i}" %>
+                </div>
+              </div>  
+              <div class="col-md-4">
+                <div id="<%= "chart_#{i}" -%>" style="height: 150px;width:200px" ></div>
+              </div>  
+            </div>
           <% end %>
             
-          <div class="actions">
-            <%= submit_tag %>
+          <div class="row ">
+            <div class="col-md-8">
+              <div class="actions">
+                 <%= submit_tag "Confirm", class: "btn btn-primary" %>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="input-group">
+                <%= label_tag "Threshold:", nil, class: "control-label" %>
+                <input value="200.0" class="form-control" type="text" id="threshold_input"/>
+              </div>
+              <div class="actions">
+                <button type="button" id="set_threshold" class="btn btn-info btn-xs">Set Threshold</button>
+              </div>
+            </div>
           </div>
         <% end %>
 
@@ -62,7 +72,9 @@
 <script>
 $(function() {
   
-    var energy_production = <%= Prosumer.all.map { |p| {id: p.id, dps: p.data_points.where(interval: 3, timestamp: (Time.now - 7.days)..Time.now).map { |dp| {time: dp.timestamp.to_i, value: dp.consumption} } } }.to_json.html_safe -%>;
+    var energy_consumption = <%= Prosumer.all.map { |p| {id: p.id, dps: p.data_points.where(interval: 3, timestamp: (Time.now - 7.days)..Time.now).map { |dp| {time: dp.timestamp.to_i, value: dp.consumption} } } }.to_json.html_safe -%>;
+    
+    var threshold = $("#threshold_input").val();
     
     var sumArrays = function(arr1, arr2) {
       result = {};
@@ -85,29 +97,37 @@ $(function() {
     };
     
     var format = function(arr) {
-      result = [];
+      var aggr = [];
+      var thresh = [];
       if (arr != null) {
         $.each(arr, function(index, value){
-          result.push([index * 1000.0, value]);
+          aggr.push([index * 1000.0, value]);
+          thresh.push([index * 1000.0, threshold]);
         });
       }
-      return result;
+      return [{
+        label: "Consumption",
+        data: aggr
+      },{
+        label: "Threshold",
+        data: thresh
+      }];
     };
     
     var rePlot = function(clusterOf) {
       var data_table = [];
-      $.each(energy_production, function(index, value) {
+      $.each(energy_consumption, function(index, value) {
         var cl = clusterOf[value.id];
         data_table[cl] = sumArrays(data_table[cl], value.dps);
       });
       
       $.each(data_table, function(index, value){
         plot_data = [{
-          label: "Production",
-          data: format(value)
+          label: "consumption",
+          data: format()
         }];
         
-        $.plot($("#chart_" + index), plot_data, {
+        $.plot($("#chart_" + index), format(value), {
           series: {
             lines: {
               show: true
@@ -166,6 +186,11 @@ $(function() {
       });
       rePlot(clusterOf);
     };
+      
+    $("#set_threshold").click(function(){
+      threshold = $("#threshold_input").val();
+      refreshLists();
+    });  
       
     var itemclone, idx;
     $(".connectedSortable").sortable({
