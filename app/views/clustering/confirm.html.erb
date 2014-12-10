@@ -31,7 +31,7 @@
                     <%= label_tag "Prosumers:", nil, class: "control-label" %>
                     <ul class="list-inline connectedSortable", id: "<%= "prosummer_list_#{i}" -%>" >
                       <% cl.prosumers.each do |p| %>
-                        <li><%= p.name -%><div style="visibility: hidden;"><%= p.id -%></div></li>
+                        <li id="<%= "prosumer_#{p.id}" -%>"><%= p.name -%><div style="visibility: hidden;"><%= p.id -%></div></li>
                       <% end %>
                     </ul>
                     
@@ -122,11 +122,7 @@ $(function() {
       });
       
       $.each(data_table, function(index, value){
-        plot_data = [{
-          label: "consumption",
-          data: format()
-        }];
-        
+         
         $.plot($("#chart_" + index), format(value), {
           series: {
             lines: {
@@ -186,6 +182,21 @@ $(function() {
       });
       rePlot(clusterOf);
     };
+    
+    var makeTooltips = function() {
+      $.each(energy_consumption, function(index, value) {
+        var max = Number.MIN_VALUE;
+        var min = Number.MAX_VALUE;
+        $.each(value.dps, function(ind, val) {
+          max = Math.max(max, val.value);
+          min = Math.min(min, val.value);
+        });
+        
+        $("#prosumer_" + value.id).attr("title", "Max: " + max+", min: "+ min);
+        
+      });
+      
+    };
       
     $("#set_threshold").click(function(){
       threshold = $("#threshold_input").val();
@@ -235,6 +246,7 @@ $(function() {
 
     }); //.disableSelection();
     refreshLists();
+    makeTooltips();
 
 });
 
