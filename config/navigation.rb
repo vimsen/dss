@@ -75,9 +75,19 @@ SimpleNavigation::Configuration.run do |navigation|
     primary.item :clusters, 'Clusters', clusters_path, :icon => ['fa fa-sitemap fa-fw'], :split => false do |sub_nav|
     # primary.item :clusters, 'Clusters' do |sub_nav|
       sub_nav.item :clusters_sub, "Cluster list", clusters_path
-      sub_nav.item :auto_cluster, "Automatic clustering", "/clustering/select"
+     #  sub_nav.item :auto_cluster, "Automatic clustering", "/clustering/select"
       HierMenu::HierMenu.new("clusters_hier", Proc.new { |p| cluster_url(p) }, nil, 4
                             ).fill_node sub_nav, Cluster.all.order(name: :asc) 
+      sub_nav.dom_class = 'nav nav-second-level collapse'
+    end
+    primary.item :algorithms, 'Algorithms', "#" do |sub_nav|
+      sub_nav.item :clustering, 'Clustering', "/clustering/select"
+      sub_nav.item :dunamic_adaptation, 'Dynamic Adaptation', "#"
+      sub_nav.item :RES_scheduling, 'RES scheduling', "#"
+      sub_nav.item :VMG_modeling, 'VMG production - consumption modeling', "#"
+      sub_nav.item :VMG_profiling, 'VMG profile maximization algorithms', "#"
+      sub_nav.item :comm_algos, 'Communication algorithms', "#"
+      sub_nav.item :virt_netw_micro, 'Virtual netwrok microgrid', "#"
       sub_nav.dom_class = 'nav nav-second-level collapse'
     end
     primary.item :data_points, 'Data points', data_points_path, :icon => ['fa fa-bar-chart-o fa-fw']
