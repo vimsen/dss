@@ -18,8 +18,10 @@ class ClusteringController < ApplicationController
   def save
     begin
       ActiveRecord::Base.transaction do
-        params[:clusterprosumers].zip(params[:clusternames], params[:clusterdescriptions]).each do |prosumers, clustername, desc|
-          cluster = Cluster.new(name: clustername, description: desc)
+        params[:clusterprosumers].zip(params[:clusternames], params[:clusterdescriptions], params[:clusterids]).each do |prosumers, clustername, desc, clid|
+          cluster = clid.to_i > 0 ? Cluster.find(clid) : Cluster.new
+          cluster.name = clustername
+          cluster.description = desc
           prs = Prosumer.find( prosumers.split(",") )
           cluster.prosumers << prs
           cluster.save!
