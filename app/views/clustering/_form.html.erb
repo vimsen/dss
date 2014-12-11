@@ -1,240 +1,240 @@
       <%= form_tag "/clustering/save", class: "form-inline" do %>
-          <%= render partial: "single", collection: @clusters, as: :cl %>
-  
-          <div class="row" id="last_row">
+        <%= render partial: "single", collection: @clusters, as: :cl %>
+
+        <div class="row" id="last_row">
+          <div class="actions">
+            <button type="button" id="add_cluster" class="btn btn-info btn-xs">
+              Add Cluster
+            </button>
+            <button type="button" id="remove_cluster" class="btn btn-danger btn-xs" style="display: none;">
+              Remove Cluster
+            </button>
+          </div>
+        </div>
+
+        <div class="row ">
+          <div class="col-md-8">
             <div class="actions">
-              <button type="button" id="add_cluster" class="btn btn-info btn-xs">
-                Add Cluster
-              </button>
-              <button type="button" id="remove_cluster" class="btn btn-danger btn-xs" style="display: none;">
-                Remove Cluster
+              <%= submit_tag "Confirm", class: "btn btn-primary" %>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="input-group">
+              <%= label_tag "Threshold:", nil, class: "control-label" %>
+              <input value="200.0" class="form-control" type="text" id="threshold_input"/>
+            </div>
+            <div class="actions">
+              <button type="button" id="set_threshold" class="btn btn-info btn-xs" >
+                Set Threshold
               </button>
             </div>
           </div>
-  
-          <div class="row ">
-            <div class="col-md-8">
-              <div class="actions">
-                <%= submit_tag "Confirm", class: "btn btn-primary" %>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="input-group">
-                <%= label_tag "Threshold:", nil, class: "control-label" %>
-                <input value="200.0" class="form-control" type="text" id="threshold_input"/>
-              </div>
-              <div class="actions">
-                <button type="button" id="set_threshold" class="btn btn-info btn-xs" >
-                  Set Threshold
-                </button>
-              </div>
-            </div>
-          </div>
-        <% end %>
-        <script>
-          $(function() {
-        
-          var energy_consumption = <%= JSON.pretty_generate(Prosumer.all.map { |p| {id: p.id, dps: p.data_points.where(interval: 3, timestamp: (Time.now - 7.days)..Time.now).map { |dp| {time: dp.timestamp.to_i, value: dp.consumption} } } }).html_safe -%>;
-        
-          var threshold = $("#threshold_input").val();
-        
-          var sumArrays = function(arr1, arr2) {
-            result = {};
-            if (arr1 == null) {
-              $.each(arr2, function(index, value) {
-                result[value.time] = 0;
-              });
-            } else {
-              result = arr1;
-            }
+        </div>
+      <% end %>
+      <script>
+        $(function() {
+      
+        var energy_consumption = <%= JSON.pretty_generate(Prosumer.all.map { |p| {id: p.id, dps: p.data_points.where(interval: 3, timestamp: (Time.now - 7.days)..Time.now).map { |dp| {time: dp.timestamp.to_i, value: dp.consumption} } } }).html_safe -%>;
+      
+        var threshold = $("#threshold_input").val();
+      
+        var sumArrays = function(arr1, arr2) {
+          result = {};
+          if (arr1 == null) {
             $.each(arr2, function(index, value) {
-              if ( typeof result[value.time] == 'undefined') {
-                result[value.time] = value.value;
-              } else {
-                result[value.time] += value.value;
+              result[value.time] = 0;
+            });
+          } else {
+            result = arr1;
+          }
+          $.each(arr2, function(index, value) {
+            if ( typeof result[value.time] == 'undefined') {
+              result[value.time] = value.value;
+            } else {
+              result[value.time] += value.value;
+            }
+          });
+      
+          return result
+        };
+      
+        var format = function(arr) {
+          var aggr = [];
+          var thresh = [];
+          if (arr != null) {
+            $.each(arr, function(index, value) {
+              aggr.push([index * 1000.0, value]);
+              thresh.push([index * 1000.0, threshold]);
+            });
+          }
+          return [{
+            label : "Consumption",
+            data : aggr.sort()
+          }, {
+            label : "Threshold",
+            data : thresh.sort()
+          }];
+        };
+      
+        var rePlot = function(clusterOf) {
+          var data_table = [];
+          $.each(energy_consumption, function(index, value) {
+            var cl = clusterOf[value.id];
+            data_table[cl] = sumArrays(data_table[cl], value.dps);
+          });
+          $('.connectedSortable').each(function(index, value) {
+            // $.each(data_table, function(index, value){
+      
+            $.plot($("#chart_" + index), format(data_table[index]), {
+              series : {
+                lines : {
+                  show : true
+                },
+                points : {
+                  show : true
+                }
+              },
+              grid : {
+                hoverable : true,
+                clickable : true
+              },
+              tooltip : true,
+              tooltipOpts : {
+                content : "'%s'<br/>%x<br/>%y.2",
+                shifts : {
+                  x : -60,
+                  y : 25
+                }
+              },
+              xaxis : {
+                mode : "time",
+                timeformat : "%y/%m/%d<br/>%h:%M:%S",
+                timezone : "browser",
+                ticks : 3 /*,
+                 timeformat : "%y/%m/%d-%h:%M:%S",
+                 tickSize : [12, "hour"]*/
+              },
+              yaxis : {
+                tickDecimals : 2
               }
             });
-        
-            return result
-          };
-        
-          var format = function(arr) {
-            var aggr = [];
-            var thresh = [];
-            if (arr != null) {
-              $.each(arr, function(index, value) {
-                aggr.push([index * 1000.0, value]);
-                thresh.push([index * 1000.0, threshold]);
-              });
-            }
-            return [{
-              label : "Consumption",
-              data : aggr.sort()
-            }, {
-              label : "Threshold",
-              data : thresh.sort()
-            }];
-          };
-        
-          var rePlot = function(clusterOf) {
-            var data_table = [];
-            $.each(energy_consumption, function(index, value) {
-              var cl = clusterOf[value.id];
-              data_table[cl] = sumArrays(data_table[cl], value.dps);
+          });
+        };
+      
+        var sortList = function(list) {
+          $(list).children('li').sort(function(a, b) {
+            return $(a).text().toUpperCase().localeCompare($(b).text().toUpperCase());
+          }).appendTo($(list));
+        };
+      
+        var getIds = function(list) {
+          var a = [];
+          $(list).children('li').children('div').each(function(index, item) {
+            a[index] = $(item).text();
+          });
+          return a;
+        }
+        var refreshLists = function() {
+          var clusterOf = [];
+          var lastempty = false;
+          $('.connectedSortable').each(function(index, listItem) {
+            sortList(listItem);
+            clusterIds = getIds(listItem);
+            $.each(clusterIds, function(idx, val) {
+              clusterOf[val] = index;
             });
-            $('.connectedSortable').each(function(index, value) {
-              // $.each(data_table, function(index, value){
-        
-              $.plot($("#chart_" + index), format(data_table[index]), {
-                series : {
-                  lines : {
-                    show : true
-                  },
-                  points : {
-                    show : true
-                  }
-                },
-                grid : {
-                  hoverable : true,
-                  clickable : true
-                },
-                tooltip : true,
-                tooltipOpts : {
-                  content : "'%s'<br/>%x<br/>%y.2",
-                  shifts : {
-                    x : -60,
-                    y : 25
-                  }
-                },
-                xaxis : {
-                  mode : "time",
-                  timeformat : "%y/%m/%d<br/>%h:%M:%S",
-                  timezone : "browser",
-                  ticks : 3 /*,
-                   timeformat : "%y/%m/%d-%h:%M:%S",
-                   tickSize : [12, "hour"]*/
-                },
-                yaxis : {
-                  tickDecimals : 2
-                }
-              });
-            });
-          };
-        
-          var sortList = function(list) {
-            $(list).children('li').sort(function(a, b) {
-              return $(a).text().toUpperCase().localeCompare($(b).text().toUpperCase());
-            }).appendTo($(list));
-          };
-        
-          var getIds = function(list) {
-            var a = [];
-            $(list).children('li').children('div').each(function(index, item) {
-              a[index] = $(item).text();
-            });
-            return a;
+            $("#hidden_" + index).val(clusterIds.join(','));
+            lastempty = (clusterIds.length == 0);
+          });
+          if (lastempty) {
+            $("#remove_cluster").show();
+          } else {
+            $("#remove_cluster").hide();
           }
-          var refreshLists = function() {
-            var clusterOf = [];
-            var lastempty = false;
-            $('.connectedSortable').each(function(index, listItem) {
-              sortList(listItem);
-              clusterIds = getIds(listItem);
-              $.each(clusterIds, function(idx, val) {
-                clusterOf[val] = index;
-              });
-              $("#hidden_" + index).val(clusterIds.join(','));
-              lastempty = (clusterIds.length == 0);
+          rePlot(clusterOf);
+        };
+      
+        var makeTooltips = function() {
+          $.each(energy_consumption, function(index, value) {
+            var max = Number.MIN_VALUE;
+            var min = Number.MAX_VALUE;
+            $.each(value.dps, function(ind, val) {
+              max = Math.max(max, val.value);
+              min = Math.min(min, val.value);
             });
-            if (lastempty) {
-              $("#remove_cluster").show();
-            } else {
-              $("#remove_cluster").hide();
-            }
-            rePlot(clusterOf);
-          };
-        
-          var makeTooltips = function() {
-            $.each(energy_consumption, function(index, value) {
-              var max = Number.MIN_VALUE;
-              var min = Number.MAX_VALUE;
-              $.each(value.dps, function(ind, val) {
-                max = Math.max(max, val.value);
-                min = Math.min(min, val.value);
-              });
-        
-              $("#prosumer_" + value.id).attr("title", "Max: " + max + ", min: " + min);
-        
-            });
-        
-          };
-        
-          $("#set_threshold").click(function() {
-            threshold = $("#threshold_input").val();
-            refreshLists();
+      
+            $("#prosumer_" + value.id).attr("title", "Max: " + max + ", min: " + min);
+      
           });
-          
-          $("#add_cluster").click(function() {
-            $("#last_row").before('<%=j render partial: 'single', locals: { cl: Cluster.new, cl_counter: "NEW_CLUSTER_ID"}  %>'.replace(/NEW_CLUSTER_ID/g, $(".connectedSortable").length)  );
-            $(".connectedSortable").sortable({
-              stop : function() {
-                refreshLists();
-              },
-              connectWith : ".connectedSortable"
-            });
-            refreshLists();
-          });
-          
-          $("#remove_cluster").click(function() {
-            $("#last_row").prev().remove();
-            refreshLists();
-          });
-          
-          var itemclone, idx;
+      
+        };
+      
+        $("#set_threshold").click(function() {
+          threshold = $("#threshold_input").val();
+          refreshLists();
+        });
+        
+        $("#add_cluster").click(function() {
+          $("#last_row").before('<%=j render partial: 'single', locals: { cl: Cluster.new, cl_counter: "NEW_CLUSTER_ID"}  %>'.replace(/NEW_CLUSTER_ID/g, $(".connectedSortable").length)  );
           $(".connectedSortable").sortable({
-            start : function(event, ui) {
-        
-              // The following code creates a "shadow object in the originating list"
-              // Removed because it is buggy
-        
-              //create clone of current seletected li
-              /*
-               itemclone = $(ui.item).clone();
-               //get current li index position in list
-               idx = $(ui.item).index();
-               //If first li then prepend clone on first position
-               if (idx === 0) {
-               itemclone.css('opacity', '0.5');
-               $(this).prepend(itemclone);
-               }
-               //Else Append Clone on its original position
-               else {
-               itemclone.css('opacity', '0.7');
-               $(this).find("li:eq(" + (idx - 1) + ")").after(itemclone);
-               }*/
-        
-            },
-            change : function(event, ui) {
-              //alert('change');
-              //While Change event set clone position as relative
-              //$(this).find("li:eq(" + idx + ")").css('position', 'relative');
-            },
             stop : function() {
-        
-              // And this removes the shadow object
-              //Once Finish Sort, remove Clone Li from current list
-              //        $(this).find("li:eq(" + idx + ")").remove();
-        
               refreshLists();
-        
             },
             connectWith : ".connectedSortable"
-        
           });
-          //.disableSelection();
           refreshLists();
-          makeTooltips();
+        });
         
-          });
+        $("#remove_cluster").click(function() {
+          $("#last_row").prev().remove();
+          refreshLists();
+        });
         
-        </script>
+        var itemclone, idx;
+        $(".connectedSortable").sortable({
+          start : function(event, ui) {
+      
+            // The following code creates a "shadow object in the originating list"
+            // Removed because it is buggy
+      
+            //create clone of current seletected li
+            /*
+             itemclone = $(ui.item).clone();
+             //get current li index position in list
+             idx = $(ui.item).index();
+             //If first li then prepend clone on first position
+             if (idx === 0) {
+             itemclone.css('opacity', '0.5');
+             $(this).prepend(itemclone);
+             }
+             //Else Append Clone on its original position
+             else {
+             itemclone.css('opacity', '0.7');
+             $(this).find("li:eq(" + (idx - 1) + ")").after(itemclone);
+             }*/
+      
+          },
+          change : function(event, ui) {
+            //alert('change');
+            //While Change event set clone position as relative
+            //$(this).find("li:eq(" + idx + ")").css('position', 'relative');
+          },
+          stop : function() {
+      
+            // And this removes the shadow object
+            //Once Finish Sort, remove Clone Li from current list
+            //        $(this).find("li:eq(" + idx + ")").remove();
+      
+            refreshLists();
+      
+          },
+          connectWith : ".connectedSortable"
+      
+        });
+        //.disableSelection();
+        refreshLists();
+        makeTooltips();
+      
+        });
+      
+      </script>
