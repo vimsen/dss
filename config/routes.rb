@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  get 'clustering/edit'
+
   get 'clustering/select'
 
   post 'clustering/confirm'

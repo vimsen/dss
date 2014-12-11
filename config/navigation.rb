@@ -82,7 +82,7 @@ SimpleNavigation::Configuration.run do |navigation|
     end
     primary.item :algorithms, 'Algorithms', "#" do |sub_nav|
       sub_nav.item :clustering, 'Clustering', "/clustering/select"
-      sub_nav.item :dunamic_adaptation, 'Dynamic Adaptation', "#"
+      sub_nav.item :dunamic_adaptation, 'Dynamic Adaptation', "/clustering/edit"
       sub_nav.item :RES_scheduling, 'RES scheduling', "#"
       sub_nav.item :VMG_modeling, 'VMG production - consumption modeling', "#"
       sub_nav.item :VMG_profiling, 'VMG profile maximization algorithms', "#"

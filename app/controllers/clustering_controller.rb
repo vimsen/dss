@@ -10,6 +10,10 @@ class ClusteringController < ApplicationController
   def confirm
     @clusters = Clustering.run_algorithm params[:algorithm], params[:kappa]
   end
+  
+  def edit
+    @clusters = Cluster.all
+  end
 
   def save
     begin
