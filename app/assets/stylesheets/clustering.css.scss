@@ -4,5 +4,9 @@
 
 .connectedSortable {
   background-color: lightgray; 
-  min-height: 40px
+  min-height: 40px;
+}
+
+.connectedSortable > li {
+  outline: 1px solid orange;
 }
