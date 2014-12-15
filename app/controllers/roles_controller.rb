@@ -1,3 +1,4 @@
+# The controller for the roles model
 class RolesController < ApplicationController
   before_action :set_role, only: [:show, :edit, :update, :destroy]
   load_and_authorize_resource
@@ -26,12 +27,14 @@ class RolesController < ApplicationController
   # POST /roles.json
   def create
     @role = Role.new(role_params)
-    @users = User.where(:id => params[:users])
+    @users = User.where(id: params[:users])
     @role.users << @users
-    
+
     respond_to do |format|
       if @role.save
-        format.html { redirect_to @role, notice: 'Role was successfully created.' }
+        format.html do
+          redirect_to @role, notice: 'Role was successfully created.'
+        end
         format.json { render :show, status: :created, location: @role }
       else
         format.html { render :new }
@@ -43,14 +46,15 @@ class RolesController < ApplicationController
   # PATCH/PUT /roles/1
   # PATCH/PUT /roles/1.json
   def update
-    
-    @users = User.where(:id => params[:users])
+    @users = User.where(id: params[:users])
     @role.users.destroy_all
     @role.users << @users
-    
+
     respond_to do |format|
       if @role.update(role_params)
-        format.html { redirect_to @role, notice: 'Role was successfully updated.' }
+        format.html do
+          redirect_to @role, notice: 'Role was successfully updated.'
+        end
         format.json { render :show, status: :ok, location: @role }
       else
         format.html { render :edit }
@@ -64,19 +68,23 @@ class RolesController < ApplicationController
   def destroy
     @role.destroy
     respond_to do |format|
-      format.html { redirect_to roles_url, notice: 'Role was successfully destroyed.' }
+      format.html do
+        redirect_to roles_url, notice: 'Role was successfully destroyed.'
+      end
       format.json { head :no_content }
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_role
-      @role = Role.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def role_params
-      params.require(:role).permit(:name, :users)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_role
+    @role = Role.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list
+  # through.
+  def role_params
+    params.require(:role).permit(:name, :users)
+  end
 end
