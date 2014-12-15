@@ -1,3 +1,4 @@
+# The controller for the EnergyPrice model
 class EnergyPricesController < ApplicationController
   before_action :set_energy_price, only: [:show, :edit, :update, :destroy]
 
@@ -35,11 +36,12 @@ class EnergyPricesController < ApplicationController
   end
 
   private
-    def set_energy_price
-      @energy_price = EnergyPrice.find(params[:id])
-    end
 
-    def energy_price_params
-      params.require(:energy_price).permit(:date, :dayhour, :price)
-    end
+  def set_energy_price
+    @energy_price = EnergyPrice.find(params[:id])
+  end
+
+  def energy_price_params
+    params.require(:energy_price).permit(:date, :dayhour, :price)
+  end
 end
