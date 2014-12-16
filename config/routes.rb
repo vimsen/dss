@@ -1,5 +1,17 @@
 Rails.application.routes.draw do
 
+  resources :market_prices
+  get 'market_prices/dayAhead/:id' => 'market_prices#dayAhead'
+  get 'market_prices/intraDay/:id' => 'market_prices#intraDay'
+
+  get 'cloud_platform' => 'cloud_platform#index'
+  get 'cloud_platform/index' => 'cloud_platform#index'
+  get 'cloud_platform/execute/:cmd' => 'cloud_platform#execute'
+  get 'cloud_platform/responses' => 'cloud_platform#responses'
+  get 'cloud_platform/results' => 'cloud_platform#results'
+  get 'cloud_platform/instances'  => 'cloud_platform#instances'
+  get 'cloud_platform/delete/:id' => 'cloud_platform#delete'
+
   get 'clustering/select'
 
   post 'clustering/confirm'
