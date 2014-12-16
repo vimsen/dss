@@ -1,2 +1,2 @@
-class EnergyPrice < ActiveRecord::Base
+class EnergyMarket < ActiveRecord::Base
 end

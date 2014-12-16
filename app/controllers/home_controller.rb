@@ -26,10 +26,10 @@ class HomeController < ApplicationController
          chartData = Array.new  
          priceData = Array.new  
 
-         currentTime = Time.new
+         selected_date = Date.today-30
 
-         #@prices = EnergyPrice.order("dayhour").where(date:currentTime.strftime("%Y-%m-%d"))
-         @prices = EnergyPrice.order("dayhour").where(date:"2014-10-01",country:"GREC")
+         @prices = DayAheadEnergyPrice.order("dayhour").where(date:selected_date,market_id:1)
+
          @prices.each do |price|
              hour_price = Array.new
              hour_price.push(price[:dayhour])
