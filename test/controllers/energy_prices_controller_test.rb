@@ -3,6 +3,8 @@ require 'test_helper'
 class EnergyPricesControllerTest < ActionController::TestCase
   setup do
     @energy_price = energy_prices(:one)
+    User.first.add_role "admin"
+    sign_in User.first
   end
 
   test "should get index" do

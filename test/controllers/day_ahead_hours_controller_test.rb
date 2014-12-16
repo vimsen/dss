@@ -3,6 +3,8 @@ require 'test_helper'
 class DayAheadHoursControllerTest < ActionController::TestCase
   setup do
     @day_ahead_hour = day_ahead_hours(:one)
+    User.first.add_role "admin"
+    sign_in User.first
   end
 
   test "should get index" do

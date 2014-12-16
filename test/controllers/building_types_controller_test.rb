@@ -3,6 +3,8 @@ require 'test_helper'
 class BuildingTypesControllerTest < ActionController::TestCase
   setup do
     @building_type = building_types(:one)
+    User.first.add_role "admin"
+    sign_in User.first
   end
 
   test "should get index" do

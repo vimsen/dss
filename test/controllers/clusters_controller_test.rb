@@ -3,6 +3,9 @@ require 'test_helper'
 class ClustersControllerTest < ActionController::TestCase
   setup do
     @cluster = clusters(:one)
+    User.first.add_role "admin"
+    sign_in User.first
+
   end
 
   test "should get index" do

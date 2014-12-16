@@ -16,7 +16,7 @@ one:
 
 two:
   prosumer_id: 1
-  interval_id: 1
+  interval_id: 2
   timestamp: 2014-11-05 12:42:06
   production: 1.5
   consumption: 1.5

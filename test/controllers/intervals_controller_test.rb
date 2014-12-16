@@ -3,6 +3,8 @@ require 'test_helper'
 class IntervalsControllerTest < ActionController::TestCase
   setup do
     @interval = intervals(:one)
+    User.first.add_role "admin"
+    sign_in User.first
   end
 
   test "should get index" do

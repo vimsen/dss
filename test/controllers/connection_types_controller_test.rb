@@ -3,6 +3,8 @@ require 'test_helper'
 class ConnectionTypesControllerTest < ActionController::TestCase
   setup do
     @connection_type = connection_types(:one)
+    User.first.add_role "admin"
+    sign_in User.first
   end
 
   test "should get index" do

@@ -3,6 +3,8 @@ require 'test_helper'
 class EnergyTypesControllerTest < ActionController::TestCase
   setup do
     @energy_type = energy_types(:one)
+    User.first.add_role "admin"
+    sign_in User.first
   end
 
   test "should get index" do

@@ -3,6 +3,8 @@ require 'test_helper'
 class DataPointsControllerTest < ActionController::TestCase
   setup do
     @data_point = data_points(:one)
+    User.first.add_role "admin"
+    sign_in User.first
   end
 
   test "should get index" do

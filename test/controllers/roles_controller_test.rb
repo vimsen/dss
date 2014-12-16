@@ -3,6 +3,8 @@ require 'test_helper'
 class RolesControllerTest < ActionController::TestCase
   setup do
     @role = roles(:one)
+    User.first.add_role "admin"
+    sign_in User.first
   end
 
   test "should get index" do
