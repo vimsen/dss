@@ -1,8 +1,9 @@
+# The controller for the EnergyType model
 class EnergyTypesController < ApplicationController
   before_action :set_energy_type, only: [:show, :edit, :update, :destroy]
   respond_to :json, :html
   load_and_authorize_resource
-  
+
   def index
     @energy_types = EnergyType.all
     respond_with(@energy_types)
@@ -37,11 +38,12 @@ class EnergyTypesController < ApplicationController
   end
 
   private
-    def set_energy_type
-      @energy_type = EnergyType.find(params[:id])
-    end
 
-    def energy_type_params
-      params.require(:energy_type).permit(:name)
-    end
+  def set_energy_type
+    @energy_type = EnergyType.find(params[:id])
+  end
+
+  def energy_type_params
+    params.require(:energy_type).permit(:name)
+  end
 end

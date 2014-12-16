@@ -12,10 +12,9 @@ Rails.application.routes.draw do
   get 'cloud_platform/instances'  => 'cloud_platform#instances'
   get 'cloud_platform/delete/:id' => 'cloud_platform#delete'
 
+  get 'clustering/edit'
   get 'clustering/select'
-
   post 'clustering/confirm'
-
   post 'clustering/save'
 
   resources :connection_types

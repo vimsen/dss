@@ -1,7 +1,8 @@
+# The controller of BuildingType model
 class BuildingTypesController < ApplicationController
   before_action :set_building_type, only: [:show, :edit, :update, :destroy]
   load_and_authorize_resource
-  
+
   def index
     @building_types = BuildingType.all
     respond_with(@building_types)
@@ -36,11 +37,12 @@ class BuildingTypesController < ApplicationController
   end
 
   private
-    def set_building_type
-      @building_type = BuildingType.find(params[:id])
-    end
 
-    def building_type_params
-      params.require(:building_type).permit(:name)
-    end
+  def set_building_type
+    @building_type = BuildingType.find(params[:id])
+  end
+
+  def building_type_params
+    params.require(:building_type).permit(:name)
+  end
 end

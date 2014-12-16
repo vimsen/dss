@@ -25,6 +25,8 @@
 //= require plugins/flot/jquery.flot.resize
 //= require plugins/flot/jquery.flot.tooltip.min
 //= require plugins/flot/jquery.flot.time
+//= require plugins/jquery-ui/jquery-ui.min
+//= require plugins/jquery-ui/jquery.ui.touch-punch.min
 //= require jquery.datetimepicker
 //= require underscore
 //= require gmaps/google

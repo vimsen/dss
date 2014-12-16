@@ -1,3 +1,4 @@
+# The controller for the connection types model.
 class ConnectionTypesController < ApplicationController
   before_action :set_connection_type, only: [:show, :edit, :update, :destroy]
   respond_to :json, :html
@@ -37,11 +38,12 @@ class ConnectionTypesController < ApplicationController
   end
 
   private
-    def set_connection_type
-      @connection_type = ConnectionType.find(params[:id])
-    end
 
-    def connection_type_params
-      params.require(:connection_type).permit(:name)
-    end
+  def set_connection_type
+    @connection_type = ConnectionType.find(params[:id])
+  end
+
+  def connection_type_params
+    params.require(:connection_type).permit(:name)
+  end
 end
