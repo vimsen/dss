@@ -11,11 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
-ActiveRecord::Schema.define(version: 20141211085307) do
-=======
 ActiveRecord::Schema.define(version: 20141211085438) do
->>>>>>> 81eca56860f1ce813cf38882e8b3acf2e29262cc
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -56,6 +52,8 @@ ActiveRecord::Schema.define(version: 20141211085438) do
     t.datetime "updated_at"
   end
 
+  add_index "data_points", ["timestamp", "prosumer_id", "interval_id"], name: "index_data_points_on_timestamp_and_prosumer_id_and_interval_id", unique: true, using: :btree
+
   create_table "day_ahead_energy_prices", force: true do |t|
     t.datetime "date"
     t.integer  "dayhour"
@@ -64,8 +62,6 @@ ActiveRecord::Schema.define(version: 20141211085438) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
-  
-   add_index "data_points", ["timestamp", "prosumer_id", "interval_id"], name: "index_data_points_on_timestamp_and_prosumer_id_and_interval_id", unique: true, using: :btree
 
   create_table "day_ahead_hours", force: true do |t|
     t.integer  "day_ahead_id"
