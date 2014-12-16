@@ -13,6 +13,7 @@
 //= require jquery
 //= require jquery_ujs
 //= require bootstrap.min
+//= require bootstrap-table
 //= require turbolinks
 //= require sb-admin-2
 //= require plugins/metisMenu/metisMenu.min

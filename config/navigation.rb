@@ -92,6 +92,8 @@ SimpleNavigation::Configuration.run do |navigation|
     end
     primary.item :data_points, 'Data points', data_points_path, :icon => ['fa fa-bar-chart-o fa-fw']
     primary.item :day_aheads, 'Day-ahead forecasts', day_aheads_path, :icon => ['fa fa-bar-chart-o fa-fw']
+    primary.item :market_prices, 'Market Prices', market_prices_path, :icon => ['fa fa-bar-chart-o fa-fw']
+    primary.item :cloud_platform, 'Cloud Platform', '/cloud_platform', :icon => ['fa fa-cog fa-fw']
     primary.item :users, 'Users', users_path, :icon => ['fa fa-user fa-fw']
 
   #    primary.item :key_1, 'name', url, options

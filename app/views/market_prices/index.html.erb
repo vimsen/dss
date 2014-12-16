@@ -1,0 +1,58 @@
+     <br>                
+     <div class="col-lg-6">
+          <div class="panel panel-default">
+               <div class="panel-heading">
+                   Greece - Day-ahead Market
+               </div> <!-- /.panel-heading -->
+               <div class="panel-body">
+                    <div class="flot-chart">
+                         <div class="flot-chart-content" id="greece-market-prices-day-ahead"></div>
+                    </div>
+               </div> <!-- /.panel-body -->
+          </div>  <!-- /.panel -->
+     </div> <!-- /.col-lg-6 -->
+     <div class="col-lg-6"> 
+          <div class="panel panel-default">
+               <div class="panel-heading">
+                      Greece - Intra-day Market 
+               </div> <!-- /.panel-heading -->
+               <div class="panel-body">
+                  <div class="flot-chart">
+                      <div class="flot-chart-content" id="greece-market-prices-intra-day"></div>
+                  </div>
+               </div> <!-- /.panel-body -->
+          </div>  <!-- /.panel -->
+     </div>
+                  
+     <div class="col-lg-6">
+          <div class="panel panel-default">
+               <div class="panel-heading">
+                   Sedini - Day-ahead Market
+               </div> <!-- /.panel-heading -->
+               <div class="panel-body">
+                    <div class="flot-chart">
+                         <div class="flot-chart-content" id="sedini-market-prices-day-ahead"></div>
+                    </div>
+               </div> <!-- /.panel-body -->
+          </div> <!-- /.panel -->
+     </div>
+     <div class="col-lg-6">
+          <div class="panel panel-default">
+               <div class="panel-heading">
+                     Sedini - Intra-day Market
+               </div> <!-- /.panel-heading -->
+               <div class="panel-body">
+                    <div class="flot-chart">
+                         <div class="flot-chart-content" id="sedini-market-prices-intra-day"></div>
+                    </div>
+               </div> <!-- /.panel-body -->
+          </div> <!-- /.panel -->
+     </div>
+                
+   </div>  <!-- /.row -->
+   
+<script>
+  $(document).ready(function() {
+      loadMarketPricesCharts();
+  });
+</script>

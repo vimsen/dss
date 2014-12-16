@@ -54,6 +54,15 @@ ActiveRecord::Schema.define(version: 20141211085438) do
 
   add_index "data_points", ["timestamp", "prosumer_id", "interval_id"], name: "index_data_points_on_timestamp_and_prosumer_id_and_interval_id", unique: true, using: :btree
 
+  create_table "day_ahead_energy_prices", force: true do |t|
+    t.datetime "date"
+    t.integer  "dayhour"
+    t.float    "price"
+    t.integer  "market_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "day_ahead_hours", force: true do |t|
     t.integer  "day_ahead_id"
     t.integer  "time"
@@ -74,13 +83,10 @@ ActiveRecord::Schema.define(version: 20141211085438) do
 
   add_index "day_aheads", ["prosumer_id"], name: "index_day_aheads_on_prosumer_id", using: :btree
 
-  create_table "energy_prices", force: true do |t|
-    t.datetime "date"
-    t.integer  "dayhour"
-    t.float    "price"
+  create_table "energy_markets", force: true do |t|
+    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "country"
   end
 
   create_table "energy_type_prosumers", force: true do |t|
@@ -100,9 +106,39 @@ ActiveRecord::Schema.define(version: 20141211085438) do
     t.datetime "updated_at"
   end
 
+  create_table "instances", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "configuration_id"
+    t.string   "results"
+    t.string   "status"
+    t.string   "reason"
+    t.string   "instance_name"
+    t.string   "worker"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "total_execution_time"
+  end
+
   create_table "intervals", force: true do |t|
     t.integer  "duration"
     t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "intra_day_energy_prices", force: true do |t|
+    t.datetime "date"
+    t.integer  "dayhour"
+    t.float    "price"
+    t.integer  "interval_id"
+    t.integer  "market_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "log_instances", force: true do |t|
+    t.integer  "instance_id"
+    t.integer  "status"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

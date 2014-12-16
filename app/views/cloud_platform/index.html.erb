@@ -1,0 +1,67 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h3 class="page-header">Cloud Platform</h3>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Select Task &amp; Execution Environment
+      </div>
+      <div class="panel-body">
+	    <div class="col-lg-5">
+		<select class="form-control" id="cloud_platform_task" name="cloud_platform_task">
+                    <option value="task1">Task 1</option>
+		    <option value="task2">Task 2</option>
+		    <option value="task3">Task 3</option>	
+		    <option value="task4">Task 4</option>
+                    <option value="task5">Task 5</option>
+                    <option value="task6">Task 6</option>
+		    <option value="task7">Task 7</option>
+                    <option value="task8">Task 8</option>
+                    <option value="task9">Task 9</option>
+		    <option value="task10">Task 10</option>
+                    <option value="task11">Task 11</option>
+                    <option value="task12">Task 12</option>
+  	        </select>
+	     </div>
+	     <div class="col-lg-5">
+		<label class="radio-inline">
+                    <input type="radio" name="execution_environment" id="exec_simple" value="simple" checked><b>Standalone Server</b>
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="execution_environment" id="exec_cloud" value="cloud"><b>Cloud Platform</b>
+                </label>
+	     </div>
+	     <div class="col-lg-2">
+		 <button  type="button" class="btn btn-primary" onclick="submit_task();">Execute</button>
+	     </div>
+      </div>
+    </div>
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+
+
+<!-- /.row -->
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Task Execution History
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+	    <%= render partial: "list" %>
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
+<br>
