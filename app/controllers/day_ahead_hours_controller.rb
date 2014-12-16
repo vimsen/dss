@@ -1,3 +1,4 @@
+# The controller of the DayAheadHour model
 class DayAheadHoursController < ApplicationController
   before_action :set_day_ahead_hour, only: [:show, :edit, :update, :destroy]
   respond_to :json, :html
@@ -37,11 +38,13 @@ class DayAheadHoursController < ApplicationController
   end
 
   private
-    def set_day_ahead_hour
-      @day_ahead_hour = DayAheadHour.find(params[:id])
-    end
 
-    def day_ahead_hour_params
-      params.require(:day_ahead_hour).permit(:day_ahead_id, :time, :production, :consumption)
-    end
+  def set_day_ahead_hour
+    @day_ahead_hour = DayAheadHour.find(params[:id])
+  end
+
+  def day_ahead_hour_params
+    params.require(:day_ahead_hour).permit(
+      :day_ahead_id, :time, :production, :consumption)
+  end
 end
