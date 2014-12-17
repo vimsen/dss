@@ -50,10 +50,10 @@ class HomeController < ApplicationController
      # Time.zone = 'Athens'
    #   print("Tiiiiime::")
    #   print(Time.zone.now-1.day)
-        @totalConsumption=DataPoint.order(timestamp: :asc).where(interval:2).where("timestamp >= ?",Time.zone.now.beginning_of_day - 1.day).group(:timestamp).select("timestamp, sum(consumption)").map {|dp| {time: dp["timestamp"], sum: dp["sum"]} }
+        @totalConsumption=DataPoint.order(timestamp: :asc).where(interval:2).where("timestamp >= ?",Time.zone.now.beginning_of_day).group(:timestamp).select("timestamp, sum(consumption)").map {|dp| {time: dp["timestamp"], sum: dp["sum"]} }
          totalconsumption = []
          
-        @totalProduction=DataPoint.order(timestamp: :asc).where(interval:2).where("timestamp >= ?",Time.zone.now.beginning_of_day - 1.day).group(:timestamp).select("timestamp, sum(production)").map {|dp| {time: dp["timestamp"], sum: dp["sum"]} }
+        @totalProduction=DataPoint.order(timestamp: :asc).where(interval:2).where("timestamp >= ?",Time.zone.now.beginning_of_day).group(:timestamp).select("timestamp, sum(production)").map {|dp| {time: dp["timestamp"], sum: dp["sum"]} }
          totalproduction =[]
       
         @totalConsumption.each do |consumption|
