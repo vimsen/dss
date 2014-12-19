@@ -26,39 +26,41 @@ var plotHelper = (function() {
 
       // Reduce number of ticks when width is small, to avoid overlapping
       var t = $("#placeholder").width() < 450 ? 3 : null;
-
-      $.plot($("#placeholder"), dataset, {
-        series: {
-          lines: {
-            show: true
-          },
-          points: {
-            show: true
-          }
-        },
-        grid: { hoverable: true, clickable: true },
-        tooltip: true,
-        tooltipOpts: {
-            content: "'%s'<br/>%x<br/>%y.2",
-            shifts: {
-                x: -60,
-                y: 25
+      
+      if ( $( "#placeholder" ).length ) {
+        $.plot($("#placeholder"), dataset, {
+          series: {
+            lines: {
+              show: true
+            },
+            points: {
+              show: true
             }
-        },
-        xaxis : {
-          mode : "time",
-          timeformat : "%y/%m/%d<br/>%h:%M:%S",
-          timezone : "browser",
-          min : s,
-          max : e,
-          ticks : t /*,
-           timeformat : "%y/%m/%d-%h:%M:%S",
-           tickSize : [12, "hour"]*/
-        },
-        yaxis : {
-          tickDecimals: 2
-        }
-      });
+          },
+          grid: { hoverable: true, clickable: true },
+          tooltip: true,
+          tooltipOpts: {
+              content: "'%s'<br/>%x<br/>%y.2",
+              shifts: {
+                  x: -60,
+                  y: 25
+              }
+          },
+          xaxis : {
+            mode : "time",
+            timeformat : "%y/%m/%d<br/>%h:%M:%S",
+            timezone : "browser",
+            min : s,
+            max : e,
+            ticks : t /*,
+             timeformat : "%y/%m/%d-%h:%M:%S",
+             tickSize : [12, "hour"]*/
+          },
+          yaxis : {
+            tickDecimals: 2
+          }
+        });
+      }
     }
   };
 
