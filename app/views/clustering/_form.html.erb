@@ -37,7 +37,7 @@
       
         var energy_consumption = <%= JSON.pretty_generate(Prosumer.all.map { |p| {id: p.id, dps: p.data_points.where(interval: 3, timestamp: (Time.now - 7.days)..Time.now).map { |dp| {time: dp.timestamp.to_i, value: dp.consumption} } } }).html_safe -%>;
       
-        var threshold = $("#threshold_input").val();
+        var threshold = parseFloat($("#threshold_input").val());
       
         var sumArrays = function(arr1, arr2) {
           result = {};
@@ -171,7 +171,7 @@
         };
       
         $("#set_threshold").click(function() {
-          threshold = $("#threshold_input").val();
+          threshold = parseFloat($("#threshold_input").val());
           refreshLists();
         });
         
