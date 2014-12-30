@@ -1,3 +1,4 @@
+# This class is used for authorization by the CanCanCan gem
 class Ability
   include CanCan::Ability
 
@@ -5,7 +6,7 @@ class Ability
     # Define abilities for the passed in user here. For example:
     #
     #    user ||= User.new # guest user (not logged in)
-    if user.has_role? "admin"
+    if user.has_role? 'admin'
       can :manage, :all
     else
       # cannot :index, User

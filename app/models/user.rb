@@ -9,6 +9,6 @@ class User < ActiveRecord::Base
 
   def getNotAssignedRoles
     result = Role.all
-    return result.reject { |r| self.has_role? r.name }
+    result.reject { |r| self.has_role? r.name }
   end
 end
