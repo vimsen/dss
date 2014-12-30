@@ -34,12 +34,17 @@ module FetchAsynch
     private
    
       def datareceived(data, channel)
-        x = $bunny_channel.fanout(channel)
+        begin
+          x = $bunny_channel.fanout(channel)
+        rescue Bunny::Exception # Don't block if channel can't be fanned out
+          puts "Can't fanout channel #{channel}"
+          x = nil
+        end
         data.each do |d|
           if newdata? d
             dbinsert d
             puts "Publishing to channel: #{channel}"
-            x.publish(prepare d)
+            x.publish(prepare d) unless x.nil?
           else
             puts "Datapoint found"
           end
