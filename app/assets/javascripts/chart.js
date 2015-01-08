@@ -48,7 +48,7 @@ var plotHelper = (function() {
           },
           xaxis : {
             mode : "time",
-            timeformat : "%y/%m/%d<br/>%h:%M:%S",
+            timeformat : "%d/%m/%Y<br/>%h:%M:%S",
             timezone : "browser",
             min : s,
             max : e,
