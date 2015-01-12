@@ -107,7 +107,7 @@ class StreamController < ApplicationController
     sse = Streamer::SSE.new(response.stream)
     meter = Meter.find(params[:id])
 
-    x = $bunny_channel.fanout("imeter_exchange")
+    x = $bunny_channel.topic("imeter_exchange")
     q = $bunny_channel.queue("", :auto_delete => false).bind(x, :routing_key => "imeter.data.220590338055311")
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
       # puts "sending: ", data
