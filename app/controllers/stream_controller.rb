@@ -108,7 +108,7 @@ class StreamController < ApplicationController
     meter = Meter.find(params[:id])
 
     puts "in meter"
-    x = $bunny_channel.fanout("imeter_exchange")
+    x = $bunny_channel.direct("imeter_exchange")
     puts "connecting to topic"
     q = $bunny_channel.queue("", :auto_delete => false).bind(x, :routing_key => "imeter.data.220590338055311")
     puts "connecting to queue"
