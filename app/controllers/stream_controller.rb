@@ -107,12 +107,16 @@ class StreamController < ApplicationController
     sse = Streamer::SSE.new(response.stream)
     meter = Meter.find(params[:id])
 
+    puts "in meter"
     x = $bunny_channel.topic("imeter_exchange")
+    puts "connecting to topic"
     q = $bunny_channel.queue("", :auto_delete => false).bind(x, :routing_key => "imeter.data.220590338055311")
+    puts "connecting to queue"
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
       # puts "sending: ", data
       sse.write(data, event: 'datapoint')
     end
+    puts "subscribed"
 
     ActiveRecord::Base.connection.close
 
