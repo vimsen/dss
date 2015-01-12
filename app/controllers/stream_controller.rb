@@ -101,4 +101,31 @@ class StreamController < ApplicationController
     sse.close
     puts "Stream closed."    
   end
+
+  def meter
+    response.headers['Content-Type'] = 'text/event-stream'
+    sse = Streamer::SSE.new(response.stream)
+    meter = Meter.find(params[:id])
+
+    x = $bunny_channel.fanout("imeter_exchange")
+    q = $bunny_channel.queue("", :auto_delete => false).bind(x, :routing_key => "imeter.data.220590338055311")
+    consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
+      # puts "sending: ", data
+      sse.write(data, event: 'datapoint')
+    end
+
+    ActiveRecord::Base.connection.close
+
+    loop do
+      sleep 30;
+      sse.write("OK".to_json, event: 'messages.keepalive')
+      ActiveRecord::Base.connection.close
+    end
+  rescue IOError
+  ensure
+    ActiveRecord::Base.connection.close
+    consumer.cancel unless consumer.nil?
+    sse.close
+    puts "Stream closed."
+  end
 end

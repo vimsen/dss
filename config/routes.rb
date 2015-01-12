@@ -47,6 +47,7 @@ Rails.application.routes.draw do
 
   get 'stream/:id/realtime' => 'stream#realtime'
   get 'stream/:id/prosumer' => 'stream#prosumer'
+  get 'stream/:id/meter' => 'stream#meter'
   get 'stream/:id/clusterfeed' => 'stream#clusterfeed'
 
   patch 'prosumers/:id/removefromcluster' => 'prosumers#removefromcluster'
