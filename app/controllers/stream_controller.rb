@@ -125,7 +125,8 @@ class StreamController < ApplicationController
       sse.write("OK".to_json, event: 'messages.keepalive')
       ActiveRecord::Base.connection.close
     end
-  rescue IOError
+  rescue => exception
+    puts exception.backtrace
   ensure
     ActiveRecord::Base.connection.close
     consumer.cancel unless consumer.nil?
