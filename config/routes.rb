@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  resources :meters
+
   resources :market_prices
   get 'market_prices/dayAhead/:id' => 'market_prices#dayAhead'
   get 'market_prices/intraDay/:id' => 'market_prices#intraDay'

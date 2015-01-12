@@ -67,3 +67,5 @@ Prosumer.create([ {name: "Prosumer 01", cluster: clusters.first, intelen_id: 1, 
                  
 EnergyType.create([{name: 'solar'},{name: 'wind'},{name: 'hydro'},{name: 'geothermal'},{name: 'biomass'} ])
 
+Meter.create mac: '220590338055311'
+

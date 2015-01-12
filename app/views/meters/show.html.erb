@@ -1,0 +1,51 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h3 class="page-header"><small>Meter:</small> <%= @meter.id -%>
+      <small>
+        | <%= link_to 'Edit', edit_meter_path(@meter), class: 'btn btn-info btn-xs' %>
+        | <%= link_to 'All meters', meters_path ,class: 'btn btn-warning btn-xs'%>
+      </small>
+    </h3>
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+
+<div class="row ">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Meter info
+      </div>
+      <div class="panel-body">
+        <dl class="dl-horizontal">
+          <dt>Mac:</dt>
+          <dd><%= @meter.mac -%></dd>
+
+          <dt>Prosumer:</dt>
+          <dd><%= render(partial: "prosumers/prosumername", :locals => { :prosumer => @meter.prosumer }) unless @meter.prosumer.nil? %></dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Prosumption Data
+      </div>
+      <div class="panel-body">
+        <div id="placeholder" style="width:100%;height:400px;min-width=600px" />
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  $(function(){
+
+    plotHelper.drawChart("<%= "/stream/#{@meter.id}/meter" %>", null, "consumption", false);
+  });
+</script>
