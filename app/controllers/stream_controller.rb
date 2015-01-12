@@ -126,8 +126,8 @@ class StreamController < ApplicationController
       ActiveRecord::Base.connection.close
     end
   rescue => e
-    logger.error e.message
-    e.backtrace.each { |line| logger.error line }
+    puts e.message
+    puts e.backtrace
   ensure
     ActiveRecord::Base.connection.close
     consumer.cancel unless consumer.nil?
