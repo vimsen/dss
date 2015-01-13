@@ -25,8 +25,8 @@ var plotHelper = (function() {
                       : null;
 
       // Reduce number of ticks when width is small, to avoid overlapping
-      var t = $("#placeholder").width() < 450 ? 3 : null;
-      
+      //var t = $("#placeholder").width() < 450 ? 3 : null;
+
       if ( $( "#placeholder" ).length ) {
         $.plot($("#placeholder"), dataset, {
           series: {
@@ -48,11 +48,11 @@ var plotHelper = (function() {
           },
           xaxis : {
             mode : "time",
-            timeformat : "%d/%m/%Y<br/>%h:%M:%S",
+            timeformat : "%d/&#8203;%m/&#8203;%Y<br/>%h:&#8203;%M:&#8203;%S",
             timezone : "browser",
             min : s,
-            max : e,
-            ticks : t /*,
+            max : e /*,
+            ticks : t,
              timeformat : "%y/%m/%d-%h:%M:%S",
              tickSize : [12, "hour"]*/
           },
