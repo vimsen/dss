@@ -124,12 +124,12 @@ class StreamController < ApplicationController
     ActiveRecord::Base.connection.close
 
     loop do
-      sleep 30;
+      sleep 5;
       sse.write("OK".to_json, event: 'messages.keepalive')
       ActiveRecord::Base.connection.close
     end
   rescue => e
-    puts e.message
+    # puts e.message
     # puts e.backtrace
   ensure
     ActiveRecord::Base.connection.close
