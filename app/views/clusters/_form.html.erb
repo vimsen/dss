@@ -1,4 +1,4 @@
-<%= form_for(@cluster) do |f| %>
+<%= form_for(@cluster, html: {class: "form-horizontal"}) do |f| %>
   <% if @cluster.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@cluster.errors.count, "error") %> prohibited this cluster from being saved:</h2>
@@ -11,22 +11,28 @@
     </div>
   <% end %>
 
-  <div class="field">
-    <%= f.label :name %><br>
-    <%= f.text_field :name %>
+  <div class="form-group">
+    <%= f.label :name, class: "col-sm-2 control-label" %>
+    <div class="col-sm-10">
+      <%= f.text_field :name, class: 'form-control' %>
+    </div>
   </div>
-  <div class="field">
-    <%= f.label :description %><br>
-    <%= f.text_area :description %>
+  <div class="form-group">
+    <%= f.label :description, class: "col-sm-2 control-label" %>
+    <div class="col-sm-10">
+      <%= f.text_area :description, class: 'form-control' %>
+    </div>
   </div>
-  <div class="field">
-    <%= f.label :prosumers %><br>
-    <%= select_tag "prosumers", 
-            options_from_collection_for_select(Prosumer.all, 
-                'id', 'name',@cluster.prosumers.map{ |j| j.id }), 
-                :multiple => true, :prompt => "Please select" %>
+  <div class="form-group">
+    <%= f.label :prosumers, class: "col-sm-2 control-label" %><br>
+    <div class="col-sm-10">
+      <%= select_tag "prosumers",
+              options_from_collection_for_select(Prosumer.all,
+                  'id', 'name',@cluster.prosumers.map{ |j| j.id }),
+                  :multiple => true, class: "form-control", :prompt => "Please select" %>
+    </div>
   </div>
   <div class="actions">
-    <%= f.submit %>
+    <%= f.submit class: "btn btn-primary"%>
   </div>
 <% end %>
