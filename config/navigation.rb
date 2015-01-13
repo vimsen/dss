@@ -80,6 +80,10 @@ SimpleNavigation::Configuration.run do |navigation|
                             ).fill_node sub_nav, Cluster.all.order(name: :asc) 
       sub_nav.dom_class = 'nav nav-second-level collapse'
     end
+    primary.item :meters, 'Meters', '#' do |sub_nav|
+      HierMenu::HierMenu.new('meters_hier', Proc.new { |p| meter_url(p) }, :mac, 4).fill_node sub_nav, Meter.all.order(id: :asc)
+      sub_nav.dom_class = 'nav nav-second-level collapse'
+    end
     primary.item :algorithms, 'Algorithms', "#" do |sub_nav|
       sub_nav.item :clustering, 'Clustering', "/clustering/select"
       sub_nav.item :dunamic_adaptation, 'Dynamic Adaptation', "/clustering/edit"
