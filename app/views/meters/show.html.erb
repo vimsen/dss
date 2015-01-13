@@ -46,6 +46,6 @@
 <script>
   $(function(){
 
-    plotHelper.drawChart("<%= "/stream/#{@meter.id}/meter" %>", null, "consumption", false);
+    plotHelper.drawChart("<%= "/stream/#{@meter.id}/meter" %>", {}, "consumption", false);
   });
 </script>
