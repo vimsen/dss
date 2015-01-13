@@ -22,7 +22,7 @@
           <dd><%= @meter.mac -%></dd>
 
           <dt>Prosumer:</dt>
-          <dd><%= render(partial: "prosumers/prosumername", :locals => { :prosumer => @meter.prosumer }) unless @meter.prosumer.nil? %></dd>
+          <dd><%= render(partial: "prosumers/prosumername", :locals => { :prosumer => @meter.prosumer }) %></dd>
         </dl>
       </div>
     </div>
@@ -33,7 +33,7 @@
   <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading">
-        Prosumption Data
+        Real-time Data
       </div>
       <div class="panel-body">
         <div id="placeholder" style="width:100%;height:400px;min-width=600px" />

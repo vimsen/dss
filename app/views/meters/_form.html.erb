@@ -11,15 +11,19 @@
     </div>
   <% end %>
 
-  <div class="field">
-    <%= f.label :mac %><br>
-    <%= f.text_field :mac %>
+  <div class="form-group">
+    <%= f.label :mac, class: "col-sm-2 control-label" %>
+    <div class="col-sm-10">
+      <%= f.text_field :mac, class: 'form-control' %>
+    </div>
   </div>
-  <div class="field">
-    <%= f.label :prosumer_id %><br>
-    <%= f.text_field :prosumer_id %>
+  <div class="form-group">
+    <%= f.label :prosumer_id, class: "col-sm-2 control-label" %>
+    <div class="col-sm-10">
+      <%= collection_select(:meter, :prosumer_id, Prosumer.all.order(name: :asc), :id, :name, {:include_blank => true}, {class: "form-control"}) %>
+    </div>
   </div>
   <div class="actions">
-    <%= f.submit %>
+    <%= f.submit class: "btn btn-primary"%>
   </div>
 <% end %>

@@ -1,27 +1,49 @@
-<h1>Listing meters</h1>
+<div class="row">
+  <div class="col-lg-12">
+    <h3 class="page-header">Meters</h3>
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
 
-<table>
-  <thead>
-    <tr>
-      <th>Mac</th>
-      <th>Prosumer</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
+<!-- /.row -->
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Available Meters
+      </div>
+      <!-- /.panel-heading -->
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered table-hover" id="dataTables-meters">
+            <thead>
+              <tr>
+                <th>Mac</th>
+                <th>Prosumer</th>
+                <th colspan="3"></th>
+              </tr>
+            </thead>
+            <tbody>
 
-  <tbody>
-    <% @meters.each do |meter| %>
-      <tr>
-        <td><%= meter.mac %></td>
-        <td><%= meter.prosumer %></td>
-        <td><%= link_to 'Show', meter %></td>
-        <td><%= link_to 'Edit', edit_meter_path(meter) %></td>
-        <td><%= link_to 'Destroy', meter, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+            <% @meters.each do |meter| %>
+              <tr>
+                <td><%= meter.mac %></td>
+                <td><%= render(partial: "prosumers/prosumername", :locals => { :prosumer => meter.prosumer }) %></td>
+                <td><%= link_to 'Show', meter, class: 'btn btn-success btn-xs' %></td>
+                <td><%= link_to 'Edit', edit_meter_path(meter), class: 'btn btn-info btn-xs' %></td>
+                <td><%= link_to 'Destroy', meter, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-xs' %></td>
+              </tr>
+            <% end %>
 
-<br>
-
-<%= link_to 'New Meter', new_meter_path %>
+            </tbody>
+          </table>
+        </div>
+        <!-- /.table-responsive -->
+        <%= link_to 'New Meter', new_meter_path, class: 'btn btn-default btn-xs' %>
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
