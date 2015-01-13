@@ -107,14 +107,17 @@ class StreamController < ApplicationController
     sse = Streamer::SSE.new(response.stream)
     meter = Meter.find(params[:id])
 
-    puts "in meter"
-    x = $bunny_channel.direct("imeter_exchange")
-    puts "connecting to topic"
-    q = $bunny_channel.queue("", :auto_delete => false).bind(x, :routing_key => "imeter.data.220590338055311")
-    puts "connecting to queue"
+    x = $bunny_channel.topic("imeter_exchange")
+    q = $bunny_channel.queue("", :auto_delete => false).bind(x, :routing_key => "imeter.data.#{meter.mac}")
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
       # puts "sending: ", data
-      sse.write(data, event: 'datapoint')
+      # puts delivery_info, properties, data
+      t = DateTime.parse(JSON.parse(data)["t"]).to_i
+      p = JSON.parse(data)["kw"]
+      sse.write( { timestamp: t,
+                   actual: {
+                     consumption: p
+                    }}.to_json, event: 'datapoint')
     end
     puts "subscribed"
 
@@ -127,7 +130,7 @@ class StreamController < ApplicationController
     end
   rescue => e
     puts e.message
-    puts e.backtrace
+    # puts e.backtrace
   ensure
     ActiveRecord::Base.connection.close
     consumer.cancel unless consumer.nil?
