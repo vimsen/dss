@@ -113,7 +113,6 @@ var plotHelper = (function() {
       if (typeof source != "undefined" && source != null) {
         console.log(source);
         if (source.OPEN) {
-          source.removeEventListener('datapoint', arguments.callee, false);
           source.close();
           console.log("Closed source");
         }
