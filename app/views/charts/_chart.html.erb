@@ -16,6 +16,9 @@
       <option value="consumption" selected="true">Consumption</option>
       <option value="storage">Storage</option>
     </select>
+    <%= collection_select(:interval, :interval_id,
+                          Interval.all.order("duration asc"), :id, :name,
+                          {include_blank: false, :selected => "3"}) %>
     <strong>Forecast?</strong>
     <input id="forecast" type="checkbox">
     <button id="subDates"> Set </button>
@@ -42,6 +45,7 @@
          
             var s = $('#startDate').val();
             var e = $('#endDate').prop("disabled") ? '' : $('#endDate').val();
+            var interval= $('#interval_interval_id').val()
             
               
             var paramObj = {};
@@ -51,6 +55,9 @@
             }
             if (e) {
               paramObj.enddate = e;
+            }
+            if (interval) {
+              paramObj.interval = interval;
             }
              
             var url = "<%= stream %>?" + $.param(paramObj);
