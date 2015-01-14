@@ -1,6 +1,25 @@
-<h1>Editing day_ahead</h1>
+<div class="row">
+  <div class="col-lg-12">
+    <h3 class="page-header"><small>Editing day_ahead:</small> <%= @day_ahead.id -%>
+      <small>
+        <%= link_to 'Show', @day_ahead, class:'btn btn-success btn-xs' %>
+        | <%= link_to 'All day aheads', day_aheads_path, class:'btn btn-warning btn-xs' %>
+      </small>
+    </h3>
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
 
-<%= render 'form' %>
-
-<%= link_to 'Show', @day_ahead %> |
-<%= link_to 'Back', day_aheads_path %>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Day ahead properties
+      </div>
+      <div class="panel-body">
+        <%= render 'form' %>
+      </div>
+    </div>
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
