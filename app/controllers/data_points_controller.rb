@@ -7,7 +7,7 @@ class DataPointsController < ApplicationController
 
   def index
     # @data_points = DataPoint.all
-    @data_points = DataPoint.joins(:prosumer, :interval).order(
+    @data_points = DataPoint.includes(:prosumer, :interval).order(
       sort_column + ' ' + sort_direction).paginate(page: params[:page])
     respond_with(@data_points)
   end
