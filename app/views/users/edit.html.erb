@@ -1,6 +1,25 @@
-<h1>Editing user</h1>
+<div class="row">
+  <div class="col-lg-12">
+    <h3 class="page-header"><small>Editing user:</small> <%= @user.email -%>
+      <small>
+        <%= link_to 'Show', @user, class:'btn btn-success btn-xs' %>
+        | <%= link_to 'All users', users_path, class:'btn btn-warning btn-xs' %>
+      </small>
+    </h3>
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
 
-<%= render 'form' %>
-
-<td><%= link_to 'Show',@user,class: 'btn btn-success btn-xs'  %></td>|
-<td><%= link_to 'Back', users_path ,class: 'btn btn-warning btn-xs'%> </td>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        User properties
+      </div>
+      <div class="panel-body">
+        <%= render 'form' %>
+      </div>
+    </div>
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
