@@ -31,7 +31,7 @@
               <% @data_points.each do |data_point| %>
               <tr>
                 <td><%= render partial: "prosumers/prosumername", :locals => { :prosumer => data_point.prosumer } %></td>
-                <td><%= data_point.interval.name %></td>
+                <td><%= data_point.interval.name unless data_point.interval.nil? %></td>
                 <td><%= data_point.timestamp %></td>
                 <td><%= round_or_null data_point.production, 2 %></td>
                 <td><%= round_or_null data_point.consumption, 2 %></td>

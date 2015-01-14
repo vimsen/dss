@@ -1,6 +1,25 @@
-<h1>Editing data_point</h1>
+<div class="row">
+  <div class="col-lg-12">
+    <h3 class="page-header"><small>Editing data_point</small> <%= @data_point.id -%>
+      <small>
+        <%= link_to 'Show', @data_point, class:'btn btn-success btn-xs' %>
+        | <%= link_to 'All data points', data_points_path, class:'btn btn-warning btn-xs' %>
+      </small>
+    </h3>
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
 
-<%= render 'form' %>
-
-<td><%= link_to 'Show',@data_point,class: 'btn btn-success btn-xs'  %></td>
-<td><%= link_to 'Back', data_points_path ,class: 'btn btn-warning btn-xs'%> </td>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Data point properties
+      </div>
+      <div class="panel-body">
+        <%= render 'form' %>
+      </div>
+    </div>
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
