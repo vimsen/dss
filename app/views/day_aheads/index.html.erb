@@ -11,8 +11,8 @@
           <table class="table table-striped table-bordered table-hover" id="dataTables-data-points">
             <thead>
               <tr>
-                <th>Prosumer</th>
-                <th>Date</th>
+                <th><%= sortable "prosumers.name", "Prosumer" -%></th>
+                <th><%= sortable "date", "Date" -%></th>
                 <th colspan="3"></th>
               </tr>
             </thead>
@@ -29,6 +29,7 @@
               <% end %>
             </tbody>
           </table>
+          <%= will_paginate @day_aheads, renderer: BootstrapPagination::Rails %>
         </div>
         <!-- /.table-responsive -->
         <%= link_to 'New Day ahead', new_day_ahead_path, class: 'btn btn-default btn-xs' %>
