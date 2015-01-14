@@ -1,4 +1,4 @@
-<%= form_for(@meter) do |f| %>
+<%= form_for(@meter, html: {class: "form-horizontal"}) do |f| %>
   <% if @meter.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@meter.errors.count, "error") %> prohibited this meter from being saved:</h2>
