@@ -1,65 +1,62 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h3 class="page-header"><small>Data point:</small> <%= @data_point.id -%>
+      <small>
+        | <%= link_to 'Edit', edit_data_point_path(@data_point), class: 'btn btn-info btn-xs' %>
+        | <%= link_to 'All data points', data_points_path, class: 'btn btn-warning btn-xs'%>
+      </small>
+    </h3>
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
 
-<p>
-  <strong>Prosumer:</strong>
-  <%= render partial: "prosumers/prosumername", :locals => { :prosumer => @data_point.prosumer } %>
-</p>
+<div class="row ">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Data point info
+      </div>
+      <div class="panel-body">
+        <dl class="dl-horizontal">
+          <dt>Prosumer:</dt>
+          <dd><%= render partial: "prosumers/prosumername", :locals => { :prosumer => @data_point.prosumer } %></dd>
 
-<p>
-  <strong>Interval:</strong>
-  <%= @data_point.interval.name %>
-</p>
+          <dt>Interval:</dt>
+          <dd><%= @data_point.interval.name %></dd>
 
-<p>
-  <strong>Timestamp:</strong>
-  <%= @data_point.timestamp %>
-</p>
+          <dt>Timestamp:</dt>
+          <dd><%= @data_point.timestamp %></dd>
 
-<p>
-  <strong>Production:</strong>
-  <%= round_or_null @data_point.production, 2 %>
-</p>
+          <dt>Production:</dt>
+          <dd><%= round_or_null @data_point.production, 2 %></dd>
 
-<p>
-  <strong>Consumption:</strong>
-  <%= round_or_null @data_point.consumption, 2 %>
-</p>
+          <dt>Consumption:</dt>
+          <dd><%= round_or_null @data_point.consumption, 2 %></dd>
 
-<p>
-  <strong>Storage:</strong>
-  <%= round_or_null @data_point.storage, 2 %>
-</p>
+          <dt>Storage:</dt>
+          <dd><%= round_or_null @data_point.storage, 2 %></dd>
 
-<p>
-  <strong>F timestamp:</strong>
-  <%= @data_point.f_timestamp %>
-</p>
+          <dt>F timestamp:</dt>
+          <dd><%= @data_point.f_timestamp %></dd>
 
-<p>
-  <strong>F production:</strong>
-  <%= round_or_null @data_point.f_production, 2 %>
-</p>
+          <dt>F production:</dt>
+          <dd><%= round_or_null @data_point.f_production, 2 %></dd>
 
-<p>
-  <strong>F consumption:</strong>
-  <%= round_or_null @data_point.f_consumption, 2 %>
-</p>
+          <dt>F consumption:</dt>
+          <dd><%= round_or_null @data_point.f_consumption, 2 %></dd>
 
-<p>
-  <strong>F storage:</strong>
-  <%= round_or_null @data_point.f_storage, 2 %>
-</p>
+          <dt>F storage:</dt>
+          <dd><%= round_or_null @data_point.f_storage, 2 %></dd>
 
-<p>
-  <strong>Dr:</strong>
-  <%= round_or_null @data_point.dr, 2 %>
-</p>
+          <dt>Dr:</dt>
+          <dd><%= round_or_null @data_point.dr, 2 %></dd>
 
-<p>
-  <strong>Reliability:</strong>
-  <%= @data_point.reliability %>
-</p>
+          <dt>Reliability:</dt>
+          <dd><%= @data_point.reliability %></dd>
 
-
-<td><%= link_to 'Edit', edit_data_point_path(@data_point),class: 'btn btn-info btn-xs' %></td> |
-<td><%= link_to 'Back', data_points_path ,class: 'btn btn-warning btn-xs'%> </td>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
 
