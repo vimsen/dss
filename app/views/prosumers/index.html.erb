@@ -37,11 +37,11 @@
           <table class="table table-striped table-bordered table-hover" id="dataTables-prosumers">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Location</th>
-                <th>Cluster</th>
-                <th>Building Type</th>
-                <th>Connection Type</th>
+                <th><%= sortable "name", "Name" %></th>
+                <th><%= sortable "location", "Location" %></th>
+                <th><%= sortable "clusters.name", "Cluster" %></th>
+                <th><%= sortable "building_types.name", "Building Type" %></th>
+                <th><%= sortable "connection_types.name", "Connection Type" %></th>
                 <th>Users</th>
                 <th>Energy Type</th>
                 <th colspan="3"></th>
@@ -67,6 +67,7 @@
 
             </tbody>
           </table>
+          <%= will_paginate @prosumers, renderer: BootstrapPagination::Rails %>
         </div>
         <!-- /.table-responsive -->
         <%= link_to 'New Prosumer', new_prosumer_path, class: 'btn btn-default btn-xs' %>

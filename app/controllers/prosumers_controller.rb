@@ -2,11 +2,13 @@
 class ProsumersController < ApplicationController
   before_action :set_prosumer, only: [:show, :edit, :update, :destroy]
   load_and_authorize_resource
+  helper_method :sort_column, :sort_direction
 
   # GET /prosumers
   # GET /prosumers.json
   def index
-    @prosumers = Prosumer.all
+    @prosumers = Prosumer.joins(:cluster, :building_type, :connection_type).
+        order(sort_column + ' ' + sort_direction).paginate(page: params[:page])
   end
 
   # GET /prosumers/1
@@ -116,5 +118,18 @@ class ProsumersController < ApplicationController
                                      energy_type_prosumers_attributes: [
                                        :id, :power, :energy_type_id, :_destroy
                                      ])
+  end
+
+  def sort_column
+    if (Prosumer.column_names + ['clusters.name', 'building_types.name', 'connection_types.name']
+    ).include?(params[:sort])
+      params[:sort]
+    else
+      'name'
+    end
+  end
+
+  def sort_direction
+    %w(asc desc).include?(params[:direction]) ?  params[:direction] : 'asc'
   end
 end
