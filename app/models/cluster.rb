@@ -40,11 +40,11 @@ class Cluster < ActiveRecord::Base
     puts "Checking aggregate:"
     aggregate.each do |key, value|
       puts key, value
-      if count[key] == num
-        res = value.clientFormat;
-        res[:prosumer_name] = "Aggregate"
-        result.push(res)
-      end
+      # if count[key] == num
+      res = value.clientFormat;
+      res[:prosumer_name] = "Aggregate"
+      result.push(res)
+      # end
     end
     
     
