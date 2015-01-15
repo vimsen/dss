@@ -26,7 +26,7 @@ class HomeController < ApplicationController
          chartData = Array.new  
          priceData = Array.new  
 
-         selected_date = Date.today-30
+	 selected_date =  Date.today.prev_year + 1
 
          @prices = DayAheadEnergyPrice.order("dayhour").where(date:selected_date,market_id:1)
 

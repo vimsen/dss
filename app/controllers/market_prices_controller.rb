@@ -8,9 +8,11 @@ class MarketPricesController < ApplicationController
          chartData = Array.new
          priceData = Array.new
 
-         selected_date = Date.today-30
+	 selected_date =  Date.today.prev_year + 1
 
-	 date_label = selected_date.to_s
+	 actual_day_ahead = Date.today + 1
+
+	 date_label = actual_day_ahead.to_s
 
          prices = DayAheadEnergyPrice.order("dayhour").where(date: selected_date, market_id: params[:id])
 
@@ -35,7 +37,7 @@ class MarketPricesController < ApplicationController
          mi3_priceData = Array.new
 	 mi4_priceData = Array.new
 
-         selected_date = Date.today-30
+         selected_date = Date.today.prev_year
 
          mi1_prices = IntraDayEnergyPrice.order("dayhour").where(date: selected_date, market_id: params[:id], interval_id: 1)
 	 mi2_prices = IntraDayEnergyPrice.order("dayhour").where(date: selected_date, market_id: params[:id], interval_id: 2)
