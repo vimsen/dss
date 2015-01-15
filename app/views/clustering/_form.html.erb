@@ -109,7 +109,7 @@
           },
           xaxis: {
             mode: "time",
-            timeformat: "%y/%m/%d<br/>%h:%M:%S",
+            timeformat: "%d/%m/%Y<br/>%h:%M:%S",
             timezone: "browser",
             ticks: 3 /*,
              timeformat : "%y/%m/%d-%h:%M:%S",
@@ -140,7 +140,7 @@
       var lastempty = false;
       $('.connectedSortable').each(function (index, listItem) {
         sortList(listItem);
-        clusterIds = getIds(listItem);
+        var clusterIds = getIds(listItem);
         $.each(clusterIds, function (idx, val) {
           clusterOf[val] = index;
         });
