@@ -5,7 +5,6 @@
  %>
 
 <div>
-  <div id="placeholder" style="width:100%;height:400px;min-width=600px"></div>
   <div id="controls">
     <input id="startDate" type="text" value="<%= startDate %>"/>
     <input id="endDate" type="text" value="<%= endDate %>"/> 
@@ -22,8 +21,17 @@
     <strong>Forecast?</strong>
     <input id="forecast" type="checkbox">
     <button id="subDates"> Set </button>
-    <br/>
   </div>
+  <br/>
+  <div class="row">
+    <div class="col-md-10">
+      <div id="placeholder" style="width:100%;height:400px;min-width=600px"></div>
+    </div>
+    <div class="col-md-2">
+      <div id="legend" ></div>
+    </div>
+  </div>
+
 </div>
 <script>  
    

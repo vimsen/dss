@@ -11,7 +11,7 @@
                    </div>
                   <div class="input-group">
                     <%= label_tag "Prosumers:", nil, class: "control-label" %>
-                    <ul class="list-inline connectedSortable", id: "<%= "prosummer_list_#{cl_counter}" -%>" >
+                    <ul class="list-inline connectedSortable", id="<%= "prosummer_list_#{cl_counter}" -%>" >
                       <% cl.prosumers.each do |p| %>
                         <li id="<%= "prosumer_#{p.id}" -%>"><%= p.name -%><div style="visibility: hidden;"><%= p.id -%></div></li>
                       <% end %>

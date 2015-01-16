@@ -58,6 +58,9 @@ var plotHelper = (function() {
           },
           yaxis : {
             tickDecimals: 2
+          },
+          legend:{
+            container: ($( "#legend" ).length ? $("#legend") : null)
           }
         });
       }
