@@ -1,4 +1,4 @@
   <%= form_for @cluster,  :url => {:controller => "clusters", :action => "addprosumer"} do |f| %>
-    <%= collection_select(:prosumer, :prosumer_id, @cluster.getNotMembers, :id, :name, {}, {class: "btn-success"}) %>
+    <%= collection_select(:prosumer, :prosumer_id, @cluster.getNotMembers.order(name: :asc), :id, :name, {}, {class: "btn-success"}) %>
     <%= f.submit "Add", data: { confirm: 'Are you sure?' }, class: "btn btn-xs btn-success"%>
   <% end %>
