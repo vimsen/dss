@@ -43,5 +43,17 @@ class Prosumer < ActiveRecord::Base
   def self.with_locations
     Prosumer.where("location_x IS NOT NULL and location_y IS NOT NULL") 
   end
+
+  def self.with_positive_dr
+    Prosumer.select { |p| p.max_dr && p.max_dr > 0 }
+  end
+
+  def self.with_dr
+    Prosumer.select { |p| p.max_dr }
+  end
+
+  def max_dr
+    self.data_points.empty? ? nil : self.data_points.max { |dp| dp.dr }.dr
+  end
   
 end

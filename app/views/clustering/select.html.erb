@@ -30,11 +30,13 @@
           </div>
           <script>
             $(function(){
-              if ($("#algorithm").find('option:selected').val() != "location") {
+              var selected = $("#algorithm").find('option:selected').val();
+              if (selected != "location" && selected != "dr") {
                 $("#k_parameter").hide();
               }
               $("#algorithm").change(function() {
-                if ($(this).find('option:selected').val() == "location") {
+                var selected = $(this).find('option:selected').val();
+                if (selected == "location" || selected == "dr") {
                   $("#k_parameter").show();
                 } else {
                   $("#k_parameter").hide();

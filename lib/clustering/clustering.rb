@@ -8,7 +8,9 @@ module Clustering
      { string: :connection_type,
        name: 'By connection type' },
      { string: :location,
-       name: 'By location' }]
+       name: 'By location' },
+     { string: :dr,
+       name: "By demand response profile"}]
   end
 
   def self.run_algorithm(algo, param)
@@ -21,6 +23,8 @@ module Clustering
       result = run_connection_type
     when 'location'
       result = run_location param.to_i
+    when 'dr'
+      result = run_dr param.to_i
     else
       return nil
     end
@@ -108,6 +112,15 @@ module Clustering
     }
   end
 
+  def self.get_centroid_dr(cluster)
+    puts "test"
+    puts [cluster.prosumers.map {|p| p.max_dr }.sum, cluster.prosumers.size]
+    {
+        dr: cluster.prosumers.map {|p| p.max_dr }.sum / cluster.prosumers.size,
+        cluster: cluster
+    }
+  end
+
   def self.distance(prosumer, centroid)
     (prosumer.location_x - centroid[:x])**2 +
       (prosumer.location_y - centroid[:y])**2
@@ -124,6 +137,12 @@ module Clustering
       end
     end
     closest
+  end
+
+  def self.find_closest_dr(prosumer, centroids)
+    (centroids.min_by do |c|
+      (c[:dr] - prosumer.max_dr).abs
+    end)[:cluster]
   end
 
   def self.run_location(kappa)
@@ -151,6 +170,40 @@ module Clustering
       cl = Cluster.new name: 'No loc.',
                        description: 'Prosumers with no Location info available.'
       cl.prosumers << without_location
+      result.push cl
+    end
+    result
+  end
+
+  def self.run_dr(kappa)
+    result = Prosumer.with_positive_dr.sample(kappa).map.with_index do |p, i|
+      cl = Cluster.new name: "Dr: #{i}",
+                       description: "Demand Response based cluster #{i}"
+      cl.prosumers.push p
+      cl
+    end
+
+    centroids = result.map { |cl| get_centroid_dr cl }
+    loop do
+      old_centroids = Array.new centroids
+      puts "Old centroids: ", old_centroids
+      result.each { |cl| cl.prosumers.clear }
+      Prosumer.with_dr.each do |p|
+        cl = find_closest_dr(p, centroids)
+        puts "Testing: ", [p.max_dr, p.id, cl.name]
+        cl.prosumers.push p
+      end
+      result = result.select { |cl| cl.prosumers.size > 0}
+      centroids = result.map { |cl| get_centroid_dr cl }
+      break if centroids <=> old_centroids
+    end
+
+    without_dr = Prosumer.all - Prosumer.with_dr
+
+    if without_dr.count > 0
+      cl = Cluster.new name: 'No DR info.',
+                       description: 'Prosumers with no DR info available'
+      cl.prosumers << without_dr
       result.push cl
     end
     result

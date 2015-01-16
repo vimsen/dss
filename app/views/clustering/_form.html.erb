@@ -35,7 +35,7 @@
 <script>
   $(function () {
 
-    var energy_consumption = <%= JSON.pretty_generate(Prosumer.all.map { |p| {id: p.id, dps: p.data_points.where(interval: 3, timestamp: (Time.now - 7.days)..Time.now).map { |dp| {time: dp.timestamp.to_i, value: dp.consumption} } } }).html_safe -%>;
+    var energy_consumption = <%= JSON.pretty_generate(Prosumer.all.map { |p| {id: p.id, dr: p.max_dr, dps: p.data_points.where(interval: 3, timestamp: (Time.now - 7.days)..Time.now).map { |dp| {time: dp.timestamp.to_i, value: dp.consumption} } } }).html_safe -%>;
 
     var threshold = parseFloat($("#threshold_input").val());
 
@@ -164,7 +164,8 @@
           min = Math.min(min, val.value);
         });
 
-        $("#prosumer_" + value.id).attr("title", "Max: " + max + ", min: " + min);
+        $("#prosumer_" + value.id).attr("title", "Max: " + max + ", min: " + min + ", dr:" + value.dr
+        );
 
       });
 
