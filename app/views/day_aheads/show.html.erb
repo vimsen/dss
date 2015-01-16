@@ -3,7 +3,7 @@
     <h3 class="page-header"><small>Day ahead:</small> <%= @day_ahead.id -%>
       <small>
         | <%= link_to 'Edit', edit_day_ahead_path(@day_ahead), class: 'btn btn-info btn-xs' %>
-        | <%= link_to 'All day aheads', day_aheads_path ,class: 'btn btn-warning btn-xs'%>
+        | <%= link_to 'All day aheads - Back', day_aheads_path ,class: 'btn btn-warning btn-xs'%>
       </small>
     </h3>
   </div>
@@ -80,3 +80,4 @@
  	});
 </script>
 
+<input id="startDate" type="hidden" value="<%= startdate %>"/>
