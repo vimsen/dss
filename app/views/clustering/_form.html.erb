@@ -59,8 +59,9 @@
       return result
     };
 
-    var format = function (arr) {
+    var format = function (arr, i_arr) {
       var aggr = [];
+      var i_aggr = [];
       var thresh = [];
       if (arr != null) {
         $.each(arr, function (index, value) {
@@ -68,10 +69,20 @@
           thresh.push([index * 1000.0, threshold]);
         });
       }
+      if (i_arr != null) {
+        $.each(i_arr, function (index, value) {
+          i_aggr.push([index * 1000.0, value]);
+          thresh.push([index * 1000.0, threshold]);
+        });
+      }
+
       return [{
         label: "Consumption",
         data: aggr.sort()
       }, {
+        label: "initial",
+        data: i_aggr.sort()
+      },{
         label: "Threshold",
         data: thresh.sort()
       }];
@@ -79,14 +90,17 @@
 
     var rePlot = function (clusterOf) {
       var data_table = [];
+      var i_data_table = [];
       $.each(energy_consumption, function (index, value) {
         var cl = clusterOf[value.id];
+        var icl = init_cluster[value.id];
         data_table[cl] = sumArrays(data_table[cl], value.dps);
+        i_data_table[icl] = sumArrays(i_data_table[icl], value.dps);
       });
       $('.connectedSortable').each(function (index, value) {
         // $.each(data_table, function(index, value){
 
-        $.plot($("#chart_" + index), format(data_table[index]), {
+        $.plot($("#chart_" + index), format(data_table[index], i_data_table[index]), {
           series: {
             lines: {
               show: true
@@ -111,12 +125,12 @@
             mode: "time",
             timeformat: "%d/%m/%Y<br/>%h:%M:%S",
             timezone: "browser",
-            ticks: 3 /*,
+            ticks: 2 /*,
              timeformat : "%y/%m/%d-%h:%M:%S",
              tickSize : [12, "hour"]*/
           },
           yaxis: {
-            tickDecimals: 2
+            tickDecimals: 0
           }
         });
       });
@@ -155,6 +169,20 @@
       rePlot(clusterOf);
     };
 
+    var init_cluster = (function () {
+      var clusterOf = [];
+      $('.connectedSortable').each(function (index, listItem) {
+        sortList(listItem);
+        var clusterIds = getIds(listItem);
+        $.each(clusterIds, function (idx, val) {
+          clusterOf[val] = index;
+        });
+        $("#hidden_" + index).val(clusterIds.join(','));
+      });
+      return clusterOf;
+
+    })();
+
     var makeTooltips = function () {
       $.each(energy_consumption, function (index, value) {
         var max = Number.MIN_VALUE;
@@ -164,8 +192,8 @@
           min = Math.min(min, val.value);
         });
 
-        $("#prosumer_" + value.id).attr("title", "Max: " + max + ", min: " + min + ", dr:" + value.dr
-        );
+        $("#prosumer_" + value.id).attr("title", "Max: " + max + ", min: " +
+                min + ", dr:" + value.dr);
 
       });
 
@@ -177,7 +205,7 @@
     });
 
     $("#add_cluster").click(function () {
-      $("#last_row").before('<%=j render partial: 'single', locals: { cl: Cluster.new, cl_counter: "NEW_CLUSTER_ID"}  %>'.replace(/NEW_CLUSTER_ID/g, $(".connectedSortable").length));
+      $("#last_row").before('<%=j render partial: 'single', locals: { cl: Cluster.new, cl_counter: "NEW_CLUSTER_ID"} -%>'.replace(/NEW_CLUSTER_ID/g, $(".connectedSortable").length));
       $(".connectedSortable").sortable({
         stop: function () {
           refreshLists();
@@ -249,3 +277,4 @@
   });
 
 </script>
+
