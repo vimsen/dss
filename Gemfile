@@ -64,3 +64,7 @@ gem 'simple-navigation-bootstrap' # For the menu
 gem 'gmaps4rails' # For google maps
 gem 'underscore-rails' # dito
 
+group :development, :test do
+  gem 'rails-erd' # use `bundle exec erd` to genera ERD diagram
+  gem 'railroady' # Use `rake diagram:all` for generating all diagrams
+end
