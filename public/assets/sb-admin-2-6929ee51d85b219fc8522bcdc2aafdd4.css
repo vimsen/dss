@@ -4,6 +4,7 @@
  * For details, see http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+
 body {
     background-color: #f8f8f8;
 }
@@ -166,7 +167,8 @@ body {
 .btn-outline {
     color: inherit;
     background-color: transparent;
-    transition: all .5s;
+    -webkit-transition: all .5s;
+            transition: all .5s;
 }
 
 .btn-primary.btn-outline {
