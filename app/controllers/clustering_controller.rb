@@ -1,18 +1,22 @@
-require 'clustering/clustering'
+require 'clustering/clustering_module'
 
 # This is the controller handles the automatic clustring BL
 class ClusteringController < ApplicationController
   authorize_resource class: false
 
+  def index
+    @clusterings = Clustering.all
+  end
+
   def select
   end
 
   def confirm
-    @clusters = Clustering.run_algorithm params[:algorithm], params[:kappa]
+    @clusters = ClusteringModule.run_algorithm params[:algorithm], params[:kappa]
   end
 
   def edit
-    @clusters = Cluster.all
+    @clusters = params[:id].nil? ? Cluster.all : Clustering.find(params[:id]).temp_clusters
   end
 
   def save
@@ -53,6 +57,6 @@ class ClusteringController < ApplicationController
   private
 
   def algorithms
-    Clustering.algorithms
+    ClusteringModule.algorithms
   end
 end

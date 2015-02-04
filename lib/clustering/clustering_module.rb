@@ -1,5 +1,5 @@
 # This module implements the clustering algorithms for the demo
-module Clustering
+module ClusteringModule
   def self.algorithms
     [{ string: :energy_type,
        name: 'By renewable type' },
