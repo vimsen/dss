@@ -16,6 +16,7 @@
 //= require bootstrap-table
 //= require turbolinks
 //= require sb-admin-2
+//= require plugins/EventSourcePolyfil/EventSource
 //= require plugins/metisMenu/metisMenu.min
 //= require plugins/dataTables/jquery.dataTables
 //= require plugins/dataTables/dataTables.bootstrap
