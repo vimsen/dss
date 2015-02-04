@@ -11,13 +11,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150112090723) do
+ActiveRecord::Schema.define(version: 20150204132935) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "building_types", force: true do |t|
     t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "clusterings", force: true do |t|
+    t.string   "name"
+    t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -177,6 +184,13 @@ ActiveRecord::Schema.define(version: 20150112090723) do
   add_index "prosumers", ["connection_type_id"], name: "index_prosumers_on_connection_type_id", using: :btree
   add_index "prosumers", ["intelen_id"], name: "index_prosumers_on_intelen_id", unique: true, using: :btree
 
+  create_table "prosumers_temp_clusters", force: true do |t|
+    t.integer "prosumer_id"
+    t.integer "temp_cluster_id"
+  end
+
+  add_index "prosumers_temp_clusters", ["prosumer_id", "temp_cluster_id"], name: "index_prosumers_temp_clusters_on_prosumer_id_and_temp_cluster", using: :btree
+
   create_table "prosumers_users", id: false, force: true do |t|
     t.integer "prosumer_id"
     t.integer "user_id"
@@ -194,6 +208,16 @@ ActiveRecord::Schema.define(version: 20150112090723) do
 
   add_index "roles", ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id", using: :btree
   add_index "roles", ["name"], name: "index_roles_on_name", using: :btree
+
+  create_table "temp_clusters", force: true do |t|
+    t.string   "name"
+    t.text     "description"
+    t.integer  "clustering_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "temp_clusters", ["clustering_id"], name: "index_temp_clusters_on_clustering_id", using: :btree
 
   create_table "users", force: true do |t|
     t.string   "email",                  default: "", null: false

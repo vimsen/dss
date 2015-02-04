@@ -16,8 +16,11 @@ Rails.application.routes.draw do
 
   get 'clustering/edit'
   get 'clustering/select'
+  # get 'clustering' => 'clustering#index'
   post 'clustering/confirm'
   post 'clustering/save'
+
+  resources :clustering
 
   resources :connection_types
 

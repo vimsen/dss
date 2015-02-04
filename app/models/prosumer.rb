@@ -15,6 +15,7 @@ class Prosumer < ActiveRecord::Base
   resourcify
 
   has_and_belongs_to_many :users
+  has_and_belongs_to_many :temp_clusters
 
   has_many :energy_type_prosumers
   has_many :energy_types, :through => :energy_type_prosumers
