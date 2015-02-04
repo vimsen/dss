@@ -29,7 +29,7 @@
     </div>
     <div class="col-md-10 col-md-pull-2">
       <div class="row" id="placeholder" style="width:100%;height:400px;min-width=600px"></div>
-      <div class="woe" id="vio_div" style="display: none;">
+      <div class="row" id="vio_div" style="display: none;">
         <hr/>
         <table id="violations" class="table">
           <thead>
@@ -47,17 +47,17 @@
 
 
 </div>
-<script>  
-   
+<script>
+
     var idata = <%= provider.request_cached(3, startDate, endDate).to_json.html_safe %>;
     $(function(){
         plotHelper.drawChart(
-                "<%= stream %>", 
+                "<%= stream %>",
                 plotHelper.readData(
-                      idata, 
+                      idata,
                       $('#type').val(),
-                      $('#forecast').is(':checked')), 
-                $('#type').val(), 
+                      $('#forecast').is(':checked')),
+                $('#type').val(),
                 $('#forecast').is(':checked'));
         $('#startDate').datetimepicker();
         $('#endDate').datetimepicker();
