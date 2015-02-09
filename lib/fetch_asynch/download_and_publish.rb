@@ -10,7 +10,8 @@ module FetchAsynch
     def initialize(prosumers, interval, startdate, enddate, channel)
       Thread.new do
         ActiveRecord::Base.connection.close
-        sleep 1
+
+     #   sleep 1
 
         u = YAML.load_file('config/config.yml')[Rails.env]['intellen_host']
         uri = URI.parse(u + '/getdata')

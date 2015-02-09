@@ -31,12 +31,6 @@ class StreamController < ApplicationController
     enddate = (params[:enddate].nil?) ? (Time.now) : params[:enddate].to_time 
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
 
-    idata = cluster.request_cached(interval, startdate, enddate)
-    
-    idata.each do |d|
-      sse.write(d.to_json, event: 'datapoint')  
-    end    
-    
     x = $bunny_channel.fanout("cluster.#{cluster.id}")
     q = $bunny_channel.queue("", :exclusive => false)
     q.bind(x)
@@ -45,7 +39,12 @@ class StreamController < ApplicationController
       sse.write(data, event: 'datapoint')
       ActiveRecord::Base.connection.close
     end
-    
+
+    idata = cluster.request_cached(interval, startdate, enddate)
+    idata.each do |d|
+      sse.write(d.to_json, event: 'datapoint')
+    end
+
     ActiveRecord::Base.connection.close
     
     loop do
@@ -71,13 +70,6 @@ class StreamController < ApplicationController
     enddate = (params[:enddate].nil?) ? (Time.now) : params[:enddate].to_time 
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
     
-    idata = prosumer.request_cached(interval, startdate, enddate)
-    
-    idata.each do |d|
-      sse.write(d.to_json, event: 'datapoint')  
-    end
-    
- 
     x = $bunny_channel.fanout("prosumer.#{params[:id]}")
     q = $bunny_channel.queue("", :exclusive => false)
     q.bind(x)
@@ -85,6 +77,12 @@ class StreamController < ApplicationController
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
       # puts "sending: ", data
       sse.write(data, event: 'datapoint')
+    end
+
+    idata = prosumer.request_cached(interval, startdate, enddate)
+
+    idata.each do |d|
+      sse.write(d.to_json, event: 'datapoint')
     end
  
     ActiveRecord::Base.connection.close
