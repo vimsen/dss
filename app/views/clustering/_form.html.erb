@@ -1,6 +1,7 @@
 <%= form_tag "/clustering/save", class: "form-inline" do %>
   <div class="row">
     <div class="col-md-8">
+      <%= hidden_field_tag "clustering_id", @clustering.id %>
     </div>
     <div class="col-md-4">
       <div id="legend"></div>
@@ -9,6 +10,31 @@
   </div>
 
 
+  <div class="row">
+    <div class="col-md-8">
+      <div class="form-group">
+        <div class="input-group">
+          <%= label_tag "Without cluster", nil, class: "control-label" %>
+          <%= hidden_field_tag "clusternames[]", :NONE %>
+          <%= hidden_field_tag "clusterdescriptions[]", :NONE %>
+        </div>
+        <div class="input-group">
+          <%= label_tag "Prosumers:", nil, class: "control-label" %>
+          <ul class="list-inline connectedSortable" id="prosumer_list_0" >
+            <% ( @clusters.nil? ? Prosumer.all : Prosumer.all - @clusters.flat_map {|c| c.prosumers} ).each do |p| %>
+              <li id="<%= "prosumer_#{p.id}" -%>"><%= p.name -%><div style="visibility: hidden;"><%= p.id -%></div></li>
+            <% end %>
+          </ul>
+        </div>
+        <%= hidden_field_tag "clusterprosumers[]", ( @clusters.nil? ? Prosumer.all : Prosumer.all - @clusters.flat_map {|c| c.prosumers} ).map {|p| p.id}.join(","), id: "hidden_0" %>
+        <%= hidden_field_tag "clusterids[]", -1 %>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div id="<%= "chart_0" -%>" style="height: 200px;width:300px" ></div>
+    </div>
+    <hr/>
+  </div>
 
   <%= render partial: "single", collection: @clusters, as: :cl %>
 
@@ -220,7 +246,7 @@
     });
 
     $("#add_cluster").click(function () {
-      $("#last_row").before('<%=j render partial: 'single', locals: { cl: Cluster.new, cl_counter: "NEW_CLUSTER_ID"} -%>'.replace(/NEW_CLUSTER_ID/g, $(".connectedSortable").length));
+      $("#last_row").before('<%=j render partial: 'single', locals: { cl: Cluster.new, cl_counter: "100000"} -%>'.replace(/100001/g, $(".connectedSortable").length ));
       $(".connectedSortable").sortable({
         stop: function () {
           refreshLists();
