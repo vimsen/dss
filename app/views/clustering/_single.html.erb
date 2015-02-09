@@ -11,7 +11,7 @@
                    </div>
                   <div class="input-group">
                     <%= label_tag "Prosumers:", nil, class: "control-label" %>
-                    <ul class="list-inline connectedSortable", id="<%= "prosummer_list_#{cl_counter}" -%>" >
+                    <ul class="list-inline connectedSortable" id="<%= "prosumer_list_#{cl_counter.to_i + 1}" -%>" >
                       <% cl.prosumers.each do |p| %>
                         <li id="<%= "prosumer_#{p.id}" -%>"><%= p.name -%><div style="visibility: hidden;"><%= p.id -%></div></li>
                       <% end %>
@@ -19,12 +19,12 @@
                     
                   </div>
                   
-                  <%= hidden_field_tag "clusterprosumers[]", cl.prosumers.map {|p| p.id}.join(","), id: "hidden_#{cl_counter}" %>
+                  <%= hidden_field_tag "clusterprosumers[]", cl.prosumers.map {|p| p.id}.join(","), id: "hidden_#{cl_counter.to_i + 1}" %>
                   <%= hidden_field_tag "clusterids[]", cl.id %>
                 </div>
               </div>  
               <div class="col-md-4">
-                <div id="<%= "chart_#{cl_counter}" -%>" style="height: 200px;width:300px" ></div>
+                <div id="<%= "chart_#{cl_counter.to_i + 1}" -%>" style="height: 200px;width:300px" ></div>
               </div>  
               <hr/>
             </div>
