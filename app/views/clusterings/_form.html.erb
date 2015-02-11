@@ -41,7 +41,7 @@
         <div class="input-group">
           <%= label_tag "Prosumers:", nil, class: "control-label" %>
           <ul class="list-inline connectedSortable" id="prosumer_list_0" >
-            <% ( @clusters.nil? ? Prosumer.all : Prosumer.all - @clusters.flat_map {|c| c.prosumers} ).each do |p| %>
+            <% ( Prosumer.all - @clustering.temp_clusters.flat_map {|c| c.prosumers} ).each do |p| %>
               <li id="<%= "prosumer_#{p.id}" -%>"><%= p.name -%><div style="visibility: hidden;"><%= p.id -%></div></li>
             <% end %>
           </ul>
@@ -109,7 +109,7 @@
     <div class="col-md-8">
       <div class="actions">
         <%= f.submit "Confirm", class: "btn btn-primary" %> |
-        <%= link_to 'Cancel', clusters_path, class: 'btn btn-warning' %>
+        <%= link_to 'Cancel', clusterings_path, class: 'btn btn-warning' %>
       </div>
     </div>
     <div class="col-md-4">

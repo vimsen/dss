@@ -36,11 +36,11 @@ module ClusteringModule
 
   def self.run_energy_type
     result = {}
-    cl = Cluster.new name: 'No ren.',
+    cl = TempCluster.new name: 'No ren.',
                      description: 'No info about renewable energy.'
     result[:none] = cl
     EnergyType.all.each do |et|
-      cl = Cluster.new name: "CL: #{et.name}",
+      cl = TempCluster.new name: "CL: #{et.name}",
                        description: "Prosumers with primarily #{et.name} "\
                                     'energy production'
       result[et.id] = cl
@@ -61,13 +61,13 @@ module ClusteringModule
 
   def self.run_connection_type
     result = []
-    cl = Cluster.new name: 'No con. info.',
+    cl = TempCluster.new name: 'No con. info.',
                      description: 'No connection info.'
     cl.prosumers << Prosumer.where(connection_type: nil)
     result.push(cl)
 
     ConnectionType.all.each do |bt|
-      cl = Cluster.new name: "CL: #{bt.name}",
+      cl = TempCluster.new name: "CL: #{bt.name}",
                        description: "Prosumers with #{bt.name} connection."
 
       cl.prosumers << Prosumer.where(connection_type: bt)
@@ -78,14 +78,14 @@ module ClusteringModule
 
   def self.run_building_type
     result = []
-    cl = Cluster.new name: 'No buil. info',
+    cl = TempCluster.new name: 'No buil. info',
                      description: 'No building type info.'
 
     cl.prosumers << Prosumer.where(building_type: nil)
     result.push(cl)
 
     BuildingType.all.each do |bt|
-      cl = Cluster.new name: "CL: #{bt.name}",
+      cl = TempCluster.new name: "CL: #{bt.name}",
                        description: "Prosumers with #{bt.name} building type."
       cl.prosumers << Prosumer.where(building_type: bt)
 
@@ -147,7 +147,7 @@ module ClusteringModule
 
   def self.run_location(kappa)
     result = Prosumer.with_locations.sample(kappa).map.with_index do |p, i|
-      cl = Cluster.new name: "Loc: #{i}",
+      cl = TempCluster.new name: "Loc: #{i}",
                        description: "Location based cluster #{i}."
       cl.prosumers.push p
       cl
@@ -167,7 +167,7 @@ module ClusteringModule
     without_location = Prosumer.all - Prosumer.with_locations
 
     if without_location.count > 0
-      cl = Cluster.new name: 'No loc.',
+      cl = TempCluster.new name: 'No loc.',
                        description: 'Prosumers with no Location info available.'
       cl.prosumers << without_location
       result.push cl
@@ -177,7 +177,7 @@ module ClusteringModule
 
   def self.run_dr(kappa)
     result = Prosumer.with_positive_dr.sample(kappa).map.with_index do |p, i|
-      cl = Cluster.new name: "Dr: #{i}",
+      cl = TempCluster.new name: "Dr: #{i}",
                        description: "Demand Response based cluster #{i}"
       cl.prosumers.push p
       cl
@@ -201,7 +201,7 @@ module ClusteringModule
     without_dr = Prosumer.all - Prosumer.with_dr
 
     if without_dr.count > 0
-      cl = Cluster.new name: 'No DR info.',
+      cl = TempCluster.new name: 'No DR info.',
                        description: 'Prosumers with no DR info available'
       cl.prosumers << without_dr
       result.push cl

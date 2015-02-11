@@ -14,7 +14,7 @@ Rails.application.routes.draw do
   get 'cloud_platform/instances'  => 'cloud_platform#instances'
   get 'cloud_platform/delete/:id' => 'cloud_platform#delete'
 
-  get 'clusterings/edit'
+  get 'clusterings/new_from_existing', as: :new_from_existing_clustering
   get 'clusterings/select'
   # get 'clusterings' => 'clusterings#index'
   post 'clusterings/confirm'

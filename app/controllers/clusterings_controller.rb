@@ -21,14 +21,38 @@ class ClusteringsController < ApplicationController
     respond_with(@clustering)
   end
 
+  def new_from_existing
+    @clustering = Clustering.new(name: "From existing",
+                                 description: "Clustering generated from existing clusters at #{Time.now}"   )
+    Cluster.all.each do |c|
+      @clustering.temp_clusters << TempCluster.new(name: c.name,
+                                                   description: c.description,
+                                                   prosumers: c.prosumers,
+                                                   clustering: @clustering)
+    end
+    puts "CLUSTERING=====", @clustering
+    respond_with(@clustering)
+  end
+
   def edit
-    # Todo Check what to do with edit before action
-    @clusters = params[:id].nil? ? Cluster.all : Clustering.find(params[:id]).temp_clusters
+
   end
 
   def create
     @clustering = Clustering.new(clustering_params)
-    flash[:notice] = 'Clustering was successfully create.' if @clustering.save
+    ActiveRecord::Base.transaction do
+      if @clustering.save
+        flash[:notice] = 'Clustering was successfully created.'
+        unless params[:clusterprosumers].nil?
+          @clustering.temp_clusters.zip(params[:clusterprosumers]).each do |tc, pros_list|
+            tc.prosumers = Prosumer.find(pros_list.split(','))
+          end
+        end
+
+      else
+        flash[:error] = 'Clustering was NOT successfully created.'
+      end
+    end
     respond_with(@clustering)
   end
 
@@ -43,13 +67,13 @@ class ClusteringsController < ApplicationController
         @clustering.temp_clusters.where.not(id: clusterids.map {|k,v| v["id"]}).destroy_all
       end
 
-      params[:clusterprosumers].each
-
       if @clustering.update(clustering_params)
         flash[:notice] = 'Clustering was successfully updated'
 
-        @clustering.temp_clusters.zip(params[:clusterprosumers]).each do |tc, pros_list|
-          tc.prosumers = Prosumer.find(pros_list.split(','))
+        unless params[:clusterprosumers].nil?
+          @clustering.temp_clusters.zip(params[:clusterprosumers]).each do |tc, pros_list|
+            tc.prosumers = Prosumer.find(pros_list.split(','))
+          end
         end
 
       else
@@ -68,7 +92,9 @@ class ClusteringsController < ApplicationController
   end
 
   def confirm
-    @clusters = ClusteringModule.run_algorithm params[:algorithm], params[:kappa]
+    @clustering = Clustering.new(name: "Auto #{params[:algorithm]}",
+                                 description: "Automatic cluster generated with #{params[:algorithm]} algorithm.");
+    @clustering.temp_clusters = ClusteringModule.run_algorithm params[:algorithm], params[:kappa]
   end
 
   def save
