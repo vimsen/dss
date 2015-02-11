@@ -14,13 +14,13 @@ Rails.application.routes.draw do
   get 'cloud_platform/instances'  => 'cloud_platform#instances'
   get 'cloud_platform/delete/:id' => 'cloud_platform#delete'
 
-  get 'clustering/edit'
-  get 'clustering/select'
-  # get 'clustering' => 'clustering#index'
-  post 'clustering/confirm'
-  post 'clustering/save'
+  get 'clusterings/edit'
+  get 'clusterings/select'
+  # get 'clusterings' => 'clusterings#index'
+  post 'clusterings/confirm'
+  post 'clusterings/save'
 
-  resources :clustering
+  resources :clusterings
 
   resources :connection_types
 

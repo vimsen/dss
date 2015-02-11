@@ -3,7 +3,7 @@
                 <div class="form-group">
                   <div class="input-group">
                     <%= label_tag "Name:", nil, class: "control-label" %>
-                    <%= text_field_tag "clusternames[]", cl.name, {class: "form-control"} %>
+                    <%= text_field_tag "clustering[temp_clusters_attributes][#{cl_counter.to_i + 1}][name]", cl.name, {class: "form-control"} %>
                   </div>
                   <div class="input-group"> 
                     <%= label_tag "Description:", nil, class: "control-label" %>

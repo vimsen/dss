@@ -75,7 +75,7 @@ SimpleNavigation::Configuration.run do |navigation|
     primary.item :clusters, 'Clusters', clusters_path, :icon => ['fa fa-sitemap fa-fw'], :split => false do |sub_nav|
     # primary.item :clusters, 'Clusters' do |sub_nav|
       sub_nav.item :clusters_sub, "Cluster list", clusters_path
-     #  sub_nav.item :auto_cluster, "Automatic clustering", "/clustering/select"
+     #  sub_nav.item :auto_cluster, "Automatic clustering", "/clusterings/select"
       HierMenu::HierMenu.new("clusters_hier", Proc.new { |p| cluster_url(p) }, nil, 4
                             ).fill_node sub_nav, Cluster.all.order(name: :asc) 
       sub_nav.dom_class = 'nav nav-second-level collapse'
@@ -85,8 +85,8 @@ SimpleNavigation::Configuration.run do |navigation|
       sub_nav.dom_class = 'nav nav-second-level collapse'
     end
     primary.item :algorithms, 'Algorithms', "#" do |sub_nav|
-      sub_nav.item :clustering, 'Clustering', "/clustering/select"
-      sub_nav.item :dunamic_adaptation, 'Dynamic Adaptation', "/clustering/edit"
+      sub_nav.item :clusterings, 'Clustering', "/clusterings/select"
+      sub_nav.item :dunamic_adaptation, 'Dynamic Adaptation', "/clusterings/edit"
       sub_nav.item :RES_scheduling, 'RES scheduling', "#"
       sub_nav.item :VMG_modeling, 'VMG production - consumption modeling', "#"
       sub_nav.item :VMG_profiling, 'VMG profile maximization algorithms', "#"

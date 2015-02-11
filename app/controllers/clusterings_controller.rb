@@ -1,7 +1,10 @@
 require 'clustering/clustering_module'
 
 # This is the controller handles the automatic clustring BL
-class ClusteringController < ApplicationController
+class ClusteringsController < ApplicationController
+
+  before_action :set_clustering, only: [:show, :edit, :update, :destroy]
+
   respond_to :json, :html
   authorize_resource class: false
 
@@ -10,15 +13,16 @@ class ClusteringController < ApplicationController
   end
 
   def show
-    @clustering = Clustering.find(params[:id])
   end
 
   def new
     @clustering = Clustering.new
+    @clustering.temp_clusters.build
     respond_with(@clustering)
   end
 
   def edit
+    # Todo Check what to do with edit before action
     @clusters = params[:id].nil? ? Cluster.all : Clustering.find(params[:id]).temp_clusters
   end
 
@@ -29,13 +33,33 @@ class ClusteringController < ApplicationController
   end
 
   def update
-    @clustering = Clustering.find(params[:id])
-    flash[:notice] = 'Clustering was successfully updated' if @clustering.save
-    respond_with(@clustering)
+    ActiveRecord::Base.transaction do
+    #  @temp_clusters = TempCluster.where(id: params[:temp_clusters])
+      clusterids = params[:clustering][:temp_clusters_attributes];
+
+      if clusterids.nil?
+        @clustering.temp_clusters.destroy_all
+      else
+        @clustering.temp_clusters.where.not(id: clusterids.map {|k,v| v["id"]}).destroy_all
+      end
+
+      params[:clusterprosumers].each
+
+      if @clustering.update(clustering_params)
+        flash[:notice] = 'Clustering was successfully updated'
+
+        @clustering.temp_clusters.zip(params[:clusterprosumers]).each do |tc, pros_list|
+          tc.prosumers = Prosumer.find(pros_list.split(','))
+        end
+
+      else
+        flash[:error] = 'Clustering was NOT successfully updated'
+      end
+      respond_with(@clustering)
+    end
   end
 
   def destroy
-    @clustering = Clustering.find(params[:id])
     @clustering.destroy
     respond_with(@clustering)
   end
@@ -82,7 +106,7 @@ class ClusteringController < ApplicationController
   rescue
     respond_to do |format|
       format.html do
-        redirect_to '/clustering/select',
+        redirect_to '/clusterings/select',
                     alert: 'Clusters were NOT successfully updated.'
       end
     end
@@ -94,5 +118,22 @@ class ClusteringController < ApplicationController
 
   def algorithms
     ClusteringModule.algorithms
+  end
+
+  def set_clustering
+    @clustering = Clustering.find(params[:id])
+  end
+
+  def clustering_params
+    params.require(:clustering).permit(
+        :name,
+        :description,
+        :temp_clusters_attributes => [
+            :id,
+            :name,
+            :description,
+            :_destroy
+        ]
+    )
   end
 end

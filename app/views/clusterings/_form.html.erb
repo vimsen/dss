@@ -1,7 +1,28 @@
-<%= form_tag "/clustering/save", class: "form-inline" do %>
+<%= form_for @clustering, html: {class: "form-inline"} do |f| %>
+  <% if @clustering.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@clustering.errors.count, "error") %> prohibited this clustering from being saved:</h2>
+
+      <ul>
+        <% @clustering.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
   <div class="row">
     <div class="col-md-8">
-      <%= hidden_field_tag "clustering_id", @clustering.id %>
+      <div class="form-group">
+        <div class="input-group">
+          <%= f.label :name, class: "control-label" %>
+          <%= f.text_field :name, class: "form-control" %>
+        </div>
+        <div class="input-group">
+          <%= f.label :description, class: "control-label" %>
+          <%= f.text_area :description, class: "form-control" %>
+        </div>
+       </div>
     </div>
     <div class="col-md-4">
       <div id="legend"></div>
@@ -9,12 +30,11 @@
     <hr/>
   </div>
 
-
   <div class="row">
     <div class="col-md-8">
       <div class="form-group">
         <div class="input-group">
-          <%= label_tag "Without cluster", nil, class: "control-label" %>
+          <%= f.label "Without cluster", class: "control-label" %>
           <%= hidden_field_tag "clusternames[]", :NONE %>
           <%= hidden_field_tag "clusterdescriptions[]", :NONE %>
         </div>
@@ -26,17 +46,53 @@
             <% end %>
           </ul>
         </div>
-        <%= hidden_field_tag "clusterprosumers[]", ( @clusters.nil? ? Prosumer.all : Prosumer.all - @clusters.flat_map {|c| c.prosumers} ).map {|p| p.id}.join(","), id: "hidden_0" %>
+        <%#= hidden_field_tag "clusterprosumers[]", ( @clusters.nil? ? Prosumer.all : Prosumer.all - @clusters.flat_map {|c| c.prosumers} ).map {|p| p.id}.join(","), id: "hidden_0" %>
         <%= hidden_field_tag "clusterids[]", -1 %>
       </div>
     </div>
+
     <div class="col-md-4">
-      <div id="<%= "chart_0" -%>" style="height: 200px;width:300px" ></div>
+      <div id="chart_-1" style="height: 200px;width:300px" ></div>
     </div>
     <hr/>
+
   </div>
 
-  <%= render partial: "single", collection: @clusters, as: :cl %>
+  <%= f.fields_for :temp_clusters do |tcf| %>
+    <div class="row">
+      <div class="col-md-8">
+        <div class="form-group">
+          <%= tcf.hidden_field :id %>
+          <div class="input-group">
+            <%= tcf.label :name, class: "control-label" %>
+            <%= tcf.text_field :name, class: "form-control" %>
+          </div>
+          <div class="input-group">
+            <%= tcf.label :description, class: "control-label" %>
+            <%= tcf.text_field :description, class: "form-control" %>
+          </div>
+          <div class="input-group">
+            <%#= tcf.check_box '_destroy' %>
+            <%= label_tag "Prosumers:", nil, class: "control-label" %>
+            <ul class="list-inline connectedSortable" id="<%= "prosumer_list_#{tcf.options[:child_index]}" -%>" >
+              <% tcf.object.prosumers.each do |p| %>
+                <li id="<%= "prosumer_#{p.id}" -%>"><%= p.name -%><div style="visibility: hidden;"><%= p.id -%></div></li>
+              <% end %>
+            </ul>
+
+          </div>
+          <%= hidden_field_tag "clusterprosumers[]", tcf.object.prosumers.map {|p| p.id}.join(","), id: "hidden_#{tcf.options[:child_index]}" %>
+          <%#= hidden_field_tag "clusterids[]", cl.id %>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div id="<%= "chart_#{tcf.options[:child_index]}" -%>" style="height: 200px;width:300px" ></div>
+      </div>
+      <hr/>
+    </div>
+  <% end %>
+
+  <%#= render partial: "single", collection: @clustering.temp_clusters, as: :cl %>
 
   <div class="row" id="last_row">
     <div class="actions">
@@ -52,7 +108,7 @@
   <div class="row ">
     <div class="col-md-8">
       <div class="actions">
-        <%= submit_tag "Confirm", class: "btn btn-primary" %> |
+        <%= f.submit "Confirm", class: "btn btn-primary" %> |
         <%= link_to 'Cancel', clusters_path, class: 'btn btn-warning' %>
       </div>
     </div>
@@ -68,7 +124,10 @@
       </div>
     </div>
   </div>
+
 <% end %>
+
+
 <script>
   $(function () {
 
@@ -137,7 +196,7 @@
       $('.connectedSortable').each(function (index, value) {
         // $.each(data_table, function(index, value){
 
-        $.plot($("#chart_" + index), format(data_table[index], i_data_table[index]), {
+        $.plot($("#chart_" + (index - 1)), format(data_table[index], i_data_table[index]), {
           series: {
             lines: {
               show: true
@@ -199,7 +258,9 @@
         $.each(clusterIds, function (idx, val) {
           clusterOf[val] = index;
         });
-        $("#hidden_" + index).val(clusterIds.join(','));
+        if (index > 0) {
+          $("#hidden_" + (index - 1)).val(clusterIds.join(','));
+        }
         lastempty = (clusterIds.length == 0);
       });
       if (lastempty) {
@@ -218,7 +279,9 @@
         $.each(clusterIds, function (idx, val) {
           clusterOf[val] = index;
         });
-        $("#hidden_" + index).val(clusterIds.join(','));
+        if (index > 0) {
+          $("#hidden_" + (index -1)).val(clusterIds.join(','));
+        }
       });
       return clusterOf;
 
@@ -246,7 +309,7 @@
     });
 
     $("#add_cluster").click(function () {
-      $("#last_row").before('<%=j render partial: 'single', locals: { cl: Cluster.new, cl_counter: "100000"} -%>'.replace(/100001/g, $(".connectedSortable").length ));
+      $("#last_row").before('<%=j render partial: 'single', locals: { cl: Cluster.new, cl_counter: "100000"} -%>'.replace(/100001/g, $(".connectedSortable").length - 1));
       $(".connectedSortable").sortable({
         stop: function () {
           refreshLists();
