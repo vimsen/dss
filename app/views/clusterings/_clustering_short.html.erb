@@ -1,4 +1,8 @@
-<% clustering.temp_clusters.each do |tc| %>
-  <%= tc.name -%> <br/>
-
-<% end %>
+<table class="table">
+  <% clustering.temp_clusters.each do |tc| %>
+    <tr>
+      <th style="white-space: nowrap;"><%= tc.name -%></th>
+      <td><%= render(partial: "prosumers/prosumername", spacer_template: "common/comma_spacer", collection: tc.prosumers, as: :prosumer) || "No Prosumers" %></td>
+    </tr>
+  <% end %>
+</table>
