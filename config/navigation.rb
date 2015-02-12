@@ -80,13 +80,25 @@ SimpleNavigation::Configuration.run do |navigation|
                             ).fill_node sub_nav, Cluster.all.order(name: :asc) 
       sub_nav.dom_class = 'nav nav-second-level collapse'
     end
+
+    primary.item :clusterings, 'Clusterings', '#' do |sub_nav|
+      sub_nav.item :clusterings_sub, "Clusterings List", clusterings_path
+      sub_nav.item :clustering_new, "New Clustering", new_clustering_path
+      sub_nav.item :clustering_new_from_existing, "New Clustering from existing allocation", new_from_existing_clustering_path
+      HierMenu::HierMenu.new("clusterings_hier",
+                             Proc.new { |p| clustering_url(p) },
+                             nil,
+                             4).fill_node sub_nav, Clustering.all.order(name: :asc)
+      sub_nav.dom_class = 'nav nav-second-level collapse'
+    end
+
     primary.item :meters, 'Meters', '#' do |sub_nav|
       HierMenu::HierMenu.new('meters_hier', Proc.new { |p| meter_url(p) }, :mac, 4).fill_node sub_nav, Meter.all.order(id: :asc)
       sub_nav.dom_class = 'nav nav-second-level collapse'
     end
     primary.item :algorithms, 'Algorithms', "#" do |sub_nav|
       sub_nav.item :clusterings, 'Clustering', "/clusterings/select"
-      sub_nav.item :dunamic_adaptation, 'Dynamic Adaptation', "/clusterings/edit"
+      sub_nav.item :dunamic_adaptation, 'Dynamic Adaptation', "/clusterings/new_from_existing"
       sub_nav.item :RES_scheduling, 'RES scheduling', "#"
       sub_nav.item :VMG_modeling, 'VMG production - consumption modeling', "#"
       sub_nav.item :VMG_profiling, 'VMG profile maximization algorithms', "#"
