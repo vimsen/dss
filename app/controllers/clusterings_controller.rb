@@ -3,7 +3,7 @@ require 'clustering/clustering_module'
 # This is the controller handles the automatic clustring BL
 class ClusteringsController < ApplicationController
 
-  before_action :set_clustering, only: [:show, :edit, :update, :destroy]
+  before_action :set_clustering, only: [:show, :edit, :update, :destroy, :apply]
 
   respond_to :json, :html
   authorize_resource class: false
@@ -96,6 +96,24 @@ class ClusteringsController < ApplicationController
                                  description: "Automatic cluster generated with #{params[:algorithm]} algorithm.");
     @clustering.temp_clusters = ClusteringModule.run_algorithm params[:algorithm], params[:kappa]
   end
+
+  def apply
+    ActiveRecord::Base.transaction do
+      Cluster.destroy_all
+
+      Cluster.create(
+          @clustering.temp_clusters.map do |tc|
+            {
+                name: tc.name,
+                description: tc.description,
+                prosumers: tc.prosumers
+            }
+          end
+      )
+    end
+    redirect_to clusters_path, notice: 'Clustering was applied'
+  end
+
 
   def save
     ActiveRecord::Base.transaction do

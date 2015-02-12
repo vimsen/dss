@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   get 'clusterings/select'
   # get 'clusterings' => 'clusterings#index'
   post 'clusterings/confirm'
+  post 'clusterings/:id/apply' => 'clusterings#apply', as: :apply_clustering
   post 'clusterings/save'
 
   resources :clusterings

@@ -13,7 +13,7 @@
                 <th>Name</th>
                 <th>Description</th>
                 <th>Clusters</th>
-                <th colspan="3"></th>
+                <th colspan="4"></th>
               </tr>
             </thead>
 
@@ -23,8 +23,9 @@
                 <td><%= clustering.name %></td>
                 <td><%= clustering.description %></td>
                 <td><%= render(partial: "clustering_short", :locals => {:clustering => clustering}) %></td>
-                <td><%= link_to 'Show', clustering,class: 'btn btn-success btn-xs' %></td>
-                <td><%= link_to 'Edit', edit_clustering_path(clustering) ,class: 'btn btn-info btn-xs'%></td>
+                <td><%= link_to 'Apply', apply_clustering_path(id: clustering), method: :post, class: 'btn btn-primary btn-xs', data: { confirm: 'This will erase the current cluster allocation. Are you sure?' } %></td>
+                <td><%= link_to 'Show', clustering, class: 'btn btn-success btn-xs' %></td>
+                <td><%= link_to 'Edit', edit_clustering_path(clustering), class: 'btn btn-info btn-xs'%></td>
                 <td><%= link_to 'Destroy', clustering, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-xs'%></td>
               </tr>
               <% end %>
