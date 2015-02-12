@@ -6,7 +6,7 @@ module ProsumersHelper
     prosumer
   end
   
-  def color_map size = 10
+  def color_map(size = 10)
     result = []
         # use golden ratio
     golden_ratio_conjugate = 0.618033988749895
