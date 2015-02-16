@@ -1,6 +1,11 @@
 <div class="row">
   <div class="col-lg-12">
-    <h3 class="page-header"><small>Dynamic Adaptation:</small> Edit clustering</h3>
+    <h3 class="page-header"><small>Editing clustering:</small> <%= @clustering.name -%>
+      <small>
+        | <%= link_to 'Show',clustering_path(@clustering), class: 'btn btn-success btn-xs' %>
+        | <%= link_to 'All clusterings', clusterings_path, class: 'btn btn-warning btn-xs'%>
+      </small>
+    </h3>
   </div>
   <!-- /.col-lg-12 -->
 </div>

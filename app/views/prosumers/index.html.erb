@@ -13,8 +13,9 @@
       </div>
       <div class="panel-body">
         <%= render partial: "charts/map", 
-          :locals => {
-            :prosumers => Prosumer.with_locations 
+          locals: {
+            prosumers: Prosumer.with_locations,
+            clustering: nil
           }
         %>
       </div>
