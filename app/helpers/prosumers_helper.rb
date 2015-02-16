@@ -20,14 +20,23 @@ module ProsumersHelper
     result
   end
   
-  def color(cluster)
-    if cluster.nil?
-      return '000000'
+  def color(prosumer, clustering = nil)
+    if clustering.nil?
+      if prosumer.cluster.nil?
+        return '000000'
+      end
+      numcolors = Cluster.count
+      ind = prosumer.cluster.get_icon_index
+    else
+      ind = clustering.get_icon_index (prosumer)
+      if ind == 'N'
+        return '000000'
+      else
+        numcolors = clustering.temp_clusters.count
+      end
     end
-    numcolors = Cluster.count
-    sprintf "%06X", tostring((color_map numcolors)[cluster.get_icon_index]) 
-#    last = 0xFFFFFF
-#    sprintf("%06X", last * (numcolors - cluster.get_icon_index) / (numcolors))
+    sprintf "%06X", tostring((color_map numcolors)[ind ])
+
   end
   
   def tostring colorArray
@@ -51,11 +60,15 @@ module ProsumersHelper
     [(r*256).to_i, (g*256).to_i, (b*256).to_i]
   end
   
-  def letter(cluster)
-    if cluster.nil?
-      return 'N'
+  def letter(prosumer, clustering = nil)
+    if clustering.nil?
+      if prosumer.cluster.nil?
+        return 'N'
+      end
+      prosumer.cluster.get_icon_index
+    else
+      clustering.get_icon_index(prosumer)
     end
-    cluster.get_icon_index
   end
   
   def prosumers_with_locations

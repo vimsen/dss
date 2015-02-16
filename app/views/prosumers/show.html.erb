@@ -69,9 +69,10 @@
       </div>
       <div class="panel-body">
         <%= render partial: "charts/map", 
-          :locals => {
-            :prosumers => [@prosumer] ,
-           :height => "230px" 
+          locals: {
+            prosumers: [@prosumer],
+            clustering: nil,
+            height: "230px"
           }
         %>
       </div>
