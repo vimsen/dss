@@ -41,14 +41,32 @@
    font-size:18px;
 }
 
+/*
+.equal, .equal > div[class*='col-'] {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex:1 1 auto;
+}
+*/
+
+
+
 @media (min-width: 992px) {
   .equal > .col-md-6 > .panel > .panel-body {
-    min-height: 270px;
+    height: 270px;
+    overflow-y: auto;
+//    min-height: 270px;
   }
 }
 
 @media (min-width: 1200px) {
   .equal > .col-lg-6 > .panel > .panel-body {
-    min-height: 270px;
+    height: 270px;
+    overflow-y: auto;
+//    min-height: 270px;
   }
 }
+
