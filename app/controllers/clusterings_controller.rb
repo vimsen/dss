@@ -40,25 +40,16 @@ class ClusteringsController < ApplicationController
 
   def create
     @clustering = Clustering.new(clustering_params)
-    ActiveRecord::Base.transaction do
-      if @clustering.save
-        flash[:notice] = 'Clustering was successfully created.'
-        unless params[:clusterprosumers].nil?
-          @clustering.temp_clusters.zip(params[:clusterprosumers]).each do |tc, pros_list|
-            tc.prosumers = Prosumer.find(pros_list.split(','))
-          end
-        end
-
-      else
-        flash[:error] = 'Clustering was NOT successfully created.'
-      end
+    if @clustering.save
+      flash[:notice] = 'Clustering was successfully created.'
+    else
+      flash[:error] = 'Clustering was NOT successfully created.'
     end
     respond_with(@clustering)
   end
 
   def update
     ActiveRecord::Base.transaction do
-    #  @temp_clusters = TempCluster.where(id: params[:temp_clusters])
       clusterids = params[:clustering][:temp_clusters_attributes];
 
       if clusterids.nil?
@@ -69,13 +60,6 @@ class ClusteringsController < ApplicationController
 
       if @clustering.update(clustering_params)
         flash[:notice] = 'Clustering was successfully updated'
-
-        unless params[:clusterprosumers].nil?
-          @clustering.temp_clusters.zip(params[:clusterprosumers]).each do |tc, pros_list|
-            tc.prosumers = Prosumer.find(pros_list.split(','))
-          end
-        end
-
       else
         flash[:error] = 'Clustering was NOT successfully updated'
       end
@@ -169,7 +153,7 @@ class ClusteringsController < ApplicationController
   end
 
   def clustering_params
-    params.require(:clustering).permit(
+    result = params.require(:clustering).permit(
         :name,
         :description,
         :temp_clusters_attributes => [
@@ -179,5 +163,12 @@ class ClusteringsController < ApplicationController
             :_destroy
         ]
     )
+    unless params[:clusterprosumers].nil?
+      result["temp_clusters_attributes"]
+          .zip(params[:clusterprosumers]).each do |tca, pros_list|
+        tca[1]["prosumers"] = Prosumer.find(pros_list.split(','))
+      end
+    end
+    return result
   end
 end
