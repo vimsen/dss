@@ -60,7 +60,7 @@ class MarketPricesController < ApplicationController
                      .order("dayhour")
                      .where(date: selected_date,
                             market_id: params[:id],
-                            interval_id: 3)
+                            interval_id: 4)
 
     mi1_prices.each do |price|
       hour_price = Array.new
