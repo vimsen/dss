@@ -1,4 +1,5 @@
-require 'streamer/sse'  
+require 'streamer/sse'
+require 'market/market'
 
 class StreamController < ApplicationController
   include ActionController::Live
@@ -36,7 +37,8 @@ class StreamController < ApplicationController
     q.bind(x)
     puts "Subscribing to feed: cluster.#{cluster.id}"  
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
-      sse.write(data, event: 'datapoint')
+      msg = JSON.parse(data)
+      sse.write(msg['data'].to_json, event: msg['event'])
       ActiveRecord::Base.connection.close
     end
 
@@ -44,6 +46,11 @@ class StreamController < ApplicationController
     idata.each do |d|
       sse.write(d.to_json, event: 'datapoint')
     end
+
+    sse.write(Market::Calculator.new(prosumers: cluster.prosumers,
+                                     startDate: startdate,
+                                     endDate: enddate).calcCosts.to_json,
+              event: 'market')
 
     ActiveRecord::Base.connection.close
     
@@ -76,7 +83,8 @@ class StreamController < ApplicationController
     puts "Subscribing to: prosumer.#{params[:id]}"
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
       # puts "sending: ", data
-      sse.write(data, event: 'datapoint')
+      msg = JSON.parse(data)
+      sse.write(msg['data'].to_json, event: msg['event'])
     end
 
     idata = prosumer.request_cached(interval, startdate, enddate)
@@ -84,6 +92,11 @@ class StreamController < ApplicationController
     idata.each do |d|
       sse.write(d.to_json, event: 'datapoint')
     end
+
+    sse.write(Market::Calculator.new(prosumers: prosumer,
+                                     startDate: startdate,
+                                     endDate: enddate).calcCosts.to_json,
+              event: 'market')
  
     ActiveRecord::Base.connection.close
     

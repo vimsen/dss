@@ -45,7 +45,7 @@ module FetchAsynch
         if newdata? d
           dbinsert d
           puts "Publishing to channel: #{channel}"
-          x.publish(prepare d) unless x.nil?
+          x.publish({data: prepare(d), event: 'datapoint'}.to_json) unless x.nil?
         else
           puts 'Datapoint found'
         end
@@ -109,7 +109,7 @@ module FetchAsynch
           Prosumer.where(intelen_id: d['procumer_id']).first.name
       d['forecast']['timestamp'] =
           DateTime.parse(d['forecast']['timestamp']).to_i
-      d.to_json
+      return d
     end
   end
 end

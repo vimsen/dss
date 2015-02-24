@@ -183,6 +183,45 @@ var plotHelper = (function() {
         window.setTimeout(redraw, 100, data);
       });
 
+      source.addEventListener('market', function(e) {
+          var message = JSON.parse(e.data);
+          $.plot($("#cost_placeholder"), message, {
+              series: {
+                  lines: {
+                      show: true
+                  },
+                  points: {
+                      show: true
+                  }
+              },
+              grid: { hoverable: true, clickable: true },
+              tooltip: true,
+              tooltipOpts: {
+                  content: "'%s'<br/>%x<br/>%y.2",
+                  shifts: {
+                      x: -60,
+                      y: 25
+                  }
+              },
+              xaxis : {
+                  mode : "time",
+                  timeformat : "%d/&#8203;%m/&#8203;%Y<br/>%h:&#8203;%M:&#8203;%S",
+                  timezone : "browser" /*,
+                  min : s,
+                  max : e ,
+                   ticks : t,
+                   timeformat : "%y/%m/%d-%h:%M:%S",
+                   tickSize : [12, "hour"]*/
+              },
+              yaxis : {
+                  tickDecimals: 2
+              },
+              legend:{
+                  container: ($( "#legend" ).length ? $("#cost_legend") : null)
+              }
+          });
+      });
+
       redraw(data);
     }
   };
