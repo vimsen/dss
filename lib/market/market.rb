@@ -40,7 +40,7 @@ module Market
       DataPoint
           .where(prosumer: @prosumers,
                  interval: 2,
-                 f_timestamp: @startDate.. @endDate)
+                 f_timestamp: @startDate .. @endDate)
           .group(:f_timestamp, :timestamp)
           .order(:f_timestamp)
           .select('timestamp, f_timestamp, sum(f_consumption) as fc')
@@ -51,14 +51,14 @@ module Market
       DataPoint
           .where(prosumer: @prosumers,
                  interval: 2,
-                 timestamp: @startDate.. @endDate)
+                 timestamp: @startDate .. @endDate)
           .group(:timestamp, :f_timestamp)
           .order(:timestamp)
           .select('timestamp, f_timestamp, sum(consumption) as c')
 #          .sum(:consumption)
     end
 
-    private
+
 
     def real_cost(f, forecasts, prices)
       return nil if forecasts[f.timestamp.to_i].nil?
@@ -72,19 +72,18 @@ module Market
     end
 
     def real_price(cons_timestamp)
-      f_date = cons_timestamp.in_time_zone("UTC").to_date - 1.year
-      f_dayhour = cons_timestamp.in_time_zone("UTC").hour + 1
-      DayAheadEnergyPrice.where(date: f_date, dayhour: f_dayhour).first.price
+      @real_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day) .. (@endDate - 1.year)).map{|d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price]}]
+     # puts "@@@@@@@@@@@@@@", cons_timestamp, @real_price_cache[cons_timestamp], @real_price_cache
+      @real_price_cache[cons_timestamp.to_i]
     end
 
     def forecast_price(cons_timestamp, fore_timestamp)
-      f_date = cons_timestamp.in_time_zone("UTC").to_date - 1.year
-      f_dayhour = cons_timestamp.in_time_zone("UTC").hour + 1
-
-      DayAheadEnergyPrice.where(date: f_date, dayhour: f_dayhour).count > 0 ?
-          DayAheadEnergyPrice.where(date: f_date, dayhour: f_dayhour).first.price :
-          nil
+      @forecast_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day) .. (@endDate - 1.year)).map{|d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price]}]
+     # puts "@@@@@@@@@@@@@@", cons_timestamp.to_i, @forecast_price_cache[cons_timestamp.to_i], @forecast_price_cache
+      @forecast_price_cache[cons_timestamp.to_i]
     end
+
+    private
 
   end
 
