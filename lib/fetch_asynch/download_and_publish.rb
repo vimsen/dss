@@ -2,12 +2,16 @@ require 'uri'
 require 'open-uri'
 require 'json'
 require 'yaml'
+require 'market/market'
 
 module FetchAsynch
   # This class downloads prosumption data from the EDMS, and then inserts them
   # in the DB, and publishes the results to the appropriate rabbitMQ channel.
   class DownloadAndPublish
     def initialize(prosumers, interval, startdate, enddate, channel)
+      @prosumers = prosumers
+      @startdate = startdate
+      @enddate = enddate
       Thread.new do
         ActiveRecord::Base.connection.close
 
@@ -51,6 +55,12 @@ module FetchAsynch
         end
         ActiveRecord::Base.connection.close
       end
+
+      x.publish({data: Market::Calculator.new(prosumers: @prosumers,
+                                              startDate: @startdate,
+                                              endDate: @enddate).calcCosts,
+                event: 'market'}.to_json) unless x.nil?
+
       ActiveRecord::Base.connection.close
     end
 
