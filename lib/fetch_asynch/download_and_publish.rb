@@ -49,18 +49,25 @@ module FetchAsynch
         if newdata? d
           dbinsert d
           puts "Publishing to channel: #{channel}"
-          x.publish({data: prepare(d), event: 'datapoint'}.to_json) unless x.nil?
+          begin
+            x.publish({data: prepare(d), event: 'datapoint'}.to_json) unless x.nil?
+          rescue Bunny::Exception # Don't block if channel can't be fanned out
+            puts "Can't publish to channel #{channel}"
+          end
         else
           puts 'Datapoint found'
         end
         ActiveRecord::Base.connection.close
       end
 
-      x.publish({data: Market::Calculator.new(prosumers: @prosumers,
+      begin
+        x.publish({data: Market::Calculator.new(prosumers: @prosumers,
                                               startDate: @startdate,
                                               endDate: @enddate).calcCosts,
                 event: 'market'}.to_json) unless x.nil?
-
+      rescue Bunny::Exception # Don't block if channel can't be fanned out
+        puts "Can't publish to channel #{channel}"
+      end
       ActiveRecord::Base.connection.close
     end
 

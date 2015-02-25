@@ -8,7 +8,7 @@ class Cluster < ActiveRecord::Base
     return Prosumer.where("cluster_id IS ? OR cluster_id != ?", nil, self.id)
   end
   
-  def request_cached(interval, startdate, enddate)
+  def request_cached(interval, startdate, enddate, channel)
     result = []
     aggregate = {}
     count = {}
@@ -53,7 +53,7 @@ class Cluster < ActiveRecord::Base
     puts "prosumerlist: ", prosumerlist
     
     if (missing_data)
-      FetchAsynch::DownloadAndPublish.new(prosumerlist, interval, startdate, enddate, "cluster.#{self.id}")
+      FetchAsynch::DownloadAndPublish.new(prosumerlist, interval, startdate, enddate, channel)
     end   
    
     return result      

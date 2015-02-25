@@ -31,18 +31,19 @@ class StreamController < ApplicationController
     startdate = ((params[:startdate].nil?) ? (Time.now - 7.days) : params[:startdate].to_time) - 1.day
     enddate = (params[:enddate].nil?) ? (Time.now) : params[:enddate].to_time 
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
+    channel = params[:channel]
 
-    x = $bunny_channel.fanout("cluster.#{cluster.id}")
+    x = $bunny_channel.fanout(channel)
     q = $bunny_channel.queue("", :exclusive => false)
     q.bind(x)
-    puts "Subscribing to feed: cluster.#{cluster.id}"  
+    puts "Subscribing to feed: #{channel}"
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
       msg = JSON.parse(data)
       sse.write(msg['data'].to_json, event: msg['event'])
       ActiveRecord::Base.connection.close
     end
 
-    idata = cluster.request_cached(interval, startdate, enddate)
+    idata = cluster.request_cached(interval, startdate, enddate, channel)
     idata.each do |d|
       sse.write(d.to_json, event: 'datapoint')
     end
@@ -76,18 +77,19 @@ class StreamController < ApplicationController
     startdate = ((params[:startdate].nil?) ? (Time.now - 7.days) : params[:startdate].to_time) - 1.day
     enddate = (params[:enddate].nil?) ? (Time.now) : params[:enddate].to_time 
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
-    
-    x = $bunny_channel.fanout("prosumer.#{params[:id]}")
+    channel = params[:channel]
+
+    x = $bunny_channel.fanout(channel)
     q = $bunny_channel.queue("", :exclusive => false)
     q.bind(x)
-    puts "Subscribing to: prosumer.#{params[:id]}"
+    puts "Subscribing to: #{channel}"
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
       # puts "sending: ", data
       msg = JSON.parse(data)
       sse.write(msg['data'].to_json, event: msg['event'])
     end
 
-    idata = prosumer.request_cached(interval, startdate, enddate)
+    idata = prosumer.request_cached(interval, startdate, enddate, channel)
 
     idata.each do |d|
       sse.write(d.to_json, event: 'datapoint')
