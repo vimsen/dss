@@ -206,9 +206,13 @@ var plotHelper = (function() {
               xaxis : {
                   mode : "time",
                   timeformat : "%d/&#8203;%m/&#8203;%Y<br/>%h:&#8203;%M:&#8203;%S",
-                  timezone : "browser" /*,
-                  min : s,
-                  max : e ,
+                  timezone : "browser" ,
+                  min : $("#startDate").length ? Date.parse($('#startDate').val()) : null,
+                  max : $('#realtime').prop('checked')
+                      ? Date.now()
+                      : $("#endDate").length
+                      ? Date.parse($('#endDate').val())
+                      : null/* ,
                    ticks : t,
                    timeformat : "%y/%m/%d-%h:%M:%S",
                    tickSize : [12, "hour"]*/
