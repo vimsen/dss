@@ -19,8 +19,8 @@ module Market
               label: "forecast",
               data: forecast.map do |f|
                 forecast_cache[f.f_timestamp.to_i] = f.fc
-                price_cache[f.f_timestamp.to_i] = f.fc * forecast_price(f.f_timestamp, f.timestamp)
-                [f.f_timestamp.to_i * 1000, price_cache[f.f_timestamp.to_i]]
+                price_cache[f.f_timestamp.to_i] = forecast_price(f.f_timestamp, f.timestamp)
+                [f.f_timestamp.to_i * 1000, f.fc * price_cache[f.f_timestamp.to_i]]
               end
           },{
               label: "ideal",
@@ -62,11 +62,12 @@ module Market
 
     def real_cost(f, forecasts, prices)
       return nil if forecasts[f.timestamp.to_i].nil?
+      #puts "@@@@@", f.c, prices[f.timestamp.to_i], (forecasts[f.timestamp.to_i] - f.c), @penalty_satisfaction, real_price(f.timestamp)
       f.c > forecasts[f.timestamp.to_i] ?
           forecasts[f.timestamp.to_i] * prices[f.timestamp.to_i] +
               (f.c - forecasts[f.timestamp.to_i]) * (1 + @penalty_violation) * real_price(f.timestamp) :
           f.c * prices[f.timestamp.to_i] +
-              (forecasts[f.timestamp.to_i] - f.c) * @penalty_satisfaction * real_price(f.f_timestamp)
+              (forecasts[f.timestamp.to_i] - f.c) * @penalty_satisfaction * real_price(f.timestamp)
 
     end
 
