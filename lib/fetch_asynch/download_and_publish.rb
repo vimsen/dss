@@ -61,7 +61,7 @@ module FetchAsynch
       end
 
       begin
-        x.publish({data: Market::Calculator.new(prosumers: @prosumers,
+        x.publish({data: Market::Calculator.new(prosumers: @prosumers.split(/,/),
                                               startDate: @startdate,
                                               endDate: @enddate).calcCosts,
                 event: 'market'}.to_json) unless x.nil?
