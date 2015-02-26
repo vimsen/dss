@@ -9,9 +9,10 @@ module FetchAsynch
   # in the DB, and publishes the results to the appropriate rabbitMQ channel.
   class DownloadAndPublish
     def initialize(prosumers, interval, startdate, enddate, channel)
-      @prosumers = prosumers
+      @prosumers = prosumers.to_s
       @startdate = startdate
       @enddate = enddate
+      @interval = Interval.find(interval)
       Thread.new do
         ActiveRecord::Base.connection.close
 
@@ -22,7 +23,7 @@ module FetchAsynch
         params = { prosumers: prosumers,
                    startdate: startdate.to_s,
                    enddate: enddate.to_s,
-                   interval: Interval.find(interval).duration }
+                   interval: @interval.duration }
         ActiveRecord::Base.connection.close
         uri.query = URI.encode_www_form(params)
 
@@ -39,36 +40,85 @@ module FetchAsynch
     private
 
     def datareceived(data, channel)
-      begin
-        x = $bunny_channel.fanout(channel)
-      rescue Bunny::Exception # Don't block if channel can't be fanned out
-        puts "Can't fanout channel #{channel}"
-        x = nil
-      end
-      data.each do |d|
-        if newdata? d
-          dbinsert d
-          puts "Publishing to channel: #{channel}"
-          begin
-            x.publish({data: prepare(d), event: 'datapoint'}.to_json) unless x.nil?
-          rescue Bunny::Exception # Don't block if channel can't be fanned out
-            puts "Can't publish to channel #{channel}"
-          end
-        else
-          puts 'Datapoint found'
+
+      DataPoint.transaction do
+        puts "Connecting to channe"
+        begin
+          x = $bunny_channel.fanout(channel)
+        rescue Bunny::Exception # Don't block if channel can't be fanned out
+          puts "Can't fanout channel #{channel}"
+          x = nil
         end
+
+        puts "Finding existing datapoints"
+        old_data_points = DataPoint.where(prosumer: @prosumers.split(/,/),
+                                      timestamp: @startdate ..@enddate,
+                                      interval: @interval)
+        puts "#{old_data_points.count} datapoints found"
+        procs = Hash[Prosumer.all.map {|p| [p.intelen_id, p]}]
+
+        puts "Rejecting existing data"
+
+        new_data_points = data.reject do |r|
+          r['timestamp'].to_datetime.future? ||
+            old_data_points.any? do |d|
+              d.timestamp == r['timestamp'].to_datetime &&
+                  d.prosumer == procs[r['procumer_id']] &&
+                  d.interval == @interval
+            end
+        end
+
+        puts "#{new_data_points.count} remaining. Publishing to rabbitmq"
+
+        begin
+          new_data_points.each do |d|
+            x.publish({data: prepare(d, procs), event: 'datapoint'}.to_json) unless x.nil?
+          end
+        rescue Bunny::Exception # Don't block if channel can't be fanned out
+          puts "Can't publish to channel #{channel}"
+        end
+
+
+        puts "Inserting to db"
+
+        prepared = new_data_points.map do |d|
+          db_prepare(d, procs)
+        end
+
+       #  puts prepared
+
+        DataPoint.create(prepared)
+
+        puts "Inserted to db"
         ActiveRecord::Base.connection.close
       end
 
+      puts "publshing market data"
       begin
+        puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@", @prosumers.split(/,/), @startdate, @enddate
         x.publish({data: Market::Calculator.new(prosumers: @prosumers.split(/,/),
                                               startDate: @startdate,
                                               endDate: @enddate).calcCosts,
-                event: 'market'}.to_json) unless x.nil?
+                event: 'market'}.to_json) # unless x.nil?
+        puts "publshed market data"
       rescue Bunny::Exception # Don't block if channel can't be fanned out
         puts "Can't publish to channel #{channel}"
       end
+
+      puts "publshing market data"
+      begin
+        puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@", @prosumers.split(/,/), @startdate, @enddate
+        x.publish({data: Market::Calculator.new(prosumers: @prosumers.split(/,/),
+                                              startDate: @startdate,
+                                              endDate: @enddate).calcCosts,
+                event: 'market'}.to_json) # unless x.nil?
+        puts "publshed market data"
+      rescue Bunny::Exception # Don't block if channel can't be fanned out
+        puts "Can't publish to channel #{channel}"
+      end
+
       ActiveRecord::Base.connection.close
+
     end
 
     def newdata?(d)
@@ -92,6 +142,24 @@ module FetchAsynch
                          ).first
       puts "=== Result : #{d['procumer_id']}, #{p}, #{datapoint.nil?} ======="
       datapoint.nil?
+    end
+
+    def db_prepare(d, procs)
+     {
+         timestamp: d['timestamp'].to_datetime,
+         prosumer: procs[d['procumer_id']],
+         interval: @interval,
+         production: d['actual']['production'],
+         consumption: d['actual']['consumption'],
+         storage: d['actual']['storage'],
+         f_timestamp: d['forecast']['timestamp'].to_datetime,
+         f_production: d['forecast']['production'],
+         f_consumption: d['forecast']['consumption'],
+         f_storage: d['forecast']['storage'],
+         dr: d['dr'],
+         reliability: d['reliability']
+      }
+
     end
 
     def dbinsert(d)
@@ -118,15 +186,14 @@ module FetchAsynch
       puts 'Saved DataPoint'
     end
 
-    def prepare(d)
-      puts "-------- #{d['timestamp']} #{DateTime.parse(d['timestamp']).to_i}"
-      d['timestamp'] = DateTime.parse(d['timestamp']).to_i
-      d[:prosumer_id] = Prosumer.where(intelen_id: d['procumer_id']).first.id
-      d[:prosumer_name] =
-          Prosumer.where(intelen_id: d['procumer_id']).first.name
-      d['forecast']['timestamp'] =
-          DateTime.parse(d['forecast']['timestamp']).to_i
-      return d
+    def prepare(d, procs)
+      k = d.deep_dup
+      k['timestamp'] = d['timestamp'].to_datetime.to_i
+      k[:prosumer_id] = procs[d['procumer_id']]
+      k[:prosumer_name] = procs[d['procumer_id']].name
+      k['forecast']['timestamp'] =
+          d['forecast']['timestamp'].to_datetime.to_i
+      return k
     end
   end
 end

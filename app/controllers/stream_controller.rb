@@ -28,8 +28,8 @@ class StreamController < ApplicationController
     sse = Streamer::SSE.new(response.stream)
     
     cluster = Cluster.find(params[:id])
-    startdate = ((params[:startdate].nil?) ? (Time.now - 7.days) : params[:startdate].to_time) - 1.day
-    enddate = (params[:enddate].nil?) ? (Time.now) : params[:enddate].to_time 
+    startdate = ((params[:startdate].nil?) ? (DateTime.now - 7.days) : params[:startdate].to_datetime) - 1.day
+    enddate = (params[:enddate].nil?) ? (DateTime.now) : params[:enddate].to_datetime
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
     channel = params[:channel]
 
@@ -74,8 +74,8 @@ class StreamController < ApplicationController
     sse = Streamer::SSE.new(response.stream)
     
     prosumer = Prosumer.find(params[:id])
-    startdate = ((params[:startdate].nil?) ? (Time.now - 7.days) : params[:startdate].to_time) - 1.day
-    enddate = (params[:enddate].nil?) ? (Time.now) : params[:enddate].to_time 
+    startdate = ((params[:startdate].nil?) ? (DateTime.now - 7.days) : params[:startdate].to_datetime) - 1.day
+    enddate = (params[:enddate].nil?) ? (DateTime.now) : params[:enddate].to_datetime
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
     channel = params[:channel]
 
@@ -86,6 +86,7 @@ class StreamController < ApplicationController
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
       # puts "sending: ", data
       msg = JSON.parse(data)
+      puts "controller received #{msg}"
       sse.write(msg['data'].to_json, event: msg['event'])
     end
 
