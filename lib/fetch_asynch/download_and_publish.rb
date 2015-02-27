@@ -88,7 +88,7 @@ module FetchAsynch
 
      #  puts prepared
 
-      DataPoint.create(prepared)
+      DataPoint.import prepared
 
       puts "Inserted to db"
       ActiveRecord::Base.connection.close
@@ -145,7 +145,7 @@ module FetchAsynch
     end
 
     def db_prepare(d, procs)
-     {
+     DataPoint.new(
          timestamp: d['timestamp'].to_datetime,
          prosumer: procs[d['procumer_id']],
          interval: @interval,
@@ -158,7 +158,7 @@ module FetchAsynch
          f_storage: d['forecast']['storage'],
          dr: d['dr'],
          reliability: d['reliability']
-      }
+     )
 
     end
 
