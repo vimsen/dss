@@ -51,6 +51,7 @@ module FetchAsynch
       end
 
       puts "Finding existing datapoints"
+      ActiveRecord::Base.connection.close
       old_data_points = DataPoint.where(prosumer: @prosumers.split(/,/),
                                     timestamp: (@startdate - 1.day)..(@enddate + 1.day),
                                     interval: @interval)
@@ -72,21 +73,26 @@ module FetchAsynch
       puts "#{new_data_points.count} remaining. Publishing to rabbitmq #{channel}"
 
       begin
-        new_data_points.each do |d|
-          x.publish({data: prepare(d, procs), event: 'datapoint'}.to_json) unless x.nil?
+        message = new_data_points.map do |d|
+          ActiveRecord::Base.connection.close
+          prepare(d, procs)
         end
+        ActiveRecord::Base.connection.close
+        x.publish({data: message, event: 'datapoints'}.to_json) unless x.nil?
       rescue Bunny::Exception # Don't block if channel can't be fanned out
         puts "Can't publish to channel #{channel}"
+        ActiveRecord::Base.connection.close
       end
       ActiveRecord::Base.connection.close
 
-      puts "Inserting to db"
+      puts "Preparing data for db"
 
       prepared = new_data_points.map do |d|
         db_prepare(d, procs)
+        ActiveRecord::Base.connection.close
       end
-
-     #  puts prepared
+      ActiveRecord::Base.connection.close
+      puts "Inserting to db"
 
       DataPoint.import prepared
 
@@ -101,22 +107,11 @@ module FetchAsynch
                                               endDate: @enddate).calcCosts,
                 event: 'market'}.to_json) # unless x.nil?
         puts "publshed market data"
+        ActiveRecord::Base.connection.close
       rescue Bunny::Exception # Don't block if channel can't be fanned out
         puts "Can't publish to channel #{channel}"
+        ActiveRecord::Base.connection.close
       end
-
-      puts "publshing market data"
-      begin
-        puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@", @prosumers.split(/,/), @startdate, @enddate
-        x.publish({data: Market::Calculator.new(prosumers: @prosumers.split(/,/),
-                                              startDate: @startdate,
-                                              endDate: @enddate).calcCosts,
-                event: 'market'}.to_json) # unless x.nil?
-        puts "publshed market data"
-      rescue Bunny::Exception # Don't block if channel can't be fanned out
-        puts "Can't publish to channel #{channel}"
-      end
-
       ActiveRecord::Base.connection.close
 
     end
