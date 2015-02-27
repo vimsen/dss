@@ -85,10 +85,11 @@ module FetchAsynch
       end
       ActiveRecord::Base.connection.close
 
-      puts "Preparing data for db"
+      puts "Preparing and Inserting to db"
 
-      prepared = new_data_points.map do |d|
-        db_prepare(d, procs)
+      new_data_points.each do |d|
+        dp = db_prepare(d, procs)
+        dp.save
         ActiveRecord::Base.connection.close
       end
       ActiveRecord::Base.connection.close
