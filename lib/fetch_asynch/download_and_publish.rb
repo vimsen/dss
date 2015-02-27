@@ -41,57 +41,57 @@ module FetchAsynch
 
     def datareceived(data, channel)
 
-      DataPoint.transaction do
-        puts "Connecting to channe"
-        begin
-          x = $bunny_channel.fanout(channel)
-        rescue Bunny::Exception # Don't block if channel can't be fanned out
-          puts "Can't fanout channel #{channel}"
-          x = nil
-        end
-
-        puts "Finding existing datapoints"
-        old_data_points = DataPoint.where(prosumer: @prosumers.split(/,/),
-                                      timestamp: @startdate ..@enddate,
-                                      interval: @interval)
-        puts "#{old_data_points.count} datapoints found"
-        procs = Hash[Prosumer.all.map {|p| [p.intelen_id, p]}]
-
-        puts "Rejecting existing data"
-
-        new_data_points = data.reject do |r|
-          r['timestamp'].to_datetime.future? ||
-            old_data_points.any? do |d|
-              d.timestamp == r['timestamp'].to_datetime &&
-                  d.prosumer == procs[r['procumer_id']] &&
-                  d.interval == @interval
-            end
-        end
-
-        puts "#{new_data_points.count} remaining. Publishing to rabbitmq"
-
-        begin
-          new_data_points.each do |d|
-            x.publish({data: prepare(d, procs), event: 'datapoint'}.to_json) unless x.nil?
-          end
-        rescue Bunny::Exception # Don't block if channel can't be fanned out
-          puts "Can't publish to channel #{channel}"
-        end
-
-
-        puts "Inserting to db"
-
-        prepared = new_data_points.map do |d|
-          db_prepare(d, procs)
-        end
-
-       #  puts prepared
-
-        DataPoint.create(prepared)
-
-        puts "Inserted to db"
-        ActiveRecord::Base.connection.close
+      ActiveRecord::Base.connection.close
+      puts "Connecting to channel"
+      begin
+        x = $bunny_channel.fanout(channel)
+      rescue Bunny::Exception # Don't block if channel can't be fanned out
+        puts "Can't fanout channel #{channel}"
+        x = nil
       end
+
+      puts "Finding existing datapoints"
+      old_data_points = DataPoint.where(prosumer: @prosumers.split(/,/),
+                                    timestamp: (@startdate - 1.day)..(@enddate + 1.day),
+                                    interval: @interval)
+      puts "#{old_data_points.count} datapoints found"
+      procs = Hash[Prosumer.all.map {|p| [p.intelen_id, p]}]
+      ActiveRecord::Base.connection.close
+
+      puts "Rejecting existing data"
+
+      new_data_points = data.reject do |r|
+        r['timestamp'].to_datetime.future? ||
+          old_data_points.any? do |d|
+            d.timestamp == r['timestamp'].to_datetime &&
+                d.prosumer_id == procs[r['procumer_id']].id &&
+                d.interval_id == @interval.id
+          end
+      end
+      ActiveRecord::Base.connection.close
+      puts "#{new_data_points.count} remaining. Publishing to rabbitmq #{channel}"
+
+      begin
+        new_data_points.each do |d|
+          x.publish({data: prepare(d, procs), event: 'datapoint'}.to_json) unless x.nil?
+        end
+      rescue Bunny::Exception # Don't block if channel can't be fanned out
+        puts "Can't publish to channel #{channel}"
+      end
+      ActiveRecord::Base.connection.close
+
+      puts "Inserting to db"
+
+      prepared = new_data_points.map do |d|
+        db_prepare(d, procs)
+      end
+
+     #  puts prepared
+
+      DataPoint.create(prepared)
+
+      puts "Inserted to db"
+      ActiveRecord::Base.connection.close
 
       puts "publshing market data"
       begin

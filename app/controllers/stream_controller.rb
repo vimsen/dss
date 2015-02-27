@@ -39,7 +39,16 @@ class StreamController < ApplicationController
     puts "Subscribing to feed: #{channel}"
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
       msg = JSON.parse(data)
-      sse.write(msg['data'].to_json, event: msg['event'])
+      begin
+        sse.write(msg['data'].to_json, event: msg['event'])
+      rescue IOError => e
+        puts e.message
+        puts e.backtrace.inspect
+        puts "Can't send data to client"
+        sse = Streamer::SSE.new(response.stream)
+        sse.write(msg['data'].to_json, event: msg['event'])
+      end
+
       ActiveRecord::Base.connection.close
     end
 
@@ -86,7 +95,7 @@ class StreamController < ApplicationController
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
       # puts "sending: ", data
       msg = JSON.parse(data)
-      puts "controller received #{msg}"
+     #  puts "controller received #{msg}"
       sse.write(msg['data'].to_json, event: msg['event'])
     end
 
