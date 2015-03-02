@@ -3,6 +3,7 @@ require 'open-uri'
 require 'json'
 require 'yaml'
 require 'market/market'
+# require 'logger'
 
 module FetchAsynch
   # This class downloads prosumption data from the EDMS, and then inserts them
@@ -27,13 +28,13 @@ module FetchAsynch
         ActiveRecord::Base.connection.close
         uri.query = URI.encode_www_form(params)
 
-        puts "Connecting to: #{uri}"
+        Rails.logger.debug "Connecting to: #{uri}"
 
         ActiveRecord::Base.connection.close
         result = JSON.parse(uri.open.read)
         datareceived(result, channel)
 
-        puts 'done'
+        Rails.logger.debug 'done'
       end
     end
 
@@ -42,35 +43,52 @@ module FetchAsynch
     def datareceived(data, channel)
 
       ActiveRecord::Base.connection.close
-      puts "Connecting to channel"
+      Rails.logger.debug "Connecting to channel"
       begin
         x = $bunny_channel.fanout(channel)
       rescue Bunny::Exception # Don't block if channel can't be fanned out
-        puts "Can't fanout channel #{channel}"
+        Rails.logger.debug "Can't fanout channel #{channel}"
         x = nil
       end
 
-      puts "Finding existing datapoints"
+      Rails.logger.debug "Finding existing datapoints"
       ActiveRecord::Base.connection.close
-      old_data_points = DataPoint.where(prosumer: @prosumers.split(/,/),
-                                    timestamp: (@startdate - 1.day)..(@enddate + 1.day),
-                                    interval: @interval)
-      puts "#{old_data_points.count} datapoints found"
+
       procs = Hash[Prosumer.all.map {|p| [p.intelen_id, p]}]
-      ActiveRecord::Base.connection.close
+      new_data_points = []
+      ActiveRecord::Base.transaction do
+        ActiveRecord::Base.connection.execute("LOCK TABLE data_points IN EXCLUSIVE MODE;")
+        old_data_points = Hash[DataPoint
+                                   .where(prosumer: @prosumers.split(/,/),
+                                          timestamp: (@startdate - 2.days) ..
+                                              (@enddate + 2.days),
+                                          interval: @interval)
+                                   .map do |dp|
+                                 ["#{dp.timestamp.to_i},#{dp.prosumer_id},#{dp.interval_id}", 1]
+                               end]
+        Rails.logger.debug "#{old_data_points.count} datapoints found"
+        Rails.logger.debug "#{data.count} datapoints received"
 
-      puts "Rejecting existing data"
+        dupe_finder = {}
 
-      new_data_points = data.reject do |r|
-        r['timestamp'].to_datetime.future? ||
-          old_data_points.any? do |d|
-            d.timestamp == r['timestamp'].to_datetime &&
-                d.prosumer_id == procs[r['procumer_id']].id &&
-                d.interval_id == @interval.id
+        new_data_points = data.reject do |r|
+          f = false
+          unless dupe_finder["#{r['timestamp'].to_datetime.to_i},#{procs[r['procumer_id']].id},#{@interval.id}"].nil?
+            f = true
           end
+          dupe_finder["#{r['timestamp'].to_datetime.to_i},#{procs[r['procumer_id']].id},#{@interval.id}"] = 1
+          r['timestamp'].to_datetime.future? ||
+              old_data_points.has_key?("#{r['timestamp'].to_datetime.to_i},#{procs[r['procumer_id']].id},#{@interval.id}") ||
+              f
+        end
+
+        Rails.logger.debug "#{new_data_points.count} datapoints remaining"
+        (new_data_points.map do |d|
+          db_prepare(d, procs)
+        end).each_slice(5000) do |slice|
+          DataPoint.import slice
+        end
       end
-      ActiveRecord::Base.connection.close
-      puts "#{new_data_points.count} remaining. Publishing to rabbitmq #{channel}"
 
       begin
         message = new_data_points.map do |d|
@@ -80,64 +98,26 @@ module FetchAsynch
         ActiveRecord::Base.connection.close
         x.publish({data: message, event: 'datapoints'}.to_json) unless x.nil?
       rescue Bunny::Exception # Don't block if channel can't be fanned out
-        puts "Can't publish to channel #{channel}"
+        Rails.logger.debug "Can't publish to channel #{channel}"
         ActiveRecord::Base.connection.close
       end
       ActiveRecord::Base.connection.close
 
-      puts "Preparing and Inserting to db"
-
-      new_data_points.each do |d|
-        dp = db_prepare(d, procs)
-        dp.save
-        ActiveRecord::Base.connection.close
-      end
-      ActiveRecord::Base.connection.close
-      puts "Inserting to db"
-
-      DataPoint.import prepared
-
-      puts "Inserted to db"
-      ActiveRecord::Base.connection.close
-
-      puts "publshing market data"
+      Rails.logger.debug "publshing market data"
       begin
-        puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@", @prosumers.split(/,/), @startdate, @enddate
         x.publish({data: Market::Calculator.new(prosumers: @prosumers.split(/,/),
-                                              startDate: @startdate,
-                                              endDate: @enddate).calcCosts,
+                                                startDate: @startdate,
+                                                endDate: @enddate).calcCosts,
                 event: 'market'}.to_json) # unless x.nil?
-        puts "publshed market data"
+        Rails.logger.debug "publshed market data"
         ActiveRecord::Base.connection.close
       rescue Bunny::Exception # Don't block if channel can't be fanned out
-        puts "Can't publish to channel #{channel}"
+        Rails.logger.debug "Can't publish to channel #{channel}"
         ActiveRecord::Base.connection.close
       end
       ActiveRecord::Base.connection.close
+      Rails.logger.debug "market data published."
 
-    end
-
-    def newdata?(d)
-      puts '===== In newData ======'
-      t = DateTime.parse(d['timestamp'])
-
-      # Intelen sends us data for the future for some reaason
-      return false if t.future?
-
-      i = d['interval'].to_i
-      s = Time.at(t.to_i - i / 2).to_datetime
-      e = Time.at(t.to_i + i / 2).to_datetime
-
-      # procumer should be changed to prosumer (by intelen)
-      p = Prosumer.where(intelen_id: d['procumer_id'].to_i).first
-
-      datapoint = DataPoint.where(
-                         timestamp: s..e,
-                         interval_id: Interval.where(duration: i).first,
-                         prosumer: p
-                         ).first
-      puts "=== Result : #{d['procumer_id']}, #{p}, #{datapoint.nil?} ======="
-      datapoint.nil?
     end
 
     def db_prepare(d, procs)
@@ -158,35 +138,11 @@ module FetchAsynch
 
     end
 
-    def dbinsert(d)
-      puts 'New datapoint'
-      puts Interval.where(duration: d['interval'].to_i).first
-      puts '===='
-      h = { timestamp: DateTime.parse(d['timestamp']),
-            prosumer: Prosumer.where(intelen_id: d['procumer_id'].to_i).first,
-            interval: Interval.where(duration: d['interval'].to_i).first,
-            production: d['actual']['production'],
-            consumption: d['actual']['consumption'],
-            storage: d['actual']['storage'],
-            f_timestamp: DateTime.parse(d['forecast']['timestamp']),
-            f_production: d['forecast']['production'],
-            f_consumption: d['forecast']['consumption'],
-            f_storage: d['forecast']['storage'],
-            dr: d['dr'],
-            reliability: d['reliability'] }
-
-      puts 'h=', h
-      datapoint = DataPoint.new(h)
-      puts "Crated DataPoint: #{datapoint}"
-      datapoint.save
-      puts 'Saved DataPoint'
-    end
-
     def prepare(d, procs)
       k = d.deep_dup
       k['timestamp'] = d['timestamp'].to_datetime.to_i
-      k[:prosumer_id] = procs[d['procumer_id']]
-      k[:prosumer_name] = procs[d['procumer_id']].name
+      k['prosumer_id'] = procs[d['procumer_id']].id
+      k['prosumer_name'] = procs[d['procumer_id']].name
       k['forecast']['timestamp'] =
           d['forecast']['timestamp'].to_datetime.to_i
       return k

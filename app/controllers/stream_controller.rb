@@ -38,18 +38,28 @@ class StreamController < ApplicationController
     q.bind(x)
     puts "Subscribing to feed: #{channel}"
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
+      begin
+        puts "I am in"
+        msg = JSON.parse(data)
+        puts "Stream Controller received: #{msg['event']},\ndata: #{msg['data'].count}"
 
-      msg = JSON.parse(data)
-      # puts JSON.pretty_generate msg
-      if msg['event'] == 'datapoints'
-        msg['data'].each do |d|
-          sse.write(d.to_json, event: 'datapoint')
-          ActiveRecord::Base.connection.close
+        # puts JSON.pretty_generate msg
+        if msg['event'] == 'datapoints'
+          msg['data'].each do |d|
+            sse.write(d.to_json, event: 'datapoint')
+            ActiveRecord::Base.connection.close
+          end
+        else
+          sse.write(msg['data'].to_json, event: msg['event'])
         end
-      else
-        sse.write(msg['data'].to_json, event: msg['event'])
+      rescue IOError
+        puts "I should NOT be here!"
+        ActiveRecord::Base.connection.close
+        consumer.cancel unless consumer.nil?
+        sse.close
+        puts "Stream closed2."
+      ensure
       end
-      ActiveRecord::Base.connection.close
     end
 
     idata = cluster.request_cached(interval, startdate, enddate, channel)
@@ -94,19 +104,25 @@ class StreamController < ApplicationController
     puts "Subscribing to: #{channel}"
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
       # puts "sending: ", data
-      msg = JSON.parse(data)
+      begin
+        msg = JSON.parse(data)
 
-      # puts JSON.pretty_generate msg
-      if msg['event'] == 'datapoints'
-        msg['data'].each do |d|
-          sse.write(d.to_json, event: 'datapoint')
-          ActiveRecord::Base.connection.close
+        # puts JSON.pretty_generate msg
+        if msg['event'] == 'datapoints'
+          msg['data'].each do |d|
+            sse.write(d.to_json, event: 'datapoint')
+            ActiveRecord::Base.connection.close
+          end
+        else
+          sse.write(msg['data'].to_json, event: msg['event'])
         end
-      else
-        sse.write(msg['data'].to_json, event: msg['event'])
+      rescue IOError
+        ActiveRecord::Base.connection.close
+        consumer.cancel unless consumer.nil?
+        sse.close
+        puts "Stream closed2."
+      ensure
       end
-      ActiveRecord::Base.connection.close
-     #  puts "controller received #{msg}"
     end
 
     idata = prosumer.request_cached(interval, startdate, enddate, channel)
