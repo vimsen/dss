@@ -29,7 +29,7 @@ module Market
           },{
               label: "ideal",
               data: real.map do |f|
-                unless price_cache[f.f_timestamp.to_i].nil?
+                unless price_cache[f.timestamp.to_i].nil?
                   [f.timestamp.to_i * 1000, f.c * real_price(f.timestamp)]
                 else
                   nil
@@ -38,7 +38,7 @@ module Market
           },{
               label: "real",
               data: real.map do |f|
-                unless price_cache[f.f_timestamp.to_i].nil?
+                unless price_cache[f.timestamp.to_i].nil?
                   [f.timestamp.to_i * 1000, real_cost(f, forecast_cache, price_cache)]
                 else
                   nil
