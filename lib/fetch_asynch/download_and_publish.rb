@@ -33,7 +33,7 @@ module FetchAsynch
         ActiveRecord::Base.connection.close
         result = JSON.parse(uri.open.read)
         datareceived(result, channel)
-
+        ActiveRecord::Base.connection.close
         Rails.logger.debug 'done'
       end
     end
@@ -88,6 +88,7 @@ module FetchAsynch
         end).each_slice(5000) do |slice|
           DataPoint.import slice
         end
+        ActiveRecord::Base.connection.close
       end
 
       begin
@@ -99,12 +100,13 @@ module FetchAsynch
         x.publish({data: message, event: 'datapoints'}.to_json) unless x.nil?
       rescue Bunny::Exception # Don't block if channel can't be fanned out
         Rails.logger.debug "Can't publish to channel #{channel}"
+      ensure
         ActiveRecord::Base.connection.close
       end
-      ActiveRecord::Base.connection.close
 
       Rails.logger.debug "publshing market data"
       begin
+        ActiveRecord::Base.connection.close
         x.publish({data: Market::Calculator.new(prosumers: @prosumers.split(/,/),
                                                 startDate: @startdate,
                                                 endDate: @enddate).calcCosts,

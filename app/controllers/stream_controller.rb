@@ -33,9 +33,12 @@ class StreamController < ApplicationController
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
     channel = params[:channel]
 
+    ActiveRecord::Base.connection.close
     x = $bunny_channel.fanout(channel)
     q = $bunny_channel.queue("", :exclusive => false)
     q.bind(x)
+
+    ActiveRecord::Base.connection.close
     puts "Subscribing to feed: #{channel}"
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
       begin
@@ -54,11 +57,11 @@ class StreamController < ApplicationController
         end
       rescue IOError
         puts "I should NOT be here!"
-        ActiveRecord::Base.connection.close
         consumer.cancel unless consumer.nil?
         sse.close
         puts "Stream closed2."
       ensure
+        ActiveRecord::Base.connection.close
       end
     end
 
@@ -66,7 +69,7 @@ class StreamController < ApplicationController
     idata.each do |d|
       sse.write(d.to_json, event: 'datapoint')
     end
-
+    ActiveRecord::Base.connection.close
     sse.write(Market::Calculator.new(prosumers: cluster.prosumers,
                                      startDate: startdate,
                                      endDate: enddate).calcCosts.to_json,
@@ -97,10 +100,11 @@ class StreamController < ApplicationController
     enddate = (params[:enddate].nil?) ? (DateTime.now) : params[:enddate].to_datetime
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
     channel = params[:channel]
-
+    ActiveRecord::Base.connection.close
     x = $bunny_channel.fanout(channel)
     q = $bunny_channel.queue("", :exclusive => false)
     q.bind(x)
+    ActiveRecord::Base.connection.close
     puts "Subscribing to: #{channel}"
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
       # puts "sending: ", data
@@ -117,11 +121,11 @@ class StreamController < ApplicationController
           sse.write(msg['data'].to_json, event: msg['event'])
         end
       rescue IOError
-        ActiveRecord::Base.connection.close
         consumer.cancel unless consumer.nil?
         sse.close
         puts "Stream closed2."
       ensure
+        ActiveRecord::Base.connection.close
       end
     end
 
@@ -130,7 +134,7 @@ class StreamController < ApplicationController
     idata.each do |d|
       sse.write(d.to_json, event: 'datapoint')
     end
-
+    ActiveRecord::Base.connection.close
     sse.write(Market::Calculator.new(prosumers: prosumer,
                                      startDate: startdate,
                                      endDate: enddate).calcCosts.to_json,
