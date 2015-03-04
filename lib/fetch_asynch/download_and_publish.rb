@@ -57,6 +57,8 @@ module FetchAsynch
       procs = Hash[Prosumer.all.map {|p| [p.intelen_id, p]}]
       new_data_points = []
       ActiveRecord::Base.transaction do
+
+        ActiveRecord::Base.connection.close
         ActiveRecord::Base.connection.execute("LOCK TABLE data_points IN EXCLUSIVE MODE;")
         old_data_points = Hash[DataPoint
                                    .where(prosumer: @prosumers.split(/,/),
