@@ -14,7 +14,8 @@ class StreamController < ApplicationController
     measurement = Measurement.new(timeslot: DateTime.now, power: power, prosumer_id: params[:id] )
     measurement.save
 
-    x = $bunny_channel.fanout("prosumer.#{params[:id]}")
+    bunny_channel = $bunny.create_channel
+    x = bunny_channel.fanout("prosumer.#{params[:id]}")
 
     msg = {'id' => measurement.id, "prosumer_id" => params[:id], 'X' => measurement.timeslot.to_i, 'Y' => power}.to_json
 
@@ -34,8 +35,9 @@ class StreamController < ApplicationController
     channel = params[:channel]
 
     ActiveRecord::Base.connection.close
-    x = $bunny_channel.fanout(channel)
-    q = $bunny_channel.queue("", :exclusive => false)
+    bunny_channel = $bunny.create_channel
+    x = bunny_channel.fanout(channel)
+    q = bunny_channel.queue("", :exclusive => false)
     q.bind(x)
 
     ActiveRecord::Base.connection.close
@@ -101,8 +103,9 @@ class StreamController < ApplicationController
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
     channel = params[:channel]
     ActiveRecord::Base.connection.close
-    x = $bunny_channel.fanout(channel)
-    q = $bunny_channel.queue("", :exclusive => false)
+    bunny_channel = $bunny.create_channel
+    x = bunny_channel.fanout(channel)
+    q = bunny_channel.queue("", :exclusive => false)
     q.bind(x)
     ActiveRecord::Base.connection.close
     puts "Subscribing to: #{channel}"
@@ -160,8 +163,10 @@ class StreamController < ApplicationController
     sse = Streamer::SSE.new(response.stream)
     meter = Meter.find(params[:id])
 
-    x = $bunny_channel.topic("imeter_exchange")
-    q = $bunny_channel.queue("", :auto_delete => false).bind(x, :routing_key => "imeter.data.#{meter.mac}")
+
+    bunny_channel = $bunny.create_channel
+    x = bunny_channel.topic("imeter_exchange")
+    q = bunny_channel.queue("", :auto_delete => false).bind(x, :routing_key => "imeter.data.#{meter.mac}")
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
       # puts "sending: ", data
       # puts delivery_info, properties, data

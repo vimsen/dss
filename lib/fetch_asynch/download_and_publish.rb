@@ -45,7 +45,8 @@ module FetchAsynch
       ActiveRecord::Base.connection.close
       Rails.logger.debug "Connecting to channel"
       begin
-        x = $bunny_channel.fanout(channel)
+        bunny_channel = $bunny.create_channel
+        x = bunny_channel.fanout(channel)
       rescue Bunny::Exception # Don't block if channel can't be fanned out
         Rails.logger.debug "Can't fanout channel #{channel}"
         x = nil
@@ -57,8 +58,6 @@ module FetchAsynch
       procs = Hash[Prosumer.all.map {|p| [p.intelen_id, p]}]
       new_data_points = []
       ActiveRecord::Base.transaction do
-
-        ActiveRecord::Base.connection.close
         ActiveRecord::Base.connection.execute("LOCK TABLE data_points IN EXCLUSIVE MODE;")
         old_data_points = Hash[DataPoint
                                    .where(prosumer: @prosumers.split(/,/),
