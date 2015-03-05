@@ -26,6 +26,7 @@ class StreamController < ApplicationController
   
   def clusterfeed
     response.headers['Content-Type'] = 'text/event-stream'
+    ActiveRecord::Base.forbid_implicit_checkout_for_thread!
     sse = Streamer::SSE.new(response.stream)
     
     cluster = Cluster.find(params[:id])
@@ -94,6 +95,7 @@ class StreamController < ApplicationController
   end
 
   def prosumer
+    ActiveRecord::Base.forbid_implicit_checkout_for_thread!
     response.headers['Content-Type'] = 'text/event-stream'
     sse = Streamer::SSE.new(response.stream)
     
@@ -159,6 +161,7 @@ class StreamController < ApplicationController
   end
 
   def meter
+    ActiveRecord::Base.forbid_implicit_checkout_for_thread!
     response.headers['Content-Type'] = 'text/event-stream'
     sse = Streamer::SSE.new(response.stream)
     meter = Meter.find(params[:id])

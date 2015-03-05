@@ -15,45 +15,47 @@ module Market
       forecast_cache = {}
       price_cache = {}
       aggr_costs = {id: -2, name: :aggregated, forecast: 0, ideal: 0, real: 0}
-      {
-          plot: [
-              {
-                  label: "forecast",
-                  data: forecast.map do |f|
-                    forecast_cache[f.f_timestamp.to_i] = f.fc
-                    price_cache[f.f_timestamp.to_i] = forecast_price(f.f_timestamp, f.timestamp)
-                    unless price_cache[f.f_timestamp.to_i].nil?
-                      aggr_costs[:forecast] += f.fc * price_cache[f.f_timestamp.to_i]
-                      [f.f_timestamp.to_i * 1000, f.fc * price_cache[f.f_timestamp.to_i]]
-                    else
-                      nil
+      ActiveRecord::Base.connection_pool.with_connection do
+        {
+            plot: [
+                {
+                    label: "forecast",
+                    data: forecast.map do |f|
+                      forecast_cache[f.f_timestamp.to_i] = f.fc
+                      price_cache[f.f_timestamp.to_i] = forecast_price(f.f_timestamp, f.timestamp)
+                      unless price_cache[f.f_timestamp.to_i].nil?
+                        aggr_costs[:forecast] += f.fc * price_cache[f.f_timestamp.to_i]
+                        [f.f_timestamp.to_i * 1000, f.fc * price_cache[f.f_timestamp.to_i]]
+                      else
+                        nil
+                      end
                     end
-                  end
-              }, {
-                  label: "ideal",
-                  data: real.map do |f|
-                    unless price_cache[f.timestamp.to_i].nil?
-                      aggr_costs[:ideal] += f.consumption * real_price(f.timestamp)
-                      [f.timestamp.to_i * 1000, f.consumption * real_price(f.timestamp)]
-                    else
-                      nil
+                }, {
+                    label: "ideal",
+                    data: real.map do |f|
+                      unless price_cache[f.timestamp.to_i].nil?
+                        aggr_costs[:ideal] += f.consumption * real_price(f.timestamp)
+                        [f.timestamp.to_i * 1000, f.consumption * real_price(f.timestamp)]
+                      else
+                        nil
+                      end
                     end
-                  end
-              }, {
-                  label: "real",
-                  data: real.map do |f|
-                    unless price_cache[f.timestamp.to_i].nil?
-                      aggr_costs[:real] += real_cost(f, forecast_cache, price_cache)
-                      [f.timestamp.to_i * 1000, real_cost(f, forecast_cache, price_cache)]
-                    else
-                      nil
+                }, {
+                    label: "real",
+                    data: real.map do |f|
+                      unless price_cache[f.timestamp.to_i].nil?
+                        aggr_costs[:real] += real_cost(f, forecast_cache, price_cache)
+                        [f.timestamp.to_i * 1000, real_cost(f, forecast_cache, price_cache)]
+                      else
+                        nil
+                      end
                     end
-                  end
-              }
-          ],
-          dissagrgated: calcDiss + [aggr_costs],
+                }
+            ],
+            dissagrgated: calcDiss + [aggr_costs],
 
-      }
+        }
+      end
     end
 
     def calcDiss

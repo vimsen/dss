@@ -13,10 +13,12 @@ module FetchAsynch
       @prosumers = prosumers.to_s
       @startdate = startdate
       @enddate = enddate
-      @interval = Interval.find(interval)
+      ActiveRecord::Base.connection_pool.with_connection do
+        @interval = Interval.find(interval)
+      end
       ActiveRecord::Base.clear_active_connections!
       Thread.new do
-        ActiveRecord::Base.clear_active_connections!
+        ActiveRecord::Base.forbid_implicit_checkout_for_thread!
 
      #   sleep 1
 
