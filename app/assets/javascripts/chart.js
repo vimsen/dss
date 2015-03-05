@@ -225,6 +225,18 @@ var plotHelper = (function() {
                   container: ($( "#legend" ).length ? $("#cost_legend") : null)
               }
           });
+
+          $("#costs_div").html('<hr/><table id="costs_table" class="table"><thead><th>Name</th><th>Forecast</th><th>Ideal</th><th>real</th></thead><tbody></tbody></table>');
+
+          var costs_dynatable = $('#costs_table').dynatable({
+              dataset: {
+                  records: message.dissagrgated
+              }
+          }).data('dynatable');
+
+//        dynatable.paginationPerPage.set(20); // Show 20 records per page
+          costs_dynatable.paginationPage.set(1);
+          costs_dynatable.process();
       });
 
       redraw(data);

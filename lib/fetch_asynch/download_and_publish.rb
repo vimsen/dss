@@ -14,8 +14,9 @@ module FetchAsynch
       @startdate = startdate
       @enddate = enddate
       @interval = Interval.find(interval)
+      ActiveRecord::Base.clear_active_connections!
       Thread.new do
-        ActiveRecord::Base.connection.close
+        ActiveRecord::Base.clear_active_connections!
 
      #   sleep 1
 
@@ -25,15 +26,15 @@ module FetchAsynch
                    startdate: startdate.to_s,
                    enddate: enddate.to_s,
                    interval: @interval.duration }
-        ActiveRecord::Base.connection.close
+        ActiveRecord::Base.clear_active_connections!
         uri.query = URI.encode_www_form(params)
 
         Rails.logger.debug "Connecting to: #{uri}"
 
-        ActiveRecord::Base.connection.close
+        ActiveRecord::Base.clear_active_connections!
         result = JSON.parse(uri.open.read)
         datareceived(result, channel)
-        ActiveRecord::Base.connection.close
+        ActiveRecord::Base.clear_active_connections!
         Rails.logger.debug 'done'
       end
     end
@@ -42,7 +43,7 @@ module FetchAsynch
 
     def datareceived(data, channel)
 
-      ActiveRecord::Base.connection.close
+      ActiveRecord::Base.clear_active_connections!
       Rails.logger.debug "Connecting to channel"
       begin
         bunny_channel = $bunny.create_channel
@@ -53,7 +54,7 @@ module FetchAsynch
       end
 
       Rails.logger.debug "Finding existing datapoints"
-      ActiveRecord::Base.connection.close
+      ActiveRecord::Base.clear_active_connections!
 
       procs = Hash[Prosumer.all.map {|p| [p.intelen_id, p]}]
       new_data_points = []
@@ -89,36 +90,36 @@ module FetchAsynch
         end).each_slice(5000) do |slice|
           DataPoint.import slice
         end
-        ActiveRecord::Base.connection.close
+        ActiveRecord::Base.clear_active_connections!
       end
 
       begin
         message = new_data_points.map do |d|
-          ActiveRecord::Base.connection.close
+          ActiveRecord::Base.clear_active_connections!
           prepare(d, procs)
         end
-        ActiveRecord::Base.connection.close
+        ActiveRecord::Base.clear_active_connections!
         x.publish({data: message, event: 'datapoints'}.to_json) unless x.nil?
       rescue Bunny::Exception # Don't block if channel can't be fanned out
         Rails.logger.debug "Can't publish to channel #{channel}"
       ensure
-        ActiveRecord::Base.connection.close
+        ActiveRecord::Base.clear_active_connections!
       end
 
       Rails.logger.debug "publshing market data"
       begin
-        ActiveRecord::Base.connection.close
+        ActiveRecord::Base.clear_active_connections!
         x.publish({data: Market::Calculator.new(prosumers: @prosumers.split(/,/),
                                                 startDate: @startdate,
                                                 endDate: @enddate).calcCosts,
                 event: 'market'}.to_json) # unless x.nil?
         Rails.logger.debug "publshed market data"
-        ActiveRecord::Base.connection.close
+        ActiveRecord::Base.clear_active_connections!
       rescue Bunny::Exception # Don't block if channel can't be fanned out
         Rails.logger.debug "Can't publish to channel #{channel}"
-        ActiveRecord::Base.connection.close
+        ActiveRecord::Base.clear_active_connections!
       end
-      ActiveRecord::Base.connection.close
+      ActiveRecord::Base.clear_active_connections!
       Rails.logger.debug "market data published."
 
     end
