@@ -186,7 +186,7 @@ var plotHelper = (function() {
       source.addEventListener('market', function(e) {
           var message = JSON.parse(e.data);
           console.log("Received market data: ", message)
-          $.plot($("#cost_placeholder"), message, {
+          $.plot($("#cost_placeholder"), message.plot, {
               series: {
                   lines: {
                       show: true
