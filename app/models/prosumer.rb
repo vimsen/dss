@@ -28,13 +28,16 @@ class Prosumer < ActiveRecord::Base
   include FindGaps
   
   def request_cached(interval, startdate, enddate, channel)
+
+    gaps = true
+    result = []
+    ActiveRecord::Base.connection_pool.with_connection do
+      dps = self.data_points.where(timestamp: startdate..enddate, interval: interval).order(timestamp: :asc)
+      result = dps.map { |dp| dp.clientFormat }
+      gaps = find_gaps(dps, startdate, enddate, Interval.find(interval).duration)
+    end
     
-    dps = self.data_points.where(timestamp: startdate..enddate, interval: interval).order(timestamp: :asc)
-    
-    result = dps.map { |dp| dp.clientFormat }
-    
-    
-    if find_gaps dps, startdate, enddate, Interval.find(interval).duration
+    if gaps
       FetchAsynch::DownloadAndPublish.new(self.intelen_id, interval, startdate, enddate, channel)
     end 
     

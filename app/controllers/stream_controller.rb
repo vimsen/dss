@@ -140,7 +140,7 @@ class StreamController < ApplicationController
       sse.write(d.to_json, event: 'datapoint')
     end
     ActiveRecord::Base.clear_active_connections!
-    sse.write(Market::Calculator.new(prosumers: prosumer,
+    sse.write(Market::Calculator.new(prosumers: [prosumer],
                                      startDate: startdate,
                                      endDate: enddate).calcCosts.to_json,
               event: 'market')
