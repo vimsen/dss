@@ -45,7 +45,6 @@ class StreamController < ApplicationController
     puts "Subscribing to feed: #{channel}"
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
       begin
-        puts "I am in"
         msg = JSON.parse(data)
         puts "Stream Controller received: #{msg['event']},\ndata: #{msg['data'].count}"
 

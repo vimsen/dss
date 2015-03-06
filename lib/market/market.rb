@@ -87,7 +87,6 @@ module Market
         total_costs[:real] += real_cost(dp, forecast_cache[dp.prosumer_id], price_cache[dp.prosumer_id]) unless  price_cache[dp.prosumer_id][dp.timestamp.to_i].nil?
       end
 
-
       @prosumers.map do |p|
         {
             id: p.id,
@@ -125,7 +124,6 @@ module Market
 
     def real_cost(f, forecasts, prices)
       return nil if forecasts[f.timestamp.to_i].nil?
-      #puts "@@@@@", f.c, prices[f.timestamp.to_i], (forecasts[f.timestamp.to_i] - f.c), @penalty_satisfaction, real_price(f.timestamp)
       f.consumption > forecasts[f.timestamp.to_i] ?
           forecasts[f.timestamp.to_i] * prices[f.timestamp.to_i] +
               (f.consumption - forecasts[f.timestamp.to_i]) * (1 + @penalty_violation) * real_price(f.timestamp) :
@@ -136,14 +134,11 @@ module Market
 
     def real_price(cons_timestamp)
       @real_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day) .. (@endDate - 1.year)).map { |d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price] }]
-      # puts "@@@@@@@@@@@@@@", cons_timestamp, @real_price_cache[cons_timestamp], @real_price_cache
       @real_price_cache[cons_timestamp.to_i]
     end
 
     def forecast_price(cons_timestamp, fore_timestamp)
-
       @forecast_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day) .. (@endDate - 1.year)).map { |d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price] }]
-      # puts "@@@@@@@@@@@@@@", cons_timestamp.to_i, @forecast_price_cache[cons_timestamp.to_i], @forecast_price_cache
       @forecast_price_cache[cons_timestamp.to_i]
     end
 

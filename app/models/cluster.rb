@@ -12,7 +12,6 @@ class Cluster < ActiveRecord::Base
     result = []
     aggregate = {}
     count = {}
-    puts "#{interval}, #{startdate}, #{enddate}"
     missing_data = false
 
     prosumerlist = []
@@ -40,9 +39,8 @@ class Cluster < ActiveRecord::Base
 
       num = self.prosumers.count
 
-      puts "Checking aggregate:"
+      Rails.logger.debug "Checking aggregate:"
       aggregate.each do |key, value|
-        puts key, value
         # if count[key] == num
         res = value.clientFormat;
         res[:prosumer_name] = "Aggregate"
@@ -51,13 +49,9 @@ class Cluster < ActiveRecord::Base
       end
 
 
-      prosumerlist = self.prosumers.map { |d| d.intelen_id }.join(",")
+      prosumerlist = self.prosumers
     end
 
-
-
-    puts "prosumerlist: ", prosumerlist
-    
     if (missing_data)
       FetchAsynch::DownloadAndPublish.new(prosumerlist, interval, startdate, enddate, channel)
     end   

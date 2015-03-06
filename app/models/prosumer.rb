@@ -38,7 +38,7 @@ class Prosumer < ActiveRecord::Base
     end
     
     if gaps
-      FetchAsynch::DownloadAndPublish.new(self.intelen_id, interval, startdate, enddate, channel)
+      FetchAsynch::DownloadAndPublish.new([self], interval, startdate, enddate, channel)
     end 
     
     return result      
