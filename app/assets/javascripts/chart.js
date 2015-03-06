@@ -230,7 +230,9 @@ var plotHelper = (function() {
 
           var costs_dynatable = $('#costs_table').dynatable({
               dataset: {
-                  records: message.dissagrgated
+                  records: message.dissagrgated,
+                  sorts: {real: -1},
+                  perPageDefault: 100
               }
           }).data('dynatable');
 
