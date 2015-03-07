@@ -55,7 +55,7 @@
 	  
 	  
 		var prod = <%= @day_ahead.day_ahead_hours.map {|dah| [ (startdate - ActiveSupport::TimeZone['Europe/Athens'].utc_offset.seconds + dah.time.hours).to_i * 1000, dah.consumption] }.to_json.html_safe %>;
-		var idata = <%= @day_ahead.prosumer.request_cached(2, startdate , enddate).to_json.html_safe %>;
+		var idata = <%= @day_ahead.prosumer.request_cached(2, startdate, enddate, @channel).to_json.html_safe %>;
 		
 		console.log("prod:", prod);
     console.log("idata:", idata);
@@ -74,8 +74,8 @@
     });
     
     data["day ahead forecast"] = daf;
-    
-    plotHelper.drawChart("<%= "/stream/#{@day_ahead.prosumer.id}/prosumer?startdate=#{startdate}&enddate=#{enddate}&interval=2" %>",data, "consumption", false);
+
+    plotHelper.drawChart("<%= "/stream/#{@day_ahead.prosumer.id}/prosumer?startdate=#{startdate}&enddate=#{enddate}&interval=2&channel=#{@channel}" -%>",data, "consumption", false);
     console.log("data:", data);
  	});
 </script>
