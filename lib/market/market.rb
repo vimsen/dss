@@ -8,6 +8,8 @@ module Market
         next unless type == :key
         v = eval(k.to_s)
         instance_variable_set("@#{k}", v) unless v.nil?
+        Rails.logger.debug("key: @#{k}")
+        Rails.logger.debug("value: #{v}")
       end
     end
 
@@ -70,11 +72,11 @@ module Market
                       f_timestamp: @startDate .. @endDate).each do |dp|
         forecast_cache[dp.prosumer_id] ||= {}
         forecast_cache[dp.prosumer_id][dp.f_timestamp.to_i] = dp.f_consumption
-        price_cache[dp.prosumer_id] ||= {}
-        price_cache[dp.prosumer_id][dp.f_timestamp.to_i] = forecast_price(dp.f_timestamp, dp.timestamp)
+        price_cache ||= {}
+        price_cache[dp.f_timestamp.to_i] = forecast_price(dp.f_timestamp, dp.timestamp)
         fore_cost[dp.prosumer_id] ||= 0
-        fore_cost[dp.prosumer_id] += dp.f_consumption * price_cache[dp.prosumer_id][dp.f_timestamp.to_i]
-        total_costs[:forecast] += dp.f_consumption * price_cache[dp.prosumer_id][dp.f_timestamp.to_i]
+        fore_cost[dp.prosumer_id] += dp.f_consumption * price_cache[dp.f_timestamp.to_i]
+        total_costs[:forecast] += dp.f_consumption * price_cache[dp.f_timestamp.to_i]
       end
       DataPoint.where(prosumer: @prosumers,
                       interval: 2,
@@ -83,8 +85,8 @@ module Market
         ideal_cost[dp.prosumer_id] += dp.consumption * real_price(dp.timestamp)
         total_costs[:ideal] += dp.consumption * real_price(dp.timestamp)
         real_cost[dp.prosumer_id] ||= 0
-        real_cost[dp.prosumer_id] += real_cost(dp, forecast_cache[dp.prosumer_id], price_cache[dp.prosumer_id]) unless  price_cache[dp.prosumer_id][dp.timestamp.to_i].nil?
-        total_costs[:real] += real_cost(dp, forecast_cache[dp.prosumer_id], price_cache[dp.prosumer_id]) unless  price_cache[dp.prosumer_id][dp.timestamp.to_i].nil?
+        real_cost[dp.prosumer_id] += real_cost(dp, forecast_cache[dp.prosumer_id], price_cache)
+        total_costs[:real] += real_cost(dp, forecast_cache[dp.prosumer_id], price_cache)
       end
 
       @prosumers.map do |p|
@@ -96,6 +98,31 @@ module Market
             real: real_cost[p.id]
         }
       end + [total_costs]
+    end
+
+
+    def audit
+      for_cache = Hash[DataPoint.where(prosumer: @prosumers,
+                                       interval: 2,
+                                       f_timestamp: @startDate .. @endDate)
+                           .map do |dp|
+                         [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_consumption]
+                       end]
+        DataPoint.where(prosumer: @prosumers,
+                               interval: 2,
+                               timestamp: @startDate .. @endDate).map do |dp|
+        {
+            timestamp: dp.timestamp,
+            prosumer: dp.prosumer.name,
+            real: dp.consumption,
+            forecast: for_cache[[dp.prosumer_id, dp.timestamp.to_i]],
+            price: real_price(dp.timestamp)
+
+        }
+      end
+
+
+
     end
 
 
@@ -123,7 +150,8 @@ module Market
 
 
     def real_cost(f, forecasts, prices)
-      return nil if forecasts[f.timestamp.to_i].nil?
+      forecasts[f.timestamp.to_i] ||= 0
+      prices[f.timestamp.to_i] ||= 0
       f.consumption > forecasts[f.timestamp.to_i] ?
           forecasts[f.timestamp.to_i] * prices[f.timestamp.to_i] +
               (f.consumption - forecasts[f.timestamp.to_i]) * (1 + @penalty_violation) * real_price(f.timestamp) :
@@ -134,7 +162,7 @@ module Market
 
     def real_price(cons_timestamp)
       @real_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day) .. (@endDate - 1.year)).map { |d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price] }]
-      @real_price_cache[cons_timestamp.to_i]
+      @real_price_cache[cons_timestamp.to_i] ||= 0
     end
 
     def forecast_price(cons_timestamp, fore_timestamp)
