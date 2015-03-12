@@ -1,3 +1,5 @@
+require 'securerandom'
+
 # The controller for the clusters
 class ClustersController < ApplicationController
   before_action :set_cluster, only: [:show, :edit, :update, :destroy]
@@ -12,6 +14,7 @@ class ClustersController < ApplicationController
   # GET /clusters/1
   # GET /clusters/1.json
   def show
+    @channel = "channel.#{SecureRandom.uuid}"
   end
 
   # GET /clusters/new
