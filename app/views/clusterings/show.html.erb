@@ -59,6 +59,40 @@
           <%= tc.name %>
         </div>
         <div class="panel-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>For.</th>
+                <th>Ideal</th>
+                <th>Real</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% stats = Hash[Market::Calculator.new(prosumers: tc.prosumers,
+                                                     startDate: @startDate,
+                                                     endDate: @endDate)
+                                      .calcCosts[:dissagrgated]
+                                      .select {|d| d[:id] < 0}
+                                      .map {|d| [d[:id], d]}] -%>
+              <% -2.upto(-1) do |i| -%>
+                <tr>
+                  <th><%= stats[i][:name] -%></th>
+                  <td class="text-right"><%= stats[i][:forecast].round -%></td>
+                  <td class="text-right"><%= stats[i][:ideal].round -%></td>
+                  <td class="text-right"><%= stats[i][:real].round -%></td>
+                </tr>
+              <% end -%>
+              <tr>
+                <th>Perc. impr.</th>
+                <td></td><td></td>
+                <td><%= ( ( stats[-1][:real] - stats[-2][:real] ) /
+                        stats[-2][:real] * 100).round(2) if stats[-2][:real] > 0
+                    -%>%</td>
+              </tr>
+
+            </tbody>
+          </table>
           <div id="<%= "chart_#{tc.id}" -%>" style="height: 200px;" ></div>
         </div>
       </div>
@@ -66,25 +100,42 @@
   <% end %>
 </div>
 
+<div class="row">
+  <%= link_to 'Apply', apply_clustering_path(id: @clustering), method: :post, class: 'btn btn-primary', data: { confirm: 'This will erase the current cluster allocation. Are you sure?' } %>
+</div>
+
+
 <script>
   $(function () {
     var idata = <%=
         JSON.pretty_generate(@clustering.temp_clusters.map do |tc|
             {
                 id: tc.id,
-                vals: DataPoint.where(prosumer: tc.prosumers,
+                vals: [{
+                    label: :consumption,
+                    data: DataPoint.where(prosumer: tc.prosumers,
                                       interval: 3,
-                                      timestamp: (Time.now - 7.days)..Time.now)
+                                      timestamp: @startDate..@endDate)
                                .order(timestamp: :asc)
                                .group(:timestamp)
                                .select("timestamp as ts, sum(consumption) as s")
                                .map{|p| [p.ts.to_i * 1000, p.s] }
+                },{
+                    label: :forecast,
+                    data: DataPoint.where(prosumer: tc.prosumers,
+                                      interval: 3,
+                                      f_timestamp: @startDate..@endDate)
+                               .order(f_timestamp: :asc)
+                               .group(:f_timestamp)
+                               .select("f_timestamp as ts, sum(f_consumption) as s")
+                               .map{|p| [p.ts.to_i * 1000, p.s] }
+                }]
             }
         end).html_safe -%>;
 
     console.log(idata);
     for (var i = 0; i < idata.length; i++) {
-      $.plot("#chart_"+idata[i].id, [{data: idata[i].vals, label: "test"}], {
+      $.plot("#chart_"+idata[i].id, idata[i].vals, {
         series: {
           lines: {
             show: true

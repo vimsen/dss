@@ -25,37 +25,24 @@ module Market
                     data: forecast.map do |f|
                       forecast_cache[f.f_timestamp.to_i] = f.fc
                       price_cache[f.f_timestamp.to_i] = forecast_price(f.f_timestamp, f.timestamp)
-                      unless price_cache[f.f_timestamp.to_i].nil?
                         aggr_costs[:forecast] += f.fc * price_cache[f.f_timestamp.to_i]
                         [f.f_timestamp.to_i * 1000, f.fc * price_cache[f.f_timestamp.to_i]]
-                      else
-                        nil
-                      end
                     end
                 }, {
                     label: "ideal",
                     data: real.map do |f|
-                      unless price_cache[f.timestamp.to_i].nil?
-                        aggr_costs[:ideal] += f.consumption * real_price(f.timestamp)
-                        [f.timestamp.to_i * 1000, f.consumption * real_price(f.timestamp)]
-                      else
-                        nil
-                      end
+                      aggr_costs[:ideal] += f.consumption * real_price(f.timestamp)
+                      [f.timestamp.to_i * 1000, f.consumption * real_price(f.timestamp)]
                     end
                 }, {
                     label: "real",
                     data: real.map do |f|
-                      unless price_cache[f.timestamp.to_i].nil?
-                        aggr_costs[:real] += real_cost(f, forecast_cache, price_cache)
-                        [f.timestamp.to_i * 1000, real_cost(f, forecast_cache, price_cache)]
-                      else
-                        nil
-                      end
+                      aggr_costs[:real] += real_cost(f, forecast_cache, {f.timestamp.to_i => real_price(f.timestamp)})
+                      [f.timestamp.to_i * 1000, real_cost(f, forecast_cache, price_cache)]
                     end
                 }
             ],
-            dissagrgated: calcDiss + [aggr_costs],
-
+            dissagrgated: calcDiss + [aggr_costs]
         }
       end
     end
@@ -100,7 +87,6 @@ module Market
       end + [total_costs]
     end
 
-
     def audit
       for_cache = Hash[DataPoint.where(prosumer: @prosumers,
                                        interval: 2,
@@ -120,11 +106,7 @@ module Market
 
         }
       end
-
-
-
     end
-
 
     def forecast
       DataPoint
@@ -147,7 +129,6 @@ module Market
           .select('timestamp, f_timestamp, sum(consumption) as consumption')
 #          .sum(:consumption)
     end
-
 
     def real_cost(f, forecasts, prices)
       forecasts[f.timestamp.to_i] ||= 0
