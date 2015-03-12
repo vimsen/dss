@@ -13,6 +13,8 @@ class ClusteringsController < ApplicationController
   end
 
   def show
+    @startDate = Time.now - 7.days
+    @endDate = Time.now
   end
 
   def new
