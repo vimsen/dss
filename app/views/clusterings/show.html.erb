@@ -78,15 +78,17 @@
               <% -2.upto(-1) do |i| -%>
                 <tr>
                   <th><%= stats[i][:name] -%></th>
-                  <td><%= stats[i][:forecast].round -%></td>
-                  <td><%= stats[i][:ideal].round -%></td>
-                  <td><%= stats[i][:real].round -%></td>
+                  <td class="text-right"><%= stats[i][:forecast].round -%></td>
+                  <td class="text-right"><%= stats[i][:ideal].round -%></td>
+                  <td class="text-right"><%= stats[i][:real].round -%></td>
                 </tr>
               <% end -%>
               <tr>
                 <th>Perc. impr.</th>
                 <td></td><td></td>
-                <td><%= ((stats[-1][:real] - stats[-2][:real]) /stats[-2][:real] * 100).round if stats[-2][:real]>0-%>%</td>
+                <td><%= ( ( stats[-1][:real] - stats[-2][:real] ) /
+                        stats[-2][:real] * 100).round(2) if stats[-2][:real] > 0
+                    -%>%</td>
               </tr>
 
             </tbody>
@@ -97,6 +99,11 @@
     </div>
   <% end %>
 </div>
+
+<div class="row">
+  <%= link_to 'Apply', apply_clustering_path(id: @clustering), method: :post, class: 'btn btn-primary', data: { confirm: 'This will erase the current cluster allocation. Are you sure?' } %>
+</div>
+
 
 <script>
   $(function () {
