@@ -34,7 +34,10 @@ module Market
                       aggr_costs[:ideal] += f.consumption * real_price(f.timestamp)
                       [f.timestamp.to_i * 1000, f.consumption * real_price(f.timestamp)]
                     end
-                }, {
+                },  {
+                    label: "without",
+                    data: sum_cost
+                },{
                     label: "real",
                     data: real.map do |f|
                       aggr_costs[:real] += real_cost(f, forecast_cache, {f.timestamp.to_i => real_price(f.timestamp)})
@@ -94,9 +97,9 @@ module Market
                            .map do |dp|
                          [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_consumption]
                        end]
-        DataPoint.where(prosumer: @prosumers,
-                               interval: 2,
-                               timestamp: @startDate .. @endDate).map do |dp|
+      DataPoint.where(prosumer: @prosumers,
+                      interval: 2,
+                      timestamp: @startDate .. @endDate).map do |dp|
         {
             timestamp: dp.timestamp,
             prosumer: dp.prosumer.name,
@@ -128,6 +131,27 @@ module Market
           .order(:timestamp)
           .select('timestamp, f_timestamp, sum(consumption) as consumption')
 #          .sum(:consumption)
+    end
+
+    def sum_cost
+      for_cache = Hash[DataPoint.where(prosumer: @prosumers,
+                                       interval: 2,
+                                       f_timestamp: @startDate .. @endDate)
+                           .map do |dp|
+                         [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_consumption]
+                       end]
+      DataPoint.where(prosumer: @prosumers,
+                      interval: 2,
+                      timestamp: @startDate .. @endDate).inject({}) do |sum, dp|
+        sum[dp.timestamp.to_i] ||= 0
+        sum[dp.timestamp.to_i] +=
+            real_cost(dp, {
+                            dp.timestamp.to_i =>
+                                for_cache[[dp.prosumer_id, dp.timestamp.to_i]]
+                        }, {dp.timestamp.to_i => real_price(dp.timestamp)})
+        sum
+      end.map {|k,v| [k*1000,v]}.sort {|a,b| a[0] <=> b[0]}
+
     end
 
     def real_cost(f, forecasts, prices)
