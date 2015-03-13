@@ -59,40 +59,42 @@
           <%= tc.name %>
         </div>
         <div class="panel-body">
-          <table class="table">
-            <thead>
-              <tr>
-                <th></th>
-                <th>For.</th>
-                <th>Ideal</th>
-                <th>Real</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% stats = Hash[Market::Calculator.new(prosumers: tc.prosumers,
-                                                     startDate: @startDate,
-                                                     endDate: @endDate)
-                                      .calcCosts[:dissagrgated]
-                                      .select {|d| d[:id] < 0}
-                                      .map {|d| [d[:id], d]}] -%>
-              <% -2.upto(-1) do |i| -%>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
                 <tr>
-                  <th><%= stats[i][:name] -%></th>
-                  <td class="text-right"><%= stats[i][:forecast].round -%></td>
-                  <td class="text-right"><%= stats[i][:ideal].round -%></td>
-                  <td class="text-right"><%= stats[i][:real].round -%></td>
+                  <th></th>
+                  <th class="text-right">For.</th>
+                  <th class="text-right">Ideal</th>
+                  <th class="text-right">Real</th>
                 </tr>
-              <% end -%>
-              <tr>
-                <th>Perc. impr.</th>
-                <td></td><td></td>
-                <td><%= ( ( stats[-1][:real] - stats[-2][:real] ) /
-                        stats[-2][:real] * 100).round(2) if stats[-2][:real] > 0
-                    -%>%</td>
-              </tr>
+              </thead>
+              <tbody>
+                <% stats = Hash[Market::Calculator.new(prosumers: tc.prosumers,
+                                                       startDate: @startDate,
+                                                       endDate: @endDate)
+                                        .calcCosts[:dissagrgated]
+                                        .select {|d| d[:id] < 0}
+                                        .map {|d| [d[:id], d]}] -%>
+                <% -2.upto(-1) do |i| -%>
+                  <tr>
+                    <th><%= stats[i][:name] -%></th>
+                    <td class="text-right"><%= stats[i][:forecast].round -%></td>
+                    <td class="text-right"><%= stats[i][:ideal].round -%></td>
+                    <td class="text-right"><%= stats[i][:real].round -%></td>
+                  </tr>
+                <% end -%>
+                <tr>
+                  <th>Perc. impr.</th>
+                  <td></td><td></td>
+                  <td class="text-right"><%= ( ( stats[-1][:real] - stats[-2][:real] ) /
+                          stats[-2][:real] * 100).round(2) if stats[-2][:real] > 0
+                      -%>%</td>
+                </tr>
 
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          </div>
           <div id="<%= "chart_#{tc.id}" -%>" style="height: 200px;" ></div>
         </div>
       </div>
