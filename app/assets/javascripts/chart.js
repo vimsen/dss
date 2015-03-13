@@ -226,8 +226,13 @@ var plotHelper = (function() {
               }
           });
 
-          $("#costs_div").html('<hr/><table id="costs_table" class="table"><thead><th>Name</th><th>Forecast</th><th>Ideal</th><th>real</th></thead><tbody></tbody></table>');
+          $("#costs_div").html('<hr/><table id="costs_table" class="table table-responsive"><thead><th>Name</th><th>Forecast</th><th>Ideal</th><th>real</th></thead><tbody></tbody></table>');
 
+          var sum = $.grep(message.dissagrgated, function(a) {return a.id == -1})[0].real;
+          var aggr = $.grep(message.dissagrgated, function(a) {return a.id == -2})[0].real;
+          var impr = ((sum -aggr)/aggr*100).toFixed(2);
+
+          $("#perc_div").html('<hr/><strong>Cost reduction: </strong> ' + impr + '%.');
           var costs_dynatable = $('#costs_table').dynatable({
               dataset: {
                   records: message.dissagrgated,
