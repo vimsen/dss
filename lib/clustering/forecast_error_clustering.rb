@@ -40,9 +40,15 @@ module ClusteringModule
                    end]
 
       @errors.select{|key,value| procs[key[0]]}.inject({}) do |res, (key,value)|
-        res[key] ||= 0
-        res[key] += value
+        res[key[1]] ||= 0
+        res[key[1]] += value
         res
+      end
+    end
+
+    def distance(centroid, prosumer)
+      centroid.inject(0) do |res, (key,value)|
+        res + (value - (@errors[[prosumer.id, key]] || 0)).abs
       end
     end
 
