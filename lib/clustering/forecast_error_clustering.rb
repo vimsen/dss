@@ -52,12 +52,49 @@ module ClusteringModule
       end
     end
 
+    def find_closest(centroids, prosumer)
+      centroids.min_by do |k,v|
+        distance(v, prosumer)
+      end
+    end
+
+    def closest_or_new(centroids, prosumer)
+
+      candidates = centroids.select do |k,v|
+        distance(v, Prosumer.new) > distance(v, prosumer)
+      end
+
+      Rails.logger.debug "Number of cluster candidates: #{candidates.count}"
+
+      return [-1, 0] if candidates.empty?
+
+      candidates.max_by do |k,v|
+        Rails.logger.debug "index #{k}"
+        Rails.logger.debug distance(v, Prosumer.new)
+        Rails.logger.debug distance(v, prosumer)
+        distance(v, Prosumer.new) - distance(v, prosumer)
+      end
+    end
+
     def run(kappa = 5)
-      result = @prosumers.sample(kappa).map.with_index do |p, i|
-        cl = TempCluster.new(name: "Est: #{i}",
-                             description: "Estimation Error clustering")
-        cl.prosumers.push p
-        cl
+      remaining_prosumers = @prosumers.sort_by{|p| - centroid([p]).sum{|k,v| v.abs}}
+      centroids = {}
+      result = []
+
+      i = 0;
+      remaining_prosumers.each do |p|
+
+        best = closest_or_new(centroids, p)[0]
+        if best < 0
+          cl = TempCluster.new(
+                          name: "Est: #{i}",
+                          description: "Estimation Error clustering")
+          result[i] = cl
+          best = i
+          i += 1
+        end
+        result[best].prosumers.push p
+        centroids[best] = centroid(result[best].prosumers)
       end
 
       result

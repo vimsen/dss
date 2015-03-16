@@ -1,3 +1,6 @@
+require 'clustering/forecast_error_clustering'
+
+
 # This module implements the clustering algorithms for the demo
 module ClusteringModule
   def self.algorithms
@@ -10,23 +13,27 @@ module ClusteringModule
      { string: :location,
        name: 'By location' },
      { string: :dr,
-       name: "By demand response profile"}]
+       name: "By demand response profile"},
+     { string: :error,
+       name: "By forecasting errors"}]
   end
 
   def self.run_algorithm(algo, param)
     case algo
-    when 'energy_type'
-      result = run_energy_type
-    when 'building_type'
-      result = run_building_type
-    when 'connection_type'
-      result = run_connection_type
-    when 'location'
-      result = run_location param.to_i
-    when 'dr'
-      result = run_dr param.to_i
-    else
-      return nil
+      when 'energy_type'
+        result = run_energy_type
+      when 'building_type'
+        result = run_building_type
+      when 'connection_type'
+        result = run_connection_type
+      when 'location'
+        result = run_location param.to_i
+      when 'dr'
+        result = run_dr param.to_i
+      when 'error'
+        result = ForecastErrorClustering.new.run
+      else
+        return nil
     end
 
     result.select { |cl| cl.prosumers.size > 0 }
