@@ -1,4 +1,6 @@
-module ClussteringModule
+module ClusteringModule
+
+
   class GeneticErrorClustering
     def initialize(prosumers: Prosumer.all,
                    startDate: Time.now - 1.week,
@@ -27,14 +29,48 @@ module ClussteringModule
                      end]
     end
 
+    def errors
+      @errors
+    end
 
     def run(kappa = 5)
+      p = Darwinning::Population.new(
+          organism: MyOrganism, population_size: 10,
+          fitness_goal: 0, generations_limit: 100
+      )
+      p.evolve!
 
+      p.best_member.nice_print
 
-      
+    end
 
+    class MyOrganism < Darwinning::Organism
 
+      @name = "Test"
 
+      @gemes = Prosumer.all.map.with_index do |p,i|
+        Darwinning::Gene.new(name: "#{i}th digit", value_range: (0..4))
+      end
+
+      def fitness
+
+        clusters = []
+        genotypes.each_with_index do |v, i|
+          clusters[v] ||= []
+          clusters[v].push i
+        end
+
+        puts "Errors", base_line_penalties
+
+        # Try to get the sum of the 3 digits to add up to 15
+        (genotypes.inject{ |sum, x| sum + x } - 15).abs
+      end
+
+      def base_line_penalties
+        GeneticErrorClustering.errors.sum do |k,v|
+          v.abs
+        end
+      end
 
     end
 

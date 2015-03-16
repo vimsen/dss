@@ -50,6 +50,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.9.0)
+    darwinning (0.0.3)
     devise (3.4.1)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -168,6 +169,7 @@ DEPENDENCIES
   bunny
   cancancan
   coffee-rails (~> 4.0.0)
+  darwinning
   devise
   font-awesome-rails
   gmaps4rails
