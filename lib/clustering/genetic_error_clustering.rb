@@ -37,7 +37,7 @@ module ClusteringModule
     def run(kappa = 5)
       p = Darwinning::Population.new(
           organism: MyOrganism, population_size: 10,
-          fitness_goal: 0, generations_limit: 2
+          fitness_goal: 0, generations_limit: 100
       )
       p.evolve!
 
@@ -74,7 +74,7 @@ module ClusteringModule
           clusters[self.class.genes[i].name] = v
         end
 
-        puts "Errors", base_line_penalties, clustered_penalties(clusters)
+        # puts "Errors", base_line_penalties, clustered_penalties(clusters)
 
         # Try to get the sum of the 3 digits to add up to 15
         # (genotypes.inject(0){ |sum, x| sum + x } - 15).abs
@@ -83,19 +83,22 @@ module ClusteringModule
 
       def base_line_penalties
         @@base_line_penalties ||= GeneticErrorClustering.errors.sum do |k,v|
-          puts "called"
+          # puts "called"
           v.abs
         end
       end
 
       def clustered_penalties(clusters)
+        @cache ||= {}
+        return @cache[clusters] if @cache[clusters]
+
         cl_errors = {}
         GeneticErrorClustering.errors.each do |k,v|
           cl_errors[[clusters[k[0]], k[1]]] ||= 0
           cl_errors[[clusters[k[0]], k[1]]] += v
         end
 
-        cl_errors.sum do |k,v|
+        @cache[clusters] = cl_errors.sum do |k,v|
           v.abs
         end
       end

@@ -1,4 +1,5 @@
 require 'clustering/clustering_module'
+require 'market/market'
 
 # This is the controller handles the automatic clustring BL
 class ClusteringsController < ApplicationController
@@ -15,6 +16,19 @@ class ClusteringsController < ApplicationController
   def show
     @startDate = Time.now - 7.days
     @endDate = Time.now
+
+    @stats = Hash[@clustering.temp_clusters.map do |tc|
+                    [tc.id, Hash[Market::Calculator.new(prosumers: tc.prosumers,
+                                                        startDate: @startDate,
+                                                        endDate: @endDate)
+                                     .calcCosts[:dissagrgated]
+                                     .select { |d| d[:id] < 0 }
+                                     .map { |d| [d[:id], d] }]]
+
+                  end]
+
+    @sum_sum = @stats.sum { |k,v| puts v; v[-1][:real]}
+    @sum_aggr = @stats.sum { |k,v| puts v; v[-2][:real]}
   end
 
   def new
@@ -25,7 +39,7 @@ class ClusteringsController < ApplicationController
 
   def new_from_existing
     @clustering = Clustering.new(name: "From existing",
-                                 description: "Clustering generated from existing clusters at #{Time.now}"   )
+                                 description: "Clustering generated from existing clusters at #{Time.now}")
     Cluster.all.each do |c|
       @clustering.temp_clusters << TempCluster.new(name: c.name,
                                                    description: c.description,
@@ -57,7 +71,7 @@ class ClusteringsController < ApplicationController
       if clusterids.nil?
         @clustering.temp_clusters.destroy_all
       else
-        @clustering.temp_clusters.where.not(id: clusterids.map {|k,v| v["id"]}).destroy_all
+        @clustering.temp_clusters.where.not(id: clusterids.map { |k, v| v["id"] }).destroy_all
       end
 
       if @clustering.update(clustering_params)
@@ -104,8 +118,8 @@ class ClusteringsController < ApplicationController
   def save
     ActiveRecord::Base.transaction do
       params[:clusterprosumers].zip(
-            params[:clusternames], params[:clusterdescriptions],
-            params[:clusterids]).each do |prosumers, clustername, desc, clid|
+          params[:clusternames], params[:clusterdescriptions],
+          params[:clusterids]).each do |prosumers, clustername, desc, clid|
         prs = Prosumer.find(prosumers.split(','))
         if clid.to_i == -1
           prs.each do |p|
