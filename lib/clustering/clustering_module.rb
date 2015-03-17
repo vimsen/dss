@@ -1,4 +1,5 @@
 require 'clustering/forecast_error_clustering'
+require 'clustering/genetic_error_clustering'
 
 
 # This module implements the clustering algorithms for the demo
@@ -15,7 +16,10 @@ module ClusteringModule
      { string: :dr,
        name: "By demand response profile"},
      { string: :error,
-       name: "By forecasting errors"}]
+       name: "By forecasting errors"},
+     { string: :genetic,
+       name: "Using genetic algorithms"}]
+
   end
 
   def self.run_algorithm(algo, param)
@@ -32,6 +36,8 @@ module ClusteringModule
         result = run_dr param.to_i
       when 'error'
         result = ForecastErrorClustering.new.run
+      when 'genetic'
+        result = ClusteringModule::GeneticErrorClustering.new.run
       else
         return nil
     end

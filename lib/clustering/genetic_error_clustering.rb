@@ -24,50 +24,78 @@ module ClusteringModule
                         .map do |dp|
                       [[dp.prosumer_id, dp.timestamp.to_i], dp.consumption]
                     end]
-      @errors = Hash[@real.map do |k,v|
+      @@errors = Hash[@real.map do |k,v|
                        [ k, v - (@forecasts[k] || 0)]
                      end]
     end
 
-    def errors
-      @errors
+    def self.errors
+      ## This is a SEVERE bug. No concurrency allowed
+      @@errors
     end
 
     def run(kappa = 5)
       p = Darwinning::Population.new(
           organism: MyOrganism, population_size: 10,
-          fitness_goal: 0, generations_limit: 100
+          fitness_goal: 0, generations_limit: 2
       )
       p.evolve!
 
-      p.best_member.nice_print
+      result = []
+      p.best_member.genotypes.each_with_index do |g, i|
+        result[g] ||= TempCluster.new(name: "Gen #{g}",
+                                      description: "Genetic clustering #{g}")
 
+        result[g].prosumers.push Prosumer.find(ClusteringModule::GeneticErrorClustering::MyOrganism.genes[i].name)
+      end
+
+      result.reject{ |c| c.nil? || c.prosumers.nil?}
     end
 
     class MyOrganism < Darwinning::Organism
 
       @name = "Test"
 
-      @gemes = Prosumer.all.map.with_index do |p,i|
-        Darwinning::Gene.new(name: "#{i}th digit", value_range: (0..4))
+      @genes = ::Prosumer.all.map.with_index do |p,i|
+        Darwinning::Gene.new(name: p.id, value_range: (0..4))
       end
+
+
+      #def initialize
+
+       # @test = "Hello"
+      #end
 
       def fitness
 
         clusters = []
+       # puts "gen",genotypes.size
         genotypes.each_with_index do |v, i|
-          clusters[v] ||= []
-          clusters[v].push i
+          clusters[self.class.genes[i].name] = v
         end
 
-        puts "Errors", base_line_penalties
+        puts "Errors", base_line_penalties, clustered_penalties(clusters)
 
         # Try to get the sum of the 3 digits to add up to 15
-        (genotypes.inject{ |sum, x| sum + x } - 15).abs
+        # (genotypes.inject(0){ |sum, x| sum + x } - 15).abs
+        clustered_penalties(clusters)
       end
 
       def base_line_penalties
-        GeneticErrorClustering.errors.sum do |k,v|
+        @@base_line_penalties ||= GeneticErrorClustering.errors.sum do |k,v|
+          puts "called"
+          v.abs
+        end
+      end
+
+      def clustered_penalties(clusters)
+        cl_errors = {}
+        GeneticErrorClustering.errors.each do |k,v|
+          cl_errors[[clusters[k[0]], k[1]]] ||= 0
+          cl_errors[[clusters[k[0]], k[1]]] += v
+        end
+
+        cl_errors.sum do |k,v|
           v.abs
         end
       end
