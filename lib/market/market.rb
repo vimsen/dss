@@ -16,7 +16,7 @@ module Market
     def calcCosts
       forecast_cache = {}
       price_cache = {}
-      aggr_costs = {id: -2, name: :aggregated, forecast: 0, ideal: 0, real: 0}
+      aggr_costs = {id: -2, name: 'aggr.', forecast: 0, ideal: 0, real: 0}
       ActiveRecord::Base.connection_pool.with_connection do
         {
             plot: [

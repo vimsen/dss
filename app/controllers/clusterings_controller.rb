@@ -23,12 +23,14 @@ class ClusteringsController < ApplicationController
                                                         endDate: @endDate)
                                      .calcCosts[:dissagrgated]
                                      .select { |d| d[:id] < 0 }
-                                     .map { |d| [d[:id], d] }]]
+                                     .map { |d| [d[:id], d.dup.update(penalty: d[:real] - d[:ideal])] }]]
 
                   end]
 
-    @sum_sum = @stats.sum { |k,v| puts v; v[-1][:real]}
-    @sum_aggr = @stats.sum { |k,v| puts v; v[-2][:real]}
+    @sum_sum = @stats.sum { |k,v| v[-1][:real]}
+    @pen_sum = @stats.sum { |k,v| v[-1][:penalty]}
+    @sum_aggr = @stats.sum { |k,v| v[-2][:real]}
+    @pen_aggr = @stats.sum { |k,v| v[-2][:penalty]}
   end
 
   def new

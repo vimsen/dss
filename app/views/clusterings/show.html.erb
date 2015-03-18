@@ -25,13 +25,14 @@
           <dd><%= @clustering.description -%></dd>
 
           <dt>Total Sum:</dt>
-          <dd><%= @sum_sum.round -%></dd>
+          <dd><%= @sum_sum.round -%> - Penalties: <%= @pen_sum.round -%> </dd>
 
           <dt>Total Aggr Sum:</dt>
-          <dd><%= @sum_aggr.round -%></dd>
+          <dd><%= @sum_aggr.round -%> - Penalties: <%= @pen_aggr.round -%> </dd>
 
           <dt>Improvement:</dt>
-          <dd><%= ((@sum_sum - @sum_aggr) / @sum_aggr * 100).round(2) if @sum_aggr > 0-%>%</dd>
+          <dd><%= ((@sum_sum - @sum_aggr) / @sum_aggr * 100).round(2) if @sum_aggr > 0-%>%
+            - Penalties: <%= ((@pen_sum - @pen_aggr) / @pen_aggr * 100).round(2) if @pen_aggr > 0-%>%</dd>
 
           <dt>Clusters:</dt>
           <dd>
@@ -76,6 +77,7 @@
                   <th class="text-right">For.</th>
                   <th class="text-right">Ideal</th>
                   <th class="text-right">Real</th>
+                  <th class="text-right">Pen.</th>
                 </tr>
               </thead>
               <tbody>
@@ -85,14 +87,18 @@
                     <td class="text-right"><%= @stats[tc.id][i][:forecast].round -%></td>
                     <td class="text-right"><%= @stats[tc.id][i][:ideal].round -%></td>
                     <td class="text-right"><%= @stats[tc.id][i][:real].round -%></td>
+                    <td class="text-right"><%= @stats[tc.id][i][:penalty].round -%></td>
                   </tr>
                 <% end -%>
                 <tr>
-                  <th>Perc. impr.</th>
+                  <th>Perc.</th>
                   <td></td><td></td>
                   <td class="text-right"><%= ( ( @stats[tc.id][-1][:real] - @stats[tc.id][-2][:real] ) /
                           @stats[tc.id][-2][:real] * 100).round(2) if @stats[tc.id][-2][:real] > 0
                       -%>%</td>
+                  <td class="text-right"><%= ( ( @stats[tc.id][-1][:penalty] - @stats[tc.id][-2][:penalty] ) /
+                          @stats[tc.id][-2][:penalty] * 100).round(2) if @stats[tc.id][-2][:penalty] > 0
+                  -%>%</td>
                 </tr>
 
               </tbody>
