@@ -1,5 +1,5 @@
 require 'clustering/forecast_error_clustering'
-require 'clustering/genetic_error_clustering'
+require 'clustering/genetic_error_clustering2'
 
 
 # This module implements the clustering algorithms for the demo

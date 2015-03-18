@@ -71,4 +71,5 @@ group :development, :test do
   gem 'railroady' # Use `rake diagram:all` for generating all diagrams
 end
 
-gem 'darwinning'
+gem 'darwinning' # For genetic algorithms
+gem "ai4r" # ditto
