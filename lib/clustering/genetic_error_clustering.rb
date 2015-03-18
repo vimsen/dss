@@ -37,7 +37,7 @@ module ClusteringModule
     def run(kappa = 5)
       p = Darwinning::Population.new(
           organism: MyOrganism, population_size: 10,
-          fitness_goal: 0, generations_limit: 100
+          fitness_goal: 1, generations_limit: 100
       )
       p.evolve!
 
@@ -81,26 +81,62 @@ module ClusteringModule
         clustered_penalties(clusters)
       end
 
-      def base_line_penalties
+      def base_line_penalties(clusters)
         @@base_line_penalties ||= GeneticErrorClustering.errors.sum do |k,v|
-          # puts "called"
           v.abs
         end
       end
 
       def clustered_penalties(clusters)
-        @cache ||= {}
-        return @cache[clusters] if @cache[clusters]
+        @clustered_penalties ||= {}
+        return @clustered_penalties[clusters] if @clustered_penalties[clusters]
 
         cl_errors = {}
+        base_errors = {}
         GeneticErrorClustering.errors.each do |k,v|
           cl_errors[[clusters[k[0]], k[1]]] ||= 0
           cl_errors[[clusters[k[0]], k[1]]] += v
+          base_errors[[clusters[k[0]], k[1]]] ||= 0
+          base_errors[[clusters[k[0]], k[1]]] += v.abs
         end
 
-        @cache[clusters] = cl_errors.sum do |k,v|
-          v.abs
+        p_b = base_errors.inject({}) do |s, (k,v)|
+          s[k[0]] ||= 0
+          s[k[0]] += v.abs
+          s
         end
+
+        puts "p_b: #{p_b}"
+
+        p_a = cl_errors.inject({}) do |s, (k,v)|
+          # puts "printing", s, k, v
+          s[k[0]] ||= 0
+          s[k[0]] += v.abs
+          s
+        end
+
+        puts "p_a: #{p_a}"
+
+        best_cluster = p_a.max_by do |k,v|
+          if v.abs > 0
+            (p_b[k] - v.abs) / p_b[k]
+          else
+            0
+          end
+        end
+
+        improvements = p_a.sum do |k,v|
+          v.abs > 0 ?
+            (p_b[k] - v.abs) / p_b[k] :
+            0
+        end
+
+        puts "best_cluster: #{best_cluster}"
+        puts "result: #{(p_b[best_cluster[0]] - p_a[best_cluster[0]]) / p_b[best_cluster[0]]}"
+        puts "result2: #{improvements}"
+
+        @clustered_penalties[clusters] = (p_b[best_cluster[0]] - p_a[best_cluster[0]]) / p_a[best_cluster[0]]
+        # @clustered_penalties[clusters] = improvements
       end
 
     end
