@@ -42,7 +42,7 @@ module ClusteringModule
           penalty_satisfaction: @penalty_satisfaction)
       best = search.run
       puts "FITNESS #{best.fitness} CLUSTERS: "+
-               "#{best.data}"
+               "#{best.data.zip(@prosumers).map {|c,p| [p.id, c]}}"
 
       result = []
       best.data.each_with_index do |g, i|
