@@ -29,6 +29,7 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.1)
       tzinfo (~> 1.1)
+    ai4r (1.13)
     amq-protocol (1.9.2)
     arel (5.0.1.20140414130214)
     autoprefixer-rails (5.1.0)
@@ -50,6 +51,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.9.0)
+    darwinning (0.0.3)
     devise (3.4.1)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -162,12 +164,14 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord-import (>= 0.2.0)
+  ai4r
   autoprefixer-rails
   bcrypt (~> 3.1.7)
   bootstrap-sass
   bunny
   cancancan
   coffee-rails (~> 4.0.0)
+  darwinning
   devise
   font-awesome-rails
   gmaps4rails

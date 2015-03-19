@@ -70,3 +70,6 @@ group :development, :test do
   gem 'rails-erd' # use `bundle exec erd` to genera ERD diagram
   gem 'railroady' # Use `rake diagram:all` for generating all diagrams
 end
+
+gem 'darwinning' # For genetic algorithms
+gem "ai4r" # ditto

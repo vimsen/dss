@@ -23,7 +23,17 @@
           
           <dt>Description:</dt>
           <dd><%= @clustering.description -%></dd>
-          
+
+          <dt>Total Sum:</dt>
+          <dd><%= @sum_sum.round -%> - Penalties: <%= @pen_sum.round -%> </dd>
+
+          <dt>Total Aggr Sum:</dt>
+          <dd><%= @sum_aggr.round -%> - Penalties: <%= @pen_aggr.round -%> </dd>
+
+          <dt>Improvement:</dt>
+          <dd><%= ((@sum_sum - @sum_aggr) / @sum_aggr * 100).round(2) if @sum_aggr > 0-%>%
+            - Penalties: <%= ((@pen_sum - @pen_aggr) / @pen_aggr * 100).round(2) if @pen_aggr > 0-%>%</dd>
+
           <dt>Clusters:</dt>
           <dd>
             <%= render(partial: "clustering_short", :locals => {:clustering => @clustering}) %>
@@ -67,29 +77,28 @@
                   <th class="text-right">For.</th>
                   <th class="text-right">Ideal</th>
                   <th class="text-right">Real</th>
+                  <th class="text-right">Pen.</th>
                 </tr>
               </thead>
               <tbody>
-                <% stats = Hash[Market::Calculator.new(prosumers: tc.prosumers,
-                                                       startDate: @startDate,
-                                                       endDate: @endDate)
-                                        .calcCosts[:dissagrgated]
-                                        .select {|d| d[:id] < 0}
-                                        .map {|d| [d[:id], d]}] -%>
                 <% -2.upto(-1) do |i| -%>
                   <tr>
-                    <th><%= stats[i][:name] -%></th>
-                    <td class="text-right"><%= stats[i][:forecast].round -%></td>
-                    <td class="text-right"><%= stats[i][:ideal].round -%></td>
-                    <td class="text-right"><%= stats[i][:real].round -%></td>
+                    <th><%= @stats[tc.id][i][:name] -%></th>
+                    <td class="text-right"><%= @stats[tc.id][i][:forecast].round -%></td>
+                    <td class="text-right"><%= @stats[tc.id][i][:ideal].round -%></td>
+                    <td class="text-right"><%= @stats[tc.id][i][:real].round -%></td>
+                    <td class="text-right"><%= @stats[tc.id][i][:penalty].round -%></td>
                   </tr>
                 <% end -%>
                 <tr>
-                  <th>Perc. impr.</th>
+                  <th>Perc.</th>
                   <td></td><td></td>
-                  <td class="text-right"><%= ( ( stats[-1][:real] - stats[-2][:real] ) /
-                          stats[-2][:real] * 100).round(2) if stats[-2][:real] > 0
+                  <td class="text-right"><%= ( ( @stats[tc.id][-1][:real] - @stats[tc.id][-2][:real] ) /
+                          @stats[tc.id][-2][:real] * 100).round(2) if @stats[tc.id][-2][:real] > 0
                       -%>%</td>
+                  <td class="text-right"><%= ( ( @stats[tc.id][-1][:penalty] - @stats[tc.id][-2][:penalty] ) /
+                          @stats[tc.id][-2][:penalty] * 100).round(2) if @stats[tc.id][-2][:penalty] > 0
+                  -%>%</td>
                 </tr>
 
               </tbody>
