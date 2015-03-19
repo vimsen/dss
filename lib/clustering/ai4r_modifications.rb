@@ -94,7 +94,7 @@ module Ai4r
           cl_errors[[clusters[k[0]], k[1]]] ||= 0
           cl_errors[[clusters[k[0]], k[1]]] += v
           base_errors[[clusters[k[0]], k[1]]] ||= 0
-          base_errors[[clusters[k[0]], k[1]]] += penalty(v.abs)
+          base_errors[[clusters[k[0]], k[1]]] += penalty(v)
         end
 
         p_b = base_errors.inject({}) do |s, (k,v)|
@@ -108,33 +108,38 @@ module Ai4r
         p_a = cl_errors.inject({}) do |s, (k,v)|
           # puts "printing", s, k, v
           s[k[0]] ||= 0
-          s[k[0]] += penalty(v.abs)
+          s[k[0]] += penalty(v)
           s
         end
 
      #   puts "p_a: #{p_a}"
 
         best_cluster = p_a.max_by do |k,v|
-          if v.abs > 0
-            (p_b[k] - v.abs) / p_b[k]
+          if p_b[k] > 0
+            (p_b[k] - v) / p_b[k]
           else
             0
           end
         end
 
         improvements = p_a.sum do |k,v|
-          v.abs > 0 ?
-              (p_b[k] - v.abs) / p_b[k] :
+          p_b[k] ?
+              (p_b[k] - v) / p_b[k] :
               0
         end
+
+        total_error = p_a.sum do |k,v|
+          v
+        end
+
 
      #   puts "best_cluster: #{best_cluster}"
      #   puts "result: #{(p_b[best_cluster[0]] - p_a[best_cluster[0]]) / p_b[best_cluster[0]]}"
      #   puts "result2: #{improvements}"
 
-        @fitness = (p_b[best_cluster[0]] - p_a[best_cluster[0]]) / p_a[best_cluster[0]]
-        # @fitness = improvements
-
+        # @fitness = (p_b[best_cluster[0]] - p_a[best_cluster[0]]) / p_a[best_cluster[0]]
+        @fitness = improvements
+        # @fitness = -total_error
       end
 
       # mutation method is used to maintain genetic diversity from one 
@@ -173,9 +178,22 @@ module Ai4r
       # most used reproduction algorithm for the Travelling salesman problem.
       def self.reproduce(a, b)
 
-        spawn = a.data.zip(b.data).map do |g1 ,g2|
-          rand(2) > 0 ? g1 : g2
+        #Two point crossover
+        current = rand(2)
+        point1 = rand(a.data.length)
+        point2 = rand(a.data.length)
+#        puts "reproduce, #{point1}, #{point2}"
+        spawn = a.data.zip(b.data).map.with_index do |g, i|
+          current = 1 - current if (i == point1) ^ (i == point2)
+       #    puts "#{g[0]},#{g[1]},#{i},#{current}, #{g[current]}"
+          g[current]
         end
+
+
+        # The following is uniform crossover
+        # spawn = a.data.zip(b.data).map do |g1 ,g2|
+        #   rand(2) > 0 ? g1 : g2
+        # end
 
         return Chromosome.new(spawn, a.options)
       end
