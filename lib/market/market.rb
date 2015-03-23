@@ -113,13 +113,18 @@ module Market
 
     def forecast
       DataPoint
+          .joins('INNER JOIN data_points as r ' +
+                     'ON r.timestamp = data_points.f_timestamp ' +
+                     'AND data_points.prosumer_id = r.prosumer_id ' +
+                     'AND data_points.interval_id = r.interval_id')
           .where(prosumer: @prosumers,
                  interval: 2,
                  f_timestamp: @startDate .. @endDate)
-          .group(:f_timestamp, :timestamp)
-          .order(:f_timestamp)
-          .select('timestamp, f_timestamp, sum(f_consumption) as fc')
-#          .sum(:f_consumption)
+          .group('data_points.f_timestamp, data_points.timestamp')
+          .order('data_points.f_timestamp')
+          .select('data_points.timestamp, data_points.f_timestamp, ' +
+                      'sum(data_points.f_consumption) as fc')
+          #.sum("data_points.f_consumption")
     end
 
     def real
