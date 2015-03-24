@@ -45,7 +45,6 @@ module Ai4r
         end
         return best_chromosome
       end
-
     end
     # A Chromosome is a representation of an individual solution for a specific 
     # problem. You will have to redifine the Chromosome representation for each
@@ -123,7 +122,7 @@ module Ai4r
         end
 
         improvements = p_a.sum do |k,v|
-          p_b[k] ?
+          p_b[k] > 0 ?
               (p_b[k] - v) / p_b[k] :
               0
         end
