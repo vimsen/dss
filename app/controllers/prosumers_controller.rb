@@ -1,3 +1,5 @@
+require 'securerandom'
+
 # The conroller for the prosumer model
 class ProsumersController < ApplicationController
   before_action :set_prosumer, only: [:show, :edit, :update, :destroy]
@@ -14,6 +16,7 @@ class ProsumersController < ApplicationController
   # GET /prosumers/1
   # GET /prosumers/1.json
   def show
+    @channel = "channel.#{SecureRandom.uuid}"
   end
 
   # GET /prosumers/new

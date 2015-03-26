@@ -14,6 +14,7 @@ class DayAheadsController < ApplicationController
   end
 
   def show
+    @channel = "channel.#{SecureRandom.uuid}"
     respond_with(@day_ahead)
   end
 

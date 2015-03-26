@@ -64,7 +64,12 @@ gem 'simple-navigation-bootstrap' # For the menu
 gem 'gmaps4rails' # For google maps
 gem 'underscore-rails' # dito
 
+gem "activerecord-import", ">= 0.2.0" # For loading multiple records to db at once
+
 group :development, :test do
   gem 'rails-erd' # use `bundle exec erd` to genera ERD diagram
   gem 'railroady' # Use `rake diagram:all` for generating all diagrams
 end
+
+gem 'darwinning' # For genetic algorithms
+gem "ai4r" # ditto

@@ -79,8 +79,10 @@ class CloudPlatformController < ApplicationController
 
 	request_params = params[:cmd].split("&")
 
-	x = $bunny_channel.direct(exchange_name, :durable => true)
-        q = $bunny_channel.queue(requests_queue, :durable => true)
+
+  bunny_channel = $bunny.create_channel
+	x = bunny_channel.direct(exchange_name, :durable => true)
+  q = bunny_channel.queue(requests_queue, :durable => true)
 	q.bind(x, :routing_key => routing_key )
 
 	for index in (1..mapper[request_params[1]])

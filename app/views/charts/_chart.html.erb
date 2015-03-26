@@ -1,7 +1,7 @@
 <%= javascript_include_tag "chart" %>
 
 <% startDate = (DateTime.now - 7.days)
-   endDate = DateTime.now 
+   endDate = DateTime.now
  %>
 
 <div>
@@ -45,14 +45,39 @@
     </div>
   </div>
 
+  <div class="row">
+    <div class="col-md-2 col-md-push-10">
+      <div id="cost_legend" ></div>
+    </div>
+    <div class="col-md-10 col-md-pull-2">
+      <div class="row" id="cost_placeholder" style="width:100%;height:400px;min-width=600px"></div>
+      <div class="row" id="perc_div"> </div>
+      <div class="row" id="costs_div" >
+        <hr/>
+        <table id="costs_table" class="table table-responsive">
+          <thead>
+          <th>Name</th>
+          <th>Forecast</th>
+          <th>Ideal</th>
+          <th>real</th>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    </div>
+  </div>
+
+
 
 </div>
 <script>
 
-    var idata = <%= provider.request_cached(3, startDate, endDate).to_json.html_safe %>;
+    var idata = <%= provider.request_cached(3, startDate, endDate, @channel).to_json.html_safe %>;
     $(function(){
         plotHelper.drawChart(
-                "<%= stream %>",
+                "<%= "#{stream}?channel=#{@channel}" %>",
                 plotHelper.readData(
                       idata,
                       $('#type').val(),
@@ -81,6 +106,8 @@
             if (interval) {
               paramObj.interval = interval;
             }
+
+            paramObj.channel = '<%= @channel.html_safe %>';
              
             var url = "<%= stream %>?" + $.param(paramObj);
             console.log("Conncting to stream: ", url);
