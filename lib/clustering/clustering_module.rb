@@ -37,9 +37,7 @@ module ClusteringModule
       when 'error'
         result = ForecastErrorClustering.new.run
       when 'genetic'
-        result = ClusteringModule::GeneticErrorClustering.new(
-            startDate: Time.now - 3.weeks,
-            endDate: Time.now - 2.weeks).run
+        result = ClusteringModule::GeneticErrorClustering.new.run
       else
         return nil
     end
