@@ -3,10 +3,9 @@ require 'fetch_asynch/download_and_publish'
 
 class Prosumer < ActiveRecord::Base
   
-  
-  has_many :measurements, dependent: :destroy
   has_many :data_points, dependent: :destroy
   has_many :day_aheads, dependent: :destroy
+  has_many :meters, dependent: :destroy
 
   belongs_to :cluster
   belongs_to :building_type

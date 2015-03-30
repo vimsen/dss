@@ -57,8 +57,6 @@ Rails.application.routes.draw do
   patch 'prosumers/:id/removefromcluster' => 'prosumers#removefromcluster'
   patch 'clusters/:id/addprosumer' => 'clusters#addprosumer'
 
-  resources :measurements
-
   resources :prosumers
 
   #login page
