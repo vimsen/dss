@@ -73,3 +73,6 @@ end
 
 gem 'darwinning' # For genetic algorithms
 gem "ai4r" # ditto
+
+gem 'aws-sdk', '~> 2'
+

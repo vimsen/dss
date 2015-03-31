@@ -4,7 +4,13 @@ Rails.application.routes.draw do
 
   resources :market_prices
   get 'market_prices/dayAhead/:id' => 'market_prices#dayAhead'
-  get 'market_prices/intraDay/:id' => 'market_prices#intraDay'
+  get 'market_prices/intraDayPrices/:id' => 'market_prices#intraDayPrices'
+  get 'market_prices/intraDayVolumes/:id' => 'market_prices#intraDayVolumes'
+  get 'market_prices/MBProvisional/:id' => 'market_prices#MBProvisional'
+  get 'market_prices/ancillary/:id' => 'market_prices#ancillary'
+  get 'market_prices/greenCertificates/:id' => 'market_prices#greenCertificates'
+  get 'market_prices/efficiencyCertificates/:id' => 'market_prices#efficiencyCertificates' 
+  get 'market_prices/regions/:id' => 'market_prices#regions'
 
   get 'cloud_platform' => 'cloud_platform#index'
   get 'cloud_platform/index' => 'cloud_platform#index'

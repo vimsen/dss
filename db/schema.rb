@@ -11,10 +11,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150204132935) do
+ActiveRecord::Schema.define(version: 20150331090654) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "ancillary_services_data", force: true do |t|
+    t.datetime "date"
+    t.integer  "dayhour"
+    t.float    "purchased_volumes"
+    t.float    "sold_volumes"
+    t.float    "min_purchasing_price"
+    t.float    "average_purchasing_price"
+    t.float    "max_selling_price"
+    t.float    "average_selling_price"
+    t.integer  "region_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "building_types", force: true do |t|
     t.string   "name"
@@ -61,11 +75,30 @@ ActiveRecord::Schema.define(version: 20150204132935) do
 
   add_index "data_points", ["timestamp", "prosumer_id", "interval_id"], name: "index_data_points_on_timestamp_and_prosumer_id_and_interval_id", unique: true, using: :btree
 
+  create_table "day_ahead_energy_demands", force: true do |t|
+    t.datetime "date"
+    t.integer  "dayhour"
+    t.float    "demand"
+    t.integer  "region_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "day_ahead_energy_prices", force: true do |t|
     t.datetime "date"
     t.integer  "dayhour"
     t.float    "price"
-    t.integer  "market_id"
+    t.integer  "region_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "day_ahead_energy_volumes", force: true do |t|
+    t.datetime "date"
+    t.integer  "dayhour"
+    t.float    "purchases"
+    t.float    "sales"
+    t.integer  "region_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -90,8 +123,14 @@ ActiveRecord::Schema.define(version: 20150204132935) do
 
   add_index "day_aheads", ["prosumer_id"], name: "index_day_aheads_on_prosumer_id", using: :btree
 
-  create_table "energy_markets", force: true do |t|
-    t.string   "name"
+  create_table "energy_efficiency_certificates", force: true do |t|
+    t.datetime "date"
+    t.string   "cert_type"
+    t.float    "price_reference"
+    t.float    "price_cumulative_average"
+    t.float    "price_minimum"
+    t.float    "price_maximum"
+    t.float    "tee_traded"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -109,6 +148,18 @@ ActiveRecord::Schema.define(version: 20150204132935) do
 
   create_table "energy_types", force: true do |t|
     t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "green_certificates", force: true do |t|
+    t.datetime "date"
+    t.string   "certificate_type"
+    t.string   "reference_year"
+    t.float    "traded_volumes"
+    t.float    "price_reference"
+    t.float    "price_minimum"
+    t.float    "price_maximum"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -138,7 +189,18 @@ ActiveRecord::Schema.define(version: 20150204132935) do
     t.integer  "dayhour"
     t.float    "price"
     t.integer  "interval_id"
-    t.integer  "market_id"
+    t.integer  "region_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "intra_day_energy_volumes", force: true do |t|
+    t.datetime "date"
+    t.integer  "dayhour"
+    t.float    "purchases"
+    t.float    "sales"
+    t.integer  "region_id"
+    t.integer  "interval_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -146,6 +208,32 @@ ActiveRecord::Schema.define(version: 20150204132935) do
   create_table "log_instances", force: true do |t|
     t.integer  "instance_id"
     t.integer  "status"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "market_operators", force: true do |t|
+    t.string   "name"
+    t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "market_regions", force: true do |t|
+    t.integer  "mo_id"
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "mb_provisional_total_data", force: true do |t|
+    t.datetime "date"
+    t.integer  "dayhour"
+    t.float    "purchased_revoked"
+    t.float    "purchased_not_revoked"
+    t.float    "sold_revoked"
+    t.float    "sold_not_revoked"
+    t.integer  "region_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
