@@ -28,7 +28,7 @@ class HomeController < ApplicationController
 
 	 selected_date =  Date.today.prev_year + 1
 
-         @prices = DayAheadEnergyPrice.order("dayhour").where(date:selected_date,market_id:1)
+         @prices = DayAheadEnergyPrice.order("dayhour").where(date:selected_date,region_id:1)
 
          @prices.each do |price|
              hour_price = Array.new

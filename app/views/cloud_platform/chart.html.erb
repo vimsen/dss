@@ -1,0 +1,37 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h3 class="page-header">Cloud Platform Chart</h3>
+  </div>
+</div>
+
+
+<!-- /.row -->
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-body">
+         <div class="flot-chart">
+            <div class="flot-chart-content" id="cloud-platform-execution-time"></div>
+          </div>
+	           </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div style="padding:10px 0;">
+    <button  type="button" class="btn btn-primary" onclick="loadCloudPlatformCharts();">Refresh</button>
+    <a class="btn btn-primary" style="color: #fff; background-color: #428bca;border-color: #357ebd;" href="/cloud_platform">Results</a>
+
+</div>
+
+<br>
+
+<script>
+  $(document).ready(function() {
+       loadCloudPlatformCharts();
+  });
+</script>
+

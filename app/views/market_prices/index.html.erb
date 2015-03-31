@@ -1,58 +1,58 @@
      <br>                
-     <div class="col-lg-6">
-          <div class="panel panel-default">
-               <div class="panel-heading">
-                   Greece - Day-ahead Market
-               </div> <!-- /.panel-heading -->
-               <div class="panel-body">
-                    <div class="flot-chart">
-                         <div class="flot-chart-content" id="greece-market-prices-day-ahead"></div>
-                    </div>
-               </div> <!-- /.panel-body -->
-          </div>  <!-- /.panel -->
-     </div> <!-- /.col-lg-6 -->
-     <div class="col-lg-6"> 
-          <div class="panel panel-default">
-               <div class="panel-heading">
-                      Greece - Intra-day Market 
-               </div> <!-- /.panel-heading -->
-               <div class="panel-body">
-                  <div class="flot-chart">
-                      <div class="flot-chart-content" id="greece-market-prices-intra-day"></div>
-                  </div>
-               </div> <!-- /.panel-body -->
-          </div>  <!-- /.panel -->
-     </div>
-                  
-     <div class="col-lg-6">
-          <div class="panel panel-default">
-               <div class="panel-heading">
-                   Sedini - Day-ahead Market
-               </div> <!-- /.panel-heading -->
-               <div class="panel-body">
-                    <div class="flot-chart">
-                         <div class="flot-chart-content" id="sedini-market-prices-day-ahead"></div>
-                    </div>
-               </div> <!-- /.panel-body -->
-          </div> <!-- /.panel -->
-     </div>
-     <div class="col-lg-6">
-          <div class="panel panel-default">
-               <div class="panel-heading">
-                     Sedini - Intra-day Market
-               </div> <!-- /.panel-heading -->
-               <div class="panel-body">
-                    <div class="flot-chart">
-                         <div class="flot-chart-content" id="sedini-market-prices-intra-day"></div>
-                    </div>
-               </div> <!-- /.panel-body -->
-          </div> <!-- /.panel -->
-     </div>
-                
-   </div>  <!-- /.row -->
-   
-<script>
-  $(document).ready(function() {
-      loadMarketPricesCharts();
-  });
-</script>
+     
+    <!-- /.row -->
+   <div class="row">
+    <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+          Available Market Operators
+      </div>
+      <div class="panel-body">
+          <div class="form-group">
+            <div class="col-sm-3">
+                 <label>Market Operator</label>
+            </div>
+            <div class="col-sm-8 input-group">
+                 <%= select_tag "mo", options_for_select(@mos.collect {|p| [ p[:name], p[:id] ] }), {class: "form-control", onchange: 'setupMOData()' } %>
+	    </div>
+         </div>     
+
+            <div id="mo-selectors">
+                 <div class="form-group">
+                     <div class="col-sm-3">
+	   	         <label>Available Zones</label>
+                     </div> 
+                     <div class="col-sm-8 input-group">
+                        <%= select_tag "mo-region", {}, { class: "form-control", onchange: "loadMOPricesCharts()" } %>
+                     </div>  
+                 </div>
+                 <div class="form-group">
+                     <div class="col-sm-3">
+                         <label>Date</label>
+                     </div>
+                     <div class="col-sm-4">
+                                    
+                          <div class="input-group custom-search-form">
+		                <input type="text" id="datepicker" value="<%= Date.today.to_s %>" class="form-control">
+                                <span class="input-group-btn">
+                                 <button class="btn btn-default" type="button" onclick="jQuery('#datepicker').datetimepicker('show');">
+                                    <i class="fa fa-calendar"></i>
+                                 </button>
+                             </span>
+                           </div>
+                       </div>
+                 </div>
+            </div>  
+      </div>
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+ </div>
+  <!-- /.row -->
+
+  <div id="mo-charts-wrapper"></div>
+
+</div> 
+
