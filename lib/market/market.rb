@@ -25,8 +25,9 @@ module Market
                     data: forecast.map do |f|
                       forecast_cache[f.f_timestamp.to_i] = f.fc
                       price_cache[f.f_timestamp.to_i] = forecast_price(f.f_timestamp, f.timestamp)
-                        aggr_costs[:forecast] += f.fc * price_cache[f.f_timestamp.to_i]
-                        [f.f_timestamp.to_i * 1000, f.fc * price_cache[f.f_timestamp.to_i]]
+                      puts "timestamp: #{f.f_timestamp}, price: #{forecast_price(f.f_timestamp, f.timestamp)}"
+                      aggr_costs[:forecast] += f.fc * price_cache[f.f_timestamp.to_i]
+                      [f.f_timestamp.to_i * 1000, f.fc * price_cache[f.f_timestamp.to_i]]
                     end
                 }, {
                     label: "ideal",
@@ -171,12 +172,12 @@ module Market
     end
 
     def real_price(cons_timestamp)
-      @real_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day) .. (@endDate - 1.year)).map { |d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price] }]
+      @real_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day) .. (@endDate - 1.year), region_id: 1).map { |d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price] }]
       @real_price_cache[cons_timestamp.to_i] ||= 0
     end
 
     def forecast_price(cons_timestamp, fore_timestamp)
-      @forecast_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day) .. (@endDate - 1.year)).map { |d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price] }]
+      @forecast_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day) .. (@endDate - 1.year), region_id: 1).map { |d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price] }]
       @forecast_price_cache[cons_timestamp.to_i]
     end
 

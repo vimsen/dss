@@ -1,4 +1,4 @@
-INSERT INTO energy_efficiency_certificates (date,type,price_reference,price_cumulative_average,price_minimum,price_maximum,tee_traded,created_at,updated_at) VALUES 
+INSERT INTO energy_efficiency_certificates (date,cert_type,price_reference,price_cumulative_average,price_minimum,price_maximum,tee_traded,created_at,updated_at) VALUES 
 ('20140114','I',105.973658331,105.973658331,105.7,106.0,39108.0,'2015-03-27','2015-03-27'), 
 ('20140114','II',105.986154895,105.986154895,105.85,106.05,55741.0,'2015-03-27','2015-03-27'), 
 ('20140114','II-CAR',105.990362976,105.990362976,105.97,106.0,1102.0,'2015-03-27','2015-03-27'), 

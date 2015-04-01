@@ -69,3 +69,4 @@ EnergyType.create([{name: 'solar'},{name: 'wind'},{name: 'hydro'},{name: 'geothe
 
 Meter.create mac: '220590338055311'
 
+Dir.glob("db/initdata/*.sql").each {|f| ActiveRecord::Base.connection.execute(IO.read(f))}
