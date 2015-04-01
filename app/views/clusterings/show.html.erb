@@ -62,7 +62,7 @@
 </div>
 
 <div class="row">
-  <% @clustering.temp_clusters.each do |tc| %>
+  <% @clustering.temp_clusters.order(name: :asc).each do |tc| %>
     <div class="col-lg-3 col-md-4 col-sm-6 cols-xs-12">
       <div class="panel panel-default">
         <div class="panel-heading">
