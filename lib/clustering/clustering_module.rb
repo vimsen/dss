@@ -1,5 +1,5 @@
-require 'clustering/forecast_error_clustering'
 require 'clustering/genetic_error_clustering2'
+require 'clustering/cross_correlation_error_clustering'
 
 
 # This module implements the clustering algorithms for the demo
@@ -18,7 +18,9 @@ module ClusteringModule
      { string: :error,
        name: "By forecasting errors"},
      { string: :genetic,
-       name: "Using genetic algorithms"}]
+       name: "Using genetic algorithms"},
+     { string: :cross_correlation_spectral,
+       name: "Cross correlation spectral clustering"}]
 
   end
 
@@ -38,6 +40,9 @@ module ClusteringModule
         result = ForecastErrorClustering.new.run
       when 'genetic'
         result = ClusteringModule::GeneticErrorClustering.new.run
+      when 'cross_correlation_spectral'
+        result = ClusteringModule::CrossCorrelationErrorClustering.new.run
+        puts result
       else
         return nil
     end
