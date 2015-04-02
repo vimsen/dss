@@ -25,10 +25,10 @@
           <dd><%= @clustering.description -%></dd>
 
           <dt>Total sum (&euro;):</dt>
-          <dd><%= @sum_sum.round -%> - Penalties: <%= @pen_sum.round -%> </dd>
+          <dd><%= @sum_sum.round(2) -%> - Penalties: <%= @pen_sum.round(2) -%> </dd>
 
           <dt>Total aggr. sum (&euro;):</dt>
-          <dd><%= @sum_aggr.round -%> - Penalties: <%= @pen_aggr.round -%> </dd>
+          <dd><%= @sum_aggr.round(2) -%> - Penalties: <%= @pen_aggr.round(2) -%> </dd>
 
           <dt>Improvement:</dt>
           <dd><%= ((@sum_sum - @sum_aggr) / @sum_sum * 100).round(2) if @sum_sum > 0-%>%
@@ -84,10 +84,10 @@
                 <% -2.upto(-1) do |i| -%>
                   <tr>
                     <th><%= @stats[tc.id][i][:name] -%></th>
-                    <td class="text-right"><%= @stats[tc.id][i][:forecast].round -%></td>
-                    <td class="text-right"><%= @stats[tc.id][i][:ideal].round -%></td>
-                    <td class="text-right"><%= @stats[tc.id][i][:real].round -%></td>
-                    <td class="text-right"><%= @stats[tc.id][i][:penalty].round -%></td>
+                    <td class="text-right"><%= @stats[tc.id][i][:forecast].round(2) -%></td>
+                    <td class="text-right"><%= @stats[tc.id][i][:ideal].round(2) -%></td>
+                    <td class="text-right"><%= @stats[tc.id][i][:real].round(2) -%></td>
+                    <td class="text-right"><%= @stats[tc.id][i][:penalty].round(2) -%></td>
                   </tr>
                 <% end -%>
                 <tr>
