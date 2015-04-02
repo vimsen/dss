@@ -1,36 +1,36 @@
 /*
-Axis Labels Plugin for flot.
-http://github.com/markrcote/flot-axislabels
+ Axis Labels Plugin for flot.
+ http://github.com/markrcote/flot-axislabels
 
-Original code is Copyright (c) 2010 Xuan Luo.
-Original code was released under the GPLv3 license by Xuan Luo, September 2010.
-Original code was rereleased under the MIT license by Xuan Luo, April 2012.
+ Original code is Copyright (c) 2010 Xuan Luo.
+ Original code was released under the GPLv3 license by Xuan Luo, September 2010.
+ Original code was rereleased under the MIT license by Xuan Luo, April 2012.
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+ Permission is hereby granted, free of charge, to any person obtaining
+ a copy of this software and associated documentation files (the
+ "Software"), to deal in the Software without restriction, including
+ without limitation the rights to use, copy, modify, merge, publish,
+ distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to
+ the following conditions:
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
+ The above copyright notice and this permission notice shall be
+ included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 (function ($) {
     var options = {
-      axisLabels: {
-        show: true
-      }
+        axisLabels: {
+            show: true
+        }
     };
 
     function canvasSupported() {
@@ -73,7 +73,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     CanvasAxisLabel.prototype.constructor = CanvasAxisLabel;
     function CanvasAxisLabel(axisName, position, padding, plot, opts) {
         AxisLabel.prototype.constructor.call(this, axisName, position, padding,
-                                             plot, opts);
+            plot, opts);
     }
 
     CanvasAxisLabel.prototype.calculateSize = function() {
@@ -99,7 +99,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         var ctx = this.plot.getCanvas().getContext('2d');
         ctx.save();
         ctx.font = this.opts.axisLabelFontSizePixels + 'px ' +
-            this.opts.axisLabelFontFamily;
+        this.opts.axisLabelFontFamily;
         ctx.fillStyle = this.opts.axisLabelColour;
         var width = ctx.measureText(this.opts.axisLabel).width;
         var height = this.opts.axisLabelFontSizePixels;
@@ -130,13 +130,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     HtmlAxisLabel.prototype.constructor = HtmlAxisLabel;
     function HtmlAxisLabel(axisName, position, padding, plot, opts) {
         AxisLabel.prototype.constructor.call(this, axisName, position,
-                                             padding, plot, opts);
+            padding, plot, opts);
         this.elem = null;
     }
 
     HtmlAxisLabel.prototype.calculateSize = function() {
         var elem = $('<div class="axisLabels" style="position:absolute;">' +
-                     this.opts.axisLabel + '</div>');
+        this.opts.axisLabel + '</div>');
         this.plot.getPlaceholder().append(elem);
         // store height and width of label itself, for use in draw()
         this.labelWidth = elem.outerWidth(true);
@@ -160,27 +160,27 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     HtmlAxisLabel.prototype.draw = function(box) {
         this.plot.getPlaceholder().find('#' + this.axisName + 'Label').remove();
         this.elem = $('<div id="' + this.axisName +
-                      'Label" " class="axisLabels" style="position:absolute;">'
-                      + this.opts.axisLabel + '</div>');
+        'Label" " class="axisLabels" style="position:absolute;">'
+        + this.opts.axisLabel + '</div>');
         this.plot.getPlaceholder().append(this.elem);
         if (this.position == 'top') {
             this.elem.css('left', box.left + box.width/2 - this.labelWidth/2 +
-                          'px');
+            'px');
             this.elem.css('top', box.top + 'px');
         } else if (this.position == 'bottom') {
             this.elem.css('left', box.left + box.width/2 - this.labelWidth/2 +
-                          'px');
+            'px');
             this.elem.css('top', box.top + box.height - this.labelHeight +
-                          'px');
+            'px');
         } else if (this.position == 'left') {
             this.elem.css('top', box.top + box.height/2 - this.labelHeight/2 +
-                          'px');
+            'px');
             this.elem.css('left', box.left + 'px');
         } else if (this.position == 'right') {
             this.elem.css('top', box.top + box.height/2 - this.labelHeight/2 +
-                          'px');
+            'px');
             this.elem.css('left', box.left + box.width - this.labelWidth +
-                          'px');
+            'px');
         }
     };
 
@@ -189,7 +189,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     CssTransformAxisLabel.prototype.constructor = CssTransformAxisLabel;
     function CssTransformAxisLabel(axisName, position, padding, plot, opts) {
         HtmlAxisLabel.prototype.constructor.call(this, axisName, position,
-                                                 padding, plot, opts);
+            padding, plot, opts);
     }
 
     CssTransformAxisLabel.prototype.calculateSize = function() {
@@ -249,7 +249,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         } else if (this.position == 'right') {
             offsets.degrees = 90;
             offsets.x = box.left + box.width - this.labelWidth/2
-                        - this.labelHeight/2;
+            - this.labelHeight/2;
             offsets.y = box.height/2 + box.top;
         }
         offsets.x = Math.round(offsets.x);
@@ -262,9 +262,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         this.plot.getPlaceholder().find("." + this.axisName + "Label").remove();
         var offsets = this.calculateOffsets(box);
         this.elem = $('<div class="axisLabels ' + this.axisName +
-                      'Label" style="position:absolute; ' +
-                      this.transforms(offsets.degrees, offsets.x, offsets.y) +
-                      '">' + this.opts.axisLabel + '</div>');
+        'Label" style="position:absolute; ' +
+        this.transforms(offsets.degrees, offsets.x, offsets.y) +
+        '">' + this.opts.axisLabel + '</div>');
         this.plot.getPlaceholder().append(this.elem);
     };
 
@@ -273,8 +273,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     IeTransformAxisLabel.prototype.constructor = IeTransformAxisLabel;
     function IeTransformAxisLabel(axisName, position, padding, plot, opts) {
         CssTransformAxisLabel.prototype.constructor.call(this, axisName,
-                                                         position, padding,
-                                                         plot, opts);
+            position, padding,
+            plot, opts);
         this.requiresResize = false;
     }
 
@@ -302,7 +302,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
     IeTransformAxisLabel.prototype.calculateOffsets = function(box) {
         var offsets = CssTransformAxisLabel.prototype.calculateOffsets.call(
-                          this, box);
+            this, box);
         // adjust some values to take into account differences between
         // CSS and IE rotations.
         if (this.position == 'top') {
@@ -323,7 +323,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         CssTransformAxisLabel.prototype.draw.call(this, box);
         if (this.requiresResize) {
             this.elem = this.plot.getPlaceholder().find("." + this.axisName +
-                                                        "Label");
+            "Label");
             // Since we used CSS positioning instead of transforms for
             // translating the element, and since the positioning is done
             // before any rotations, we have to reset the width and height
@@ -366,9 +366,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                         // Handle redraws initiated outside of this plug-in.
                         if (axisName in axisLabels) {
                             axis.labelHeight = axis.labelHeight -
-                                axisLabels[axisName].height;
+                            axisLabels[axisName].height;
                             axis.labelWidth = axis.labelWidth -
-                                axisLabels[axisName].width;
+                            axisLabels[axisName].width;
                             opts.labelHeight = axis.labelHeight;
                             opts.labelWidth = axis.labelWidth;
                             axisLabels[axisName].cleanup();
@@ -408,11 +408,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                         }
 
                         var padding = opts.axisLabelPadding === undefined ?
-                                      defaultPadding : opts.axisLabelPadding;
+                            defaultPadding : opts.axisLabelPadding;
 
                         axisLabels[axisName] = new renderer(axisName,
-                                                            axis.position, padding,
-                                                            plot, opts);
+                            axis.position, padding,
+                            plot, opts);
 
                         // flot interprets axis.labelHeight and .labelWidth as
                         // the height and width of the tick labels. We increase
@@ -427,9 +427,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                         // the redraw.
 
                         opts.labelHeight = axis.labelHeight +
-                            axisLabels[axisName].height;
+                        axisLabels[axisName].height;
                         opts.labelWidth = axis.labelWidth +
-                            axisLabels[axisName].width;
+                        axisLabels[axisName].width;
                     });
 
                     // If there are axis labels, re-draw with new label widths and

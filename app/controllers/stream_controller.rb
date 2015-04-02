@@ -176,7 +176,7 @@ class StreamController < ApplicationController
       p = JSON.parse(data)["kw"]
       sse.write( { timestamp: t,
                    actual: {
-                     consumption: p
+                     kw: p
                     }}.to_json, event: 'datapoint')
     end
     puts "subscribed"
