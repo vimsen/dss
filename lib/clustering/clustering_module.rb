@@ -35,9 +35,9 @@ module ClusteringModule
       when 'dr'
         result = run_dr param.to_i
       when 'error'
-        result = ForecastErrorClustering.new.run
+        result = ForecastErrorClustering.new.run param.to_i
       when 'genetic'
-        result = ClusteringModule::GeneticErrorClustering.new.run
+        result = ClusteringModule::GeneticErrorClustering.new.run param.to_i
       else
         return nil
     end
