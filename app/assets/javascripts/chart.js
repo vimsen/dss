@@ -1,6 +1,7 @@
 var plotHelper = (function() {
   var data = {};
   var chaanged = false;
+  var unit = "KWh";
 
   var replot = function(d) {
     var dataset = [];
@@ -11,7 +12,7 @@ var plotHelper = (function() {
           single.push(val);
         });
         dataset.push({
-          label : index,
+          label : (unit == "KW" ? "Consumption" : index),
           data : single.sort() /*,
            color : "#00FF00"*/
         });
@@ -51,13 +52,14 @@ var plotHelper = (function() {
             timeformat : "%d/&#8203;%m/&#8203;%Y<br/>%h:&#8203;%M:&#8203;%S",
             timezone : "browser",
             min : s,
-            max : e /*,
+            max : e,/*,
             ticks : t,
              timeformat : "%y/%m/%d-%h:%M:%S",
              tickSize : [12, "hour"]*/
           },
           yaxis : {
-            tickDecimals: 2
+            tickDecimals: 2,
+            axisLabel: unit
           },
           legend:{
             container: ($( "#legend" ).length ? $("#legend") : null)
@@ -98,7 +100,7 @@ var plotHelper = (function() {
         }
       });
 
-        $("#vio_div").html('<hr/>        <table id="violations" class="table">          <thead>          <th>Date</th>          <th>Actual</th>          <th>Forecast</th>          <th>Status</th>          </thead>          <tbody>          </tbody>        </table>');
+        $("#vio_div").html('<hr/>        <table id="violations" class="table">          <thead>          <th>Date</th><th data-dynatable-column="actual">Actual (&euro;)</th>          <th data-dynatable-column="forecast">Forecast (&euro;)</th>          <th>Status</th>          </thead>          <tbody>          </tbody>        </table>');
 
       var dynatable = $('#violations').dynatable({
         dataset: {
@@ -153,6 +155,12 @@ var plotHelper = (function() {
     replot : replot,
     readData : readData,
     drawChart : function(stream, idata, type, forecast) {
+
+      if (type == "kw") {
+        unit = "KW";
+      } else {
+        unit = "KWh"; // WARNING this is a hack
+      }
 
       // We set source as global, otherwise we were left
       // with sources remaining open after visiting internal
@@ -219,30 +227,31 @@ var plotHelper = (function() {
                    tickSize : [12, "hour"]*/
               },
               yaxis : {
-                  tickDecimals: 2
+                  tickDecimals: 2,
+                  axisLabel: '&euro;'
               },
               legend:{
                   container: ($( "#legend" ).length ? $("#cost_legend") : null)
               }
           });
 
-          $("#costs_div").html('<hr/><table id="costs_table" class="table table-responsive"><thead><th>Name</th><th>Forecast</th><th>Ideal</th><th>real</th></thead><tbody></tbody></table>');
+          $("#costs_div").html('<hr/><table id="costs_table" class="table table-responsive"><thead><th>Name</th><th data-dynatable-column="forecast">Forecasted Cost (&euro;)</th><th data-dynatable-column="ideal">Cost without penalties (&euro;)</th><th data-dynatable-column="real">Cost with penalties (&euro;)</th></thead><tbody></tbody></table>');
 
           var sum = $.grep(message.dissagrgated, function(a) {return a.id == -1})[0];
           var aggr = $.grep(message.dissagrgated, function(a) {return a.id == -2})[0];
-          var impr = ((sum.real -aggr.real)/aggr.real*100).toFixed(2);
+          var impr = ((sum.real -aggr.real)/sum.real*100).toFixed(2);
 
           var pen_sum = sum.real - sum.ideal;
           var pen_aggr = aggr.real - aggr.ideal;
-          var pen_impr = ((pen_sum -pen_aggr)/pen_aggr*100).toFixed(2);
+          var pen_impr = ((pen_sum -pen_aggr)/pen_sum*100).toFixed(2);
 
 
-          $("#perc_div").html('<hr/><strong>Cost reduction: </strong> ' + impr + '%.<br/><strong>Penalty reduction: </strong> ' + pen_impr + '%.');
+          $("#perc_div").html('<hr/><strong>Cost reduction: </strong> ' + impr + '%<br/><strong>Penalty reduction: </strong> ' + pen_impr + '%');
           var costs_dynatable = $('#costs_table').dynatable({
               dataset: {
                   records: message.dissagrgated,
                   sorts: {real: -1},
-                  perPageDefault: 100
+                  perPageDefault: 10
               }
           }).data('dynatable');
 

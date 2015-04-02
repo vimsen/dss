@@ -242,7 +242,7 @@ function loadtop5Producers(data){
         },
         yaxis:{
         	tickDecimals:1,
-       		axisLabel: "Total Energy",
+       		axisLabel: "KWh",
     		axisLabelFontSizePixels: 12,
    			axisLabelFontFamily: 'Verdana, Arial',
     		axisLabelPadding: 3,     
@@ -323,7 +323,7 @@ function loadtop5Consumers(data){
         },
         yaxis:{
         	tickDecimals:1,
-       		axisLabel: "Total Energy",
+       		axisLabel: "KWh",
     		axisLabelFontSizePixels: 12,
    			axisLabelFontFamily: 'Verdana, Arial',
     		axisLabelPadding: 3,     

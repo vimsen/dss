@@ -53,18 +53,11 @@
         %>
       </div>
     </div>
-          
+
   </div>
 </div>
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        Prosumption Data
-      </div>
-      <div class="panel-body">
-        <%= render partial: "charts/chart", :locals => {:stream => "/stream/#{@cluster.id}/clusterfeed", :provider => @cluster} %>
-      </div>
-    </div>
+    <%= render partial: "charts/chart", :locals => {:stream => "/stream/#{@cluster.id}/clusterfeed", :provider => @cluster} %>
   </div>
 </div>

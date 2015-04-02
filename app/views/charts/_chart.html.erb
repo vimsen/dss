@@ -4,74 +4,93 @@
    endDate = DateTime.now
  %>
 
-<div>
-  <div id="controls">
-    <input id="startDate" type="text" value="<%= startDate %>"/>
-    <input id="endDate" type="text" value="<%= endDate %>"/> 
-    <strong>Real-time updates?</strong>
-    <input id="realtime" type="checkbox" checked>
-    <select id="type">
-      <option value="production">Production</option>
-      <option value="consumption" selected="true">Consumption</option>
-      <option value="storage">Storage</option>
-    </select>
-    <%= collection_select(:interval, :interval_id,
-                          Interval.all.order("duration asc"), :id, :name,
-                          {include_blank: false, :selected => "3"}) %>
-    <strong>Forecast?</strong>
-    <input id="forecast" type="checkbox">
-    <button id="subDates"> Set </button>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    Prosumption Data
   </div>
-  <br/>
-  <div class="row">
-    <div class="col-md-2 col-md-push-10">
-      <div id="legend" ></div>
-    </div>
-    <div class="col-md-10 col-md-pull-2">
-      <div class="row" id="placeholder" style="width:100%;height:400px;min-width=600px"></div>
-      <div class="row" id="vio_div" style="display: none;">
-        <hr/>
-        <table id="violations" class="table">
-          <thead>
-          <th>Date</th>
-          <th>Actual</th>
-          <th>Forecast</th>
-          <th>Status</th>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
+  <div class="panel-body">
+
+    <div>
+      <div id="controls">
+        <input id="startDate" type="text" value="<%= startDate %>"/>
+        <input id="endDate" type="text" value="<%= endDate %>"/>
+        <strong>Real-time updates?</strong>
+        <input id="realtime" type="checkbox" checked>
+        <select id="type">
+          <option value="production">Production</option>
+          <option value="consumption" selected="true">Consumption</option>
+          <option value="storage">Storage</option>
+        </select>
+        <%= collection_select(:interval, :interval_id,
+                              Interval.all.order("duration asc"), :id, :name,
+                              {include_blank: false, :selected => "3"}) %>
+        <strong>Forecast?</strong>
+        <input id="forecast" type="checkbox">
+        <button id="subDates"> Set </button>
+      </div>
+      <br/>
+      <div class="row">
+        <div class="col-md-2 col-md-push-10">
+          <div id="legend" ></div>
+        </div>
+        <div class="col-md-10 col-md-pull-2">
+          <div class="row" id="placeholder" style="width:100%;height:400px;min-width=600px"></div>
+          <div class="row" id="vio_div" style="display: none;">
+            <hr/>
+            <table id="violations" class="table">
+              <thead>
+              <th>Date</th>
+              <th>Actual</th>
+              <th>Forecast</th>
+              <th>Status</th>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
+
+  </div>
   </div>
 
-  <div class="row">
-    <div class="col-md-2 col-md-push-10">
-      <div id="cost_legend" ></div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      Energy Cost
     </div>
-    <div class="col-md-10 col-md-pull-2">
-      <div class="row" id="cost_placeholder" style="width:100%;height:400px;min-width=600px"></div>
-      <div class="row" id="perc_div"> </div>
-      <div class="row" id="costs_div" >
-        <hr/>
-        <table id="costs_table" class="table table-responsive">
-          <thead>
-          <th>Name</th>
-          <th>Forecast</th>
-          <th>Ideal</th>
-          <th>real</th>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-md-2 col-md-push-10">
+          <div id="cost_legend" ></div>
+        </div>
+        <div class="col-md-10 col-md-pull-2">
+          <div class="row" id="cost_placeholder" style="width:100%;height:400px;min-width=600px"></div>
+          <div class="row" id="perc_div"> </div>
+          <div class="row" id="costs_div" >
+            <hr/>
+            <table id="costs_table" class="table table-responsive">
+              <thead>
+              <th>Name</th>
+              <th>Forecast</th>
+              <th>Ideal</th>
+              <th>real</th>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        </div>
       </div>
-    </div>
-    </div>
-  </div>
 
 
+
+    </div>
 
 </div>
+
+
 <script>
 
     var idata = <%= provider.request_cached(3, startDate, endDate, @channel).to_json.html_safe %>;
