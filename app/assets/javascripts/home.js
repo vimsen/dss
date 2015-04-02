@@ -76,12 +76,13 @@ function loadEnergyPriceChart(data){
 			{       
 				min:1,    
 				ticks:20,     
-    			tickDecimals: 0
-    			
+    			tickDecimals: 0,
+                axisLabel: "Time of day"
 			},
             yaxis: {
                 min: 1,
-                tickDecimals: 2
+                tickDecimals: 2,
+                axisLabel: "&euro;/MWh"
 
             },
             tooltip: true,
@@ -91,8 +92,7 @@ function loadEnergyPriceChart(data){
                     x: -60,
                     y: 25
                 }
-            },
-            colors:["#70b08ff"]
+            }
         };
 
         var plotObj = $.plot($("#energy-price-line-chart"), data, options);
@@ -152,13 +152,15 @@ console.log($(data[0].data).length);
             },
             yaxis: {
                 min: 0,
+                axisLabel: 'KWh'
               //  max: 1000
             },  
             xaxis:{
-            	ticks:[[0,"00:00"],[1,"01:00"],[2,"02:00"],[3,"03:00"],[4,"04:00"],[5,"05:00"],[6,"06:00"]
+            	ticks: [[0,"00:00"],[1,"01:00"],[2,"02:00"],[3,"03:00"],[4,"04:00"],[5,"05:00"],[6,"06:00"]
             	,[7,"07:00"],[8,"08:00"],[9,"09:00"],[10,"10:00"],[11,"11:00"],[12,"12:00"],[13,"13:00"]
             	,[14,"14:00"],[15,"15:00"],[16,"16:00"],[17,"17:00"],[18,"18:00"],[19,"19:00"],[20,"20:00"]
-            	,[21,"21:00"],[22,"22:00"],[23,"23:00"] ] 
+            	,[21,"21:00"],[22,"22:00"],[23,"23:00"] ],
+                axisLabel: 'Time of day'
             	  },     
             tooltip: true,
             tooltipOpts: {
