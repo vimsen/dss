@@ -20,7 +20,7 @@
             </div>
           </div>
           <div id="k_parameter" class="form-group">
-            <%= label_tag :kappa, nil, class: "col-sm-2 control-label"  %>
+            <%= label_tag "Number of clusters", nil, class: "col-sm-2 control-label"  %>
             <div class="col-sm-10">
               <%= text_field_tag :kappa, 5, class: 'form-control'  %>
             </div>
@@ -31,15 +31,15 @@
           <script>
             $(function(){
               var selected = $("#algorithm").find('option:selected').val();
-              if (selected != "location" && selected != "dr") {
+              if (selected == "energy_type" || selected == "building_type" || selected == "connection_type") {
                 $("#k_parameter").hide();
               }
               $("#algorithm").change(function() {
                 var selected = $(this).find('option:selected').val();
-                if (selected == "location" || selected == "dr") {
-                  $("#k_parameter").show();
-                } else {
+                if (selected == "energy_type" || selected == "building_type" || selected == "connection_type") {
                   $("#k_parameter").hide();
+                } else {
+                  $("#k_parameter").show();
                 }
               });
             });
