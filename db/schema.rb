@@ -135,6 +135,12 @@ ActiveRecord::Schema.define(version: 20150331090654) do
     t.datetime "updated_at"
   end
 
+  create_table "energy_markets", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "energy_type_prosumers", force: true do |t|
     t.float    "power"
     t.integer  "energy_type_id"
