@@ -161,6 +161,7 @@ module Market
     end
 
     def real_cost(f, forecasts, prices)
+      forecasts ||= {}
       forecasts[f.timestamp.to_i] ||= 0
       prices[f.timestamp.to_i] ||= 0
       f.consumption > forecasts[f.timestamp.to_i] ?
