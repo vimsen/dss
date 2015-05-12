@@ -25,7 +25,7 @@ module ClusteringModule
         (@startDate.to_i .. @endDate.to_i).step(@interval.to_i).with_index do |secs, i|
           sd = Time.at(secs)
           ed = sd + @interval
-          csv << ["week #{i}"] + @clusters.map{|c| get_penalty_reduction(c, sd, ed)}
+          csv << [ i ] + @clusters.map{|c| get_penalty_reduction(c, sd, ed)}
         end
       end
     end

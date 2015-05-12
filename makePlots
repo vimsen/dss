@@ -24,11 +24,11 @@ set yrange [0:65]
 
 
 plot \
-     "genetic_results.csv" using 1:2 w lp, \
-     "genetic_results.csv" using 1:3 w lp, \
-     "genetic_results.csv" using 1:4 w lp, \
-     "genetic_results.csv" using 1:5 w lp, \
-     "genetic_results.csv" using 1:6 w lp
+     "genetic_results2.csv" using 2:xtic(1) w lp, \
+     "genetic_results2.csv" using 3:xtic(1) w lp, \
+     "genetic_results2.csv" using 4:xtic(1) w lp, \
+     "genetic_results2.csv" using 5:xtic(1) w lp, \
+     "genetic_results2.csv" using 6:xtic(1) w lp
 
 set out "spectral.eps"
 plot \
