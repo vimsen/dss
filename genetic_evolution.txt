@@ -1,0 +1,300 @@
+ed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+seed options: 5632
+Generation: 0, best fitness: 0.5949124948547246
+Generation: 1, best fitness: 1.0519149360853657
+Generation: 2, best fitness: 1.0519149360853657
+Generation: 3, best fitness: 1.0519149360853657
+Generation: 4, best fitness: 1.079309800117735
+Generation: 5, best fitness: 1.0983601987672207
+Generation: 6, best fitness: 1.0983601987672207
+Generation: 7, best fitness: 1.0983601987672207
+Generation: 8, best fitness: 1.0983601987672207
+Generation: 9, best fitness: 1.0983601987672207
+Generation: 10, best fitness: 1.09953868362393
+Generation: 11, best fitness: 1.09953868362393
+Generation: 12, best fitness: 1.1435393707705601
+Generation: 13, best fitness: 1.1616662529119055
+Generation: 14, best fitness: 1.1616662529119055
+Generation: 15, best fitness: 1.1616662529119055
+Generation: 16, best fitness: 1.1743426098627225
+Generation: 17, best fitness: 1.2246485623612984
+Generation: 18, best fitness: 1.2246485623612984
+Generation: 19, best fitness: 1.2246485623612984
+Generation: 20, best fitness: 1.2246485623612984
+Generation: 21, best fitness: 1.2246485623612984
+Generation: 22, best fitness: 1.2246485623612984
+Generation: 23, best fitness: 1.258122974455889
+Generation: 24, best fitness: 1.2755469339900793
+Generation: 25, best fitness: 1.2755469339900793
+Generation: 26, best fitness: 1.2755469339900793
+Generation: 27, best fitness: 1.2755469339900793
+Generation: 28, best fitness: 1.2981188000463693
+Generation: 29, best fitness: 1.2992608595925155
+Generation: 30, best fitness: 1.2992608595925155
+Generation: 31, best fitness: 1.2992608595925155
+Generation: 32, best fitness: 1.2992608595925155
+Generation: 33, best fitness: 1.2992608595925155
+Generation: 34, best fitness: 1.3419990969748867
+Generation: 35, best fitness: 1.3419990969748867
+Generation: 36, best fitness: 1.3419990969748867
+Generation: 37, best fitness: 1.3423059093514316
+Generation: 38, best fitness: 1.3423059093514316
+Generation: 39, best fitness: 1.3423059093514316
+Generation: 40, best fitness: 1.3423059093514316
+Generation: 41, best fitness: 1.3648003191880707
+Generation: 42, best fitness: 1.3648003191880707
+Generation: 43, best fitness: 1.3648003191880707
+Generation: 44, best fitness: 1.3670374684257018
+Generation: 45, best fitness: 1.3763776238769354
+Generation: 46, best fitness: 1.3763776238769354
+Generation: 47, best fitness: 1.3763776238769354
+Generation: 48, best fitness: 1.3900009390128971
+Generation: 49, best fitness: 1.3900009390128971
+Generation: 50, best fitness: 1.3900009390128971
+Generation: 51, best fitness: 1.3935987228510738
+Generation: 52, best fitness: 1.3935987228510738
+Generation: 53, best fitness: 1.4203773822168304
+Generation: 54, best fitness: 1.4203773822168304
+Generation: 55, best fitness: 1.4212351278370259
+Generation: 56, best fitness: 1.4267174194088412
+Generation: 57, best fitness: 1.4267174194088412
+Generation: 58, best fitness: 1.4267174194088412
+Generation: 59, best fitness: 1.4267174194088412
+Generation: 60, best fitness: 1.4306425356202594
+Generation: 61, best fitness: 1.4461722055142148
+Generation: 62, best fitness: 1.4461722055142148
+Generation: 63, best fitness: 1.472955604181022
+Generation: 64, best fitness: 1.472955604181022
+Generation: 65, best fitness: 1.472955604181022
+Generation: 66, best fitness: 1.472955604181022
+Generation: 67, best fitness: 1.479273634448015
+Generation: 68, best fitness: 1.479273634448015
+Generation: 69, best fitness: 1.479273634448015
+Generation: 70, best fitness: 1.479273634448015
+Generation: 71, best fitness: 1.479273634448015
+Generation: 72, best fitness: 1.479273634448015
+Generation: 73, best fitness: 1.4841225343964994
+Generation: 74, best fitness: 1.493674811582713
+Generation: 75, best fitness: 1.493674811582713
+Generation: 76, best fitness: 1.493674811582713
+Generation: 77, best fitness: 1.4954455098453407
+Generation: 78, best fitness: 1.5066379383264419
+Generation: 79, best fitness: 1.5078870280400074
+Generation: 80, best fitness: 1.5093229368865737
+Generation: 81, best fitness: 1.5093229368865737
+Generation: 82, best fitness: 1.5093229368865737
+Generation: 83, best fitness: 1.511651513371198
+Generation: 84, best fitness: 1.511651513371198
+Generation: 85, best fitness: 1.518473065253123
+Generation: 86, best fitness: 1.518473065253123
+Generation: 87, best fitness: 1.5275295624021055
+Generation: 88, best fitness: 1.5275295624021055
+Generation: 89, best fitness: 1.5275295624021055
+Generation: 90, best fitness: 1.5315612598638393
+Generation: 91, best fitness: 1.5315612598638393
+Generation: 92, best fitness: 1.5315612598638393
+Generation: 93, best fitness: 1.5326656723807002
+Generation: 94, best fitness: 1.5326656723807002
+Generation: 95, best fitness: 1.5326656723807002
+Generation: 96, best fitness: 1.5326656723807002
+Generation: 97, best fitness: 1.5326656723807002
+Generation: 98, best fitness: 1.5326656723807002
+Generation: 99, best fitness: 1.5326656723807002
+
