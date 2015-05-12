@@ -20,12 +20,12 @@ module ClusteringModule
 
       CSV.open(@outputFile, "w", {:col_sep => "\t"}) do |csv|
 
-        csv << ["startDate", "endDate"] + @clusters.map{|c| c.name}
+        csv << ["week"] + @clusters.map{|c| c.name}
 
-        (@startDate.to_i .. @endDate.to_i).step(@interval.to_i) do |secs|
+        (@startDate.to_i .. @endDate.to_i).step(@interval.to_i).with_index do |secs, i|
           sd = Time.at(secs)
           ed = sd + @interval
-          csv << [sd,ed] + @clusters.map{|c| get_penalty_reduction(c, sd, ed)}
+          csv << ["week #{i}"] + @clusters.map{|c| get_penalty_reduction(c, sd, ed)}
         end
       end
     end
