@@ -20,7 +20,7 @@ set xlabel "Week"
 
 set out "genetic.eps"
 set ylabel "Penalty Reduction"
-# set yrange [0:2e+6]
+set yrange [0:65]
 
 
 plot \
