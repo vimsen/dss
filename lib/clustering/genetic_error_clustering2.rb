@@ -36,10 +36,11 @@ module ClusteringModule
     def run(kappa = 5)
 
       puts "Beginning genetic search, please wait... "
-      search = Ai4r::GeneticAlgorithm::GeneticSearch.new(
+      search = Ai4r::GeneticAlgorithm::GeneticSearchWithOptions.new(
           200, 100, errors: @errors, prosumers: @prosumers, kappa: kappa,
           penalty_violation: @penalty_violation,
-          penalty_satisfaction: @penalty_satisfaction)
+          penalty_satisfaction: @penalty_satisfaction,
+          class: Ai4r::GeneticAlgorithm::StaticChromosome)
       best = search.run
       puts "FITNESS #{best.fitness} CLUSTERS: "+
                "#{best.data.zip(@prosumers).map {|c,p| [p.id, c]}}"

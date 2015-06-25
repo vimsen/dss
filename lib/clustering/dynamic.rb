@@ -3,18 +3,18 @@ require "clustering/ai4r_modifications"
 module ClusteringModule
 
   class Dynamic
-    def initialize(clustering, date: Date.today)
-      @clustering = clustering
+    def initialize(clusters, date: Date.today)
+      @clusters = clusters
       @date = date
 
-      @forecasts = Hash[DataPoint.where(prosumer: @clustering.temp_clusters.map{|tc| tc.prosumers}.flatten,
+      @forecasts = Hash[DataPoint.where(prosumer: @clusters.map{|tc| tc.prosumers}.flatten,
                                        interval: 2,
                                        f_timestamp: @date.midnight .. (@date + 1.day).midnight)
                            .map do |dp|
                          [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_consumption]
                        end]
 
-      cluster_of = @clustering.temp_clusters.map do |tc|
+      cluster_of = @clusters.map do |tc|
         Hash[tc.prosumers.map do |p|
           [p.id, tc.id]
         end]
@@ -25,7 +25,7 @@ module ClusteringModule
         h[[cluster_of[pr_id],timestamp]] += value
       end
 
-      real_per_hour = Hash[DataPoint.where(prosumer: @clustering.temp_clusters.map{|tc| tc.prosumers}.flatten,
+      real_per_hour = Hash[DataPoint.where(prosumer: @clusters.map{|tc| tc.prosumers}.flatten,
                                   interval: 2,
                                   timestamp: @date.midnight .. (@date + 1.day).midnight)
                       .map do |dp|
@@ -37,7 +37,7 @@ module ClusteringModule
         h[[cluster_of[pr_id],timestamp]] += value
       end
 
-      @real_per_quarter = Hash[DataPoint.where(prosumer: @clustering.temp_clusters.map{|tc| tc.prosumers}.flatten,
+      @real_per_quarter = Hash[DataPoint.where(prosumer: @clusters.map{|tc| tc.prosumers}.flatten,
                                            interval: 1,
                                            timestamp: @date.midnight .. (@date + 1.day).midnight)
                                .map do |dp|
@@ -116,19 +116,37 @@ module ClusteringModule
 
       search = Ai4r::GeneticAlgorithm::GeneticSearch.new(
           200, 100, errors: f_errors,
-          prosumers: @clustering.temp_clusters.map{|tc| tc.prosumers}.flatten,
-          kappa: @clustering.temp_clusters.count,
+          prosumers: @clusters.map{|tc| tc.prosumers}.flatten,
+          kappa: @clusters.count,
           penalty_violation: 0.3, penalty_satisfaction: 0.2
       )
 
-      best = search.run
+      best = process_result(@clusters.map{|tc| tc.prosumers}.flatten, search.run)
     end
 
+    def process_result(prosumers, chromosome)
+      hash = prosumers.zip(chromosome.data).inject({}) do |h, (p, c)|
+        h[c] ||= []
+        h[c].push(p)
+        h
+      end
+    end
 
     def adapt_hourly_block(timestamp)
-      (timestatmp - 3600 .. timestamp).step(900).map do ||
+      (timestamp - 2700 .. timestamp).step(900).map do |ts|
+        res = adaptation(ts, timestamp)
+        [Time.at(ts), res]
+      end
     end
 
+    def adapt_daily
+      (@date.midnight.to_i .. ((@date + 1).midnight - 1.hour).to_i).step(1.hour).each do |ts|
+        adaptation(ts, ts).map do |cl_id, prosumers |
+
+        end
+
+      end
+    end
   end
 
 end

@@ -10,71 +10,11 @@ module Ai4r
   
   module GeneticAlgorithm
 
-    class GeneticSearchWithOptions < GeneticSearch
-
-      def initialize(initial_population_size, generations, options = {})
-        @population_size = initial_population_size
-        @max_generation = generations
-        @generation = 0
-        @options = options
-        @chromosomeClass = options[:class]
-      end
-
-      def generate_initial_population
-       @population = []
-       puts "INIT: TARGETS: #{@options[:targets]}"
-       puts "INIT: REAL: #{@options[:real_consumption]}"
-       @population_size.times do
-         population << @chromosomeClass.seed(@options)
-       end
-      end
-
-
-      # We combine each pair of selected chromosome using the method
-      # Chromosome.reproduce
-      #
-      # The reproduction will also call the Chromosome.mutate method with
-      # each member of the population. You should implement Chromosome.mutate
-      # to only change (mutate) randomly. E.g. You could effectivly change the
-      # chromosome only if
-      #     rand < ((1 - chromosome.normalized_fitness) * 0.4)
-      def reproduction(selected_to_breed)
-        offsprings = []
-        0.upto(selected_to_breed.length/2-1) do |i|
-          offsprings << @chromosomeClass.reproduce(selected_to_breed[2*i], selected_to_breed[2*i+1])
-        end
-        @population.each do |individual|
-          @chromosomeClass.mutate(individual)
-        end
-        return offsprings
-      end
-
-
-      #     1. Choose initial population
-      #     2. Evaluate the fitness of each individual in the population
-      #     3. Repeat
-      #           1. Select best-ranking individuals to reproduce
-      #           2. Breed new generation through crossover and mutation (genetic operations) and give birth to offspring
-      #           3. Evaluate the individual fitnesses of the offspring
-      #           4. Replace worst ranked part of population with offspring
-      #     4. Until termination
-      #     5. Return the best chromosome
-      def run
-        generate_initial_population                    #Generate initial population
-        @max_generation.times do |i|
-          puts "Generation: #{i}, best fitness: #{@population[0].fitness}"
-          selected_to_breed = selection                #Evaluates current population
-          offsprings = reproduction selected_to_breed  #Generate the population for this new generation
-          replace_worst_ranked offsprings
-        end
-        return best_chromosome
-      end
-    end
-    # A Chromosome is a representation of an individual solution for a specific 
+    # A Chromosome is a representation of an individual solution for a specific
     # problem. You will have to redifine the Chromosome representation for each
     # particular problem, along with its fitness, mutate, reproduce, and seed 
     # methods.
-    class StaticChromosome < Chromosome
+    class DynamicChromosome < Chromosome
 
       attr_accessor :data
       attr_accessor :normalized_fitness
@@ -91,8 +31,12 @@ module Ai4r
 
         @data = data
         @options = options
-        @errors = options[:errors]
+        @targets_per_cluster = options[:targets]
+        @real_consumption = options[:real_consumption]
         @prosumers = options[:prosumers]
+
+        puts "TARGETS: #{@targets_per_cluster}"
+        puts "REAL: #{@targets_per_cluster}"
       end
 
       # The fitness method quantifies the optimality of a solution 
@@ -105,64 +49,22 @@ module Ai4r
       def fitness
         return @fitness if @fitness
 
-        clusters = []
-        # puts "gen",genotypes.size
+        consumption_per_cluster = {}
         @data.each_with_index do |v, i|
-          clusters[@prosumers[i].id] = v
+          consumption_per_cluster[v] ||= 0
+          # puts @prosumers[i].id, @real_consumption
+          consumption_per_cluster[v] += (@real_consumption[@prosumers[i].id] || 0)
         end
 
-        cl_errors = {}
-        base_errors = {}
-        @errors.each do |k,v|
-          cl_errors[[clusters[k[0]], k[1]]] ||= 0
-          cl_errors[[clusters[k[0]], k[1]]] += v
-          base_errors[[clusters[k[0]], k[1]]] ||= 0
-          base_errors[[clusters[k[0]], k[1]]] += penalty(v)
+        total_penalties = 0
+
+        consumption_per_cluster.each do |cluster, consumption |
+          # puts "DEBUG: #{cluster}, #{consumption}"
+          total_penalties += penalty((consumption || 0) - (@targets_per_cluster[cluster] || 0))
         end
 
-        p_b = base_errors.inject({}) do |s, (k,v)|
-          s[k[0]] ||= 0
-          s[k[0]] += v
-          s
-        end
+        @fitness =  1 / total_penalties
 
-     #   puts "p_b: #{p_b}"
-
-        p_a = cl_errors.inject({}) do |s, (k,v)|
-          # puts "printing", s, k, v
-          s[k[0]] ||= 0
-          s[k[0]] += penalty(v)
-          s
-        end
-
-     #   puts "p_a: #{p_a}"
-
-        best_cluster = p_a.max_by do |k,v|
-          if p_b[k] > 0
-            (p_b[k] - v) / p_b[k]
-          else
-            0
-          end
-        end
-
-        improvements = p_a.sum do |k,v|
-          p_b[k] > 0 ?
-              (p_b[k] - v) / p_b[k] :
-              0
-        end
-
-        total_error = p_a.sum do |k,v|
-          v
-        end
-
-
-     #   puts "best_cluster: #{best_cluster}"
-     #   puts "result: #{(p_b[best_cluster[0]] - p_a[best_cluster[0]]) / p_b[best_cluster[0]]}"
-     #   puts "result2: #{improvements}"
-
-        # @fitness = (p_b[best_cluster[0]] - p_a[best_cluster[0]]) / p_a[best_cluster[0]]
-        @fitness = improvements
-        # @fitness = -total_error
       end
 
       # mutation method is used to maintain genetic diversity from one 
@@ -218,7 +120,7 @@ module Ai4r
         #   rand(2) > 0 ? g1 : g2
         # end
 
-        return StaticChromosome.new(spawn, a.options)
+        return DynamicChromosome.new(spawn, a.options)
       end
 
       # Initializes an individual solution (chromosome) for the initial 
@@ -233,8 +135,8 @@ module Ai4r
         0.upto(data_size-1) do
           seed << rand(kappa)
         end
-        puts "seed options: #{options[:errors].length}"
-        return StaticChromosome.new(seed, options)
+       #  puts "seed options: #{options[:errors].length}"
+        return DynamicChromosome.new(seed, options)
       end
 
       def self.set_cost_matrix(costs)
