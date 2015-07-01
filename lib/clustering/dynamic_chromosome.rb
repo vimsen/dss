@@ -34,9 +34,10 @@ module Ai4r
         @targets_per_cluster = options[:targets]
         @real_consumption = options[:real_consumption]
         @prosumers = options[:prosumers]
+        @initial_imballance = options[:initial_imballance]
 
-        puts "TARGETS: #{@targets_per_cluster}"
-        puts "REAL: #{@targets_per_cluster}"
+    #    puts "TARGETS: #{@targets_per_cluster}"
+    #    puts "REAL: #{@targets_per_cluster}"
       end
 
       # The fitness method quantifies the optimality of a solution 
@@ -56,14 +57,23 @@ module Ai4r
           consumption_per_cluster[v] += (@real_consumption[@prosumers[i].id] || 0)
         end
 
-        total_penalties = 0
-
-        consumption_per_cluster.each do |cluster, consumption |
-          # puts "DEBUG: #{cluster}, #{consumption}"
-          total_penalties += penalty((consumption || 0) - (@targets_per_cluster[cluster] || 0))
+        total_penalties_before = @initial_imballance.map do |imballance|
+          penalty(imballance)
         end
 
-        @fitness =  1 / total_penalties
+        total_penalties_after = 0
+        res = 0;
+
+        consumption_per_cluster.each do |cluster, consumption |
+          #  puts "DEBUG: #{cluster}, #{consumption}"
+          p = penalty((consumption || 0) - (@targets_per_cluster[cluster] || 0))
+          res += 100 * (total_penalties_before[cluster] - p) / total_penalties_before[cluster]
+        end
+
+
+
+
+        @fitness =  res
 
       end
 
@@ -128,6 +138,8 @@ module Ai4r
       # use some problem domain knowledge, to generate a 
       # (probably) better initial solution.
       def self.seed(options)
+
+      #  puts "I am in the corrext seed function, options: #{options}"
         data_size = options[:prosumers].length
         kappa = options[:kappa]
 

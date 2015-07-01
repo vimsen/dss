@@ -63,6 +63,7 @@ module Ai4r
         generate_initial_population                    #Generate initial population
         @max_generation.times do |i|
           puts "Generation: #{i}, best fitness: #{@population[0].fitness}"
+
           selected_to_breed = selection                #Evaluates current population
           offsprings = reproduction selected_to_breed  #Generate the population for this new generation
           replace_worst_ranked offsprings

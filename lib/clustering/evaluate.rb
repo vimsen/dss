@@ -30,6 +30,7 @@ module ClusteringModule
           sd = Time.at(secs)
           ed = sd + @interval
           csv << [ i ] + all_penalty_reductions(@clusters, sd, ed)
+          csv.flush
         end
       end
     end
@@ -60,10 +61,32 @@ module ClusteringModule
     end
 
     def get_targets(clusters, ts)
-      clusters.map do |c, i|
-        DataPoint.where(prosumer: c.prosumers,
+      result = clusters.map do |c, i|
+        DataPoint.where(prosumer: c.prosumers.map{|p| p.id},
                         interval: 2,
                         f_timestamp: ts).sum(:f_consumption)
+      end
+      puts "TARGET first: #{result}"
+      result
+    end
+
+    def get_real_before_reclustering(clusters, ts)
+      result = clusters.map do |c, i|
+        DataPoint.where(prosumer: c.prosumers.map{|p| p.id},
+                        interval: 2,
+                        timestamp: ts).sum(:consumption)
+      end
+      puts "REAL BEFORE first: #{result}"
+      result
+    end
+
+
+    def get_imballance_before(clusters, ts)
+      target = get_targets(clusters, ts)
+      before = get_real_before_reclustering(clusters, ts)
+
+      before.zip(target).map do |b,t|
+        b - t
       end
     end
 
@@ -79,25 +102,43 @@ module ClusteringModule
     end
 
     def get_dynamic_getnalty_reduction(clusters, sd, ed)
-      # penalties_before = Hash[clusters.map.with_index do |cl, i|
-      #               [i, get_stats(cl.prosumers, sd, ed)[-2][1][:penalty]]
-      #             end]
 
-      (sd.beginning_of_hour.to_i ..
+      all_prosumers = clusters.map{|tc| tc.prosumers}.flatten
+
+      penalties_before = clusters.map do |cl|
+                     get_stats(cl.prosumers, sd, ed)[-2][1][:penalty]
+                   end
+
+      puts JSON.pretty_generate penalties_before
+
+      penalties_after = (((sd.beginning_of_hour.to_i ..
           (ed - 1.hour).beginning_of_hour.to_i).step(1.hour).map do |t|
         ts = Time.at(t)
         search = Ai4r::GeneticAlgorithm::GeneticSearchWithOptions.new(
-            200, 100, prosumers: clusters.map{|tc| tc.prosumers}.flatten,
+            200, 100, prosumers: all_prosumers,
             kappa: clusters.count,
             penalty_violation: 0.3, penalty_satisfaction: 0.2,
             class: Ai4r::GeneticAlgorithm::DynamicChromosome,
             targets: get_targets(clusters, ts),
+            initial_imballance: get_imballance_before(clusters, ts),
             real_consumption: real_consumption(clusters, ts)
         )
-        search.run
 
-      end
+        best = search.run
 
+        puts "NEW CLUSTERING: #{best.data.zip(all_prosumers).map {|c,p| [p.id, c]}}"
+
+        result = penalties_before.map{|k| []}
+        best.data.each_with_index do |g, i|
+#           result[g] ||= []
+          result[g].push Prosumer.find(all_prosumers[i])
+        end
+        result.map do |c|
+          puts "Cluster: #{c.map{|p| p.id}}"
+          c.length > 0 ? get_stats(c, ts, ts)[-1][1][:penalty] : 0
+        end
+      end).transpose.map{|k| k.sum})
+      penalties_before.zip(penalties_after).map{|b,a| (b-a)/b * 100}
     end
 
   end
