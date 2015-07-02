@@ -20,3 +20,6 @@
 .idea/
 
 nohup.out
+
+config/database.yml
+config/rabbitmq.yml
