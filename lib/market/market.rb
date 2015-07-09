@@ -173,6 +173,23 @@ module Market
 
     end
 
+    def penalty_for_sigle(day_ahead_amount)
+      day_ahead_cost = day_ahead_amount * real_price(@startDate)
+
+      f = real()
+
+      raise "Multiple Results" if f.length > 1
+
+      f = [ Struct.new(:timestamp, :consumption).new(@startDate, 0) ] if f.length == 0
+
+
+      final_cost = real_cost(f.first,
+                             {@startDate.to_i => day_ahead_amount},
+                             {@startDate.to_i => real_price(@startDate)})
+
+      final_cost - day_ahead_cost
+    end
+
     def real_price(cons_timestamp)
       @real_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day - 2.hours) .. (@endDate - 1.year), region_id: 1).map { |d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price * 0.001 ] }] # Convert euro/MWh to euro/KWh
       # puts "ts: #{cons_timestamp}, Cache: #{@real_price_cache}"

@@ -67,7 +67,7 @@ module Ai4r
         consumption_per_cluster.each do |cluster, consumption |
           #  puts "DEBUG: #{cluster}, #{consumption}"
           p = penalty((consumption || 0) - (@targets_per_cluster[cluster] || 0))
-          res += 100 * (total_penalties_before[cluster] - p) / total_penalties_before[cluster]
+          res += 100 * (total_penalties_before[cluster] - p) / total_penalties_before[cluster] if total_penalties_before[cluster] > 0
         end
 
 

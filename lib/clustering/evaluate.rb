@@ -53,6 +53,13 @@ module ClusteringModule
           .map { |d| [d[:id], d.dup.update(penalty: d[:real] - d[:ideal])] }
     end
 
+    def get_penalty(prosumers, timestamp, target)
+      Market::Calculator.new(prosumers: prosumers,
+                             startDate: timestamp,
+                             endDate: timestamp)
+          .penalty_for_sigle(target)
+    end
+
 
     def get_penalty_reduction(prosumers, startDate, endDate)
       stats = get_stats(prosumers, startDate, endDate)
@@ -106,7 +113,7 @@ module ClusteringModule
       all_prosumers = clusters.map{|tc| tc.prosumers}.flatten
 
       penalties_before = clusters.map do |cl|
-                     get_stats(cl.prosumers, sd, ed)[-2][1][:penalty]
+                     get_stats(cl.prosumers, sd, ed)[-1][1][:penalty]
                    end
 
       puts JSON.pretty_generate penalties_before
@@ -114,12 +121,15 @@ module ClusteringModule
       penalties_after = (((sd.beginning_of_hour.to_i ..
           (ed - 1.hour).beginning_of_hour.to_i).step(1.hour).map do |t|
         ts = Time.at(t)
+
+        targets = get_targets(clusters, ts)
+
         search = Ai4r::GeneticAlgorithm::GeneticSearchWithOptions.new(
             200, 100, prosumers: all_prosumers,
             kappa: clusters.count,
             penalty_violation: 0.3, penalty_satisfaction: 0.2,
             class: Ai4r::GeneticAlgorithm::DynamicChromosome,
-            targets: get_targets(clusters, ts),
+            targets: targets,
             initial_imballance: get_imballance_before(clusters, ts),
             real_consumption: real_consumption(clusters, ts)
         )
@@ -133,11 +143,13 @@ module ClusteringModule
 #           result[g] ||= []
           result[g].push Prosumer.find(all_prosumers[i])
         end
-        result.map do |c|
+        puts "FITNESS: #{best.fitness}"
+        result.map.with_index do |c, i|
           puts "Cluster: #{c.map{|p| p.id}}"
-          c.length > 0 ? get_stats(c, ts, ts)[-1][1][:penalty] : 0
+          c.length > 0 ? get_penalty(c, ts, targets[i]) : 0
         end
       end).transpose.map{|k| k.sum})
+      puts "audit: #{penalties_before}, #{penalties_after}"
       penalties_before.zip(penalties_after).map{|b,a| (b-a)/b * 100}
     end
 
