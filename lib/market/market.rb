@@ -173,8 +173,8 @@ module Market
 
     end
 
-    def penalty_for_sigle(day_ahead_amount)
-      day_ahead_cost = day_ahead_amount * real_price(@startDate)
+    def penalty_for_single(day_ahead_amount)
+      # day_ahead_cost = day_ahead_amount * real_price(@startDate)
 
       f = real()
 
@@ -182,12 +182,18 @@ module Market
 
       f = [ Struct.new(:timestamp, :consumption).new(@startDate, 0) ] if f.length == 0
 
+      actual_amount = f.first.consumption
 
-      final_cost = real_cost(f.first,
-                             {@startDate.to_i => day_ahead_amount},
-                             {@startDate.to_i => real_price(@startDate)})
+      #final_cost = real_cost(f.first,
+      #                       {@startDate.to_i => day_ahead_amount},
+      #                       {@startDate.to_i => real_price(@startDate)})
 
-      final_cost - day_ahead_cost
+      #final_cost - day_ahead_cost
+
+      imbalance = day_ahead_amount - actual_amount
+
+      (imbalance > 0 ? @penalty_satisfaction : - @penalty_violation) * imbalance * real_price(@startDate)
+
     end
 
     def real_price(cons_timestamp)

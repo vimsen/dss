@@ -9,7 +9,7 @@ module ClusteringModule
                    startDate: Time.now - 1.month,
                    endDate: Time.now,
                    interval: 1.week,
-                   outputFile: 'res.csv',
+                   outputFile: 'res_',
                    adaptive: false)
       method(__method__).parameters.each do |type, k|
         next unless type == :key
@@ -22,15 +22,15 @@ module ClusteringModule
 
     def evaluate
 
-      CSV.open(@outputFile, "w", {:col_sep => "\t"}) do |csv|
-
-        csv << ["week"] + @clusters.map{|c| c.name}
-
-        (@startDate.to_i .. @endDate.to_i).step(@interval.to_i).with_index do |secs, i|
-          sd = Time.at(secs)
-          ed = sd + @interval
-          csv << [ i ] + all_penalty_reductions(@clusters, sd, ed)
-          csv.flush
+      10.times do |j|
+        CSV.open(@outputFile + j.to_s + ".csv", "w", {:col_sep => "\t"}) do |csv|
+          csv << ["week"] + @clusters.map{|c| c.name}
+          (@startDate.to_i .. @endDate.to_i).step(@interval.to_i).with_index do |secs, i|
+            sd = Time.at(secs)
+            ed = sd + @interval
+            csv << [ i ] + all_penalty_reductions(@clusters, sd, ed)
+            csv.flush
+          end
         end
       end
     end
@@ -57,13 +57,15 @@ module ClusteringModule
       Market::Calculator.new(prosumers: prosumers,
                              startDate: timestamp,
                              endDate: timestamp)
-          .penalty_for_sigle(target)
+          .penalty_for_single(target)
     end
 
 
     def get_penalty_reduction(prosumers, startDate, endDate)
       stats = get_stats(prosumers, startDate, endDate)
 #       puts JSON.pretty_generate stats
+
+#       [stats[-2][1][:penalty], stats[-1][1][:penalty]]
       ( ( stats[-2][1][:penalty] - stats[-1][1][:penalty] ) / stats[-2][1][:penalty] * 100) if stats[-2][1][:penalty] > 0
     end
 
@@ -113,7 +115,7 @@ module ClusteringModule
       all_prosumers = clusters.map{|tc| tc.prosumers}.flatten
 
       penalties_before = clusters.map do |cl|
-                     get_stats(cl.prosumers, sd, ed)[-1][1][:penalty]
+                     get_stats(cl.prosumers, sd, ed)[-2][1][:penalty]
                    end
 
       puts JSON.pretty_generate penalties_before
@@ -150,6 +152,7 @@ module ClusteringModule
         end
       end).transpose.map{|k| k.sum})
       puts "audit: #{penalties_before}, #{penalties_after}"
+      # penalties_before.zip(penalties_after).map{|b,a| [b, a, (b-a)/b * 100]}
       penalties_before.zip(penalties_after).map{|b,a| (b-a)/b * 100}
     end
 
