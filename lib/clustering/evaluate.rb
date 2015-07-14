@@ -45,12 +45,14 @@ module ClusteringModule
 
 
     def get_stats(prosumers, startDate, endDate)
-      Market::Calculator.new(prosumers: prosumers,
-                             startDate: startDate,
-                             endDate: endDate)
-          .calcCosts[:dissagrgated]
-          .select { |d| d[:id] < 0 }
-          .map { |d| [d[:id], d.dup.update(penalty: d[:real] - d[:ideal])] }
+      Hash[
+          Market::Calculator.new(prosumers: prosumers,
+                                 startDate: startDate,
+                                 endDate: endDate)
+              .calcCosts[:dissagrgated]
+              .select { |d| d[:id] < 0 }
+              .map { |d| [d[:id], d.dup.update(penalty: d[:real] - d[:ideal])] }
+      ]
     end
 
     def get_penalty(prosumers, timestamp, target)
@@ -66,7 +68,7 @@ module ClusteringModule
 #       puts JSON.pretty_generate stats
 
 #       [stats[-2][1][:penalty], stats[-1][1][:penalty]]
-      ( ( stats[-2][1][:penalty] - stats[-1][1][:penalty] ) / stats[-2][1][:penalty] * 100) if stats[-2][1][:penalty] > 0
+      ( ( stats[-1][:penalty] - stats[-2][:penalty] ) / stats[-1][:penalty] * 100) if stats[-1][:penalty] > 0
     end
 
     def get_targets(clusters, ts)
@@ -115,7 +117,7 @@ module ClusteringModule
       all_prosumers = clusters.map{|tc| tc.prosumers}.flatten
 
       penalties_before = clusters.map do |cl|
-                     get_stats(cl.prosumers, sd, ed)[-2][1][:penalty]
+                     get_stats(cl.prosumers, sd, ed)[-1][:penalty]
                    end
 
       puts JSON.pretty_generate penalties_before

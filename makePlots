@@ -1,7 +1,9 @@
 #!/usr/bin/gnuplot
 #set term postscript enhanced color 
 #set term postscript eps enhanced monochrome size 4,2.8
-set term postscript eps enhanced color size 4,2.8 linewidth 2
+# set term postscript eps enhanced color size 4,2.8 linewidth 2
+set term postscript eps enhanced color size 3.5,2.62 linewidth 2 
+#     font 'Helvetica,20'
 #set terminal epslatex color
 
 #set size 1,1
@@ -40,8 +42,8 @@ plot \
      "spectral_results.csv" using 1:6 w lp
 
 set out "adaptive.eps"
+set key center right
 plot for [col=2:6] 'adaptive_results.csv' using 1:col w lp
-
 
 set out "comparison.eps"
 plot \
@@ -57,3 +59,17 @@ set ylabel 'Fitness'
 unset key
 
 plot "<awk -v OFS='\t' '/Generation:/{print $2+0, $5}' genetic_evolution.txt" using 1:2 w l
+
+
+set out "spectral_k.eps"
+set key noautotitle
+set xlabel 'Kappa'
+set ylabel "Penalty Reduction"
+set yrange [-20:100]
+
+set key top right
+set xrange [0:6]
+plot for [col=2:6] 'spectral_k.csv' using 1:col w lp t 'Cluster '.(col - 2)
+
+set out "genetic_k.eps"
+plot for [col=2:6] 'genetic_k.csv' using 1:col w lp t 'Cluster '.(col - 2)
