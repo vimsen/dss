@@ -23,13 +23,31 @@ module ClusteringModule
     def evaluate
 
       10.times do |j|
-        CSV.open(@outputFile + j.to_s + ".csv", "w", {:col_sep => "\t"}) do |csv|
-          csv << ["week"] + @clusters.map{|c| c.name}
-          (@startDate.to_i .. @endDate.to_i).step(@interval.to_i).with_index do |secs, i|
-            sd = Time.at(secs)
-            ed = sd + @interval
-            csv << [ i ] + all_penalty_reductions(@clusters, sd, ed)
-            csv.flush
+        # f3 = CSV.open(@outputFile + j.to_s + ".csv", "w", {:col_sep => "\t"})
+        # f1 = CSV.open(@outputFile + j.to_s + "_before.csv", "w", {:col_sep => "\t"})
+        # f2 = CSV.open(@outputFile + j.to_s + "_after.csv", "w", {:col_sep => "\t"})
+
+        # CSV.open(@outputFile + j.to_s + "_after.csv", "w", {:col_sep => "\t"}) do |csv2|
+
+        CSV.open(@outputFile + j.to_s + "_before.csv", "w", {:col_sep => "\t"}) do |csv1|
+          CSV.open(@outputFile + j.to_s + "_after.csv", "w", {:col_sep => "\t"}) do |csv2|
+            CSV.open(@outputFile + j.to_s + ".csv", "w", {:col_sep => "\t"}) do |csv3|
+              csv1 << ["week"] + @clusters.map{|c| c.name}
+              csv2 << ["week"] + @clusters.map{|c| c.name}
+              csv3 << ["week"] + @clusters.map{|c| c.name}
+              (@startDate.to_i .. @endDate.to_i).step(@interval.to_i).with_index do |secs, i|
+                sd = Time.at(secs)
+                ed = sd + @interval
+                penalties = all_penalty_reductions(@clusters, sd, ed)
+                puts "Penalties: #{penalties}"
+                csv1 << [ i ] + penalties.map{|p| p[0]}
+                csv2 << [ i ] + penalties.map{|p| p[1]}
+                csv3 << [ i ] + penalties.map{|p| p[2]}
+                csv1.flush
+                csv2.flush
+                csv3.flush
+              end
+            end
           end
         end
       end
@@ -68,7 +86,14 @@ module ClusteringModule
 #       puts JSON.pretty_generate stats
 
 #       [stats[-2][1][:penalty], stats[-1][1][:penalty]]
-      ( ( stats[-1][:penalty] - stats[-2][:penalty] ) / stats[-1][:penalty] * 100) if stats[-1][:penalty] > 0
+      [
+          stats[-1][:penalty],
+          stats[-2][:penalty],
+          stats[-1][:penalty] > 0 ?
+              ((stats[-1][:penalty] - stats[-2][:penalty]) /
+                  stats[-1][:penalty] * 100) :
+              "NaN"
+      ]
     end
 
     def get_targets(clusters, ts)
@@ -155,7 +180,7 @@ module ClusteringModule
       end).transpose.map{|k| k.sum})
       puts "audit: #{penalties_before}, #{penalties_after}"
       # penalties_before.zip(penalties_after).map{|b,a| [b, a, (b-a)/b * 100]}
-      penalties_before.zip(penalties_after).map{|b,a| (b-a)/b * 100}
+      penalties_before.zip(penalties_after).map{|b,a| [b, a, a > 0 ? (b-a)/b * 100 : "NaN"]}
     end
 
   end
