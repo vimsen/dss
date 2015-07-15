@@ -1,5 +1,5 @@
 %!PS-Adobe-2.0 EPSF-2.0
-%%Title: comparison.eps
+%%Title: adaptive_k.eps
 %%Creator: gnuplot 4.6 patchlevel 4
 %%CreationDate: Wed Jul 15 12:50:33 2015
 %%DocumentFonts: (atend)
@@ -455,7 +455,7 @@ systemdict /pdfmark known not {
   userdict /pdfmark systemdict /cleartomark get put
 } if
 SDict begin [
-  /Title (comparison.eps)
+  /Title (adaptive_k.eps)
   /Subject (gnuplot plot)
   /Creator (gnuplot 4.6 patchlevel 4)
   /Author (dimitriv)
@@ -541,7 +541,9 @@ LCb setrgbcolor
 LTa
 LCa setrgbcolor
 686 1800 M
-4101 0 V
+2694 0 V
+1323 0 R
+84 0 V
 stroke
 LTb
 LCb setrgbcolor
@@ -560,7 +562,9 @@ LCb setrgbcolor
 LTa
 LCa setrgbcolor
 686 2251 M
-4101 0 V
+2694 0 V
+1323 0 R
+84 0 V
 stroke
 LTb
 LCb setrgbcolor
@@ -643,46 +647,57 @@ stroke
 1.000 UL
 LTb
 LCb setrgbcolor
-1506 448 M
+1370 448 M
 0 63 V
 0 3092 R
 0 -63 V
 stroke
-1506 308 M
+1370 308 M
 [ [(Helvetica) 140.0 0.0 true true 0 ( 1)]
 ] -46.7 MCshow
 1.000 UL
 LTb
 LCb setrgbcolor
-2326 448 M
+2053 448 M
 0 63 V
 0 3092 R
 0 -63 V
 stroke
-2326 308 M
+2053 308 M
 [ [(Helvetica) 140.0 0.0 true true 0 ( 2)]
 ] -46.7 MCshow
 1.000 UL
 LTb
 LCb setrgbcolor
-3147 448 M
+2737 448 M
 0 63 V
 0 3092 R
 0 -63 V
 stroke
-3147 308 M
+2737 308 M
 [ [(Helvetica) 140.0 0.0 true true 0 ( 3)]
 ] -46.7 MCshow
 1.000 UL
 LTb
 LCb setrgbcolor
-3967 448 M
+3420 448 M
 0 63 V
 0 3092 R
 0 -63 V
 stroke
-3967 308 M
+3420 308 M
 [ [(Helvetica) 140.0 0.0 true true 0 ( 4)]
+] -46.7 MCshow
+1.000 UL
+LTb
+LCb setrgbcolor
+4104 448 M
+0 63 V
+0 3092 R
+0 -63 V
+stroke
+4104 308 M
+[ [(Helvetica) 140.0 0.0 true true 0 ( 5)]
 ] -46.7 MCshow
 1.000 UL
 LTb
@@ -693,7 +708,7 @@ LCb setrgbcolor
 0 -63 V
 stroke
 4787 308 M
-[ [(Helvetica) 140.0 0.0 true true 0 ( 5)]
+[ [(Helvetica) 140.0 0.0 true true 0 ( 6)]
 ] -46.7 MCshow
 1.000 UL
 LTb
@@ -716,7 +731,7 @@ grestore
 LTb
 LCb setrgbcolor
 2736 98 M
-[ [(Helvetica) 140.0 0.0 true true 0 (Week)]
+[ [(Helvetica) 140.0 0.0 true true 0 (Kappa)]
 ] -46.7 MCshow
 LTb
 1.000 UP
@@ -729,25 +744,23 @@ LCb setrgbcolor
 LT0
 LC0 setrgbcolor
 LCb setrgbcolor
-4136 2165 M
-[ [(Helvetica) 140.0 0.0 true true 0 (Genetic)]
+4136 2305 M
+[ [(Helvetica) 140.0 0.0 true true 0 (Cluster 0)]
 ] -46.7 MRshow
 LT0
-4220 2165 M
+4220 2305 M
 399 0 V
-686 1637 M
-820 -300 V
-820 -48 V
-821 94 V
-820 -141 V
-820 287 V
-686 1637 Pls
-1506 1337 Pls
-2326 1289 Pls
-3147 1383 Pls
-3967 1242 Pls
-4787 1529 Pls
-4419 2165 Pls
+1370 1368 M
+683 -230 V
+684 2008 V
+683 -373 V
+684 279 V
+1370 1368 Pls
+2053 1138 Pls
+2737 3146 Pls
+3420 2773 Pls
+4104 3052 Pls
+4419 2305 Pls
 % End plot #1
 % Begin plot #2
 1.000 UP
@@ -755,25 +768,21 @@ LT0
 LT1
 LC1 setrgbcolor
 LCb setrgbcolor
-4136 2025 M
-[ [(Helvetica) 140.0 0.0 true true 0 (Spectral)]
+4136 2165 M
+[ [(Helvetica) 140.0 0.0 true true 0 (Cluster 1)]
 ] -46.7 MRshow
 LT1
-4220 2025 M
+4220 2165 M
 399 0 V
-686 976 M
-820 80 V
-820 29 V
-821 78 V
-3967 964 L
-820 159 V
-686 976 Crs
-1506 1056 Crs
-2326 1085 Crs
-3147 1163 Crs
-3967 964 Crs
-4787 1123 Crs
-4419 2025 Crs
+2053 2995 M
+2737 1074 L
+683 2067 V
+684 -382 V
+2053 2995 Crs
+2737 1074 Crs
+3420 3141 Crs
+4104 2759 Crs
+4419 2165 Crs
 % End plot #2
 % Begin plot #3
 1.000 UP
@@ -781,26 +790,54 @@ LT1
 LT2
 LC2 setrgbcolor
 LCb setrgbcolor
-4136 1885 M
-[ [(Helvetica) 140.0 0.0 true true 0 (Adaptive)]
+4136 2025 M
+[ [(Helvetica) 140.0 0.0 true true 0 (Cluster 2)]
 ] -46.7 MRshow
 LT2
+4220 2025 M
+399 0 V
+2737 2967 M
+3420 960 L
+684 2114 V
+2737 2967 Star
+3420 960 Star
+4104 3074 Star
+4419 2025 Star
+% End plot #3
+% Begin plot #4
+1.000 UP
+1.000 UL
+LT3
+LC3 setrgbcolor
+LCb setrgbcolor
+4136 1885 M
+[ [(Helvetica) 140.0 0.0 true true 0 (Cluster 3)]
+] -46.7 MRshow
+LT3
 4220 1885 M
 399 0 V
-686 2607 M
-820 -30 V
-820 -387 V
-821 435 V
-820 -98 V
-820 66 V
-686 2607 Star
-1506 2577 Star
-2326 2190 Star
-3147 2625 Star
-3967 2527 Star
-4787 2593 Star
-4419 1885 Star
-% End plot #3
+3420 3132 M
+684 -13 V
+3420 3132 Box
+4104 3119 Box
+4419 1885 Box
+% End plot #4
+% Begin plot #5
+1.000 UP
+1.000 UL
+LT4
+LC4 setrgbcolor
+LCb setrgbcolor
+4136 1745 M
+[ [(Helvetica) 140.0 0.0 true true 0 (Cluster 4)]
+] -46.7 MRshow
+LT4
+4220 1745 M
+399 0 V
+4104 1031 M
+4104 1031 BoxF
+4419 1745 BoxF
+% End plot #5
 1.000 UL
 LTb
 LCb setrgbcolor

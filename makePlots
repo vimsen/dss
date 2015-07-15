@@ -22,28 +22,18 @@ set xlabel "Week"
 
 set out "genetic.eps"
 set ylabel "Penalty Reduction"
-set yrange [-20:100]
+set yrange [-20:120]
 set xrange [0:5]
 
 
-plot \
-     "genetic_results2.csv" using 1:2 w lp, \
-     "genetic_results2.csv" using 1:3 w lp, \
-     "genetic_results2.csv" using 1:4 w lp, \
-     "genetic_results2.csv" using 1:5 w lp, \
-     "genetic_results2.csv" using 1:6 w lp
+plot for [col=2:6] 'result_genetic_k_5_0.csv' using 1:col w lp
 
 set out "spectral.eps"
-plot \
-     "spectral_results.csv" using 1:2 w lp, \
-     "spectral_results.csv" using 1:3 w lp, \
-     "spectral_results.csv" using 1:4 w lp, \
-     "spectral_results.csv" using 1:5 w lp, \
-     "spectral_results.csv" using 1:6 w lp
+plot for [col=2:6] 'result_spectral_k_5_0.csv' using 1:col w lp
 
 set out "adaptive.eps"
 set key center right
-plot for [col=2:6] 'adaptive_results.csv' using 1:col w lp
+plot for [col=2:6] 'result_adaptive_k_5_avg.csv' using 1:col w lp
 
 set out "comparison.eps"
 plot \
@@ -65,7 +55,7 @@ set out "spectral_k.eps"
 set key noautotitle
 set xlabel 'Kappa'
 set ylabel "Penalty Reduction"
-set yrange [-20:100]
+set yrange [-20:120]
 
 set key top right
 set xrange [0:6]
@@ -73,3 +63,14 @@ plot for [col=2:6] 'spectral_k.csv' using 1:col w lp t 'Cluster '.(col - 2)
 
 set out "genetic_k.eps"
 plot for [col=2:6] 'genetic_k.csv' using 1:col w lp t 'Cluster '.(col - 2)
+
+set out "adaptive_k.eps"
+set key center right
+plot for [col=2:6] 'adaptive_k.csv' using 1:col w lp t 'Cluster '.(col -2)
+
+set out "comparison_k.eps"
+set key top right
+plot \
+     "genetic_k_avg.csv" using 1:2 t 'Genetic' w lp, \
+     "spectral_k_avg.csv" using 1:2 t 'Spectral' w lp, \
+     "adaptive_k_avg.csv" using 1:2 t 'Adaptive' w lp
