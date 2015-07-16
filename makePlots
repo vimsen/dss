@@ -74,3 +74,11 @@ plot \
      "genetic_k_avg.csv" using 1:2 t 'Genetic' w lp, \
      "spectral_k_avg.csv" using 1:2 t 'Spectral' w lp, \
      "adaptive_k_avg.csv" using 1:2 t 'Adaptive' w lp
+
+set out "comparison_k_sum.eps"
+set yrange [*:*]
+set ylabel "Total penalties"
+plot \
+     "genetic_k_sum.csv" using 1:2 t 'Genetic' w lp, \
+     "spectral_k_sum.csv" using 1:2 t 'Spectral' w lp, \
+     "adaptive_k_sum.csv" using 1:2 t 'Adaptive' w lp
