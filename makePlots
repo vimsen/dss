@@ -23,7 +23,7 @@ set xlabel "Week"
 set out "genetic.eps"
 set ylabel "Penalty Reduction"
 set yrange [-20:120]
-set xrange [0:5]
+set xrange [0:10]
 
 
 plot for [col=2:6] 'result_genetic_k_5_0.csv' using 1:col w lp
@@ -58,7 +58,7 @@ set ylabel "Penalty Reduction"
 set yrange [-20:120]
 
 set key top right
-set xrange [0:6]
+set xrange [0:10]
 plot for [col=2:6] 'spectral_k.csv' using 1:col w lp t 'Cluster '.(col - 2)
 
 set out "genetic_k.eps"
