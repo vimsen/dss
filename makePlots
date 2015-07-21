@@ -1,0 +1,84 @@
+#!/usr/bin/gnuplot
+#set term postscript enhanced color 
+#set term postscript eps enhanced monochrome size 4,2.8
+# set term postscript eps enhanced color size 4,2.8 linewidth 2
+set term postscript eps enhanced color size 3.5,2.62 linewidth 2 
+#     font 'Helvetica,20'
+#set terminal epslatex color
+
+#set size 1,1
+#set key spacing 1.5
+#set boxwidth 0.85
+set grid y lt 0
+
+
+set key top right
+#set format x "%.1f"
+#set logscale y
+set key autotitle columnhead
+set datafile separator "\t"
+
+set xlabel "Week"
+
+set out "genetic.eps"
+set ylabel "Penalty Reduction"
+set yrange [-20:120]
+set xrange [0:10]
+
+
+plot for [col=2:6] 'result_genetic_k_5_0.csv' using 1:col w lp
+
+set out "spectral.eps"
+plot for [col=2:6] 'result_spectral_k_5_0.csv' using 1:col w lp
+
+set out "adaptive.eps"
+set key center right
+plot for [col=2:6] 'result_adaptive_k_5_avg.csv' using 1:col w lp
+
+set out "comparison.eps"
+plot \
+     "genetic_results2_avg.csv" using 1:2 t 'Genetic' w lp, \
+     "spectral_results_avg.csv" using 1:2 t 'Spectral' w lp, \
+     "adaptive_results_avg.csv" using 1:2 t 'Adaptive' w lp
+
+set out "evolution.eps"
+set xrange [*:*]
+set yrange [*:*]
+set xlabel 'Generation'
+set ylabel 'Fitness'
+unset key
+
+plot "<awk -v OFS='\t' '/Generation:/{print $2+0, $5}' genetic_evolution.txt" using 1:2 w l
+
+
+set out "spectral_k.eps"
+set key noautotitle
+set xlabel 'Kappa'
+set ylabel "Penalty Reduction"
+set yrange [-20:120]
+
+set key top right
+set xrange [0:10]
+plot for [col=2:6] 'spectral_k.csv' using 1:col w lp t 'Cluster '.(col - 2)
+
+set out "genetic_k.eps"
+plot for [col=2:6] 'genetic_k.csv' using 1:col w lp t 'Cluster '.(col - 2)
+
+set out "adaptive_k.eps"
+set key center right
+plot for [col=2:6] 'adaptive_k.csv' using 1:col w lp t 'Cluster '.(col -2)
+
+set out "comparison_k.eps"
+set key top right
+plot \
+     "genetic_k_avg.csv" using 1:2 t 'Genetic' w lp, \
+     "spectral_k_avg.csv" using 1:2 t 'Spectral' w lp, \
+     "adaptive_k_avg.csv" using 1:2 t 'Adaptive' w lp
+
+set out "comparison_k_sum.eps"
+set yrange [*:*]
+set ylabel "Total penalties"
+plot \
+     "genetic_k_sum.csv" using 1:2 t 'Genetic' w lp, \
+     "spectral_k_sum.csv" using 1:2 t 'Spectral' w lp, \
+     "adaptive_k_sum.csv" using 1:2 t 'Adaptive' w lp

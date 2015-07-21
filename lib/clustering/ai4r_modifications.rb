@@ -10,21 +10,45 @@ module Ai4r
   
   module GeneticAlgorithm
 
-    class GeneticSearch
+    class GeneticSearchWithOptions < GeneticSearch
 
       def initialize(initial_population_size, generations, options = {})
         @population_size = initial_population_size
         @max_generation = generations
         @generation = 0
         @options = options
+        @chromosomeClass = options[:class]
       end
 
       def generate_initial_population
        @population = []
+       puts "INIT: TARGETS: #{@options[:targets]}"
+       puts "INIT: REAL: #{@options[:real_consumption]}"
        @population_size.times do
-         population << Chromosome.seed(@options)
+         population << @chromosomeClass.seed(@options)
        end
       end
+
+
+      # We combine each pair of selected chromosome using the method
+      # Chromosome.reproduce
+      #
+      # The reproduction will also call the Chromosome.mutate method with
+      # each member of the population. You should implement Chromosome.mutate
+      # to only change (mutate) randomly. E.g. You could effectivly change the
+      # chromosome only if
+      #     rand < ((1 - chromosome.normalized_fitness) * 0.4)
+      def reproduction(selected_to_breed)
+        offsprings = []
+        0.upto(selected_to_breed.length/2-1) do |i|
+          offsprings << @chromosomeClass.reproduce(selected_to_breed[2*i], selected_to_breed[2*i+1])
+        end
+        @population.each do |individual|
+          @chromosomeClass.mutate(individual)
+        end
+        return offsprings
+      end
+
 
       #     1. Choose initial population
       #     2. Evaluate the fitness of each individual in the population
@@ -39,6 +63,7 @@ module Ai4r
         generate_initial_population                    #Generate initial population
         @max_generation.times do |i|
           puts "Generation: #{i}, best fitness: #{@population[0].fitness}"
+
           selected_to_breed = selection                #Evaluates current population
           offsprings = reproduction selected_to_breed  #Generate the population for this new generation
           replace_worst_ranked offsprings
@@ -50,7 +75,7 @@ module Ai4r
     # problem. You will have to redifine the Chromosome representation for each
     # particular problem, along with its fitness, mutate, reproduce, and seed 
     # methods.
-    class Chromosome
+    class StaticChromosome < Chromosome
 
       attr_accessor :data
       attr_accessor :normalized_fitness
@@ -194,7 +219,7 @@ module Ai4r
         #   rand(2) > 0 ? g1 : g2
         # end
 
-        return Chromosome.new(spawn, a.options)
+        return StaticChromosome.new(spawn, a.options)
       end
 
       # Initializes an individual solution (chromosome) for the initial 
@@ -210,7 +235,7 @@ module Ai4r
           seed << rand(kappa)
         end
         puts "seed options: #{options[:errors].length}"
-        return Chromosome.new(seed, options)
+        return StaticChromosome.new(seed, options)
       end
 
       def self.set_cost_matrix(costs)

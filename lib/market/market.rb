@@ -26,6 +26,7 @@ module Market
                       forecast_cache[f.f_timestamp.to_i] = f.fc
                       price_cache[f.f_timestamp.to_i] = forecast_price(f.f_timestamp, f.timestamp)
                      #  puts "timestamp: #{f.f_timestamp}, price: #{forecast_price(f.f_timestamp, f.timestamp)}"
+                      puts "fc: #{f.fc}, pc: #{price_cache[f.f_timestamp.to_i]}, ts: #{f.f_timestamp.to_i}, cache: #{price_cache}"
                       aggr_costs[:forecast] += f.fc * price_cache[f.f_timestamp.to_i]
                       [f.f_timestamp.to_i * 1000, f.fc * price_cache[f.f_timestamp.to_i]]
                     end
@@ -161,6 +162,7 @@ module Market
     end
 
     def real_cost(f, forecasts, prices)
+      forecasts ||= {}
       forecasts[f.timestamp.to_i] ||= 0
       prices[f.timestamp.to_i] ||= 0
       f.consumption > forecasts[f.timestamp.to_i] ?
@@ -171,13 +173,38 @@ module Market
 
     end
 
+    def penalty_for_single(day_ahead_amount)
+      # day_ahead_cost = day_ahead_amount * real_price(@startDate)
+
+      f = real()
+
+      raise "Multiple Results" if f.length > 1
+
+      f = [ Struct.new(:timestamp, :consumption).new(@startDate, 0) ] if f.length == 0
+
+      actual_amount = f.first.consumption
+
+      #final_cost = real_cost(f.first,
+      #                       {@startDate.to_i => day_ahead_amount},
+      #                       {@startDate.to_i => real_price(@startDate)})
+
+      #final_cost - day_ahead_cost
+
+      imbalance = day_ahead_amount - actual_amount
+
+      (imbalance > 0 ? @penalty_satisfaction : - @penalty_violation) * imbalance * real_price(@startDate)
+
+    end
+
     def real_price(cons_timestamp)
-      @real_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day) .. (@endDate - 1.year), region_id: 1).map { |d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price * 0.001 ] }] # Convert euro/MWh to euro/KWh
+      @real_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day - 2.hours) .. (@endDate - 1.year), region_id: 1).map { |d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price * 0.001 ] }] # Convert euro/MWh to euro/KWh
+      # puts "ts: #{cons_timestamp}, Cache: #{@real_price_cache}"
       @real_price_cache[cons_timestamp.to_i] ||= 0
     end
 
     def forecast_price(cons_timestamp, fore_timestamp)
-      @forecast_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day) .. (@endDate - 1.year), region_id: 1).map { |d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price * 0.001 ] }] # Convert euro/MWh to euro/KWh
+      @forecast_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day - 2.hours) .. (@endDate - 1.year), region_id: 1).map { |d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price * 0.001 ] }] # Convert euro/MWh to euro/KWh      puts "timestamp: #{cons_timestamp}, price: #{@forecast_price_cache[cons_timestamp.to_i]}, total: #{@forecast_price_cache}"
+       # puts "ts: #{cons_timestamp}, For. Cache: #{@forecast_price_cache}"
       @forecast_price_cache[cons_timestamp.to_i]
     end
 
