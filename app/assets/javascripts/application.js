@@ -27,6 +27,8 @@
 //= require plugins/flot/jquery.flot.tooltip.min
 //= require plugins/flot/jquery.flot.time
 //= require plugins/flot/jquery.flot.axislabels
+//= require plugins/flot/jquery.flot.JUMlib.js
+//= require plugins/flot/jquery.flot.mouse.js
 //= require plugins/jquery-ui/jquery-ui.min
 //= require plugins/jquery-ui/jquery.ui.touch-punch.min
 //= require plugins/dynatable/jquery.dynatable

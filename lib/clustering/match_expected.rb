@@ -10,7 +10,8 @@ module ClusteringModule
                    startDate: Time.now - 1.day,
                    endDate: Time.now,
                    interval: 1.hour,
-                   targets: 25.times.map {|ts| 0}
+                   targets: 25.times.map {|ts| 0},
+                   rb_channel: nil
       )
 
       method(__method__).parameters.each do |type, k|
@@ -25,6 +26,17 @@ module ClusteringModule
 
       @prosumers = reject_zeros(@prosumers, real_consumption)
 
+      if ! @rb_channel.nil?
+        Rails.logger.debug "Connecting to channel..."
+        begin
+          bunny_channel = $bunny.create_channel
+          @x = bunny_channel.fanout(@rb_channel)
+        rescue Bunny::Exception # Don't block if channel can't be fanned out
+          Rails.logger.debug "Can't fanout channel #{channel}"
+          @x = nil
+        end
+      end
+
     end
 
     def run
@@ -33,15 +45,21 @@ module ClusteringModule
           200, 100, prosumers: @prosumers,
           class: Ai4r::GeneticAlgorithm::MatchChromosome,
           targets: @targets,
-          real_consumption: real_consumption
+          real_consumption: real_consumption,
+          rb_channel: @x
       )
 
       best = search.run
 
-      best.data.zip(@prosumers).each do |ch, pr|
-        puts "Prosumer: #{pr.id}" if ch == 1
-      end
-      []
+      {
+          prosumers: best.data.zip(@prosumers).select do |ch, pr|
+            ch == 1
+          end.map do |ch, pr|
+            Prosumer.find(pr.id)
+          end,
+          consumption: timestamps.map{|ts| ts.to_i * 1000 }.zip(best.result)
+      }
+
     end
 
     def reject_zeros(prosumers, rc)
@@ -110,6 +128,20 @@ module Ai4r
         @prosumers = options[:prosumers]
         @real_consumption = options[:real_consumption]
 
+      end
+
+      def result
+        total_consumption = @targets.map {|t| 0}
+        @data.each_with_index do |d, i|
+          #   puts "d= #{d}, i=#{i}"
+
+          if d == 1
+            total_consumption = total_consumption.zip(@real_consumption[@prosumers[i].id]).map do |t,r|
+              t + r
+            end
+          end
+        end
+        total_consumption
       end
 
       def fitness

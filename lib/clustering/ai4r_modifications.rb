@@ -62,7 +62,13 @@ module Ai4r
       def run
         generate_initial_population                    #Generate initial population
         @max_generation.times do |i|
-          puts "Generation: #{i}, best fitness: #{@population[0].fitness}"
+
+          message = "Generation: #{i}, best fitness: #{@population[0].fitness}"
+          if @options[:rb_channel].nil?
+            puts message
+          else
+            @options[:rb_channel].publish({data: message, event: 'output'}.to_json)
+          end
 
           selected_to_breed = selection                #Evaluates current population
           offsprings = reproduction selected_to_breed  #Generate the population for this new generation
