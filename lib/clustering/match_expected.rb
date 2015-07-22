@@ -162,7 +162,7 @@ module Ai4r
 
         error = total_consumption.zip(@targets).sum do |r, t|
           # puts "r= #{r}, t= #{t}"
-          (r - t).abs
+          (r - t) ** 2
         end
 
         return -error

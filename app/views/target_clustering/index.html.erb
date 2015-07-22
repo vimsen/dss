@@ -15,7 +15,13 @@
       <div class="panel-body">
 
         <form action="#" id="maxvalueform">
+          <label>Graph scale</label>
           <input type="text" name="max" value="100" id="maxvalue"/>
+        </form>
+
+        <form action="#" id="targetvalueform">
+          <label>Target value</label>
+          <input type="text" name="target" value="50" id="targetvalue"/>
         </form>
 
         <div id="placeholder" style="width:600px;height:300px"></div>
@@ -38,7 +44,7 @@
         <form action="#" id="run_algorithm">
           <input type="submit" value="Run Algorithm"/>
         </form>
-        <div id="progress">
+        <div id="progress" class="terminal">
 
         </div>
       </div>
@@ -109,6 +115,15 @@
       return false;
     });
 
+    $("#targetvalueform").submit(function () {
+      var target = parseInt($("#targetvalue").val());
+      for (var i = 0; i < data[0].data.length; i++) {
+        data[0].data[i][1] = target;
+      }
+      plot = $.plot($("#placeholder"), data, options);
+      return false;
+    });
+
     $("#run_algorithm").submit(function () {
       data[0].editable = false;
       plot = $.plot($("#placeholder"), data, options);
@@ -131,13 +146,13 @@
       source.addEventListener('output', function(e) {
         //   console.log("Datapoint received ", e);
         var message = JSON.parse(e.data);
-        $("#progress").append("<BR/>" + message)
+        $("#progress").append("<BR/>" + message).animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
       });
 
       source.addEventListener('result', function(e) {
         var message = JSON.parse(e.data);
         source.close();
-        $("#progress").append("<BR/>" + message);
+        $("#progress").append("<BR/>" + message).an;
         $("#run_algorithm :input").prop("disabled", false);
         data[0].editable = true;
         data[1] = {
