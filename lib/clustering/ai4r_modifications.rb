@@ -23,7 +23,7 @@ module Ai4r
       def generate_initial_population
        @population = []
        puts "INIT: TARGETS: #{@options[:targets]}"
-       puts "INIT: REAL: #{@options[:real_consumption]}"
+       puts "INIT: REAL: #{@options[:real_prosumption]}" unless @options[:real_prosumption].nil?
        @population_size.times do
          population << @chromosomeClass.seed(@options)
        end

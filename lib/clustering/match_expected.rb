@@ -24,7 +24,7 @@ module ClusteringModule
 
       raise "Wrong targets size" if @targets.length != timestamps.length
 
-      @prosumers = reject_zeros(@prosumers, real_consumption)
+      @prosumers = reject_zeros(@prosumers, real_prosumption)
 
       if ! @rb_channel.nil?
         Rails.logger.debug "Connecting to channel..."
@@ -45,7 +45,7 @@ module ClusteringModule
           200, 100, prosumers: @prosumers,
           class: Ai4r::GeneticAlgorithm::MatchChromosome,
           targets: @targets,
-          real_consumption: real_consumption,
+          real_prosumption: real_prosumption,
           rb_channel: @x
       )
 
@@ -88,16 +88,17 @@ module ClusteringModule
 
     end
 
-    def real_consumption
+    def real_prosumption
       result = Hash[@prosumers.map {|p| [p.id, timestamps.map{|ts| 0}]}]
+
       timestamps.map do |ts|
         DataPoint.where(prosumer: @prosumers,
                         interval: 2,
-                        timestamp: ts)
+                        timestamp: ts).select(:prosumer_id, '(consumption - production) as prosumption')
             .map do |dp|
-          result[dp.prosumer_id][timestamps.index(ts)] = dp.consumption
+          result[dp.prosumer_id][timestamps.index(ts)] = dp[:prosumption]
 
-          [dp.prosumer_id, dp.consumption]
+          [dp.prosumer_id, dp[:prosumption]]
         end
       end
       result
@@ -126,7 +127,7 @@ module Ai4r
         @options = options
         @targets = options[:targets]
         @prosumers = options[:prosumers]
-        @real_consumption = options[:real_consumption]
+        @real_prosumption = options[:real_prosumption]
 
       end
 
@@ -136,7 +137,7 @@ module Ai4r
           #   puts "d= #{d}, i=#{i}"
 
           if d == 1
-            total_consumption = total_consumption.zip(@real_consumption[@prosumers[i].id]).map do |t,r|
+            total_consumption = total_consumption.zip(@real_prosumption[@prosumers[i].id]).map do |t,r|
               t + r
             end
           end
@@ -152,7 +153,7 @@ module Ai4r
        #   puts "d= #{d}, i=#{i}"
 
           if d == 1
-            total_consumption = total_consumption.zip(@real_consumption[@prosumers[i].id]).map do |t,r|
+            total_consumption = total_consumption.zip(@real_prosumption[@prosumers[i].id]).map do |t,r|
               t + r
             end
           end
