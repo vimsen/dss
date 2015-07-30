@@ -5,6 +5,7 @@ module ClusteringModule
   class TargetMatcher
 
     attr_accessor :targets
+    attr_accessor :prosumers
 
     def initialize(prosumers: Prosumer.all,
                    startDate: Time.now - 1.day,
@@ -64,7 +65,7 @@ module ClusteringModule
 
     def reject_zeros(prosumers, rc)
       prosumers.reject do |p|
-        rc[p.id].sum == 0
+        rc[p.id].max == 0
       end
     end
 

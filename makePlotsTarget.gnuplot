@@ -11,3 +11,14 @@ set ylabel "Prosumption"
 
 plot for [col=2:19] 'target1.csv' using 1:col w l
 
+set out "target2_1.eps"
+set yrange [*:*]
+plot for [col=2:10] 'target2.csv' using 1:col w l, \
+     for [col=11:19] 'target2.csv' using 1:col w p
+
+
+set out "target2_2.eps"
+set ylabel "Prosumption (negative)"
+set yrange [*:512] reverse
+plot for [col=2:10] 'target2.csv' using 1:(-column(col)) w l, \
+     for [col=11:19] 'target2.csv' using 1:(-column(col)) w p
