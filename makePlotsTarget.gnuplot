@@ -22,3 +22,17 @@ set ylabel "Prosumption (negative)"
 set yrange [*:512] reverse
 plot for [col=2:10] 'target2.csv' using 1:(-column(col)) w l, \
      for [col=11:19] 'target2.csv' using 1:(-column(col)) w p
+
+set out "target2_stats.eps"
+set ylabel "percentage (%)"
+set key autotitle columnhead
+
+unset yrange
+unset logscale
+set yrange [60:110]
+set xrange [*:*]
+set y2label 'Mean Square Error'
+set y2range [-0.02: 0.2]
+set y2tics 0.05
+plot for [col=2:3] 'target2_stats.csv' using 1:(100 * column(col)) w lp, \
+     'target2_stats.csv' using 1:4 axes x1y2 w lp

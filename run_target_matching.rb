@@ -60,6 +60,10 @@ class CreateGraphs
     targets = []
     results = []
 
+    precisions = []
+    recalls = []
+    mean_square_errors = []
+
     plot = [ (1 .. 25).to_a ]
     
     8.times do |i|
@@ -78,6 +82,13 @@ class CreateGraphs
       res = tme2.run
       results.push(target_vector.map{ -10000 }) if i == 5           
       results.push(res[:consumption].map{|(a,b)| b})
+
+      output = res[:prosumers].map{|p| p.id}
+
+      precisions.push(precision(prosumers, output))
+      recalls.push(recall(prosumers, output))
+      mean_square_errors.push(mean_square_error(target_vector, results.last))
+
     end
 
     plot = plot + targets + results
@@ -88,9 +99,31 @@ class CreateGraphs
       end
     end
 
-    puts JSON.pretty_generate plot
+    i = 1
+    CSV.open('target2_stats.csv', 'w', col_sep: "\t") do |csv|
+      csv << [ 'id', 'precision', 'recall', 'mean square error (2nd y axis)']
 
+      precisions.zip(recalls,mean_square_errors).map do |a,b,c|
+        csv << [i,a,b,c]
+        i = i + 1
+      end
+    end
 
+  end
+
+  def self.precision(relevant, retrieved)
+    (relevant & retrieved).length.to_f / retrieved.length.to_f
+  end
+
+  def self.recall(relevant, retrieved)
+    (relevant & retrieved).length.to_f / relevant.length.to_f
+  end
+
+  def self.mean_square_error(targets, outputs)
+    raise "Size mismach" unless targets.length == outputs.length
+    targets.zip(outputs).sum do | t, o|
+      (t - o) ** 2
+    end.to_f / targets.length.to_f
   end
 end
 
