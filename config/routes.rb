@@ -60,6 +60,7 @@ Rails.application.routes.draw do
   get 'stream/:id/prosumer' => 'stream#prosumer'
   get 'stream/:id/meter' => 'stream#meter'
   get 'stream/:id/clusterfeed' => 'stream#clusterfeed'
+  get 'stream/run_algorithm' => 'stream#run_algorithm'
 
   patch 'prosumers/:id/removefromcluster' => 'prosumers#removefromcluster'
   patch 'clusters/:id/addprosumer' => 'clusters#addprosumer'
@@ -82,7 +83,10 @@ Rails.application.routes.draw do
 
 
   resources :machines
-  
+
+
+  get 'target_clustering' => 'target_clustering#index'
+
 
   root :to => 'home#index'
  # devise_scope :user do

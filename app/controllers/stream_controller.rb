@@ -1,5 +1,6 @@
 require 'streamer/sse'
 require 'market/market'
+require 'clustering/match_expected'
 
 class StreamController < ApplicationController
   include ActionController::Live
@@ -197,4 +198,65 @@ class StreamController < ApplicationController
     sse.close
     puts "Stream closed."
   end
+
+  def run_algorithm
+    ActiveRecord::Base.forbid_implicit_checkout_for_thread!
+    response.headers['Content-Type'] = 'text/event-stream'
+    sse = Streamer::SSE.new(response.stream)
+
+   #  puts "PARAMS: #{params[:targets]}"
+
+    bunny_channel = $bunny.create_channel
+    channel_name = SecureRandom.uuid
+    x = bunny_channel.fanout(channel_name)
+    q = bunny_channel.queue("", :exclusive => false)
+    q.bind(x)
+
+    consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
+       puts "Received: ", data
+      begin
+        msg = JSON.parse(data)
+        sse.write(msg['data'].to_json, event: msg['event'])
+      rescue IOError
+        consumer.cancel unless consumer.nil?
+        sse.close
+        puts "Stream closed2."
+      ensure
+        ActiveRecord::Base.clear_active_connections!
+      end
+    end
+
+    Thread.new do
+      ActiveRecord::Base.forbid_implicit_checkout_for_thread!
+      ActiveRecord::Base.connection_pool.with_connection do
+        puts "Running algorithm"
+        tm = ClusteringModule::TargetMatcher.new(
+            startDate: DateTime.parse(params[:startDate]),
+            endDate: DateTime.parse(params[:endDate]),
+            interval: params[:interval].to_i,
+            targets: JSON.parse(params[:targets]).map{|v| v[1]},
+            rb_channel: channel_name
+        )
+        puts "Object created"
+        results = tm.run
+        sse.write(results.to_json, event: "result")
+
+        puts JSON.pretty_generate results
+
+      end
+
+    end
+
+    loop do
+      sleep 1;
+      sse.write("OK".to_json, event: 'messages.keepalive')
+    end
+  rescue IOError
+  ensure
+    consumer.cancel unless consumer.nil?
+    sse.close
+    puts "Stream closed."
+  end
+
+
 end
