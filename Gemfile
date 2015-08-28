@@ -76,3 +76,4 @@ gem "ai4r" # ditto
 
 gem 'aws-sdk', '~> 2'
 
+gem 'seed_dump' # Needed for generatic seeds from existing data 
