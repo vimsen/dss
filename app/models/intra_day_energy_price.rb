@@ -1,3 +1,3 @@
 class IntraDayEnergyPrice < ActiveRecord::Base
-  belongs_to :market,  class_name: "EnergyMarket"
+  belongs_to :region,  class_name: "MarketRegions"
 end
