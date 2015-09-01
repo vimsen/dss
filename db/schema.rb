@@ -11,13 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150331090654) do
+ActiveRecord::Schema.define(version: 20150901125140) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "ancillary_services_data", force: true do |t|
-    t.datetime "date"
+    t.date     "date"
     t.integer  "dayhour"
     t.float    "purchased_volumes"
     t.float    "sold_volumes"
@@ -76,7 +76,7 @@ ActiveRecord::Schema.define(version: 20150331090654) do
   add_index "data_points", ["timestamp", "prosumer_id", "interval_id"], name: "index_data_points_on_timestamp_and_prosumer_id_and_interval_id", unique: true, using: :btree
 
   create_table "day_ahead_energy_demands", force: true do |t|
-    t.datetime "date"
+    t.date     "date"
     t.integer  "dayhour"
     t.float    "demand"
     t.integer  "region_id"
@@ -85,7 +85,7 @@ ActiveRecord::Schema.define(version: 20150331090654) do
   end
 
   create_table "day_ahead_energy_prices", force: true do |t|
-    t.datetime "date"
+    t.date     "date"
     t.integer  "dayhour"
     t.float    "price"
     t.integer  "region_id"
@@ -94,7 +94,7 @@ ActiveRecord::Schema.define(version: 20150331090654) do
   end
 
   create_table "day_ahead_energy_volumes", force: true do |t|
-    t.datetime "date"
+    t.date     "date"
     t.integer  "dayhour"
     t.float    "purchases"
     t.float    "sales"
@@ -131,12 +131,6 @@ ActiveRecord::Schema.define(version: 20150331090654) do
     t.float    "price_minimum"
     t.float    "price_maximum"
     t.float    "tee_traded"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "energy_markets", force: true do |t|
-    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -191,7 +185,7 @@ ActiveRecord::Schema.define(version: 20150331090654) do
   end
 
   create_table "intra_day_energy_prices", force: true do |t|
-    t.datetime "date"
+    t.date     "date"
     t.integer  "dayhour"
     t.float    "price"
     t.integer  "interval_id"
@@ -201,7 +195,7 @@ ActiveRecord::Schema.define(version: 20150331090654) do
   end
 
   create_table "intra_day_energy_volumes", force: true do |t|
-    t.datetime "date"
+    t.date     "date"
     t.integer  "dayhour"
     t.float    "purchases"
     t.float    "sales"
@@ -233,21 +227,13 @@ ActiveRecord::Schema.define(version: 20150331090654) do
   end
 
   create_table "mb_provisional_total_data", force: true do |t|
-    t.datetime "date"
+    t.date     "date"
     t.integer  "dayhour"
     t.float    "purchased_revoked"
     t.float    "purchased_not_revoked"
     t.float    "sold_revoked"
     t.float    "sold_not_revoked"
     t.integer  "region_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "measurements", force: true do |t|
-    t.datetime "timeslot"
-    t.float    "power"
-    t.integer  "prosumer_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
