@@ -1,6 +1,7 @@
 require 'streamer/sse'
 require 'market/market'
 require 'clustering/match_expected'
+require 'fetch_asynch/download_and_publish'
 
 class StreamController < ApplicationController
   include ActionController::Live
@@ -198,6 +199,65 @@ class StreamController < ApplicationController
     sse.close
     puts "Stream closed."
   end
+
+  def download_data
+    ActiveRecord::Base.forbid_implicit_checkout_for_thread!
+    response.headers['Content-Type'] = 'text/event-stream'
+    sse = Streamer::SSE.new(response.stream)
+
+    bunny_channel = $bunny.create_channel
+    channel_name = SecureRandom.uuid
+    x = bunny_channel.fanout(channel_name)
+    q = bunny_channel.queue("", :exclusive => false)
+    q.bind(x)
+    remaining = 0
+    consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
+      begin
+        msg = JSON.parse(data)
+        if msg['event'] == "output"
+          remaining = remaining - 1;
+         #  puts "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", delivery_info, properties, data
+         #  puts "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY", msg
+          sse.write(msg['data'].to_json, event: msg['event'])
+
+        end
+      rescue IOError
+        consumer.cancel unless consumer.nil?
+        sse.close
+        puts "Stream closed2."
+      ensure
+        ActiveRecord::Base.clear_active_connections!
+      end
+    end
+
+    startdate = DateTime.now - 2.weeks
+    enddate = DateTime.now
+
+    remaining = 3
+    FetchAsynch::DownloadAndPublish.new(Prosumer.all, 1, startdate, enddate, channel_name)
+    FetchAsynch::DownloadAndPublish.new(Prosumer.all, 2, startdate, enddate, channel_name)
+    FetchAsynch::DownloadAndPublish.new(Prosumer.all, 3, startdate, enddate, channel_name)
+
+
+
+    until remaining == 0
+      sleep 1;
+      sse.write("OK".to_json, event: 'messages.keepalive')
+    end
+
+    sse.write("done".to_json, event: 'result')
+    consumer.cancel unless consumer.nil?
+    sse.close
+    puts "Stream closed3."
+
+
+  rescue IOError
+  ensure
+    consumer.cancel unless consumer.nil?
+    sse.close
+    puts "Stream closed."
+  end
+
 
   def run_algorithm
     ActiveRecord::Base.forbid_implicit_checkout_for_thread!

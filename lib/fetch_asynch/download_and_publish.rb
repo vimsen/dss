@@ -16,19 +16,29 @@ module FetchAsynch
       ActiveRecord::Base.connection_pool.with_connection do
         @interval = Interval.find(interval)
       end
+
+      puts "Starting new Thread..."
       Thread.new do
         ActiveRecord::Base.forbid_implicit_checkout_for_thread!
-
-     #   sleep 1
-
+        #   sleep 1
+        i = 0
         u = YAML.load_file('config/config.yml')[Rails.env]['intellen_host']
-        uri = URI.parse(u + '/getdata')
-        params = { prosumers: prosumers.map {|p| p.intelen_id}.join(","),
-                   startdate: startdate.to_s,
-                   enddate: enddate.to_s,
-                   interval: @interval.duration }
-        uri.query = URI.encode_www_form(params)
 
+        puts i; i=i+1;
+        uri = URI.parse(u + '/getdata')
+        puts i; i=i+1;
+        params = {}
+        ActiveRecord::Base.connection_pool.with_connection do
+          params = { prosumers: prosumers.map {|p| p.intelen_id}.join(","),
+                     startdate: startdate.to_s,
+                     enddate: enddate.to_s,
+                     interval: @interval.duration }
+        end
+        puts i; i=i+1;
+        uri.query = URI.encode_www_form(params)
+        puts i; i=i+1;
+
+        puts "In the new Thread..."
         Rails.logger.debug "Connecting to: #{uri}"
 
         result = JSON.parse(uri.open.read)
@@ -108,12 +118,15 @@ module FetchAsynch
                                                 endDate: @enddate).calcCosts,
                 event: 'market'}.to_json) # unless x.nil?
         Rails.logger.debug "publshed market data"
+        ActiveRecord::Base.connection_pool.with_connection do
+          x.publish({data:  "Interval #{@interval.name} complete.", event: "output"}.to_json)
+        end
+        Rails.logger.debug "pushed end message"
       rescue Bunny::Exception # Don't block if channel can't be fanned out
         Rails.logger.debug "Can't publish to channel #{channel}"
       end
       Rails.logger.debug "market data published."
-
-    end
+     end
 
     def db_prepare(d, procs)
      DataPoint.new(
