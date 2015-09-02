@@ -26,7 +26,7 @@ module Market
                       forecast_cache[f.f_timestamp.to_i] = f.fc
                       price_cache[f.f_timestamp.to_i] = forecast_price(f.f_timestamp, f.timestamp)
                      #  puts "timestamp: #{f.f_timestamp}, price: #{forecast_price(f.f_timestamp, f.timestamp)}"
-                      puts "fc: #{f.fc}, pc: #{price_cache[f.f_timestamp.to_i]}, ts: #{f.f_timestamp.to_i}, cache: #{price_cache}"
+                      # puts "fc: #{f.fc}, pc: #{price_cache[f.f_timestamp.to_i]}, ts: #{f.f_timestamp.to_i}, cache: #{price_cache}"
                       aggr_costs[:forecast] += f.fc * price_cache[f.f_timestamp.to_i]
                       [f.f_timestamp.to_i * 1000, f.fc * price_cache[f.f_timestamp.to_i]]
                     end

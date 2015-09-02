@@ -152,7 +152,7 @@
       source.addEventListener('result', function(e) {
         var message = JSON.parse(e.data);
         source.close();
-        $("#progress").append("<BR/>" + message).an;
+        $("#progress").append("<BR/>" + message).animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
         $("#run_algorithm :input").prop("disabled", false);
         data[0].editable = true;
         data[1] = {

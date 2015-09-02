@@ -61,6 +61,7 @@ Rails.application.routes.draw do
   get 'stream/:id/meter' => 'stream#meter'
   get 'stream/:id/clusterfeed' => 'stream#clusterfeed'
   get 'stream/run_algorithm' => 'stream#run_algorithm'
+  get 'stream/download_data' => 'stream#download_data'
 
   patch 'prosumers/:id/removefromcluster' => 'prosumers#removefromcluster'
   patch 'clusters/:id/addprosumer' => 'clusters#addprosumer'
