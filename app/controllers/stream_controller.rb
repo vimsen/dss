@@ -211,11 +211,15 @@ class StreamController < ApplicationController
     q = bunny_channel.queue("", :exclusive => false)
     q.bind(x)
     remaining = 0
+
+    sse.write("Downloading data. Please wait...".to_json, event: 'output')
+
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
       begin
         msg = JSON.parse(data)
         if msg['event'] == "output"
-          remaining = remaining - 1;
+
+          remaining = remaining - 1 if msg['data'] =~ %r{^Interval.*: complete\.$}
          #  puts "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", delivery_info, properties, data
          #  puts "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY", msg
           sse.write(msg['data'].to_json, event: msg['event'])
