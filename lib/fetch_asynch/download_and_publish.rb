@@ -98,8 +98,8 @@ module FetchAsynch
           (new_data_points.map do |d|
             db_prepare(d, procs)
           end).each_slice(5000) do |slice|
-            res = DataPoint.import(slice)
-            x.publish({data:  "Interval #{@interval.name}: Inserted #{res.num_inserts} datapoints.", event: "output"}.to_json)
+            DataPoint.import(slice)
+            x.publish({data:  "Interval #{@interval.name}: Inserted datapoints.", event: "output"}.to_json)
           end
         end
       end
