@@ -78,7 +78,9 @@ module FetchAsynch
                                    ["#{dp.timestamp.to_i},#{dp.prosumer_id},#{dp.interval_id}", 1]
                                  end]
           Rails.logger.debug "#{old_data_points.count} datapoints found"
+          x.publish({data:  "Interval #{@interval.name}: #{old_data_points.count} datapoints found.", event: "output"}.to_json)
           Rails.logger.debug "#{data.count} datapoints received"
+          x.publish({data:  "Interval #{@interval.name}: #{data.count} datapoints received.", event: "output"}.to_json)
 
           dupe_finder = {}
 
@@ -91,10 +93,13 @@ module FetchAsynch
           end
 
           Rails.logger.debug "#{new_data_points.count} datapoints remaining"
+          x.publish({data:  "Interval #{@interval.name}: #{new_data_points.count} datapoints remaining.", event: "output"}.to_json)
+
           (new_data_points.map do |d|
             db_prepare(d, procs)
           end).each_slice(5000) do |slice|
-            DataPoint.import slice
+            res = DataPoint.import(slice)
+            x.publish({data:  "Interval #{@interval.name}: Inserted #{res.num_inserts} datapoints.", event: "output"}.to_json)
           end
         end
       end
@@ -119,7 +124,7 @@ module FetchAsynch
                 event: 'market'}.to_json) # unless x.nil?
         Rails.logger.debug "publshed market data"
         ActiveRecord::Base.connection_pool.with_connection do
-          x.publish({data:  "Interval #{@interval.name} complete.", event: "output"}.to_json)
+          x.publish({data:  "Interval #{@interval.name}: complete.", event: "output"}.to_json)
         end
         Rails.logger.debug "pushed end message"
       rescue Bunny::Exception # Don't block if channel can't be fanned out
