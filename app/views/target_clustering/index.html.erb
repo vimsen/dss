@@ -162,7 +162,10 @@
         plot = $.plot($("#placeholder"), data, options);
 
         $.each(message.prosumers, function(i,v) {
-          $("#prosumer_results").append("<a href='/prosumers/" + v.id + "'>"+ v.name+"</a>,");
+          if ( ! $('#prosumer_results').is(':empty')) {
+            $("#prosumer_results").append(", ");
+          }
+          $("#prosumer_results").append("<a href='/prosumers/" + v.id + "'>"+ v.name+"</a>");
        //   console.log("<a href='/prosumers/" + v.id + "'>"+ v.name+"</a>,");
         });
 
