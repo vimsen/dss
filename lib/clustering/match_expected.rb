@@ -57,7 +57,7 @@ module ClusteringModule
             ch == 1
           end.map do |ch, pr|
             Prosumer.find(pr.id)
-          end,
+          end.sort_by{|p| p.name},
           consumption: timestamps.map{|ts| ts.to_i * 1000 }.zip(best.result)
       }
 
