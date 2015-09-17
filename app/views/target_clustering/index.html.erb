@@ -116,7 +116,7 @@
     });
 
     $("#targetvalueform").submit(function () {
-      var target = parseInt($("#targetvalue").val());
+      var target = parseFloat($("#targetvalue").val());
       for (var i = 0; i < data[0].data.length; i++) {
         data[0].data[i][1] = target;
       }
