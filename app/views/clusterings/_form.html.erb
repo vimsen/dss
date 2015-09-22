@@ -34,13 +34,13 @@
     <div class="col-md-8">
       <div class="form-group">
         <div class="input-group">
-          <%= f.label "Without cluster", class: "control-label" %>
+          <%= f.label :without_cluster, class: "control-label" %>
           <%= hidden_field_tag "clusternames[]", :NONE %>
           <%= hidden_field_tag "clusterdescriptions[]", :NONE %>
         </div>
         <div class="input-group">
           <%= label_tag "Prosumers:", nil, class: "control-label" %>
-          <ul class="list-inline connectedSortable" id="prosumer_list_0" >
+          <ul class="list-inline connectedSortable" id="prosumer_list_-1" >
             <% ( Prosumer.all - @clustering.temp_clusters.flat_map {|c| c.prosumers} ).each do |p| %>
               <li id="<%= "prosumer_#{p.id}" -%>"><%= p.name -%><div style="visibility: hidden;"><%= p.id -%></div></li>
             <% end %>
