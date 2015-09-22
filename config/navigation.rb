@@ -97,7 +97,7 @@ SimpleNavigation::Configuration.run do |navigation|
       sub_nav.dom_class = 'nav nav-second-level collapse'
     end
     primary.item :algorithms, 'Algorithms', "#" do |sub_nav|
-      sub_nav.item :clusterings, 'Clustering', "/clusterings/select"
+      sub_nav.item :clustering, 'Clustering', "/clusterings/select"
       sub_nav.item :dunamic_adaptation, 'Dynamic Adaptation', "/clusterings/new_from_existing"
       sub_nav.item :target_clustering, "Target Clustering", "/target_clustering"
       sub_nav.item :RES_scheduling, 'RES scheduling', "#"
