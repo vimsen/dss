@@ -18,7 +18,7 @@
         <input id="realtime" type="checkbox" checked>
         <select id="type">
           <option value="production">Production</option>
-          <option value="consumption" selected="true">Consumption</option>
+          <option value="consumption" selected="selected">Consumption</option>
           <option value="storage">Storage</option>
         </select>
         <%= collection_select(:interval, :interval_id,
@@ -39,10 +39,12 @@
             <hr/>
             <table id="violations" class="table">
               <thead>
-              <th>Date</th>
-              <th>Actual</th>
-              <th>Forecast</th>
-              <th>Status</th>
+                <tr>
+                  <th>Date</th>
+                  <th>Actual</th>
+                  <th>Forecast</th>
+                  <th>Status</th>
+                </tr>
               </thead>
               <tbody>
               </tbody>
@@ -53,7 +55,7 @@
     </div>
 
   </div>
-  </div>
+</div>
 
   <div class="panel panel-default">
     <div class="panel-heading">
@@ -71,25 +73,21 @@
             <hr/>
             <table id="costs_table" class="table table-responsive">
               <thead>
-              <th>Name</th>
-              <th>Forecast</th>
-              <th>Ideal</th>
-              <th>real</th>
+                <tr>
+                  <th>Name</th>
+                  <th>Forecast</th>
+                  <th>Ideal</th>
+                  <th>real</th>
+                </tr>
               </thead>
               <tbody>
               </tbody>
             </table>
           </div>
         </div>
-        </div>
       </div>
-
-
-
     </div>
-
-</div>
-
+  </div>
 
 <script>
 
