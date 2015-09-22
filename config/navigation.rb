@@ -63,28 +63,28 @@ SimpleNavigation::Configuration.run do |navigation|
     #                            against the current URI.  You may also use a proc, or the symbol <tt>:subpath</tt>.
     #
 
-    primary.item :home, 'Home', '/', :icon => ['fa fa-home fa-fw'] # class: 'fa fa-home fa-fw'
-    primary.item :prosumers, 'Prosumers', prosumers_path, :icon => ['fa fa-plug fa-fw'], :split => false do |sub_nav|
-      sub_nav.item :prosumers_sub, "Prosumer list", prosumers_path
-      sub_nav.item :prosumer_new, "New Prosumer", new_prosumer_path
+    primary.item :menu_home, 'Home', '/', :icon => ['fa fa-home fa-fw'] # class: 'fa fa-home fa-fw'
+    primary.item :menu_prosumers, 'Prosumers', prosumers_path, :icon => ['fa fa-plug fa-fw'], :split => false do |sub_nav|
+      sub_nav.item :menu_prosumers_sub, "Prosumer list", prosumers_path
+      sub_nav.item :menu_prosumer_new, "New Prosumer", new_prosumer_path
       HierMenu::HierMenu.new("prosumers_hier", 
                              Proc.new { |p| prosumer_url(p) }
                             ).fill_node sub_nav, Prosumer.all.order(name: :asc) 
       sub_nav.dom_class = 'nav nav-second-level collapse'
     end
-    primary.item :clusters, 'Clusters', clusters_path, :icon => ['fa fa-sitemap fa-fw'], :split => false do |sub_nav|
-    # primary.item :clusters, 'Clusters' do |sub_nav|
-      sub_nav.item :clusters_sub, "Cluster list", clusters_path
-     #  sub_nav.item :auto_cluster, "Automatic clustering", "/clusterings/select"
+    primary.item :menu_clusters, 'Clusters', clusters_path, :icon => ['fa fa-sitemap fa-fw'], :split => false do |sub_nav|
+    # primary.item :menu_clusters, 'Clusters' do |sub_nav|
+      sub_nav.item :menu_clusters_sub, "Cluster list", clusters_path
+     #  sub_nav.item :menu_auto_cluster, "Automatic clustering", "/clusterings/select"
       HierMenu::HierMenu.new("clusters_hier", Proc.new { |p| cluster_url(p) }, nil, 4
                             ).fill_node sub_nav, Cluster.all.order(name: :asc) 
       sub_nav.dom_class = 'nav nav-second-level collapse'
     end
 
-    primary.item :clusterings, 'Clusterings', '#' do |sub_nav|
-      sub_nav.item :clusterings_sub, "Clusterings List", clusterings_path
-      sub_nav.item :clustering_new, "New Clustering", new_clustering_path
-      sub_nav.item :clustering_new_from_existing, "New Clustering from existing allocation", new_from_existing_clustering_path
+    primary.item :menu_clusterings, 'Clusterings', '#' do |sub_nav|
+      sub_nav.item :menu_clusterings_sub, "Clusterings List", clusterings_path
+      sub_nav.item :menu_clustering_new, "New Clustering", new_clustering_path
+      sub_nav.item :menu_clustering_new_from_existing, "New Clustering from existing allocation", new_from_existing_clustering_path
       HierMenu::HierMenu.new("clusterings_hier",
                              Proc.new { |p| clustering_url(p) },
                              nil,
@@ -92,26 +92,26 @@ SimpleNavigation::Configuration.run do |navigation|
       sub_nav.dom_class = 'nav nav-second-level collapse'
     end
 
-    primary.item :meters, 'Meters', '#' do |sub_nav|
+    primary.item :menu_meters, 'Meters', '#' do |sub_nav|
       HierMenu::HierMenu.new('meters_hier', Proc.new { |p| meter_url(p) }, :mac, 4).fill_node sub_nav, Meter.all.order(id: :asc)
       sub_nav.dom_class = 'nav nav-second-level collapse'
     end
-    primary.item :algorithms, 'Algorithms', "#" do |sub_nav|
-      sub_nav.item :clusterings, 'Clustering', "/clusterings/select"
-      sub_nav.item :dunamic_adaptation, 'Dynamic Adaptation', "/clusterings/new_from_existing"
-      sub_nav.item :target_clustering, "Target Clustering", "/target_clustering"
-      sub_nav.item :RES_scheduling, 'RES scheduling', "#"
-      sub_nav.item :VMG_modeling, 'VMG production - consumption modeling', "#"
-      sub_nav.item :VMG_profiling, 'VMG profile maximization algorithms', "#"
-      sub_nav.item :comm_algos, 'Communication algorithms', "#"
-      sub_nav.item :virt_netw_micro, 'Virtual netwrok microgrid', "#"
+    primary.item :menu_algorithms, 'Algorithms', "#" do |sub_nav|
+      sub_nav.item :menu_clustering, 'Clustering', "/clusterings/select"
+      sub_nav.item :menu_dunamic_adaptation, 'Dynamic Adaptation', "/clusterings/new_from_existing"
+      sub_nav.item :menu_target_clustering, "Target Clustering", "/target_clustering"
+      sub_nav.item :menu_RES_scheduling, 'RES scheduling', "#"
+      sub_nav.item :menu_VMG_modeling, 'VMG production - consumption modeling', "#"
+      sub_nav.item :menu_VMG_profiling, 'VMG profile maximization algorithms', "#"
+      sub_nav.item :menu_comm_algos, 'Communication algorithms', "#"
+      sub_nav.item :menu_virt_netw_micro, 'Virtual netwrok microgrid', "#"
       sub_nav.dom_class = 'nav nav-second-level collapse'
     end
-    primary.item :data_points, 'Data points', data_points_path, :icon => ['fa fa-bar-chart-o fa-fw']
-    primary.item :day_aheads, 'Day-ahead forecasts', day_aheads_path, :icon => ['fa fa-bar-chart-o fa-fw']
-    primary.item :market_prices, 'Market Prices', market_prices_path, :icon => ['fa fa-bar-chart-o fa-fw']
-    primary.item :cloud_platform, 'Cloud Platform', '/cloud_platform', :icon => ['fa fa-cog fa-fw']
-    primary.item :users, 'Users', users_path, :icon => ['fa fa-user fa-fw']
+    primary.item :menu_data_points, 'Data points', data_points_path, :icon => ['fa fa-bar-chart-o fa-fw']
+    primary.item :menu_day_aheads, 'Day-ahead forecasts', day_aheads_path, :icon => ['fa fa-bar-chart-o fa-fw']
+    primary.item :menu_market_prices, 'Market Prices', market_prices_path, :icon => ['fa fa-bar-chart-o fa-fw']
+    primary.item :menu_cloud_platform, 'Cloud Platform', '/cloud_platform', :icon => ['fa fa-cog fa-fw']
+    primary.item :menu_users, 'Users', users_path, :icon => ['fa fa-user fa-fw']
 
   #    primary.item :key_1, 'name', url, options
 
