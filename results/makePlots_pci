@@ -1,0 +1,26 @@
+#!/usr/bin/gnuplot
+set term postscript eps enhanced color size 3.5,2.62 linewidth 3
+set grid y lt 0
+set key top right
+set key autotitle columnhead
+set datafile separator "\t"
+
+set xlabel "Week"
+
+set out "genetic_pci.eps"
+set ylabel "Penalty Reduction"
+set yrange [0:50]
+set xrange [0:5]
+
+
+plot for [col=2:6] 'genetic_results_pci.csv' using 1:col w lp
+
+set out "evolution.eps"
+set xrange [*:*]
+set yrange [*:*]
+set xlabel 'Generation'
+set ylabel 'Fitness'
+unset key
+
+plot "<awk -v OFS='\t' '/Generation:/{print $2+0, $5}' genetic_evolution.txt" using 1:2 w l
+
