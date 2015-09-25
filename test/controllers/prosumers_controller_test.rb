@@ -4,7 +4,6 @@ class ProsumersControllerTest < ActionController::TestCase
   
   setup do
     @prosumer = prosumers(:one)
-    User.first.add_role "admin"
     sign_in User.first
   end
 
