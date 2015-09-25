@@ -116,48 +116,6 @@ class ClusteringsController < ApplicationController
     redirect_to clusters_path, notice: 'Clustering was applied'
   end
 
-
-  def save
-    ActiveRecord::Base.transaction do
-      params[:clusterprosumers].zip(
-          params[:clusternames], params[:clusterdescriptions],
-          params[:clusterids]).each do |prosumers, clustername, desc, clid|
-        prs = Prosumer.find(prosumers.split(','))
-        if clid.to_i == -1
-          prs.each do |p|
-            p.cluster = nil
-            p.save
-          end
-        else
-          cluster = clid.to_i > 0 ? Cluster.find(clid) : Cluster.new
-          cluster.name = clustername
-          cluster.description = desc
-
-          cluster.prosumers << prs
-          cluster.save!
-        end
-      end
-
-      Cluster.all.each do |cl|
-        cl.destroy if cl.prosumers.size == 0
-      end
-
-      respond_to do |format|
-        format.html do
-          redirect_to clusters_path,
-                      notice: 'Clusters were successfully updated.'
-        end
-      end
-    end
-  rescue
-    respond_to do |format|
-      format.html do
-        redirect_to '/clusterings/select',
-                    alert: 'Clusters were NOT successfully updated.'
-      end
-    end
-  end
-
   helper_method :algorithms
 
   private
