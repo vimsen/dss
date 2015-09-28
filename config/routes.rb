@@ -53,8 +53,6 @@ Rails.application.routes.draw do
   resources :users
   resources :roles
 
-  get 'stream/:id/addevent' => 'stream#addevent'
-
   get 'stream/:id/realtime' => 'stream#realtime'
   get 'stream/:id/prosumer' => 'stream#prosumer'
   get 'stream/:id/meter' => 'stream#meter'
