@@ -33,8 +33,6 @@ Rails.application.routes.draw do
 
   resources :building_types
 
-  resources :energy_prices
-
   resources :energy_types
 
   resources :day_ahead_hours
