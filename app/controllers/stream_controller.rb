@@ -6,26 +6,6 @@ require 'fetch_asynch/download_and_publish'
 class StreamController < ApplicationController
   include ActionController::Live
 
-  def addevent
-
-    raise "Missing prosumer" if params[:id].nil?
-
-    raise "Invalid prosumer id" if Prosumer.find_by_id(params[:id]).nil?
-
-    power = rand(-100..100)
-    measurement = Measurement.new(timeslot: DateTime.now, power: power, prosumer_id: params[:id] )
-    measurement.save
-
-    bunny_channel = $bunny.create_channel
-    x = bunny_channel.fanout("prosumer.#{params[:id]}")
-
-    msg = {'id' => measurement.id, "prosumer_id" => params[:id], 'X' => measurement.timeslot.to_i, 'Y' => power}.to_json
-
-    x.publish(msg)
-
-    render nothing:true
-  end
-  
   def clusterfeed
     response.headers['Content-Type'] = 'text/event-stream'
     ActiveRecord::Base.forbid_implicit_checkout_for_thread!
