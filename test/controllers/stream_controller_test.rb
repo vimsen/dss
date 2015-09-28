@@ -1,13 +1,13 @@
 require 'test_helper'
 
 class StreamControllerTest < ActionController::TestCase
-  test "should get addevent" do
-    get :addevent
-    assert_response :success
+
+  setup do
+    sign_in User.first
   end
 
   test "should get realtime" do
-    get :realtime
+    get :realtime, id: Prosumer.first.id
     assert_response :success
   end
 

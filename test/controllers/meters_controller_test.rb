@@ -3,6 +3,7 @@ require 'test_helper'
 class MetersControllerTest < ActionController::TestCase
   setup do
     @meter = meters(:one)
+    sign_in User.first
   end
 
   test "should get index" do
