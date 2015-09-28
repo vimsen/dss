@@ -26,15 +26,12 @@ Rails.application.routes.draw do
   # get 'clusterings' => 'clusterings#index'
   post 'clusterings/confirm'
   post 'clusterings/:id/apply' => 'clusterings#apply', as: :apply_clustering
-  post 'clusterings/save'
 
   resources :clusterings
 
   resources :connection_types
 
   resources :building_types
-
-  resources :energy_prices
 
   resources :energy_types
 
@@ -53,8 +50,6 @@ Rails.application.routes.draw do
   resources :clusters
   resources :users
   resources :roles
-
-  get 'stream/:id/addevent' => 'stream#addevent'
 
   get 'stream/:id/realtime' => 'stream#realtime'
   get 'stream/:id/prosumer' => 'stream#prosumer'

@@ -20,7 +20,7 @@ class DataPointsControllerTest < ActionController::TestCase
 
   test "should create data_point" do
     assert_difference('DataPoint.count') do
-      post :create, data_point: { consumption: @data_point.consumption, dr: @data_point.dr, f_consumption: @data_point.f_consumption, f_production: @data_point.f_production, f_storage: @data_point.f_storage, f_timestamp: @data_point.f_timestamp, interval_id: @data_point.interval_id, production: @data_point.production, prosumer_id: @data_point.prosumer_id, reliability: @data_point.reliability, storage: @data_point.storage, timestamp: @data_point.timestamp }
+      post :create, data_point: { consumption: @data_point.consumption, dr: @data_point.dr, f_consumption: @data_point.f_consumption, f_production: @data_point.f_production, f_storage: @data_point.f_storage, f_timestamp: @data_point.f_timestamp, interval_id: @data_point.interval_id, production: @data_point.production, prosumer_id: @data_point.prosumer_id, reliability: @data_point.reliability, storage: @data_point.storage, timestamp: @data_point.timestamp + 1.day}
     end
 
     assert_redirected_to data_point_path(assigns(:data_point))
