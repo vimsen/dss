@@ -3,7 +3,7 @@ require 'matrix/eigenvalue_decomposition'
 
 
 module ClusteringModule
-  class CrossCorrelationErrorClustering
+  class SpectralClustering
 
     def initialize(prosumers: Prosumer.all,
                    startDate: Time.now - 1.week,
@@ -46,6 +46,7 @@ module ClusteringModule
         cross_correlation(@prosumers[row].id, @prosumers[col].id) + 1 # We need similarities to always be positive
       end
 
+                                     # v---- This is a "splat" operator
       degree_matrix = Matrix.diagonal *similarity_matrix.row_vectors.map{|v| v.sum}
 
       unnormalized_laplacian = degree_matrix - similarity_matrix
@@ -90,6 +91,8 @@ module ClusteringModule
                         prosumers: cl.map { |p| @prosumers[p]})
       end
     end
+
+
 
     def cross_correlation(pid1, pid2)
       common_timestamps = @timestamps[pid1] & @timestamps[pid2]
