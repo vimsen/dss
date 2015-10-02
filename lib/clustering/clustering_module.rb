@@ -1,5 +1,5 @@
 require 'clustering/genetic_error_clustering2'
-require 'clustering/cross_correlation_error_clustering'
+require 'clustering/spectral_clustering'
 
 
 # This module implements the clustering algorithms for the demo
@@ -41,7 +41,7 @@ module ClusteringModule
       when 'genetic'
         result = ClusteringModule::GeneticErrorClustering.new.run param.to_i
       when 'cross_correlation_spectral'
-        result = ClusteringModule::CrossCorrelationErrorClustering.new.run param.to_i
+        result = ClusteringModule::SpectralClustering.new.run param.to_i
         puts result
       else
         return nil

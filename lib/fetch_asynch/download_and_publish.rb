@@ -9,7 +9,7 @@ module FetchAsynch
   # This class downloads prosumption data from the EDMS, and then inserts them
   # in the DB, and publishes the results to the appropriate rabbitMQ channel.
   class DownloadAndPublish
-    def initialize(prosumers, interval, startdate, enddate, channel)
+    def initialize(prosumers, interval, startdate, enddate, channel, async = false)
       @prosumers = prosumers
       @startdate = startdate
       @enddate = enddate
@@ -18,7 +18,7 @@ module FetchAsynch
       end
 
       puts "Starting new Thread..."
-      Thread.new do
+      thread = Thread.new do
         ActiveRecord::Base.forbid_implicit_checkout_for_thread!
         #   sleep 1
         i = 0
@@ -40,11 +40,11 @@ module FetchAsynch
 
         puts "In the new Thread..."
         Rails.logger.debug "Connecting to: #{uri}"
-
         result = JSON.parse(uri.open.read)
         datareceived(result, channel)
         Rails.logger.debug 'done'
       end
+      thread.join if (async)
     end
 
     private
@@ -53,8 +53,8 @@ module FetchAsynch
 
       Rails.logger.debug "Connecting to channel"
       begin
-        bunny_channel = $bunny.create_channel
-        x = bunny_channel.fanout(channel)
+        bunny_channel = $bunny.create_channel if channel
+        x = bunny_channel.fanout(channel) if channel
       rescue Bunny::Exception # Don't block if channel can't be fanned out
         Rails.logger.debug "Can't fanout channel #{channel}"
         x = nil
@@ -65,7 +65,7 @@ module FetchAsynch
       procs = []
 
       ActiveRecord::Base.connection_pool.with_connection do
-        procs = Hash[Prosumer.all.map {|p| [p.intelen_id, p]}]
+        procs = Hash[@prosumers.map {|p| [p.intelen_id, p]}]
 
         ActiveRecord::Base.transaction do
           ActiveRecord::Base.connection.execute("LOCK TABLE data_points IN EXCLUSIVE MODE;")
@@ -78,28 +78,29 @@ module FetchAsynch
                                    ["#{dp.timestamp.to_i},#{dp.prosumer_id},#{dp.interval_id}", 1]
                                  end]
           Rails.logger.debug "#{old_data_points.count} datapoints found"
-          x.publish({data:  "Interval #{@interval.name}: #{old_data_points.count} datapoints found.", event: "output"}.to_json)
+          x.publish({data:  "Interval #{@interval.name}: #{old_data_points.count} datapoints found.", event: "output"}.to_json) if x
           Rails.logger.debug "#{data.count} datapoints received"
-          x.publish({data:  "Interval #{@interval.name}: #{data.count} datapoints received.", event: "output"}.to_json)
+          x.publish({data:  "Interval #{@interval.name}: #{data.count} datapoints received.", event: "output"}.to_json) if x
 
           dupe_finder = {}
 
+
           new_data_points = data.reject do |r|
-           is_duplicate = dupe_finder.has_key?("#{r['timestamp'].to_datetime.to_i},#{procs[r['procumer_id']].id},#{@interval.id}")
-           dupe_finder["#{r['timestamp'].to_datetime.to_i},#{procs[r['procumer_id']].id},#{@interval.id}"] = 1
+            is_duplicate = dupe_finder.has_key?("#{r['timestamp'].to_datetime.to_i},#{procs[r['procumer_id']].id},#{@interval.id}")
+            dupe_finder["#{r['timestamp'].to_datetime.to_i},#{procs[r['procumer_id']].id},#{@interval.id}"] = 1
             r['timestamp'].to_datetime.future? ||
                 old_data_points.has_key?("#{r['timestamp'].to_datetime.to_i},#{procs[r['procumer_id']].id},#{@interval.id}") ||
                 is_duplicate
           end
 
           Rails.logger.debug "#{new_data_points.count} datapoints remaining"
-          x.publish({data:  "Interval #{@interval.name}: #{new_data_points.count} datapoints remaining.", event: "output"}.to_json)
+          x.publish({data:  "Interval #{@interval.name}: #{new_data_points.count} datapoints remaining.", event: "output"}.to_json) if x
 
           (new_data_points.map do |d|
             db_prepare(d, procs)
           end).each_slice(5000) do |slice|
             DataPoint.import(slice)
-            x.publish({data:  "Interval #{@interval.name}: Inserted datapoints.", event: "output"}.to_json)
+            x.publish({data:  "Interval #{@interval.name}: Inserted datapoints.", event: "output"}.to_json) if x
           end
         end
       end
@@ -121,10 +122,10 @@ module FetchAsynch
         x.publish({data: Market::Calculator.new(prosumers: @prosumers,
                                                 startDate: @startdate,
                                                 endDate: @enddate).calcCosts,
-                event: 'market'}.to_json) # unless x.nil?
+                event: 'market'}.to_json) if x
         Rails.logger.debug "publshed market data"
         ActiveRecord::Base.connection_pool.with_connection do
-          x.publish({data:  "Interval #{@interval.name}: complete.", event: "output"}.to_json)
+          x.publish({data:  "Interval #{@interval.name}: complete.", event: "output"}.to_json) if x
         end
         Rails.logger.debug "pushed end message"
       rescue Bunny::Exception # Don't block if channel can't be fanned out
