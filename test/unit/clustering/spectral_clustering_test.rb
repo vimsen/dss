@@ -8,13 +8,21 @@ class SpectralClusteringTest < ActionController::TestCase
     ed = DateTime.now
     sd = ed - 1.week
 
-    prosumers = 12.upto(37).map do |i|
+    prosumers = 1.upto(37).map do |i|
        Prosumer.create(intelen_id: i)
     end
 
-      puts prosumers.map{|p| [p.id, p.intelen_id]}
+    puts "#{prosumers.map{|p| [p.id, p.intelen_id]}}"
 
-    FetchAsynch::DownloadAndPublish.new(prosumers , 2, sd, ed, nil, true)
+    prosumers.each_slice(5) do |p|
+      puts "#{p.map{|p| [p.id, p.intelen_id]}}"
+      begin
+        FetchAsynch::DownloadAndPublish.new(p , 2, sd, ed, nil, true)
+      rescue
+        puts "Failed to downlad data"
+
+      end
+    end
 
     spek = ClusteringModule::SpectralClustering.new(prosumers: prosumers, startDate: sd, endDate: ed)
 
@@ -24,6 +32,7 @@ class SpectralClusteringTest < ActionController::TestCase
       assert_difference('Clustering.count') do
         cl = Clustering.new(name: "Spectral k=#{i}", temp_clusters: spek.run(i))
         cl.save
+        assert_equal(cl.temp_clusters.count, i)
         puts Clustering.count
         Clustering.count
       end
