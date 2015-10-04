@@ -8,10 +8,19 @@ class ActiveSupport::TestCase
 
   # Add more helper methods to be used by all tests here...
   setup do
+    puts "PARENT !!!!!!!!!!!!!!!!!!!!"
     User.first.add_role :admin
   end
 end
 
 class ActionController::TestCase
   include Devise::TestHelpers
+
+end
+
+class ActiveSupport::TestCaseWithProsumptionData < ActiveSupport::TestCase
+  setup do
+    puts "CHILD !!!!!!!!!!!!!!!!!!!!"
+  end
+
 end
