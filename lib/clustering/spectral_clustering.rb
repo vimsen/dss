@@ -38,18 +38,17 @@ module ClusteringModule
                       [ [pid, timestamp], v - (@forecasts[[pid, timestamp]] || 0)]
                      end]
 
-    end
-
-    def run(kappa = 5)
-
-      similarity_matrix = Matrix.build(@prosumers.length, @prosumers.length)  do |row, col|
+      @similarity_matrix = Matrix.build(@prosumers.length, @prosumers.length)  do |row, col|
         cross_correlation(@prosumers[row].id, @prosumers[col].id) + 1 # We need similarities to always be positive
       end
 
-                                     # v---- This is a "splat" operator
-      degree_matrix = Matrix.diagonal *similarity_matrix.row_vectors.map{|v| v.sum}
+    end
 
-      unnormalized_laplacian = degree_matrix - similarity_matrix
+    def run(kappa = 5)
+                                     # v---- This is a "splat" operator
+      degree_matrix = Matrix.diagonal *@similarity_matrix.row_vectors.map{|v| v.sum}
+
+      unnormalized_laplacian = degree_matrix - @similarity_matrix
 
       decomposition = Matrix::EigenvalueDecomposition.new(unnormalized_laplacian)
 
@@ -59,17 +58,17 @@ module ClusteringModule
 
       # puts decomposition.eigenvalues.take(kappa).join(",\n")
       # puts decomposition.eigenvectors.take(kappa).join(",\n")
-      puts u
+      # puts u
 
-      puts y.join(",\n")
+      # puts y.join(",\n")
 
       clusters = y.sample(kappa).map{|i| [y.index(i)]}
 
       centroids = clusters.map{ |cl| get_centroid(cl, y) }
 
       loop do
-        puts "clusters: #{clusters}"
-        stats(clusters, similarity_matrix)
+      #   puts "clusters: #{clusters}"
+      #  stats(clusters)
 
 
         old_centroids = Array.new(centroids)
@@ -92,8 +91,6 @@ module ClusteringModule
       end
     end
 
-
-
     def cross_correlation(pid1, pid2)
       common_timestamps = @timestamps[pid1] & @timestamps[pid2]
 
@@ -105,7 +102,6 @@ module ClusteringModule
       s12 / ( s11 ** 0.5 * s22 ** 0.5)
     end
 
-
     def get_centroid(cluster, y)
       cluster.sum { |i| y[i] } / cluster.length
     end
@@ -115,7 +111,7 @@ module ClusteringModule
       centroids.index(centroids.min_by {|c| (c - vector).magnitude })
     end
 
-    def stats(clusters, similarity_matrix)
+    def stats(clusters)
       sum_same = sum_different = 0.0;
       count_same = count_different = 0
       @prosumers.combination(2) do |pi,pj|
@@ -123,15 +119,17 @@ module ClusteringModule
         j = @prosumers.index(pj)
 
         if same_cluster(clusters, i,j)
-          sum_same += similarity_matrix[i,j] - 1
+          sum_same += @similarity_matrix[i,j] - 1
           count_same += 1
         else
-          sum_different += similarity_matrix[i,j] - 1
+          sum_different += @similarity_matrix[i,j] - 1
           count_different += 1
         end
       end
-      puts "ingroup: #{sum_same / count_same}, outgroup: #{sum_different / count_different}"
-
+      {
+          ingroup: sum_same / count_same,
+          outgroup: sum_different / count_different
+      }
     end
 
     def same_cluster(clusters, i,j)
