@@ -20,8 +20,8 @@ class EvaluatorTest < ActiveSupport::TestCaseWithProsAndMarketData
 
     eval = ClusteringModule::Evaluator.new(
         clusters: clg.temp_clusters,
-        startDate: '30/3/2015 00:00:00 +200'.to_datetime,
-        endDate: '27/4/2015 00:00:00 +200'.to_datetime,
+        startDate: '23/3/2015 00:00:00 +200'.to_datetime,
+        endDate: '25/5/2015 00:00:00 +200'.to_datetime,
         adaptive: false,
         interval: 1.week,
         outputFile: 'results/test_',
