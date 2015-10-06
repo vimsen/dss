@@ -19,8 +19,6 @@ class ActiveSupport::TestCaseWithProsumptionData < ActiveSupport::TestCase
       puts "We have #{Prosumer.count} prosumers"
 
     end
-    @prosumers = Prosumer.where(intelen_id: 1..37)
-
 
     if DataPoint.count < 10
       dbconn = ActiveRecord::Base.connection_pool.checkout
@@ -37,6 +35,16 @@ class ActiveSupport::TestCaseWithProsumptionData < ActiveSupport::TestCase
       ActiveRecord::Base.connection_pool.checkin(dbconn)
       puts "We have #{DataPoint.count} data points"
     end
+
+    startdate = '2015/3/23'.to_datetime
+    enddate = '2015/3/30'.to_datetime
+    max = (startdate .. enddate).count * 24
+    puts "max = #{max}"
+    @prosumers = Prosumer.where(intelen_id: 1..37).reject do |p|
+#       puts p.data_points.where(interval: 2, timestamp: startdate .. enddate).count
+      p.data_points.where(interval: 2, timestamp: startdate .. enddate).count < max / 2 || p.data_points.where(interval: 2, timestamp: startdate .. enddate).max{|dp| dp.consumption} == 0
+    end
+
 
     # ActiveRecord::Base.connection.execute(IO.read("../prosumers_and_data_points.sql"))
     puts "data imported"
