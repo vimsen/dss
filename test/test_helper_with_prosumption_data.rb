@@ -24,7 +24,11 @@ class ActiveSupport::TestCaseWithProsumptionData < ActiveSupport::TestCase
       dbconn = ActiveRecord::Base.connection_pool.checkout
       raw  = dbconn.raw_connection
 
-      raw.copy_data "COPY data_points (id, prosumer_id, interval_id, timestamp, production, consumption, storage, f_timestamp, f_production, f_consumption, f_storage, dr, reliability, created_at, updated_at) FROM stdin;" do
+      raw.copy_data "COPY data_points (id, prosumer_id, interval_id, "\
+                    "timestamp, production, consumption, storage, f_timestamp, "\
+                    "f_production, f_consumption, f_storage, dr, reliability, "\
+                    "created_at, updated_at) FROM stdin;" do
+
         c = 0
         File.open("test/fixtures/data_points.sql", 'r').each do |line|
            c = c + 1
@@ -42,7 +46,10 @@ class ActiveSupport::TestCaseWithProsumptionData < ActiveSupport::TestCase
     puts "max = #{max}"
     @prosumers = Prosumer.where(intelen_id: 1..37).reject do |p|
 #       puts p.data_points.where(interval: 2, timestamp: startdate .. enddate).count
-      p.data_points.where(interval: 2, timestamp: startdate .. enddate).count < max / 2 || p.data_points.where(interval: 2, timestamp: startdate .. enddate).max{|dp| dp.consumption} == 0
+      p.data_points.where(interval: 2,
+                          timestamp: startdate .. enddate).count < max / 2 ||
+          p.data_points.where(interval: 2,
+                              timestamp: startdate .. enddate).max{|dp| dp.consumption} == 0
     end
 
 
