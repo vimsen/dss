@@ -6,25 +6,27 @@ class DataPointTest < ActiveSupport::TestCaseWithProsumptionData
   test "DataPoints should have 16266 data_points" do
     assert_equal 241809, DataPoint.count
 
-    startdate = '2015/3/23'.to_datetime
-    enddate = '2015/4/27'.to_datetime
-
-=begin
     @prosumers.sort_by{ |p| p.name }.each do |p|
-      puts "#{p.id}: #{p.name}: #{p.intelen_id}: #{p.data_points.where(
-               interval: 2,
-               timestamp: startdate .. enddate
-           ).count}"
+
+      points = (@startdate.to_i .. @enddate.to_i).step(1.week.to_i).map do |secs|
+        sd = Time.at(secs)
+        ed = sd + 1.week
+        p.data_points.where(
+            interval: 2,
+            timestamp: sd .. ed
+        ).count
+      end
+
+      puts "#{p.id}: #{p.name}: #{p.intelen_id}: #{points}"
     end
-=end
 
     points = @prosumers.map do |p|
       p.data_points.where(
           interval: 2,
-          timestamp: startdate .. enddate).count
+          timestamp: @startdate .. @trainend).count
     end.sum
 
-    max = @prosumers.count * (startdate .. enddate).count * 24
+    max = @prosumers.count * (@startdate .. @trainend).count * 24
 
     assert_operator(points, :>, max / 2)
 
