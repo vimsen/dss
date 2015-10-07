@@ -6,7 +6,7 @@ require 'clustering/spectral_clustering'
 class EvaluatorTest < ActiveSupport::TestCaseWithProsAndMarketData
   test "should create evaluation results" do
 
-    spek = ClusteringModule::SpectralClustering.new(prosumers: @prosumers,
+    spek = ClusteringModule::CrossCorrelationErrorClustering.new(prosumers: @prosumers,
                                                     startDate: @startdate,
                                                     endDate: @trainend)
 

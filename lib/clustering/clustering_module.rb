@@ -41,7 +41,7 @@ module ClusteringModule
       when 'genetic'
         result = ClusteringModule::GeneticErrorClustering.new.run param.to_i
       when 'cross_correlation_spectral'
-        result = ClusteringModule::SpectralClustering.new.run param.to_i
+        result = ClusteringModule::CrossCorrelationErrorClustering.new.run param.to_i
         puts result
       else
         return nil

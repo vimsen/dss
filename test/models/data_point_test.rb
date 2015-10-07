@@ -14,7 +14,7 @@ class DataPointTest < ActiveSupport::TestCaseWithProsumptionData
         p.data_points.where(
             interval: 2,
             timestamp: sd .. ed
-        ).count
+        ).where("consumption > ?", 0).count
       end
 
       puts "#{p.id}: #{p.name}: #{p.intelen_id}: #{points}"

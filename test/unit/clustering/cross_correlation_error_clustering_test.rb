@@ -2,11 +2,11 @@ require 'test_helper'
 require 'test_helper_with_prosumption_data'
 require 'clustering/spectral_clustering'
 
-class SpectralClusteringTest < ActiveSupport::TestCaseWithProsumptionData
+class CrossCorrelationErrorClusteringTest < ActiveSupport::TestCaseWithProsumptionData
 
   test "should create spectral clustering" do
 
-    spek = ClusteringModule::SpectralClustering.new(prosumers: @prosumers, startDate: @startdate, endDate: @trainend)
+    spek = ClusteringModule::CrossCorrelationErrorClustering.new(prosumers: @prosumers, startDate: @startdate, endDate: @trainend)
 
     2.upto(9) do |i|
       assert_difference('Clustering.count') do

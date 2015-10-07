@@ -1,7 +1,7 @@
 require 'clustering/spectral_clustering'
 sd = '24/3/2015 00:00:00 +200'.to_datetime
 ed = '31/3/2015 00:00:00 +200'.to_datetime
-spek = ClusteringModule::SpectralClustering.new(startDate: sd, endDate: ed)
+spek = ClusteringModule::CrossCorrelationErrorClustering.new(startDate: sd, endDate: ed)
 
 #1.upto(5) do |i|
 6.upto(9) do |i|
