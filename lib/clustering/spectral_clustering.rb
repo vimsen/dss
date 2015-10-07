@@ -3,7 +3,8 @@ require 'matrix/eigenvalue_decomposition'
 
 
 module ClusteringModule
-  class SpectralClustering
+
+  class CrossCorrelationErrorClustering
 
     def initialize(prosumers: Prosumer.all,
                    startDate: Time.now - 1.week,
@@ -17,35 +18,35 @@ module ClusteringModule
       end
 
       @forecasts = Hash[DataPoint.where(prosumer: @prosumers,
-                                       interval: 2,
-                                       f_timestamp: @startDate .. @endDate)
-                           .map do |dp|
-                         [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_consumption]
-                       end]
+                                        interval: 2,
+                                        f_timestamp: @startDate .. @endDate)
+                            .map do |dp|
+                          [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_consumption]
+                        end]
 
       @real =  Hash[DataPoint.where(prosumer: @prosumers,
-                                   interval: 2,
-                                   timestamp: @startDate .. @endDate)
-                       .map do |dp|
-                     [[dp.prosumer_id, dp.timestamp.to_i], dp.consumption]
-                   end]
+                                    interval: 2,
+                                    timestamp: @startDate .. @endDate)
+                        .map do |dp|
+                      [[dp.prosumer_id, dp.timestamp.to_i], dp.consumption]
+                    end]
 
       @timestamps = Hash[@prosumers.map{|p| [p.id,[]] }]
 
       @errors = Hash[@real.map do |(pid,timestamp),v|
-                      # @timestamps[pid] ||= []
-                      @timestamps[pid].push timestamp
-                      [ [pid, timestamp], v - (@forecasts[[pid, timestamp]] || 0)]
+                       # @timestamps[pid] ||= []
+                       @timestamps[pid].push timestamp
+                       [ [pid, timestamp], v - (@forecasts[[pid, timestamp]] || 0)]
                      end]
 
       @similarity_matrix = Matrix.build(@prosumers.length, @prosumers.length)  do |row, col|
-        cross_correlation(@prosumers[row].id, @prosumers[col].id) + 1 # We need similarities to always be positive
+        cross_correlation(@prosumers[row].id, @prosumers[col].id) # We need similarities to always be positive
       end
 
     end
 
     def run(kappa = 5)
-                                     # v---- This is a "splat" operator
+      # v---- This is a "splat" operator
       degree_matrix = Matrix.diagonal *@similarity_matrix.row_vectors.map{|v| v.sum}
 
       unnormalized_laplacian = degree_matrix - @similarity_matrix
@@ -67,8 +68,8 @@ module ClusteringModule
       centroids = clusters.map{ |cl| get_centroid(cl, y) }
 
       loop do
-      #   puts "clusters: #{clusters}"
-      #  stats(clusters)
+        #   puts "clusters: #{clusters}"
+        #  stats(clusters)
 
 
         old_centroids = Array.new(centroids)
@@ -119,10 +120,10 @@ module ClusteringModule
         j = @prosumers.index(pj)
 
         if same_cluster(clusters, i,j)
-          sum_same += @similarity_matrix[i,j] - 1
+          sum_same += @similarity_matrix[i,j]
           count_same += 1
         else
-          sum_different += @similarity_matrix[i,j] - 1
+          sum_different += @similarity_matrix[i,j]
           count_different += 1
         end
       end
@@ -135,6 +136,13 @@ module ClusteringModule
     def same_cluster(clusters, i,j)
       clusters.find{|k| k.include? i} == clusters.find{|k| k.include? j}
     end
+
+
+  end
+
+
+  class SpectralClustering
+
 
   end
 end
