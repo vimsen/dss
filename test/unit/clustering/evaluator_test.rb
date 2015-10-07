@@ -28,11 +28,15 @@ class EvaluatorTest < ActiveSupport::TestCaseWithProsAndMarketData
     eval.evaluate
 
     eval.instance_variable_get(:@runs).times do |i|
+      succ = 0
+      total = 0
       CSV.foreach("results/test_#{i}.csv", headers: true, col_sep: "\t")
           .with_index do |row, i|
         assert_equal i, row[0].to_i
-        assert_operator row.reject{|k,v| k == "week"}.map{|k,v| v.to_f}.max, :>, 10
+        succ += 1 if row.reject{|k,v| k == "week"}.map{|k,v| v.to_f}.max > 10
+        total += 1
       end
+      assert_operator succ, :>, total / 2
       # assert_file "results/test_#{i}_before.csv"
       # assert_file "results/test_#{i}_after.csv"
     end
