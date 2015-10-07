@@ -40,16 +40,20 @@ class ActiveSupport::TestCaseWithProsumptionData < ActiveSupport::TestCase
       puts "We have #{DataPoint.count} data points"
     end
 
-    startdate = '2015/3/23'.to_datetime
-    enddate = '2015/3/30'.to_datetime
-    max = (startdate .. enddate).count * 24
+    @startdate = '2015/3/23'.to_datetime
+    @trainend = '2015/3/30'.to_datetime
+    @enddate = '25/5/2015'.to_datetime
+    #@enddate = '27/4/2015'.to_datetime
+
+
+    max = (@startdate .. @trainend).count * 24
     puts "max = #{max}"
     @prosumers = Prosumer.where(intelen_id: 1..37).reject do |p|
 #       puts p.data_points.where(interval: 2, timestamp: startdate .. enddate).count
       p.data_points.where(interval: 2,
-                          timestamp: startdate .. enddate).count < max / 2 ||
+                          timestamp: @startdate .. @trainend).count < max / 2 ||
           p.data_points.where(interval: 2,
-                              timestamp: startdate .. enddate).max{|dp| dp.consumption} == 0
+                              timestamp: @startdate .. @trainend).max{|dp| dp.consumption} == 0
     end
 
 

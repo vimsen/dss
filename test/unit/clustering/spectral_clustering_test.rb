@@ -6,10 +6,7 @@ class SpectralClusteringTest < ActiveSupport::TestCaseWithProsumptionData
 
   test "should create spectral clustering" do
 
-    ed = '2015/3/30'
-    sd = '2015/3/23'
-
-    spek = ClusteringModule::SpectralClustering.new(prosumers: @prosumers, startDate: sd, endDate: ed)
+    spek = ClusteringModule::SpectralClustering.new(prosumers: @prosumers, startDate: @startdate, endDate: @trainend)
 
     2.upto(9) do |i|
       assert_difference('Clustering.count') do
