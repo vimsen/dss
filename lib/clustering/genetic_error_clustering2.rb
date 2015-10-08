@@ -37,7 +37,7 @@ module ClusteringModule
 
       puts "Beginning genetic search, please wait... "
       search = Ai4r::GeneticAlgorithm::GeneticSearchWithOptions.new(
-          200, 100, errors: @errors, prosumers: @prosumers, kappa: kappa,
+          20, 10, errors: @errors, prosumers: @prosumers, kappa: kappa,
           penalty_violation: @penalty_violation,
           penalty_satisfaction: @penalty_satisfaction,
           class: Ai4r::GeneticAlgorithm::StaticChromosome)
@@ -45,15 +45,19 @@ module ClusteringModule
       puts "FITNESS #{best.fitness} CLUSTERS: "+
                "#{best.data.zip(@prosumers).map {|c,p| [p.id, c]}}"
 
+
       result = []
       best.data.each_with_index do |g, i|
-        result[g] ||= TempCluster.new(name: "Gen #{g}",
-                                      description: "Genetic clustering #{g}")
-        result[g].prosumers.push Prosumer.find(@prosumers[i])
+        result[g] ||= []
+        result[g].push i
       end
-      result.reject{ |c| c.nil? || c.prosumers.nil?}
+      result.reject{ |c| c.nil? || c.empty?}
 
+      result.map.with_index do |cl, i|
+        TempCluster.new(name: "Genetic #{i}",
+                        description: "Genetic clustering #{i}",
+                        prosumers: cl.map { |p| @prosumers[p]})
+      end
     end
-
   end
 end
