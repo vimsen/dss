@@ -1,10 +1,9 @@
-require 'matrix'
-require 'matrix/eigenvalue_decomposition'
+require 'clustering/spectral_clustering_algorithm'
 
 
 module ClusteringModule
 
-  class CrossCorrelationErrorClustering
+  class SpectralClustering
 
     def initialize(prosumers: Prosumer.all,
                    startDate: Time.now - 1.week,
@@ -43,9 +42,13 @@ module ClusteringModule
 
     end
 
+    def generate_similarity_matrix
+      raise "Use a subclass that implements this method"
+    end
+
     def run(kappa = 5)
 
-      sc = SpectralClustering.new(@similarity_matrix)
+      sc = SpectralClusteringAlgorithm.new(@similarity_matrix)
 
       clusters = sc.run(kappa)
 
@@ -53,12 +56,6 @@ module ClusteringModule
         TempCluster.new(name: "Spectral #{i}",
                         description: "Spectral error clustering #{i}",
                         prosumers: cl.map { |p| @prosumers[p]})
-      end
-    end
-
-    def generate_similarity_matrix
-      Matrix.build(@prosumers.length, @prosumers.length)  do |row, col|
-        cross_correlation(@prosumers[row].id, @prosumers[col].id) # We need similarities to always be positive
       end
     end
 
@@ -97,68 +94,14 @@ module ClusteringModule
     def same_cluster(clusters, i,j)
       clusters.find{|k| k.include? i} == clusters.find{|k| k.include? j}
     end
-
-
   end
 
-
-  class SpectralClustering
-    def initialize(similarity_matrix)
-      @similarity_matrix = similarity_matrix
-    end
-
-    def run(kappa = 5)
-      # v---- This is a "splat" operator
-      degree_matrix = Matrix.diagonal *@similarity_matrix.row_vectors.map{|v| v.sum}
-
-      unnormalized_laplacian = degree_matrix - @similarity_matrix
-
-      decomposition = Matrix::EigenvalueDecomposition.new(unnormalized_laplacian)
-
-      u = Matrix.columns(decomposition.eigenvectors.take(kappa))
-
-      y = u.row_vectors
-
-      # puts decomposition.eigenvalues.take(kappa).join(",\n")
-      # puts decomposition.eigenvectors.take(kappa).join(",\n")
-      # puts u
-
-      # puts y.join(",\n")
-
-      clusters = y.sample(kappa).map{|i| [y.index(i)]}
-
-      centroids = clusters.map{ |cl| get_centroid(cl, y) }
-
-      loop do
-        #   puts "clusters: #{clusters}"
-        #  stats(clusters)
-
-
-        old_centroids = Array.new(centroids)
-        clusters = []
-        y.each_with_index do |y_i, i|
-          closest = find_closest(y_i, centroids)
-          clusters[closest] ||= []
-          clusters[closest].push i
-        end
-
-        centroids = clusters.map{ |cl| get_centroid(cl, y) }
-
-        break if centroids <=> old_centroids
+  class CrossCorrelationErrorClustering < SpectralClustering
+    def generate_similarity_matrix
+      Matrix.build(@prosumers.length, @prosumers.length)  do |row, col|
+        cross_correlation(@prosumers[row].id, @prosumers[col].id)
       end
-
-      clusters
     end
-
-    private
-
-    def get_centroid(cluster, y)
-      cluster.sum { |i| y[i] } / cluster.length
-    end
-
-    def find_closest(vector, centroids)
-      centroids.index(centroids.min_by {|c| (c - vector).magnitude })
-    end
-
   end
+
 end
