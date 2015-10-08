@@ -59,12 +59,12 @@ module ClusteringModule
       end
     end
 
-    def cross_correlation(pid1, pid2)
+    def cross_correlation(vector, pid1, pid2)
       common_timestamps = @timestamps[pid1] & @timestamps[pid2]
 
-      s12 = common_timestamps.sum{|ts| @errors[[pid1, ts]] * @errors[[pid2, ts]]}
-      s11 = common_timestamps.sum{|ts| @errors[[pid1, ts]] ** 2 }
-      s22 = common_timestamps.sum{|ts| @errors[[pid2, ts]] ** 2 }
+      s12 = common_timestamps.sum{|ts| vector[[pid1, ts]] * vector[[pid2, ts]]}
+      s11 = common_timestamps.sum{|ts| vector[[pid1, ts]] ** 2 }
+      s22 = common_timestamps.sum{|ts| vector[[pid2, ts]] ** 2 }
 
       return 0 if (s11 == 0 || s22 == 0)
       s12 / ( s11 ** 0.5 * s22 ** 0.5)
@@ -99,7 +99,31 @@ module ClusteringModule
   class CrossCorrelationErrorClustering < SpectralClustering
     def generate_similarity_matrix
       Matrix.build(@prosumers.length, @prosumers.length)  do |row, col|
-        cross_correlation(@prosumers[row].id, @prosumers[col].id)
+        cross_correlation(@errors, @prosumers[row].id, @prosumers[col].id)
+      end
+    end
+  end
+
+  class InverseCrossCorrelationErrorClustering < SpectralClustering
+    def generate_similarity_matrix
+      Matrix.build(@prosumers.length, @prosumers.length)  do |row, col|
+        1 - cross_correlation(@errors, @prosumers[row].id, @prosumers[col].id).abs
+      end
+    end
+  end
+
+  class CrossCorrelationConsumptionClustering < SpectralClustering
+    def generate_similarity_matrix
+      Matrix.build(@prosumers.length, @prosumers.length)  do |row, col|
+        cross_correlation(@real, @prosumers[row].id, @prosumers[col].id)
+      end
+    end
+  end
+
+  class InverseCrossCorrelationConsumptionClustering < SpectralClustering
+    def generate_similarity_matrix
+      Matrix.build(@prosumers.length, @prosumers.length)  do |row, col|
+        1 - cross_correlation(@real, @prosumers[row].id, @prosumers[col].id).abs
       end
     end
   end
