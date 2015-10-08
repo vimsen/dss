@@ -2,7 +2,7 @@ require 'test_helper'
 require 'test_helper_with_prosumption_data'
 require 'clustering/spectral_clustering'
 
-class CrossCorrelationErrorClusteringTest < ActiveSupport::TestCaseWithProsumptionData
+class SpectralClusteringTest < ActiveSupport::TestCaseWithProsumptionData
 
   test "should create spectral clustering" do
 
