@@ -21,9 +21,10 @@ class DataPointTest < ActiveSupport::TestCaseWithProsumptionData
     end
 
     points = @prosumers.map do |p|
-      p.data_points.where(
-          interval: 2,
-          timestamp: @startdate .. @trainend).count
+      p.data_points
+          .where(interval: 2, timestamp: @startdate .. @trainend)
+          .where("consumption > ?", 0)
+          .count
     end.sum
 
     max = @prosumers.count * (@startdate .. @trainend).count * 24

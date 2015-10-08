@@ -50,15 +50,18 @@ class ActiveSupport::TestCaseWithProsumptionData < ActiveSupport::TestCase
     puts "max = #{max}"
     @prosumers = Prosumer.where(intelen_id: 1..37).reject do |p|
 #       puts p.data_points.where(interval: 2, timestamp: startdate .. enddate).count
-      p.data_points.where(interval: 2,
-                          timestamp: @startdate .. @trainend).count < max / 2 ||
-          p.data_points.where(interval: 2,
-                              timestamp: @startdate .. @trainend).max{|dp| dp.consumption} == 0
+      p.data_points
+          .where(interval: 2, timestamp: @startdate .. @trainend)
+          .where("consumption > ?", 0)
+          .count < max / 2 ||
+          p.data_points
+              .where(interval: 2, timestamp: @startdate .. @trainend)
+              .max{|dp| dp.consumption} == 0
     end
 
 
     # ActiveRecord::Base.connection.execute(IO.read("../prosumers_and_data_points.sql"))
-    puts "data imported"
+    puts "data imported, #{@prosumers.count} prosumers with valid training data"
   end
 
 end
