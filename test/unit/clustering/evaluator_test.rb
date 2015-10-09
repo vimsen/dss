@@ -20,7 +20,7 @@ class EvaluatorTest < ActiveSupport::TestCaseWithProsAndMarketData
                       startDate: @startdate,
                       endDate: @trainend)
 
-        clg = Clustering.new(name: "Spectral", temp_clusters: spek.run(5))
+        clg = Clustering.new(name: name, temp_clusters: spek.run(5))
         clg.save
 
 
