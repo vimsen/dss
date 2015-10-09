@@ -2,7 +2,7 @@
 #set term postscript enhanced color 
 #set term postscript eps enhanced monochrome size 4,2.8
 # set term postscript eps enhanced color size 4,2.8 linewidth 2
-set term postscript eps enhanced color size 3.5,2.62 linewidth 2 
+set term postscript eps enhanced color size 3.5,2.62 linewidth 3
 #     font 'Helvetica,20'
 #set terminal epslatex color
 
@@ -26,19 +26,27 @@ set yrange [-20:120]
 set xrange [0:10]
 
 
-plot for [col=2:6] 'result_genetic_k_5_0.csv' using 1:col w lp
+plot for [col=2:6] 'test_genetic_0_0.csv' using 1:col w lp
 
-set out "spectral.eps"
-plot for [col=2:6] 'result_spectral_k_5_0.csv' using 1:col w lp
+set out "spectral_pos_error.eps"
+plot for [col=2:6] 'test_pos_error_0_0.csv' using 1:col w lp
+
+set out "spectral_neg_error.eps"
+plot for [col=2:6] 'test_neg_error_0_0.csv' using 1:col w lp
+
+set out "spectral_pos_cons.eps"
+plot for [col=2:6] 'test_pos_cons_0_0.csv' using 1:col w lp
+
+set out "spectral_neg_cons.eps"
+plot for [col=2:6] 'test_neg_cons_0_0.csv' using 1:col w lp
 
 set out "adaptive.eps"
 set key center right
-plot for [col=2:6] 'result_adaptive_k_5_avg.csv' using 1:col w lp
+plot for [col=2:6] 'test_adaptive_1_0.csv' using 1:col w lp
 
 set out "comparison.eps"
 plot \
-     "genetic_results2_avg.csv" using 1:2 t 'Genetic' w lp, \
-     "spectral_results_avg.csv" using 1:2 t 'Spectral' w lp, \
+     "test_genetic_avg.csv" using 1:2 t 'Genetic' w lp, \
      "adaptive_results_avg.csv" using 1:2 t 'Adaptive' w lp
 
 set out "evolution.eps"
