@@ -47,7 +47,7 @@ plot for [col=2:6] 'test_adaptive_1_0.csv' using 1:col w lp
 set out "comparison.eps"
 plot \
      "test_genetic_avg.csv" using 1:2 t 'Genetic' w lp, \
-     "adaptive_results_avg.csv" using 1:2 t 'Adaptive' w lp
+     "test_adaptive_avg.csv" using 1:2 t 'Adaptive' w lp
 
 set out "evolution.eps"
 set xrange [*:*]
