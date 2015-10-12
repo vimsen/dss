@@ -14,6 +14,7 @@ plot 'test_genetic_after_sum.csv' using 1:2 w lp t 'Genetic algorithm', \
      'test_neg_error_after_sum.csv' using 1:2 w lp t 'Negative Error', \
      'test_pos_cons_after_sum.csv' using 1:2 w lp t 'Positive Consumption', \
      'test_neg_cons_after_sum.csv' using 1:2 w lp t 'Negative Consumption', \
+     'test_adaptive_after_sum.csv' using 1:2 w lp t 'Adaptive', \
      'test_pos_error_before_sum.csv' using 1:2 w lp t 'Before Clustering'
 
 set out "comparison_total_percentile_penalty_reduction.eps"
@@ -22,7 +23,8 @@ plot 'test_genetic_tot_impr.csv' using 1:2 w lp t 'Genetic algorithm', \
      'test_pos_error_tot_impr.csv' using 1:2 w lp t 'Positive Error', \
      'test_neg_error_tot_impr.csv' using 1:2 w lp t 'Negative Error', \
      'test_pos_cons_tot_impr.csv' using 1:2 w lp t 'Positive Consumption', \
-     'test_neg_cons_tot_impr.csv' using 1:2 w lp t 'Negative Consumption'
+     'test_neg_cons_tot_impr.csv' using 1:2 w lp t 'Negative Consumption', \
+     'test_adaptive_tot_impr.csv' using 1:2 w lp t 'Adaptive'
 
 set out "comparison_average_percentile_penalty_reduction.eps"
 set ylabel "Average percentile penalty reduction"
@@ -30,5 +32,6 @@ plot 'test_genetic_avg.csv' using 1:2 w lp t 'Genetic algorithm', \
      'test_pos_error_avg.csv' using 1:2 w lp t 'Positive Error', \
      'test_neg_error_avg.csv' using 1:2 w lp t 'Negative Error', \
      'test_pos_cons_avg.csv' using 1:2 w lp t 'Positive Consumption', \
-     'test_neg_cons_avg.csv' using 1:2 w lp t 'Negative Consumption'
+     'test_neg_cons_avg.csv' using 1:2 w lp t 'Negative Consumption', \
+     'test_adaptive_avg.csv' using 1:2 w lp t 'Adaptive'
 

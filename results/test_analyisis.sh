@@ -1,12 +1,12 @@
 #!/bin/bash
 
-for file in test_{{pos,neg}_{error,cons},genetic}_[0-9]_0{"",_before,_after}.csv
+for file in test_{{pos,neg}_{error,cons},genetic,adaptive}_[0-9]_0{"",_before,_after}.csv
 do
   ./sum.awk "$file" > "${file%.*}_sum.csv"
   ./avg.awk "$file" > "${file%.*}_avg.csv"
 done
 
-for prefix in {{pos,neg}_{error,cons},genetic}
+for prefix in {{pos,neg}_{error,cons},genetic,adaptive}
 do
   for suffix in {"",_before,_after}_{sum,avg}
   do
