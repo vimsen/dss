@@ -98,6 +98,7 @@ plot \
 
 set out "comparison_k_sum.eps"
 set yrange [*:*]
+set key bottom left
 set ylabel "Total reduction in penalties payed"
 plot \
      "genetic_k_tot_impr.csv" using 1:2 t 'Genetic' w lp, \
