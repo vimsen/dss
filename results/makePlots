@@ -59,7 +59,7 @@ unset key
 plot "<awk -v OFS='\t' '/Generation:/{print $2+0, $5}' genetic_evolution.txt" using 1:2 w l
 
 
-set out "spectral_k.eps"
+set out "neg_cons_k.eps"
 set key noautotitle
 set xlabel 'Kappa'
 set ylabel "Penalty Reduction"
@@ -67,26 +67,42 @@ set yrange [-20:120]
 
 set key top right
 set xrange [0:10]
-plot for [col=2:6] 'spectral_k.csv' using 1:col w lp t 'Cluster '.(col - 2)
+plot for [col=2:10] 'neg_cons_k_0.csv' using 1:col w lp t 'Cluster '.(col - 2)
+
+set out "pos_cons_k.eps"
+plot for [col=2:10] 'pos_cons_k_0.csv' using 1:col w lp t 'Cluster '.(col - 2)
+
+set out "neg_error_k.eps"
+plot for [col=2:10] 'neg_error_k_0.csv' using 1:col w lp t 'Cluster '.(col - 2)
+
+set out "pos_error_k.eps"
+plot for [col=2:10] 'pos_error_k_0.csv' using 1:col w lp t 'Cluster '.(col - 2)
 
 set out "genetic_k.eps"
-plot for [col=2:6] 'genetic_k.csv' using 1:col w lp t 'Cluster '.(col - 2)
+plot for [col=2:10] 'genetic_k_0.csv' using 1:col w lp t 'Cluster '.(col - 2)
 
 set out "adaptive_k.eps"
 set key center right
-plot for [col=2:6] 'adaptive_k.csv' using 1:col w lp t 'Cluster '.(col -2)
+plot for [col=2:10] 'adaptive_k_0.csv' using 1:col w lp t 'Cluster '.(col -2)
 
 set out "comparison_k.eps"
 set key top right
+set ylabel "Average penalty reduction per cluster"
 plot \
      "genetic_k_avg.csv" using 1:2 t 'Genetic' w lp, \
-     "spectral_k_avg.csv" using 1:2 t 'Spectral' w lp, \
+     "pos_error_k_avg.csv" using 1:2 t 'Pesitive Error' w lp, \
+     "neg_error_k_avg.csv" using 1:2 t 'Negative Error' w lp, \
+     "pos_cons_k_avg.csv" using 1:2 t 'Positive Consumption' w lp, \
+     "neg_cons_k_avg.csv" using 1:2 t 'Negative Consumption' w lp, \
      "adaptive_k_avg.csv" using 1:2 t 'Adaptive' w lp
 
 set out "comparison_k_sum.eps"
 set yrange [*:*]
-set ylabel "Total penalties"
+set ylabel "Total reduction in penalties payed"
 plot \
-     "genetic_k_sum.csv" using 1:2 t 'Genetic' w lp, \
-     "spectral_k_sum.csv" using 1:2 t 'Spectral' w lp, \
-     "adaptive_k_sum.csv" using 1:2 t 'Adaptive' w lp
+     "genetic_k_tot_impr.csv" using 1:2 t 'Genetic' w lp, \
+     "pos_error_k_tot_impr.csv" using 1:2 t 'Pesitive Error' w lp, \
+     "neg_error_k_tot_impr.csv" using 1:2 t 'Negative Error' w lp, \
+     "pos_cons_k_tot_impr.csv" using 1:2 t 'Positive Consumption' w lp, \
+     "neg_cons_k_tot_impr.csv" using 1:2 t 'Negative Consumption' w lp, \
+     "adaptive_k_tot_impr.csv" using 1:2 t 'Adaptive' w lp
