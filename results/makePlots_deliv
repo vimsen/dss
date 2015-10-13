@@ -28,6 +28,7 @@ plot 'test_genetic_tot_impr.csv' using 1:2 w lp t 'Genetic algorithm', \
 
 set out "comparison_average_percentile_penalty_reduction.eps"
 set ylabel "Average percentile penalty reduction"
+set key center right
 plot 'test_genetic_avg.csv' using 1:2 w lp t 'Genetic algorithm', \
      'test_pos_error_avg.csv' using 1:2 w lp t 'Positive Error', \
      'test_neg_error_avg.csv' using 1:2 w lp t 'Negative Error', \
