@@ -7,7 +7,7 @@ require 'clustering/genetic_error_clustering2'
 class EvaluatorTest < ActiveSupport::TestCaseWithProsAndMarketData
   test "should create evaluation results" do
 
-    1.times do |round|
+    1.upto(9) do |round|
       1.upto(9) do |kappa|
         { genetic: ClusteringModule::GeneticErrorClustering,
           pos_error: ClusteringModule::CrossCorrelationErrorClustering,
