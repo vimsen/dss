@@ -4,10 +4,12 @@ require 'clustering/evaluate'
 require 'clustering/spectral_clustering'
 require 'clustering/genetic_error_clustering2'
 
-class EvaluatorTest < ActiveSupport::TestCaseWithProsAndMarketData
-  test "should create evaluation results" do
+class EvaluatorKappaTest < ActiveSupport::TestCaseWithProsAndMarketData
+  test "should create evaluation results with varying kappa" do
 
-    1.upto(9) do |round|
+    skip('Test is too slow, so it is excluded. Remove this line to enable')
+
+    0.upto(9) do |round|
       1.upto(9) do |kappa|
         { genetic: ClusteringModule::GeneticErrorClustering,
           pos_error: ClusteringModule::CrossCorrelationErrorClustering,
