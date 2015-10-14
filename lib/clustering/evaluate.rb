@@ -10,7 +10,8 @@ module ClusteringModule
                    endDate: Time.now,
                    interval: 1.week,
                    outputFile: 'res_',
-                   adaptive: false)
+                   adaptive: false,
+                   runs: 2)
       method(__method__).parameters.each do |type, k|
         next unless type == :key
         v = eval(k.to_s)
@@ -22,7 +23,7 @@ module ClusteringModule
 
     def evaluate
 
-      10.times do |j|
+      @runs.times do |j|
         # f3 = CSV.open(@outputFile + j.to_s + ".csv", "w", {:col_sep => "\t"})
         # f1 = CSV.open(@outputFile + j.to_s + "_before.csv", "w", {:col_sep => "\t"})
         # f2 = CSV.open(@outputFile + j.to_s + "_after.csv", "w", {:col_sep => "\t"})

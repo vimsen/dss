@@ -69,6 +69,7 @@ gem "activerecord-import", ">= 0.2.0" # For loading multiple records to db at on
 group :development, :test do
   gem 'rails-erd' # use `bundle exec erd` to genera ERD diagram
   gem 'railroady' # Use `rake diagram:all` for generating all diagrams
+  gem 'delorean' # For time-traveling in tests
 end
 
 gem 'darwinning' # For genetic algorithms
@@ -77,3 +78,4 @@ gem "ai4r" # ditto
 gem 'aws-sdk', '~> 2'
 
 gem 'seed_dump' # Needed for generatic seeds from existing data 
+

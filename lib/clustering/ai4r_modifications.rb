@@ -112,7 +112,7 @@ module Ai4r
       def fitness
         return @fitness if @fitness
 
-        clusters = []
+        clusters = {}
         # puts "gen",genotypes.size
         @data.each_with_index do |v, i|
           clusters[@prosumers[i].id] = v
