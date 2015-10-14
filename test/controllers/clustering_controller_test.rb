@@ -1,5 +1,6 @@
 require 'test_helper'
 require 'test_helper_with_prosumption_data'
+require 'delorean'
 
 class ClusteringControllerTest < ActionController::TestCaseWithProsumptionData
 
@@ -45,13 +46,18 @@ class ClusteringControllerTest < ActionController::TestCaseWithProsumptionData
   end
 
   test "should post confirm genetic" do
-    post :confirm, algorithm: :genetic, kappa: 5
-    assert_response :success
+    # Commenting out Delorean ,because it makes the test too slow
+  #   Delorean.time_travel_to(@trainend) do
+      post :confirm, algorithm: :genetic, kappa: 5
+      assert_response :success
+  #   end
   end
 
   test "should post confirm cross_correlation_spectral" do
-    post :confirm, algorithm: :cross_correlation_spectral, kappa: 5
-    assert_response :success
+    Delorean.time_travel_to(@trainend) do
+      post :confirm, algorithm: :cross_correlation_spectral, kappa: 5
+      assert_response :success
+    end
   end
 
 end
