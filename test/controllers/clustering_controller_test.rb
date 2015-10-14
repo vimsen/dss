@@ -1,6 +1,7 @@
 require 'test_helper'
+require 'test_helper_with_prosumption_data'
 
-class ClusteringControllerTest < ActionController::TestCase
+class ClusteringControllerTest < ActionController::TestCaseWithProsumptionData
 
   def setup
     @controller = ClusteringsController.new
@@ -18,8 +19,38 @@ class ClusteringControllerTest < ActionController::TestCase
     assert_response :success
   end
 
-  test "should get confirm" do
+  test "should post confirm energy_type" do
     post :confirm, algorithm: :energy_type
+    assert_response :success
+  end
+
+  test "should post confirm building_type" do
+    post :confirm, algorithm: :building_type
+    assert_response :success
+  end
+
+  test "should post confirm connection_type" do
+    post :confirm, algorithm: :connection_type
+    assert_response :success
+  end
+
+  test "should post confirm location" do
+    post :confirm, algorithm: :location, kappa: 5
+    assert_response :success
+  end
+
+  test "should post confirm dr" do
+    post :confirm, algorithm: :dr, kappa: 5
+    assert_response :success
+  end
+
+  test "should post confirm genetic" do
+    post :confirm, algorithm: :genetic, kappa: 5
+    assert_response :success
+  end
+
+  test "should post confirm cross_correlation_spectral" do
+    post :confirm, algorithm: :cross_correlation_spectral, kappa: 5
     assert_response :success
   end
 
