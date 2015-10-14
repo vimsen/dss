@@ -7,6 +7,8 @@ require 'clustering/genetic_error_clustering2'
 class EvaluatorTest < ActiveSupport::TestCaseWithProsAndMarketData
   test "should create evaluation results" do
 
+    skip('Test is too slow, so it is excluded. Remove this line to enable')
+    
     10.times do |round|
 
       { genetic: ClusteringModule::GeneticErrorClustering,

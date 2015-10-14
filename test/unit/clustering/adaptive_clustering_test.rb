@@ -3,8 +3,9 @@ require 'test_helper_with_pros_and_market_data'
 require 'clustering/genetic_error_clustering2'
 require 'clustering/evaluate'
 
-class GeneticClusteringTest < ActiveSupport::TestCaseWithProsAndMarketData
+class AdaptiveClusteringTest < ActiveSupport::TestCaseWithProsAndMarketData
   test "should create adaptive clustering" do
+    skip('Test is too slow, so it is excluded. Remove this line to enable')
     10.times do |round|
       spek = ClusteringModule::GeneticErrorClustering.new(prosumers: @prosumers,
                                                                    startDate: @startdate,

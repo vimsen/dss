@@ -6,6 +6,9 @@ require 'clustering/evaluate'
 
 class GeneticClusteringTest < ActiveSupport::TestCaseWithProsAndMarketData
   test "should create genetic clustering" do
+
+    skip('Test is too slow, so it is excluded. Remove this line to enable')
+
     spek1 = ClusteringModule::CrossCorrelationErrorClustering.new(prosumers: @prosumers,
                                                         startDate: @startdate,
                                                         endDate: @trainend)
