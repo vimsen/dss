@@ -130,11 +130,9 @@ module ClusteringModule
     }
   end
 
-  def self.get_centroid_dr(cluster)
-    puts "test"
-    puts [cluster.prosumers.map {|p| p.max_dr }.sum, cluster.prosumers.size]
+  def self.get_centroid_dr(cluster, dr_vector)
     {
-        dr: cluster.prosumers.map {|p| p.max_dr }.sum / cluster.prosumers.size,
+        dr: cluster.map {|p| dr_vector[p]}.sum / cluster.size,
         cluster: cluster
     }
   end
@@ -157,9 +155,9 @@ module ClusteringModule
     closest
   end
 
-  def self.find_closest_dr(prosumer, centroids)
+  def self.find_closest_dr(dr, centroids)
     (centroids.min_by do |c|
-      (c[:dr] - prosumer.max_dr).abs
+      (c[:dr] - dr).abs
     end)[:cluster]
   end
 
@@ -195,35 +193,42 @@ module ClusteringModule
 
   def self.run_dr(kappa)
     result = Prosumer.with_positive_dr.sample(kappa).map.with_index do |p, i|
-      cl = TempCluster.new name: "Dr: #{i}",
-                       description: "Demand Response based cluster #{i}"
-      cl.prosumers.push p
-      cl
+       [ p.id ]
     end
 
-    centroids = result.map { |cl| get_centroid_dr cl }
+    dr_vector = Hash[Prosumer.all.map {|p| [p.id, p.max_dr]}]
+
+    dr_prosumers = Prosumer.with_dr
+
+    centroids = result.map { |cl| get_centroid_dr(cl, dr_vector) }
     loop do
       old_centroids = Array.new centroids
       puts "Old centroids: ", old_centroids
-      result.each { |cl| cl.prosumers.clear }
-      Prosumer.with_dr.each do |p|
-        cl = find_closest_dr(p, centroids)
-        puts "Testing: ", [p.max_dr, p.id, cl.name]
-        cl.prosumers.push p
+      result.each { |cl| cl.clear }
+      dr_prosumers.each do |p|
+        cl = find_closest_dr(dr_vector[p.id], centroids)
+        cl.push p.id
       end
-      result = result.select { |cl| cl.prosumers.size > 0}
-      centroids = result.map { |cl| get_centroid_dr cl }
+      result = result.select { |cl| cl.size > 0}
+      centroids = result.map { |cl| get_centroid_dr cl, dr_vector }
       break if centroids <=> old_centroids
     end
 
-    without_dr = Prosumer.all - Prosumer.with_dr
+    without_dr = Prosumer.all - dr_prosumers
 
     if without_dr.count > 0
-      cl = TempCluster.new name: 'No DR info.',
-                       description: 'Prosumers with no DR info available'
-      cl.prosumers << without_dr
+      cl = []
+      cl << without_dr.map{|p| p.id}
       result.push cl
     end
-    result
+    result.map.with_index do |c, i|
+      puts "Prosumer ids are: #{c}"
+      cl = TempCluster.new name: "Dr: #{i}",
+                           description: "Demand Response based cluster #{i}"
+      c.each do |p|
+        cl.prosumers << Prosumer.find(p)
+      end
+      cl
+    end
   end
 end
