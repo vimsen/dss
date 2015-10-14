@@ -5,22 +5,22 @@ require 'clustering/spectral_clustering'
 class SpectralClusteringTest < ActiveSupport::TestCaseWithProsumptionData
 
   test "should create Cross-correlation error spectral clustering" do
-    spek = ClusteringModule::CrossCorrelationErrorClustering.new(prosumers: @prosumers, startDate: @startdate, endDate: @trainend)
+    spek = ClusteringModule::PositiveErrorSpectralClustering.new(prosumers: @prosumers, startDate: @startdate, endDate: @trainend)
     check_performance spek
   end
 
   test "should create inverse Cross-correlation error spectral clustering" do
-    spek = ClusteringModule::InverseCrossCorrelationErrorClustering.new(prosumers: @prosumers, startDate: @startdate, endDate: @trainend)
+    spek = ClusteringModule::NegativeErrorSpectralClustering.new(prosumers: @prosumers, startDate: @startdate, endDate: @trainend)
     check_performance spek
   end
 
   test "should create Cross-correlation consumption spectral clustering" do
-    spek = ClusteringModule::CrossCorrelationConsumptionClustering.new(prosumers: @prosumers, startDate: @startdate, endDate: @trainend)
+    spek = ClusteringModule::PositiveConsumptionSpectralClustering.new(prosumers: @prosumers, startDate: @startdate, endDate: @trainend)
     check_performance spek
   end
 
   test "should create inverse Cross-correlation consumption spectral clustering" do
-    spek = ClusteringModule::InverseCrossCorrelationConsumptionClustering.new(prosumers: @prosumers, startDate: @startdate, endDate: @trainend)
+    spek = ClusteringModule::NegativeConsumptionSpectralClustering.new(prosumers: @prosumers, startDate: @startdate, endDate: @trainend)
     check_performance spek
   end
 

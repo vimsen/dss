@@ -19,8 +19,14 @@ module ClusteringModule
      #  name: "By forecasting errors"},
      { string: :genetic,
        name: "Using genetic algorithms"},
-     { string: :cross_correlation_spectral,
-       name: "Cross correlation spectral clustering"}]
+     { string: :positive_error_spectral_clustering,
+       name: "Positive Error Spectral Clustering"},
+     { string: :negative_error_spectral_clustering,
+       name: "Negative Error Spectral Clustering"},
+     { string: :positive_consumption_spectral_clustering,
+       name: "Positive Consumption Spectral Clustering"},
+     { string: :negative_consumption_spectral_clustering,
+       name: "Negative Consumption Spectral Clustering"}]
 
   end
 
@@ -40,9 +46,14 @@ module ClusteringModule
         result = ForecastErrorClustering.new.run param.to_i
       when 'genetic'
         result = ClusteringModule::GeneticErrorClustering.new.run param.to_i
-      when 'cross_correlation_spectral'
-        result = ClusteringModule::CrossCorrelationErrorClustering.new.run param.to_i
-        puts result
+      when 'positive_error_spectral_clustering'
+        result = ClusteringModule::PositiveErrorSpectralClustering.new.run param.to_i
+      when 'negative_error_spectral_clustering'
+        result = ClusteringModule::NegativeErrorSpectralClustering.new.run param.to_i
+      when 'positive_consumption_spectral_clustering'
+        result = ClusteringModule::PositiveConsumptionSpectralClustering.new.run param.to_i
+      when 'negative_consumption_spectral_clustering'
+        result = ClusteringModule::NegativeConsumptionSpectralClustering.new.run param.to_i
       else
         return nil
     end

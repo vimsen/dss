@@ -96,7 +96,7 @@ module ClusteringModule
     end
   end
 
-  class CrossCorrelationErrorClustering < SpectralClustering
+  class PositiveErrorSpectralClustering < SpectralClustering
     def generate_similarity_matrix
       Matrix.build(@prosumers.length, @prosumers.length)  do |row, col|
         cross_correlation(@errors, @prosumers[row].id, @prosumers[col].id)
@@ -104,7 +104,7 @@ module ClusteringModule
     end
   end
 
-  class InverseCrossCorrelationErrorClustering < SpectralClustering
+  class NegativeErrorSpectralClustering < SpectralClustering
     def generate_similarity_matrix
       Matrix.build(@prosumers.length, @prosumers.length)  do |row, col|
         1 - cross_correlation(@errors, @prosumers[row].id, @prosumers[col].id).abs
@@ -112,7 +112,7 @@ module ClusteringModule
     end
   end
 
-  class CrossCorrelationConsumptionClustering < SpectralClustering
+  class PositiveConsumptionSpectralClustering < SpectralClustering
     def generate_similarity_matrix
       Matrix.build(@prosumers.length, @prosumers.length)  do |row, col|
         cross_correlation(@real, @prosumers[row].id, @prosumers[col].id)
@@ -120,7 +120,7 @@ module ClusteringModule
     end
   end
 
-  class InverseCrossCorrelationConsumptionClustering < SpectralClustering
+  class NegativeConsumptionSpectralClustering < SpectralClustering
     def generate_similarity_matrix
       Matrix.build(@prosumers.length, @prosumers.length)  do |row, col|
         1 - cross_correlation(@real, @prosumers[row].id, @prosumers[col].id).abs

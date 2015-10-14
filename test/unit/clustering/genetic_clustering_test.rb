@@ -9,7 +9,7 @@ class GeneticClusteringTest < ActiveSupport::TestCaseWithProsAndMarketData
 
     skip('Test is too slow, so it is excluded. Remove this line to enable')
 
-    spek1 = ClusteringModule::CrossCorrelationErrorClustering.new(prosumers: @prosumers,
+    spek1 = ClusteringModule::PositiveErrorSpectralClustering.new(prosumers: @prosumers,
                                                         startDate: @startdate,
                                                         endDate: @trainend)
     spek2 = ClusteringModule::GeneticErrorClustering.new(prosumers: @prosumers,
