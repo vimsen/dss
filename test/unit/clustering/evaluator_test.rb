@@ -12,10 +12,10 @@ class EvaluatorTest < ActiveSupport::TestCaseWithProsAndMarketData
     10.times do |round|
 
       { genetic: ClusteringModule::GeneticErrorClustering,
-        pos_error: ClusteringModule::CrossCorrelationErrorClustering,
-        neg_error: ClusteringModule::InverseCrossCorrelationErrorClustering,
-        pos_cons: ClusteringModule::CrossCorrelationConsumptionClustering,
-        neg_cons: ClusteringModule::InverseCrossCorrelationConsumptionClustering
+        pos_error: ClusteringModule::PositiveErrorSpectralClustering,
+        neg_error: ClusteringModule::NegativeErrorSpectralClustering,
+        pos_cons: ClusteringModule::PositiveConsumptionSpectralClustering,
+        neg_cons: ClusteringModule::NegativeConsumptionSpectralClustering
       }.each do |(name, cl)|
 
         spek = cl.new(prosumers: @prosumers,

@@ -53,11 +53,33 @@ class ClusteringControllerTest < ActionController::TestCaseWithProsumptionData
   #   end
   end
 
-  test "should post confirm cross_correlation_spectral" do
+  test "should post confirm positive_error_spectral_clustering" do
     Delorean.time_travel_to(@trainend) do
-      post :confirm, algorithm: :cross_correlation_spectral, kappa: 5
+      post :confirm, algorithm: :positive_error_spectral_clustering, kappa: 5
       assert_response :success
     end
   end
+
+  test "should post confirm negative_error_spectral_clustering" do
+    Delorean.time_travel_to(@trainend) do
+      post :confirm, algorithm: :negative_error_spectral_clustering, kappa: 5
+      assert_response :success
+    end
+  end
+
+  test "should post confirm positive_consumption_spectral_clustering" do
+    Delorean.time_travel_to(@trainend) do
+      post :confirm, algorithm: :positive_consumption_spectral_clustering, kappa: 5
+      assert_response :success
+    end
+  end
+
+  test "should post confirm negative_consumption_spectral_clustering" do
+    Delorean.time_travel_to(@trainend) do
+      post :confirm, algorithm: :negative_consumption_spectral_clustering, kappa: 5
+      assert_response :success
+    end
+  end
+
 
 end
