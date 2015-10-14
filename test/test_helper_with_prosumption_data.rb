@@ -1,6 +1,5 @@
-class ActiveSupport::TestCaseWithProsumptionData < ActiveSupport::TestCase
-
-  setup do
+module ProsumptionData
+  def load_data
     puts "Importing data"
 
     if Prosumer.count < 37
@@ -10,7 +9,7 @@ class ActiveSupport::TestCaseWithProsumptionData < ActiveSupport::TestCase
       raw.copy_data "COPY prosumers (id, name, location, created_at, updated_at, cluster_id, intelen_id, building_type_id, connection_type_id, location_x, location_y) FROM stdin WITH (FORMAT 'csv', DELIMITER E'\t', NULL \"\N\")" do
         c = 0
         File.open("test/fixtures/prosumers.sql", 'r').each do |line|
-           c = c + 1
+          c = c + 1
           raw.put_copy_data line if c > 1
         end
         # raw.put_copy_data File.read("../prosumers.sql")
@@ -31,7 +30,7 @@ class ActiveSupport::TestCaseWithProsumptionData < ActiveSupport::TestCase
 
         c = 0
         File.open("test/fixtures/data_points.sql", 'r').each do |line|
-           c = c + 1
+          c = c + 1
           raw.put_copy_data line if c > 1
         end
         # raw.put_copy_data File.read("../prosumers.sql")
@@ -62,6 +61,23 @@ class ActiveSupport::TestCaseWithProsumptionData < ActiveSupport::TestCase
 
     # ActiveRecord::Base.connection.execute(IO.read("../prosumers_and_data_points.sql"))
     puts "data imported, #{@prosumers.count} prosumers with valid training data"
+  end
+end
+
+class ActiveSupport::TestCaseWithProsumptionData < ActiveSupport::TestCase
+  include ProsumptionData
+
+  setup do
+    load_data
+  end
+
+end
+
+class ActionController::TestCaseWithProsumptionData < ActionController::TestCase
+  include ProsumptionData
+
+  setup do
+    load_data
   end
 
 end
