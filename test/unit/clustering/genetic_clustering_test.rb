@@ -7,44 +7,20 @@ require 'clustering/evaluate'
 class GeneticClusteringTest < ActiveSupport::TestCaseWithProsAndMarketData
   test "should create genetic clustering" do
 
-    skip('Test is too slow, so it is excluded. Remove this line to enable')
+   #  skip('Test is too slow, so it is excluded. Remove this line to enable')
 
-    spek1 = ClusteringModule::PositiveErrorSpectralClustering.new(prosumers: @prosumers,
-                                                        startDate: @startdate,
-                                                        endDate: @trainend)
-    spek2 = ClusteringModule::GeneticErrorClustering.new(prosumers: @prosumers,
+    spek = ClusteringModule::GeneticErrorClustering.new(prosumers: @prosumers,
                                                                  startDate: @startdate,
                                                                  endDate: @trainend)
 
-    clg1 = Clustering.new(name: "Genetic", temp_clusters: spek1.run(5))
-    clg1.save
+    clg = Clustering.new(name: "Genetic", temp_clusters: spek.run(5))
+    clg.save
 
-    clg2 = Clustering.new(name: "Genetic", temp_clusters: spek2.run(5))
-    clg2.save
-
-
-    # clg.temp_clusters.each{|tc| tc.save}
-
-
-    puts ">>>>>>>>>>>>> #{clg1.temp_clusters.first.prosumers.class}"
-    puts "<<<<<<<<<<<<< #{clg2.temp_clusters.first.prosumers.class}"
-
-    puts ">>>>>>>>>>>>> Found #{DataPoint.where(prosumer: clg1.temp_clusters.first.prosumers.map{|p| p.id}, timestamp: @startdate .. @enddate).count } datapoints"
-    puts ">>>>>>>>>>>>> Found #{DataPoint.where(prosumer: clg1.temp_clusters.first.prosumers, timestamp: @startdate .. @enddate).count } datapoints"
-
-    puts "<<<<<<<<<<<<< Found #{DataPoint.where(prosumer: clg2.temp_clusters.first.prosumers.map{|p| p.id}, timestamp: @startdate .. @enddate).count } datapoints"
-    puts "<<<<<<<<<<<<< Found #{DataPoint.where(prosumer: clg2.temp_clusters.first.prosumers, timestamp: @startdate .. @enddate).count } datapoints"
-
-
-    puts ">>>>>>>>>>>>> ", Market::Calculator.new(prosumers: clg1.temp_clusters.first.prosumers,
-                           startDate: @startdate,
-                           endDate: @enddate)
-        .calcCosts[:dissagrgated]
-
-    puts "<<<<<<<<<<<<< ", Market::Calculator.new(prosumers: Prosumer.where(id: clg2.temp_clusters.first.prosumers.map{|p| p.id}),
+    puts Market::Calculator.new(prosumers: clg.temp_clusters.first.prosumers,
                                 startDate: @startdate,
                                 endDate: @enddate)
              .calcCosts[:dissagrgated]
+
 
 =begin
     eval = ClusteringModule::Evaluator.new(
