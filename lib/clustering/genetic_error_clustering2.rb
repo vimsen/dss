@@ -40,7 +40,7 @@ module ClusteringModule
           200, 100, errors: @errors, prosumers: @prosumers, kappa: kappa,
           penalty_violation: @penalty_violation,
           penalty_satisfaction: @penalty_satisfaction,
-          class: Ai4r::GeneticAlgorithm::StaticChromosome)
+          class: Ai4r::GeneticAlgorithm::StaticChromosomeWithSmartCrossover)
       best = search.run
       puts "FITNESS #{best.fitness} CLUSTERS: "+
                "#{best.data.zip(@prosumers).map {|c,p| [p.id, c]}}"

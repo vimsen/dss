@@ -6,6 +6,9 @@
 # You can redistribute it and/or modify it under the terms of 
 # the Mozilla Public License version 1.1  as published by the 
 # Mozilla Foundation at http://www.mozilla.org/MPL/MPL-1.1.txt
+
+require 'set'
+
 module Ai4r
   
   module GeneticAlgorithm
@@ -112,64 +115,32 @@ module Ai4r
       def fitness
         return @fitness if @fitness
 
-        clusters = {}
-        # puts "gen",genotypes.size
-        @data.each_with_index do |v, i|
-          clusters[@prosumers[i].id] = v
+        cls = (options[:kappa]).times.map { |i| [] }
+        @data.each_with_index { |g, i| cls[g].push i}
+
+        p_b2 = cls.map { |c| penalty_before(c) }
+        p_a2 = cls.map { |c| penalty_after(c) }
+
+        impr2 = p_b2.zip(p_a2).sum do |b,a|
+          b > 0 ? ((b - a)/b) : 0
         end
 
-        cl_errors = {}
-        base_errors = {}
-        @errors.each do |k,v|
-          cl_errors[[clusters[k[0]], k[1]]] ||= 0
-          cl_errors[[clusters[k[0]], k[1]]] += v
-          base_errors[[clusters[k[0]], k[1]]] ||= 0
-          base_errors[[clusters[k[0]], k[1]]] += penalty(v)
+        @fitness = impr2
+      end
+
+      def penalty_before(cluster)
+        cluster.sum do |p|
+          @options[:penalties_before][p]
         end
+      end
 
-        p_b = base_errors.inject({}) do |s, (k,v)|
-          s[k[0]] ||= 0
-          s[k[0]] += v
-          s
-        end
-
-     #   puts "p_b: #{p_b}"
-
-        p_a = cl_errors.inject({}) do |s, (k,v)|
-          # puts "printing", s, k, v
-          s[k[0]] ||= 0
-          s[k[0]] += penalty(v)
-          s
-        end
-
-     #   puts "p_a: #{p_a}"
-
-        best_cluster = p_a.max_by do |k,v|
-          if p_b[k] > 0
-            (p_b[k] - v) / p_b[k]
-          else
-            0
+      def penalty_after(cluster)
+        @options[:timestamps].sum do |t|
+          v = cluster.sum do |p|
+            @errors[[@prosumers[p].id ,t]] || 0
           end
+          self.class.penalty(v, @options)
         end
-
-        improvements = p_a.sum do |k,v|
-          p_b[k] > 0 ?
-              (p_b[k] - v) / p_b[k] :
-              0
-        end
-
-        total_error = p_a.sum do |k,v|
-          v
-        end
-
-
-     #   puts "best_cluster: #{best_cluster}"
-     #   puts "result: #{(p_b[best_cluster[0]] - p_a[best_cluster[0]]) / p_b[best_cluster[0]]}"
-     #   puts "result2: #{improvements}"
-
-        # @fitness = (p_b[best_cluster[0]] - p_a[best_cluster[0]]) / p_a[best_cluster[0]]
-        @fitness = improvements
-        # @fitness = -total_error
       end
 
       # mutation method is used to maintain genetic diversity from one 
@@ -225,7 +196,7 @@ module Ai4r
         #   rand(2) > 0 ? g1 : g2
         # end
 
-        return StaticChromosome.new(spawn, a.options)
+        return self.new(spawn, a.options)
       end
 
       # Initializes an individual solution (chromosome) for the initial 
@@ -240,8 +211,16 @@ module Ai4r
         0.upto(data_size-1) do
           seed << rand(kappa)
         end
-        puts "seed options: #{options[:errors].length}"
-        return StaticChromosome.new(seed, options)
+
+        options[:timestamps] = options[:errors].map{|(pid,t), v| t}.to_set
+        options[:penalties_before] = options[:prosumers].map do |p|
+          options[:timestamps].sum do |t|
+            penalty(options[:errors][[p.id, t]] || 0, options)
+          end
+        end
+
+        # puts "seed options: #{options[:errors].length}, timestamps: #{options[:timestamps]}, pb: #{options[:penalties_before]}"
+        return self.new(seed, options)
       end
 
       def self.set_cost_matrix(costs)
@@ -249,11 +228,46 @@ module Ai4r
       end
 
       private
-      def penalty(error)
-        (error > 0 ? @options[:penalty_violation] : @options[:penalty_satisfaction]) * error.abs
+      def self.penalty(error, options)
+        (error > 0 ? options[:penalty_violation] : options[:penalty_satisfaction]) * error.abs
       end
     end
 
-  end
+    class StaticChromosomeWithSmartCrossover < StaticChromosome
 
+      def self.reproduce(a, b)
+
+        clusters = create_clusters(a,b)
+        spawn = a.data.map { |p| a.options[:kappa]- 1 }
+        0.upto(a.options[:kappa] - 2) do |cluster_index|
+       #    puts "a: #{a.data}, b:#{b.data}, spawn: #{spawn}, CLUSTERS: #{clusters}"
+          best = clusters.sort_by do |c|
+            before = a.penalty_before(c)
+            after = a.penalty_after(c)
+            before > 0 ? (before - after) / before : 0
+          end.last
+          clusters -= [best]
+          best.each do |p|
+            spawn[p] = cluster_index
+            clusters.each{|c| c.delete p}
+          end
+          clusters.reject!{|c| c.size == 0}
+        end
+       #  puts "#{spawn }"
+        return self.new(spawn, a.options)
+      end
+
+      private
+
+
+      def self.create_clusters(a, b)
+        clusters = (2 * a.options[:kappa]).times.map { |i| [] }
+        a.data.each_with_index { |g, i| clusters[g].push i}
+        b.data.each_with_index { |g, i| clusters[g + a.options[:kappa]].push i}
+        clusters
+      end
+
+    end
+
+  end
 end
