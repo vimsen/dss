@@ -47,10 +47,10 @@ class ClusteringControllerTest < ActionController::TestCaseWithProsumptionData
 
   test "should post confirm genetic" do
     # Commenting out Delorean ,because it makes the test too slow
-  #   Delorean.time_travel_to(@trainend) do
+    Delorean.time_travel_to(@trainend) do
       post :confirm, algorithm: :genetic, kappa: 5
       assert_response :success
-  #   end
+    end
   end
 
   test "should post confirm positive_error_spectral_clustering" do

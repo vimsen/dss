@@ -1,13 +1,16 @@
 require "clustering/ai4r_modifications"
-
+require 'csv'
 
 module ClusteringModule
 
 
   class GeneticErrorClustering
+
+    attr_accessor :last_run_stats
     def initialize(prosumers: Prosumer.all,
                    startDate: Time.now - 1.week,
                    endDate: Time.now,
+                   algorithm: Ai4r::GeneticAlgorithm::StaticChromosome,
                    penalty_violation: 0.3, penalty_satisfaction: 0.2)
       method(__method__).parameters.each do |type, k|
         next unless type == :key
@@ -34,13 +37,15 @@ module ClusteringModule
     end
 
     def run(kappa = 5)
+      @lastRunSTats = {start_run: Time.now}
 
       puts "Beginning genetic search, please wait... "
       search = Ai4r::GeneticAlgorithm::GeneticSearchWithOptions.new(
           200, 100, errors: @errors, prosumers: @prosumers, kappa: kappa,
           penalty_violation: @penalty_violation,
           penalty_satisfaction: @penalty_satisfaction,
-          class: Ai4r::GeneticAlgorithm::StaticChromosomeWithSmartCrossover)
+          class: @algorithm,
+          stats: @lastRunSTats)
       best = search.run
       puts "FITNESS #{best.fitness} CLUSTERS: "+
                "#{best.data.zip(@prosumers).map {|c,p| [p.id, c]}}"
@@ -57,6 +62,15 @@ module ClusteringModule
         TempCluster.new(name: "Genetic #{i}",
                         description: "Genetic clustering #{i}",
                         prosumers: cl.map { |p| @prosumers[p]})
+      end
+    end
+
+    def dump_stats(file)
+      CSV.open(file, "w", {:col_sep => "\t"}) do |csv|
+        csv << ["generation", "time", "fitness"]
+        @lastRunSTats[:gen].each_with_index do |e, i|
+          csv << [i, e[:time], e[:fitness]]
+        end
       end
     end
   end
