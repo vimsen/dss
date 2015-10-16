@@ -3,6 +3,7 @@ require 'test_helper_with_pros_and_market_data'
 require 'clustering/genetic_error_clustering2'
 require 'clustering/spectral_clustering'
 require 'clustering/evaluate'
+require 'benchmark'
 
 class GeneticClusteringTest < ActiveSupport::TestCaseWithProsAndMarketData
   test "should create genetic clustering" do
@@ -35,6 +36,33 @@ class GeneticClusteringTest < ActiveSupport::TestCaseWithProsAndMarketData
 
     eval.evaluate
 =end
+
+
+  end
+
+  test "measure genetic clustering performance" do
+    result = Benchmark.bm do |x|
+      10.times do |i|
+        x.report("smart") do
+          spek = ClusteringModule::GeneticErrorClustering.new(prosumers: @prosumers,
+                                                              startDate: @startdate,
+                                                              endDate: @trainend,
+                                                              algorithm: Ai4r::GeneticAlgorithm::StaticChromosomeWithSmartCrossover)
+          spek.run(5)
+          spek.dump_stats("results/smart_#{i}")
+        end
+        x.report("static") do
+          spek = ClusteringModule::GeneticErrorClustering.new(prosumers: @prosumers,
+                                                              startDate: @startdate,
+                                                              endDate: @trainend)
+          spek.run(5)
+          spek.dump_stats("results/static_#{i}")
+        end
+      end
+    end
+
+    puts result
+
 
 
   end

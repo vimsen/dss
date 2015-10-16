@@ -67,6 +67,11 @@ module Ai4r
         @max_generation.times do |i|
 
           message = "Generation: #{i}, best fitness: #{@population[0].fitness}"
+          @options[:stats][:gen] ||= []
+          @options[:stats][:gen][i] = {
+              fitness: @population[0].fitness,
+              time: Time.now - @options[:stats][:start_run]
+          }
           if @options[:rb_channel].nil?
             puts message
           else
@@ -129,13 +134,15 @@ module Ai4r
       end
 
       def penalty_before(cluster)
-        cluster.sum do |p|
+        @cache_penalty_before ||= {}
+        @cache_penalty_before[cluster] ||= cluster.sum do |p|
           @options[:penalties_before][p]
         end
       end
 
       def penalty_after(cluster)
-        @options[:timestamps].sum do |t|
+        @cache_penalty_after||= {}
+        @cache_penalty_after[cluster] ||= @options[:timestamps].sum do |t|
           v = cluster.sum do |p|
             @errors[[@prosumers[p].id ,t]] || 0
           end
