@@ -38,3 +38,7 @@ do
   paste "$prefix"_k_before_sum.csv "$prefix"_k_after_sum.csv | awk -v OFS='\t' '{print $1, ($2-$4)/$2*100}' > "$prefix"_k_tot_impr.csv
 done
 
+for proto in smart static
+do
+  ./standard_error.awk "$proto"_? | sort -n > "$proto"_se
+done
