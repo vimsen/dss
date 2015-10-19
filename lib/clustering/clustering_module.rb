@@ -19,6 +19,8 @@ module ClusteringModule
      #  name: "By forecasting errors"},
      { string: :genetic,
        name: "Using genetic algorithms"},
+     { string: :genetic_smart,
+       name: "Genetic algorithm with smart reproduction"},
      { string: :positive_error_spectral_clustering,
        name: "Positive Error Spectral Clustering"},
      { string: :negative_error_spectral_clustering,
@@ -46,6 +48,8 @@ module ClusteringModule
         result = ForecastErrorClustering.new.run param.to_i
       when 'genetic'
         result = ClusteringModule::GeneticErrorClustering.new.run param.to_i
+      when 'genetic_smart'
+        result = ClusteringModule::GeneticErrorClustering.new(algorithm: Ai4r::GeneticAlgorithm::StaticChromosomeWithSmartCrossover).run param.to_i
       when 'positive_error_spectral_clustering'
         result = ClusteringModule::PositiveErrorSpectralClustering.new.run param.to_i
       when 'negative_error_spectral_clustering'
