@@ -4,63 +4,63 @@ require 'clustering/spectral_clustering'
 
 # This module implements the clustering algorithms for the demo
 module ClusteringModule
-  def self.algorithms
-    [{ string: :energy_type,
-       name: 'By renewable type' },
-     { string: :building_type,
-       name: 'By building type' },
-     { string: :connection_type,
-       name: 'By connection type' },
-     { string: :location,
-       name: 'By location' },
-     { string: :dr,
-       name: "By demand response profile"},
-     # { string: :error,
-     #  name: "By forecasting errors"},
-     { string: :genetic,
-       name: "Using genetic algorithms"},
-     { string: :genetic_smart,
-       name: "Genetic algorithm with smart reproduction"},
-     { string: :positive_error_spectral_clustering,
-       name: "Positive Error Spectral Clustering"},
-     { string: :negative_error_spectral_clustering,
-       name: "Negative Error Spectral Clustering"},
-     { string: :positive_consumption_spectral_clustering,
-       name: "Positive Consumption Spectral Clustering"},
-     { string: :negative_consumption_spectral_clustering,
-       name: "Negative Consumption Spectral Clustering"}]
 
+  def self.algorithms
+    {
+        energy_type: {
+            string: 'By renewable type',
+            proc: ->(k) { run_energy_type }
+        },
+        building_type: {
+            string: 'By building type',
+            proc: ->(k) { run_building_type }
+        },
+        connection_type: {
+            string: 'By connection type',
+            proc: ->(k) { run_connection_type }
+        },
+        location: {
+            string: 'By location',
+            proc: ->(k) { run_location k }
+        },
+        dr: {
+            string: 'By demand response profile',
+            proc: ->(k) { run_dr k }
+        },
+        genetic: {
+            string: 'Using genetic algorithms',
+            proc: ->(k) { ClusteringModule::GeneticErrorClustering.new.run k }
+        },
+        genetic_smart: {
+            string: 'Genetic algorithm with smart reproduction',
+            proc: ->(k) {
+              ClusteringModule::GeneticErrorClustering.new(
+                  algorithm: Ai4r::GeneticAlgorithm::StaticChromosomeWithSmartCrossover
+              ).run k
+            }
+        },
+        positive_error_spectral_clustering: {
+            string: 'Positive Error Spectral Clustering',
+            proc: ->(k) { ClusteringModule::PositiveErrorSpectralClustering.new.run k }
+        },
+        negative_error_spectral_clustering: {
+            string: 'Negative Error Spectral Clustering',
+            proc: ->(k) { ClusteringModule::NegativeErrorSpectralClustering.new.run k }
+        },
+        positive_consumption_spectral_clustering: {
+            string: 'Positive Consumption Spectral Clustering',
+            proc: ->(k) { ClusteringModule::PositiveConsumptionSpectralClustering.new.run k }
+        },
+        negative_consumption_spectral_clustering: {
+            string: 'Negative Consumption Spectral Clustering',
+            proc: ->(k) { ClusteringModule::NegativeConsumptionSpectralClustering.new.run k }
+        }
+
+    }
   end
 
   def self.run_algorithm(algo, param)
-    case algo
-      when 'energy_type'
-        result = run_energy_type
-      when 'building_type'
-        result = run_building_type
-      when 'connection_type'
-        result = run_connection_type
-      when 'location'
-        result = run_location param.to_i
-      when 'dr'
-        result = run_dr param.to_i
-      when 'error'
-        result = ForecastErrorClustering.new.run param.to_i
-      when 'genetic'
-        result = ClusteringModule::GeneticErrorClustering.new.run param.to_i
-      when 'genetic_smart'
-        result = ClusteringModule::GeneticErrorClustering.new(algorithm: Ai4r::GeneticAlgorithm::StaticChromosomeWithSmartCrossover).run param.to_i
-      when 'positive_error_spectral_clustering'
-        result = ClusteringModule::PositiveErrorSpectralClustering.new.run param.to_i
-      when 'negative_error_spectral_clustering'
-        result = ClusteringModule::NegativeErrorSpectralClustering.new.run param.to_i
-      when 'positive_consumption_spectral_clustering'
-        result = ClusteringModule::PositiveConsumptionSpectralClustering.new.run param.to_i
-      when 'negative_consumption_spectral_clustering'
-        result = ClusteringModule::NegativeConsumptionSpectralClustering.new.run param.to_i
-      else
-        return nil
-    end
+    result = self.algorithms.with_indifferent_access[algo][:proc].call(param.to_i)
 
     result.select { |cl| cl.prosumers.size > 0 }
   end

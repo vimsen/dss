@@ -16,7 +16,7 @@
           <div class="form-group">
             <%= label_tag :algorithm, nil, class: "col-sm-2 control-label" %>
             <div class="col-sm-10">
-              <%= select_tag "algorithm", options_for_select(algorithms.collect {|p| [ p[:name], p[:string] ] }), {class: "form-control"} %>
+              <%= select_tag "algorithm", options_for_select(algorithms.map {|k, v| [ v[:string], k] }), {class: "form-control"} %>
             </div>
           </div>
           <div id="k_parameter" class="form-group">
