@@ -41,6 +41,9 @@ class GeneticClusteringTest < ActiveSupport::TestCaseWithProsAndMarketData
   end
 
   test "measure genetic clustering performance" do
+
+    skip('Test is too slow, so it is excluded. Remove this line to enable')
+
     result = Benchmark.bm do |x|
       10.times do |i|
         x.report("smart") do
