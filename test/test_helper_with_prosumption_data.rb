@@ -81,3 +81,12 @@ class ActionController::TestCaseWithProsumptionData < ActionController::TestCase
   end
 
 end
+
+class ActionDispatch::IntegrationTestWithProsumptionData < ActionDispatch::IntegrationTest
+  include ProsumptionData
+
+  setup do
+    load_data
+  end
+
+end
