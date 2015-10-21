@@ -35,7 +35,8 @@ class ClusteringTest < ActionDispatch::IntegrationTestWithProsumptionData
     Capybara.current_driver = :selenium_15_min
 
     Delorean.time_travel_to(@trainend) do
-      ClusteringModule::algorithms.keys.size.times do |i|
+      # ClusteringModule::algorithms.keys.size
+      1.times do |i|
         visit clusterings_select_path
         assert page.has_selector?('#algorithm'), "There should be an #algorithm input"
         assert(find('#algorithm'), "There should be an #algorithm input")
@@ -46,6 +47,24 @@ class ClusteringTest < ActionDispatch::IntegrationTestWithProsumptionData
         select ClusteringModule::algorithms.values[i][:string], :from => "algorithm"
         click_button 'Select'
         assert(current_path == clusterings_confirm_path, "Should be on confirm page for algorithn '#{ClusteringModule::algorithms.values[i][:string]}'")
+
+
+        no_cluster = page.all(:xpath, '//ul[@id="prosumer_list_-1"]')
+
+        assert_equal 1, no_cluster.count, "Single list for unclustered prosumers"
+
+        get_prosumers = Proc.new {|d| d.all(:xpath, 'li[@id[starts-with(.,"prosumer_")]]').count }
+        
+        assert_equal 0, no_cluster.sum{|d| get_prosumers.call(d) }, "No unclustered prosumers"
+        #         puts page.all(:xpath, 'div[@id[starts-with(.,"prosumer_list_")]]').count
+        assert_equal Prosumer.all.count, 
+                    (page.all(:xpath, '//ul[@id[starts-with(.,"prosumer_list_")]]').sum do |ul|
+                        get_prosumers.call(ul)
+                    end),
+                    "All prosumers should be in a cluster"
+        click_button 'Confirm'
+        assert_match(/^\/clusterings\/\d+/, current_path, "Should be on clustering view page")
+
       end
     end
   end
