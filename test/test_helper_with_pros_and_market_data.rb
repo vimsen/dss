@@ -1,7 +1,7 @@
 require 'test_helper_with_prosumption_data'
 
-class ActiveSupport::TestCaseWithProsAndMarketData < ActiveSupport::TestCaseWithProsumptionData
-  setup do
+module MarketData
+  def load_market_data
     puts "Importing market data"
     if DayAheadEnergyPrice.count < 37
       dbconn = ActiveRecord::Base.connection_pool.checkout
@@ -22,4 +22,29 @@ class ActiveSupport::TestCaseWithProsAndMarketData < ActiveSupport::TestCaseWith
   end
 end
 
+class ActiveSupport::TestCaseWithProsAndMarketData < ActiveSupport::TestCaseWithProsumptionData
+  include MarketData
 
+  setup do
+    load_market_data
+  end
+
+end
+
+class ActionController::TestCaseWithProsAndMarketData < ActionController::TestCaseWithProsumptionData
+  include MarketData
+
+  setup do
+    load_market_data
+  end
+
+end
+
+class ActionDispatch::IntegrationTestWithProsAndMarketData < ActionDispatch::IntegrationTestWithProsumptionData
+  include MarketData
+
+  setup do
+    load_market_data
+  end
+
+end
