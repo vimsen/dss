@@ -7,7 +7,7 @@ Capybara.app = Rails.application.class
 Capybara.default_driver = :rack_test
 DatabaseCleaner.strategy = :truncation
 
-class ClusteringTest < ActionDispatch::IntegrationTestWithProsumptionData
+class ClusteringTest < ActionDispatch::IntegrationTestWithProsAndMarketData
   include Capybara::DSL
   include Warden::Test::Helpers
   # include Devise::TestHelpers
@@ -29,7 +29,9 @@ class ClusteringTest < ActionDispatch::IntegrationTestWithProsumptionData
       profile = Selenium::WebDriver::Firefox::Profile.new
       client = Selenium::WebDriver::Remote::Http::Default.new
       client.timeout = 60 * 15 # instead of the default 60
-      Capybara::Selenium::Driver.new(app, browser: :firefox, profile: profile, http_client: client)
+      Capybara::Selenium::Driver.new(app, browser: :firefox,
+                                     profile: profile,
+                                     http_client: client)
     end
 
     Capybara.current_driver = :selenium_15_min
