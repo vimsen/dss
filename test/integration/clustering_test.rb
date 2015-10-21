@@ -1,6 +1,7 @@
 require 'test_helper'
 require 'database_cleaner'
 require 'clustering/clustering_module'
+require 'delorean'
 
 Capybara.app = Rails.application.class
 Capybara.default_driver = :rack_test
@@ -23,29 +24,29 @@ class ClusteringTest < ActionDispatch::IntegrationTestWithProsumptionData
   end
 
   test "run spectral algorithm" do
-    Capybara.current_driver = :selenium
-    visit '/clusterings/select'
 
-    assert page.has_selector?('#algorithm'), "There should be an #algorithm input"
+    Capybara.register_driver :selenium_15_min do |app|
+      profile = Selenium::WebDriver::Firefox::Profile.new
+      client = Selenium::WebDriver::Remote::Http::Default.new
+      client.timeout = 60 * 15 # instead of the default 60
+      Capybara::Selenium::Driver.new(app, browser: :firefox, profile: profile, http_client: client)
+    end
 
-    # expect(page).to have_selector('#algorithm', visible: true)
+    Capybara.current_driver = :selenium_15_min
 
-    assert(find('#algorithm'), "There should be an #algorithm input")
+    Delorean.time_travel_to(@trainend) do
+      ClusteringModule::algorithms.keys.size.times do |i|
+        visit clusterings_select_path
+        assert page.has_selector?('#algorithm'), "There should be an #algorithm input"
+        assert(find('#algorithm'), "There should be an #algorithm input")
+        assert page.has_select?('algorithm', :options => ClusteringModule::algorithms.map{|k,v| v[:string]}),
+               "Should have all options available"
+        assert(current_path == clusterings_select_path, "Should be on select page")
 
-    assert page.has_select?('algorithm', :options => ClusteringModule::algorithms.map{|k,v| v[:string]}),
-           "Should have all options available"
-
-    assert(current_path == '/clusterings/select', "Should be on select page")
-
-    select "Positive Error Spectral Clustering", :from => "algorithm"
-    click_button 'Select'
-    assert(current_path == '/clusterings/confirm', "Should be on confirm page")
-
-
-    #fill_in 'user_email', :with => 'player@example.com'
-    #fill_in 'user_password', :with => 'password'
-    #click_button 'Log in'
-
+        select ClusteringModule::algorithms.values[i][:string], :from => "algorithm"
+        click_button 'Select'
+        assert(current_path == clusterings_confirm_path, "Should be on confirm page for algorithn '#{ClusteringModule::algorithms.values[i][:string]}'")
+      end
+    end
   end
-
 end
