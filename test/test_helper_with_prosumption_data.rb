@@ -1,5 +1,5 @@
 module ProsumptionData
-  def load_data
+  def load_prosumption_data
     puts "Importing data"
 
     if Prosumer.count < 37
@@ -68,7 +68,7 @@ class ActiveSupport::TestCaseWithProsumptionData < ActiveSupport::TestCase
   include ProsumptionData
 
   setup do
-    load_data
+    load_prosumption_data
   end
 
 end
@@ -77,7 +77,16 @@ class ActionController::TestCaseWithProsumptionData < ActionController::TestCase
   include ProsumptionData
 
   setup do
-    load_data
+    load_prosumption_data
+  end
+
+end
+
+class ActionDispatch::IntegrationTestWithProsumptionData < ActionDispatch::IntegrationTest
+  include ProsumptionData
+
+  setup do
+    load_prosumption_data
   end
 
 end

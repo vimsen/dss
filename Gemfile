@@ -70,6 +70,9 @@ group :development, :test do
   gem 'rails-erd' # use `bundle exec erd` to genera ERD diagram
   gem 'railroady' # Use `rake diagram:all` for generating all diagrams
   gem 'delorean' # For time-traveling in tests
+  gem 'capybara' # For integration testing
+  gem 'database_cleaner' # ditto
+  gem 'selenium-webdriver' # For capybara
 end
 
 gem 'darwinning' # For genetic algorithms
