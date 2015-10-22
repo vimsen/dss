@@ -37,8 +37,9 @@ class ClusteringTest < ActionDispatch::IntegrationTestWithProsAndMarketData
     Capybara.current_driver = :selenium_15_min
 
     Delorean.time_travel_to(@trainend) do
-      # ClusteringModule::algorithms.keys.size
-      1.times do |i|
+      # 2.upto(2)
+      ClusteringModule::algorithms.keys.size.times do |i|
+        puts "Testing algorithm: #{ClusteringModule::algorithms.keys[i]}"
         visit clusterings_select_path
         assert page.has_selector?('#algorithm'), "There should be an #algorithm input"
         assert(find('#algorithm'), "There should be an #algorithm input")
@@ -55,17 +56,57 @@ class ClusteringTest < ActionDispatch::IntegrationTestWithProsAndMarketData
 
         assert_equal 1, no_cluster.count, "Single list for unclustered prosumers"
 
-        get_prosumers = Proc.new {|d| d.all(:xpath, 'li[@id[starts-with(.,"prosumer_")]]').count }
+        get_pros_count = ->(d) { d.all(:xpath, 'li[@id[starts-with(.,"prosumer_")]]').count }
         
-        assert_equal 0, no_cluster.sum{|d| get_prosumers.call(d) }, "No unclustered prosumers"
+        assert_equal 0, no_cluster.sum(&get_pros_count), "No unclustered prosumers"
         #         puts page.all(:xpath, 'div[@id[starts-with(.,"prosumer_list_")]]').count
-        assert_equal Prosumer.all.count, 
-                    (page.all(:xpath, '//ul[@id[starts-with(.,"prosumer_list_")]]').sum do |ul|
-                        get_prosumers.call(ul)
-                    end),
-                    "All prosumers should be in a cluster"
-        click_button 'Confirm'
+        assert_equal Prosumer.all.count,
+                     page.all(:xpath, '//ul[@id[starts-with(.,"prosumer_list_")]]')
+                         .sum(&get_pros_count),
+                     "All prosumers should be in a cluster"
+        assert_difference('Clustering.count') do
+          click_button 'Confirm'
+        end
         assert_match(/^\/clusterings\/\d+/, current_path, "Should be on clustering view page")
+
+        total_penalties_before = page.first(:xpath, '//dt[text()="Total sum (€):"]/following::dd[1]').text.split.last.to_f
+        total_penalties_after = page.first(:xpath, '//dt[text()="Total aggr. sum (€):"]/following::dd[1]').text.split.last.to_f
+        total_penalty_reduction = page.first(:xpath, '//dt[text()="Improvement:"]/following::dd[1]').text.split.last.to_f
+
+        puts "before: #{total_penalties_before}, after: #{total_penalties_after}, perc: #{total_penalty_reduction }"
+
+        assert_operator total_penalties_before, :>, 0, "Total penalties before should be positive"
+        assert_operator total_penalties_after , :>, 0, "Total penalties after should be positive"
+        assert_operator total_penalty_reduction , :>, 0, "Total penalty reduction should be positive"
+        assert_operator total_penalties_after ,:<, total_penalties_before, "Penalties after should be larger than before"
+
+
+        penalties_before = page.all(:xpath, '//table/tbody/tr/th[text()="sum"]/following::td[4]').map{|t| t.text.to_f}
+        penalties_after = page.all(:xpath, '//table/tbody/tr/th[text()="aggr."]/following::td[4]').map{|t| t.text.to_f}
+        penalty_reduction  = page.all(:xpath, '//table/tbody/tr/th[text()="Perc."]/following::td[4]').map{|t| t.text.to_f}
+
+        puts "penalties before: #{penalties_before}"
+        puts "penalties after: #{penalties_after}"
+        puts "penalty reduction: #{penalty_reduction}"
+
+        assert_operator penalties_before.min, :>=, 0, "All penalties should be positive or zero"
+        assert_operator penalties_after.min, :>=, 0, "All penalties should be positive or zero"
+        assert_operator penalty_reduction.min, :>=, 0, "No cluster should be worse than before"
+
+
+        assert_in_delta total_penalties_before,
+                        penalties_before.sum,
+                        total_penalties_before / 100,
+                        "Penalties before should add up"
+        assert_in_delta total_penalties_after,
+                        penalties_after.sum,
+                        total_penalties_after / 100,
+                        "Penalties after should add up"
+        assert_in_delta total_penalty_reduction,
+                        penalties_before.zip(penalty_reduction).map{|a,b| a * b}.sum /
+                            penalties_before.sum,
+                        10,
+                        "Penalties after should add up"
 
       end
     end
