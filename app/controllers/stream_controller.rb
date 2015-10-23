@@ -1,30 +1,11 @@
 require 'streamer/sse'
 require 'market/market'
 require 'clustering/match_expected'
+require 'fetch_asynch/download_and_publish'
 
 class StreamController < ApplicationController
   include ActionController::Live
 
-  def addevent
-
-    raise "Missing prosumer" if params[:id].nil?
-
-    raise "Invalid prosumer id" if Prosumer.find_by_id(params[:id]).nil?
-
-    power = rand(-100..100)
-    measurement = Measurement.new(timeslot: DateTime.now, power: power, prosumer_id: params[:id] )
-    measurement.save
-
-    bunny_channel = $bunny.create_channel
-    x = bunny_channel.fanout("prosumer.#{params[:id]}")
-
-    msg = {'id' => measurement.id, "prosumer_id" => params[:id], 'X' => measurement.timeslot.to_i, 'Y' => power}.to_json
-
-    x.publish(msg)
-
-    render nothing:true
-  end
-  
   def clusterfeed
     response.headers['Content-Type'] = 'text/event-stream'
     ActiveRecord::Base.forbid_implicit_checkout_for_thread!
@@ -198,6 +179,69 @@ class StreamController < ApplicationController
     sse.close
     puts "Stream closed."
   end
+
+  def download_data
+    ActiveRecord::Base.forbid_implicit_checkout_for_thread!
+    response.headers['Content-Type'] = 'text/event-stream'
+    sse = Streamer::SSE.new(response.stream)
+
+    bunny_channel = $bunny.create_channel
+    channel_name = SecureRandom.uuid
+    x = bunny_channel.fanout(channel_name)
+    q = bunny_channel.queue("", :exclusive => false)
+    q.bind(x)
+    remaining = 0
+
+    sse.write("Downloading data. Please wait...".to_json, event: 'output')
+
+    consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
+      begin
+        msg = JSON.parse(data)
+        if msg['event'] == "output"
+
+          remaining = remaining - 1 if msg['data'] =~ %r{^Interval.*: complete\.$}
+         #  puts "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", delivery_info, properties, data
+         #  puts "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY", msg
+          sse.write(msg['data'].to_json, event: msg['event'])
+
+        end
+      rescue IOError
+        consumer.cancel unless consumer.nil?
+        sse.close
+        puts "Stream closed2."
+      ensure
+        ActiveRecord::Base.clear_active_connections!
+      end
+    end
+
+    startdate = DateTime.now - 2.weeks
+    enddate = DateTime.now
+
+    remaining = 3
+    FetchAsynch::DownloadAndPublish.new(Prosumer.all, 1, startdate, enddate, channel_name)
+    FetchAsynch::DownloadAndPublish.new(Prosumer.all, 2, startdate, enddate, channel_name)
+    FetchAsynch::DownloadAndPublish.new(Prosumer.all, 3, startdate, enddate, channel_name)
+
+
+
+    until remaining == 0
+      sleep 1;
+      sse.write("OK".to_json, event: 'messages.keepalive')
+    end
+
+    sse.write("done".to_json, event: 'result')
+    consumer.cancel unless consumer.nil?
+    sse.close
+    puts "Stream closed3."
+
+
+  rescue IOError
+  ensure
+    consumer.cancel unless consumer.nil?
+    sse.close
+    puts "Stream closed."
+  end
+
 
   def run_algorithm
     ActiveRecord::Base.forbid_implicit_checkout_for_thread!

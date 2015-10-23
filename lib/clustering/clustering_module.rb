@@ -1,51 +1,66 @@
 require 'clustering/genetic_error_clustering2'
-require 'clustering/cross_correlation_error_clustering'
+require 'clustering/spectral_clustering'
 
 
 # This module implements the clustering algorithms for the demo
 module ClusteringModule
-  def self.algorithms
-    [{ string: :energy_type,
-       name: 'By renewable type' },
-     { string: :building_type,
-       name: 'By building type' },
-     { string: :connection_type,
-       name: 'By connection type' },
-     { string: :location,
-       name: 'By location' },
-     { string: :dr,
-       name: "By demand response profile"},
-     # { string: :error,
-     #  name: "By forecasting errors"},
-     { string: :genetic,
-       name: "Using genetic algorithms"},
-     { string: :cross_correlation_spectral,
-       name: "Cross correlation spectral clustering"}]
 
+  def self.algorithms
+    {
+        energy_type: {
+            string: 'By renewable type',
+            proc: ->(k) { run_energy_type }
+        },
+        building_type: {
+            string: 'By building type',
+            proc: ->(k) { run_building_type }
+        },
+        connection_type: {
+            string: 'By connection type',
+            proc: ->(k) { run_connection_type }
+        },
+        location: {
+            string: 'By location',
+            proc: ->(k) { run_location k }
+        },
+        dr: {
+            string: 'By demand response profile',
+            proc: ->(k) { run_dr k }
+        },
+        genetic: {
+            string: 'Using genetic algorithms',
+            proc: ->(k) { ClusteringModule::GeneticErrorClustering.new.run k }
+        },
+        genetic_smart: {
+            string: 'Genetic algorithm with smart reproduction',
+            proc: ->(k) {
+              ClusteringModule::GeneticErrorClustering.new(
+                  algorithm: Ai4r::GeneticAlgorithm::StaticChromosomeWithSmartCrossover
+              ).run k
+            }
+        },
+        positive_error_spectral_clustering: {
+            string: 'Positive Error Spectral Clustering',
+            proc: ->(k) { ClusteringModule::PositiveErrorSpectralClustering.new.run k }
+        },
+        negative_error_spectral_clustering: {
+            string: 'Negative Error Spectral Clustering',
+            proc: ->(k) { ClusteringModule::NegativeErrorSpectralClustering.new.run k }
+        },
+        positive_consumption_spectral_clustering: {
+            string: 'Positive Consumption Spectral Clustering',
+            proc: ->(k) { ClusteringModule::PositiveConsumptionSpectralClustering.new.run k }
+        },
+        negative_consumption_spectral_clustering: {
+            string: 'Negative Consumption Spectral Clustering',
+            proc: ->(k) { ClusteringModule::NegativeConsumptionSpectralClustering.new.run k }
+        }
+
+    }
   end
 
   def self.run_algorithm(algo, param)
-    case algo
-      when 'energy_type'
-        result = run_energy_type
-      when 'building_type'
-        result = run_building_type
-      when 'connection_type'
-        result = run_connection_type
-      when 'location'
-        result = run_location param.to_i
-      when 'dr'
-        result = run_dr param.to_i
-      when 'error'
-        result = ForecastErrorClustering.new.run param.to_i
-      when 'genetic'
-        result = ClusteringModule::GeneticErrorClustering.new.run param.to_i
-      when 'cross_correlation_spectral'
-        result = ClusteringModule::CrossCorrelationErrorClustering.new.run param.to_i
-        puts result
-      else
-        return nil
-    end
+    result = self.algorithms.with_indifferent_access[algo][:proc].call(param.to_i)
 
     result.select { |cl| cl.prosumers.size > 0 }
   end
@@ -130,11 +145,9 @@ module ClusteringModule
     }
   end
 
-  def self.get_centroid_dr(cluster)
-    puts "test"
-    puts [cluster.prosumers.map {|p| p.max_dr }.sum, cluster.prosumers.size]
+  def self.get_centroid_dr(cluster, dr_vector)
     {
-        dr: cluster.prosumers.map {|p| p.max_dr }.sum / cluster.prosumers.size,
+        dr: cluster.map {|p| dr_vector[p]}.sum / cluster.size,
         cluster: cluster
     }
   end
@@ -157,9 +170,9 @@ module ClusteringModule
     closest
   end
 
-  def self.find_closest_dr(prosumer, centroids)
+  def self.find_closest_dr(dr, centroids)
     (centroids.min_by do |c|
-      (c[:dr] - prosumer.max_dr).abs
+      (c[:dr] - dr).abs
     end)[:cluster]
   end
 
@@ -195,35 +208,42 @@ module ClusteringModule
 
   def self.run_dr(kappa)
     result = Prosumer.with_positive_dr.sample(kappa).map.with_index do |p, i|
-      cl = TempCluster.new name: "Dr: #{i}",
-                       description: "Demand Response based cluster #{i}"
-      cl.prosumers.push p
-      cl
+       [ p.id ]
     end
 
-    centroids = result.map { |cl| get_centroid_dr cl }
+    dr_vector = Hash[Prosumer.all.map {|p| [p.id, p.max_dr]}]
+
+    dr_prosumers = Prosumer.with_dr
+
+    centroids = result.map { |cl| get_centroid_dr(cl, dr_vector) }
     loop do
       old_centroids = Array.new centroids
       puts "Old centroids: ", old_centroids
-      result.each { |cl| cl.prosumers.clear }
-      Prosumer.with_dr.each do |p|
-        cl = find_closest_dr(p, centroids)
-        puts "Testing: ", [p.max_dr, p.id, cl.name]
-        cl.prosumers.push p
+      result.each { |cl| cl.clear }
+      dr_prosumers.each do |p|
+        cl = find_closest_dr(dr_vector[p.id], centroids)
+        cl.push p.id
       end
-      result = result.select { |cl| cl.prosumers.size > 0}
-      centroids = result.map { |cl| get_centroid_dr cl }
+      result = result.select { |cl| cl.size > 0}
+      centroids = result.map { |cl| get_centroid_dr cl, dr_vector }
       break if centroids <=> old_centroids
     end
 
-    without_dr = Prosumer.all - Prosumer.with_dr
+    without_dr = Prosumer.all - dr_prosumers
 
     if without_dr.count > 0
-      cl = TempCluster.new name: 'No DR info.',
-                       description: 'Prosumers with no DR info available'
-      cl.prosumers << without_dr
+      cl = []
+      cl << without_dr.map{|p| p.id}
       result.push cl
     end
-    result
+    result.map.with_index do |c, i|
+      puts "Prosumer ids are: #{c}"
+      cl = TempCluster.new name: "Dr: #{i}",
+                           description: "Demand Response based cluster #{i}"
+      c.each do |p|
+        cl.prosumers << Prosumer.find(p)
+      end
+      cl
+    end
   end
 end

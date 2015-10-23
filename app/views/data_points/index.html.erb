@@ -1,6 +1,21 @@
 <!-- /.row -->
 <div class="row">
   <div class="col-lg-12">
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Load recent data points
+      </div>
+      <div class="panel-body">
+        <form action="#" id="download_data">
+          <input type="submit" value="Download recent data points"/>
+        </form>
+        <div id="progress" class="terminal">
+
+        </div>
+      </div>
+    </div>
+
     <div class="panel panel-default">
       <div class="panel-heading">
         Listing data_points
@@ -63,5 +78,30 @@
 <!-- /.row -->
 <br>
 
+<script>
+  $("#download_data").submit(function () {
+    $("#progress").empty();
+    $("#download_data :input").prop("disabled", true);
+    var source = new EventSource("/stream/download_data");
+
+    source.addEventListener('output', function(e) {
+      console.log("output received: ", e);
+      var message = JSON.parse(e.data);
+      $("#progress").append("<BR/>" + message).animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
+    });
+
+    source.addEventListener('result', function(e) {
+      console.log("result received: ", e);
+      var message = JSON.parse(e.data);
+      source.close();
+      $("#progress").append("<BR/>" + message).animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
+      $("#run_algorithm :input").prop("disabled", false);
+      $("#progress").append("<BR/>DataPoints downloaded. Refresh page to view them.").animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
+    });
+
+    return false;
+  });
+
+</script>
 
 

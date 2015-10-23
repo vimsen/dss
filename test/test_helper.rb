@@ -7,8 +7,13 @@ class ActiveSupport::TestCase
   fixtures :all
 
   # Add more helper methods to be used by all tests here...
+  setup do
+    User.first.add_role :admin
+  end
 end
 
 class ActionController::TestCase
   include Devise::TestHelpers
+
 end
+
