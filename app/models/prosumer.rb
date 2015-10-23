@@ -56,7 +56,7 @@ class Prosumer < ActiveRecord::Base
   end
 
   def max_dr
-    self.data_points.empty? ? nil : self.data_points.max { |dp| dp.dr }.dr
+    self.data_points.empty? ? nil : self.data_points.maximum(:dr)
   end
   
 end

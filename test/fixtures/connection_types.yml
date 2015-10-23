@@ -1,5 +1,25 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+2g:
+  id: 1
+  name: 2G
+
+3g:
+  id: 2
+  name: 3G
+
+4g:
+  id: 3
+  name: 4G
+
+adsl:
+  id: 4
+  name: ADSL
+
+cable:
+  id: 5
+  name: Cable
+
 one:
   name: MyString
 

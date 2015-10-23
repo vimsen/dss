@@ -3,7 +3,6 @@ require 'test_helper'
 class RolesControllerTest < ActionController::TestCase
   setup do
     @role = roles(:one)
-    User.first.add_role "admin"
     sign_in User.first
   end
 
@@ -20,7 +19,7 @@ class RolesControllerTest < ActionController::TestCase
 
   test "should create role" do
     assert_difference('Role.count') do
-      post :create, role: { name: @role.name, users: @role.users }
+      post :create, role: { name: @role.name + "2", users: [ @role.users ] }
     end
 
     assert_redirected_to role_path(assigns(:role))
@@ -37,7 +36,7 @@ class RolesControllerTest < ActionController::TestCase
   end
 
   test "should update role" do
-    patch :update, id: @role, role: { name: @role.name, users: @role.users }
+    patch :update, id: @role, role: { name: @role.name, users: [ @role.users ] }
     assert_redirected_to role_path(assigns(:role))
   end
 

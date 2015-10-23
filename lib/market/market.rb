@@ -26,7 +26,7 @@ module Market
                       forecast_cache[f.f_timestamp.to_i] = f.fc
                       price_cache[f.f_timestamp.to_i] = forecast_price(f.f_timestamp, f.timestamp)
                      #  puts "timestamp: #{f.f_timestamp}, price: #{forecast_price(f.f_timestamp, f.timestamp)}"
-                      puts "fc: #{f.fc}, pc: #{price_cache[f.f_timestamp.to_i]}, ts: #{f.f_timestamp.to_i}, cache: #{price_cache}"
+                      puts "fc: #{f.fc}, pc: #{price_cache[f.f_timestamp.to_i]}, ts: #{f.f_timestamp.to_i}, cache: #{price_cache}" unless price_cache[f.f_timestamp.to_i]
                       aggr_costs[:forecast] += f.fc * price_cache[f.f_timestamp.to_i]
                       [f.f_timestamp.to_i * 1000, f.fc * price_cache[f.f_timestamp.to_i]]
                     end
@@ -204,7 +204,7 @@ module Market
 
     def forecast_price(cons_timestamp, fore_timestamp)
       @forecast_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day - 2.hours) .. (@endDate - 1.year), region_id: 1).map { |d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price * 0.001 ] }] # Convert euro/MWh to euro/KWh      puts "timestamp: #{cons_timestamp}, price: #{@forecast_price_cache[cons_timestamp.to_i]}, total: #{@forecast_price_cache}"
-       # puts "ts: #{cons_timestamp}, For. Cache: #{@forecast_price_cache}"
+    #   puts "ts: #{cons_timestamp}, For. Cache: #{@forecast_price_cache}"
       @forecast_price_cache[cons_timestamp.to_i]
     end
 
