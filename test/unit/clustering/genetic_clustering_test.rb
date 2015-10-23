@@ -8,7 +8,7 @@ require 'benchmark'
 class GeneticClusteringTest < ActiveSupport::TestCaseWithProsAndMarketData
   test "should create genetic clustering" do
 
-   #  skip('Test is too slow, so it is excluded. Remove this line to enable')
+    skip('Test is too slow, so it is excluded. Remove this line to enable')
 
     spek = ClusteringModule::GeneticErrorClustering.new(prosumers: @prosumers,
                                                                  startDate: @startdate,

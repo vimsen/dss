@@ -11,7 +11,7 @@ class EvaluatorTest < ActiveSupport::TestCaseWithProsAndMarketData
     
     10.times do |round|
 
-      { genetic: ClusteringModule::GeneticErrorClustering,
+      { # genetic: ClusteringModule::GeneticErrorClustering,
         pos_error: ClusteringModule::PositiveErrorSpectralClustering,
         neg_error: ClusteringModule::NegativeErrorSpectralClustering,
         pos_cons: ClusteringModule::PositiveConsumptionSpectralClustering,
