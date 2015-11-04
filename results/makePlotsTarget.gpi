@@ -17,19 +17,19 @@ set xrange [1:25]
 set xlabel "Time index"
 set ylabel "Prosumption"
 
-plot for [col=2:19] 'target1.csv' using 1:col w l
+plot for [col=2:19] 'target1.csv' using 1:col w l lt (col>10 ? col-10 : col-1)
 
 set out "target2_1.".ext
 set yrange [*:*]
-plot for [col=2:10] 'target2.csv' using 1:col w l, \
-     for [col=11:19] 'target2.csv' using 1:col w p
+plot for [col=2:10] 'target2.csv' using 1:col w l lt col - 1, \
+     for [col=11:19] 'target2.csv' using 1:col w p lt col - 10
 
 
 set out "target2_2.".ext
 set ylabel "Prosumption (negative)"
 set yrange [*:512] reverse
-plot for [col=2:10] 'target2.csv' using 1:(-column(col)) w l, \
-     for [col=11:19] 'target2.csv' using 1:(-column(col)) w p
+plot for [col=2:10] 'target2.csv' using 1:(-column(col)) w l lt col - 1, \
+     for [col=11:19] 'target2.csv' using 1:(-column(col)) w p lt col - 10
 
 set out "target2_stats.".ext
 set ylabel "percentage (%)"
