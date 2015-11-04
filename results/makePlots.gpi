@@ -1,11 +1,13 @@
 #!/usr/bin/gnuplot
-#set term postscript enhanced color 
-#set term postscript eps enhanced monochrome size 4,2.8
-# set term postscript eps enhanced color size 4,2.8 linewidth 2
-set term postscript eps enhanced color size 3.5,2.62 linewidth 3
-#     font 'Helvetica,20'
-#set terminal epslatex color
 
+if (!exists ("ext")) ext='eps'
+if (ext eq 'eps') {
+  print "first: ".ext
+  set term postscript eps enhanced color size 3.5,2.62 linewidth 3
+} else { if (ext eq 'emf') {
+  print "second: ".ext
+  set terminal emf linewidth 3 size 640,480
+}}
 #set size 1,1
 #set key spacing 1.5
 #set boxwidth 0.85
@@ -20,7 +22,7 @@ set datafile separator "\t"
 
 set xlabel "Week"
 
-set out "genetic.eps"
+set out "genetic.".ext
 set ylabel "Penalty Reduction"
 set yrange [-20:120]
 set xrange [0:10]
@@ -28,50 +30,50 @@ set xrange [0:10]
 
 plot for [col=2:6] 'test_genetic_0_0.csv' using 1:col w lp
 
-set out "spectral_pos_error.eps"
+set out "spectral_pos_error.".ext
 plot for [col=2:6] 'test_pos_error_0_0.csv' using 1:col w lp
 
-set out "spectral_neg_error.eps"
+set out "spectral_neg_error.".ext
 plot for [col=2:6] 'test_neg_error_0_0.csv' using 1:col w lp
 
-set out "spectral_pos_cons.eps"
+set out "spectral_pos_cons.".ext
 plot for [col=2:6] 'test_pos_cons_0_0.csv' using 1:col w lp
 
-set out "spectral_neg_cons.eps"
+set out "spectral_neg_cons.".ext
 plot for [col=2:6] 'test_neg_cons_0_0.csv' using 1:col w lp
 
-set out "adaptive.eps"
+set out "adaptive.".ext
 set key center right
 plot for [col=2:6] 'test_adaptive_1_0.csv' using 1:col w lp
 
 set key noautotitle
-set out "comparison.eps"
+set out "comparison.".ext
 plot \
      "test_genetic_avg.csv" using 1:2 t 'Genetic' w lp, \
      "test_adaptive_avg.csv" using 1:2 t 'Adaptive' w lp
 
-set out "evolution.eps"
+set out "evolution.".ext
 set xrange [*:*]
 set yrange [0.4:1.4]
 set xlabel 'Time'
-set ylabel 'Fitness'
+set ylabel "Fitness"
 unset key
 
 plot for [run=0:9] "smart_".run using 2:3 w l lt 1, \
      for [run=0:9] "static_".run using 2:3 w l lt 2
 
-set out "evolution_se.eps"
+set out "evolution_se.".ext
 set key bottom right
 plot "<awk '1' smart_se" using 2:5:3:4:6:7 with xyerrorbars t 'smart' ps 0, \
      "<awk '1' static_se" using 2:5:3:4:6:7 with xyerrorbars t 'static' ps 0
 
-set out "evolution_gen.eps"
+set out "evolution_gen.".ext
 set xlabel "Generation"
 unset key
 plot for [run=0:9] "smart_".run using 1:3 w l lt 1, \
      for [run=0:9] "static_".run using 1:3 w l lt 2
 
-set out "evolution_gen_se.eps"
+set out "evolution_gen_se.".ext
 set key bottom right
 plot "<awk '1' smart_se" using 1:5:6:7 with errorbars t 'smart' ps 0, \
      "<awk '1' static_se" using 1:5:6:7 with errorbars t 'static' ps 0
@@ -79,7 +81,7 @@ plot "<awk '1' smart_se" using 1:5:6:7 with errorbars t 'smart' ps 0, \
 
 
 
-set out "neg_cons_k.eps"
+set out "neg_cons_k.".ext
 set key noautotitle
 set xlabel 'Kappa'
 set ylabel "Penalty Reduction"
@@ -89,23 +91,23 @@ set key top right
 set xrange [0:10]
 plot for [col=2:10] 'neg_cons_k_0.csv' using 1:col w lp t 'Cluster '.(col - 2)
 
-set out "pos_cons_k.eps"
+set out "pos_cons_k.".ext
 plot for [col=2:10] 'pos_cons_k_0.csv' using 1:col w lp t 'Cluster '.(col - 2)
 
-set out "neg_error_k.eps"
+set out "neg_error_k.".ext
 plot for [col=2:10] 'neg_error_k_0.csv' using 1:col w lp t 'Cluster '.(col - 2)
 
-set out "pos_error_k.eps"
+set out "pos_error_k.".ext
 plot for [col=2:10] 'pos_error_k_0.csv' using 1:col w lp t 'Cluster '.(col - 2)
 
-set out "genetic_k.eps"
+set out "genetic_k.".ext
 plot for [col=2:10] 'genetic_k_0.csv' using 1:col w lp t 'Cluster '.(col - 2)
 
-set out "adaptive_k.eps"
+set out "adaptive_k.".ext
 set key center right
 plot for [col=2:10] 'adaptive_k_0.csv' using 1:col w lp t 'Cluster '.(col -2)
 
-set out "comparison_k.eps"
+set out "comparison_k.".ext
 set key top right
 set ylabel "Average penalty reduction per cluster"
 plot \
@@ -116,7 +118,7 @@ plot \
      "neg_cons_k_avg.csv" using 1:2 t 'Negative Consumption' w lp, \
      "adaptive_k_avg.csv" using 1:2 t 'Adaptive' w lp
 
-set out "comparison_k_sum.eps"
+set out "comparison_k_sum.".ext
 set yrange [*:*]
 set key bottom left
 set ylabel "Total reduction in penalties payed"
