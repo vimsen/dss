@@ -1,7 +1,15 @@
 #!/usr/bin/gnuplot
-set term postscript eps enhanced color size 3.5,2.62 linewidth 2 
 
-set out "target1.eps"
+if (!exists ("ext")) ext='eps'
+if (ext eq 'eps') {
+  print "first: ".ext
+  set term postscript eps enhanced color size 3.5,2.62 linewidth 3
+} else { if (ext eq 'emf') {
+  print "second: ".ext
+  set terminal emf linewidth 3 size 640,480
+}}
+
+set out "target1.".ext
 set key off
 set logscale y 2
 set yrange [0.75 : 13]
@@ -11,19 +19,19 @@ set ylabel "Prosumption"
 
 plot for [col=2:19] 'target1.csv' using 1:col w l
 
-set out "target2_1.eps"
+set out "target2_1.".ext
 set yrange [*:*]
 plot for [col=2:10] 'target2.csv' using 1:col w l, \
      for [col=11:19] 'target2.csv' using 1:col w p
 
 
-set out "target2_2.eps"
+set out "target2_2.".ext
 set ylabel "Prosumption (negative)"
 set yrange [*:512] reverse
 plot for [col=2:10] 'target2.csv' using 1:(-column(col)) w l, \
      for [col=11:19] 'target2.csv' using 1:(-column(col)) w p
 
-set out "target2_stats.eps"
+set out "target2_stats.".ext
 set ylabel "percentage (%)"
 set key autotitle columnhead
 
