@@ -1,5 +1,14 @@
 #!/usr/bin/gnuplot
-set term postscript eps enhanced color size 3.5,2.62 linewidth 3
+
+if (!exists ("ext")) ext='eps'
+if (ext eq 'eps') {
+  print "first: ".ext
+    set term postscript eps enhanced color size 3.5,2.62 linewidth 3
+} else { if (ext eq 'emf') {
+  print "second: ".ext
+    set terminal emf linewidth 3 size 640,480
+}}
+
 set grid y lt 0
 set key top right
 # set key autotitle columnhead
@@ -7,7 +16,7 @@ set datafile separator "\t"
 
 set xlabel "Week"
 
-set out "comparison_total_penalties.eps"
+set out "comparison_total_penalties.".ext
 set ylabel "Total Penalties Payed"
 plot 'test_genetic_after_sum.csv' using 1:2 w lp t 'Genetic algorithm', \
      'test_pos_error_after_sum.csv' using 1:2 w lp t 'Positive Error', \
@@ -17,7 +26,7 @@ plot 'test_genetic_after_sum.csv' using 1:2 w lp t 'Genetic algorithm', \
      'test_adaptive_after_sum.csv' using 1:2 w lp t 'Adaptive', \
      'test_pos_error_before_sum.csv' using 1:2 w lp t 'Before Clustering'
 
-set out "comparison_total_percentile_penalty_reduction.eps"
+set out "comparison_total_percentile_penalty_reduction.".ext
 set ylabel "Total percentile penalty reduction"
 plot 'test_genetic_tot_impr.csv' using 1:2 w lp t 'Genetic algorithm', \
      'test_pos_error_tot_impr.csv' using 1:2 w lp t 'Positive Error', \
@@ -26,7 +35,7 @@ plot 'test_genetic_tot_impr.csv' using 1:2 w lp t 'Genetic algorithm', \
      'test_neg_cons_tot_impr.csv' using 1:2 w lp t 'Negative Consumption', \
      'test_adaptive_tot_impr.csv' using 1:2 w lp t 'Adaptive'
 
-set out "comparison_average_percentile_penalty_reduction.eps"
+set out "comparison_average_percentile_penalty_reduction.".ext
 set ylabel "Average percentile penalty reduction"
 set key center right
 plot 'test_genetic_avg.csv' using 1:2 w lp t 'Genetic algorithm', \
