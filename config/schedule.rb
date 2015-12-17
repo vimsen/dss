@@ -24,3 +24,6 @@ set :output, File.join(Whenever.path, "log", "cron.log")
 every 1.minute do
   runner "BidDayAheadJob.perform_now"
 end
+
+# To update cron run 
+#     whenever --update-cron BidDayAhead --set environment=development
