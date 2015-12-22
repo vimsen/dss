@@ -12,13 +12,30 @@ class BidDayAheadJob < ActiveJob::Base
     token = config[Rails.env]["market_operator"]["token"]
     base_uri = config[Rails.env]["market_operator"]["host"]
 
-    uri = "#{base_uri}/bids/"
+    rest_resource = RestClient::Resource.new(base_uri, verify_ssl: OpenSSL::SSL::VERIFY_NONE)
 
-    rest_resource = RestClient::Resource.new(uri, verify_ssl: OpenSSL::SSL::VERIFY_NONE)
+    markets = JSON.parse rest_resource['markets'].get params: {user_email: user, user_token: token, format: :json}
 
-    puts JSON.pretty_generate rest_resource.get
+    day_ahead_market = (markets.find do |m|
+      m["name"] == "Day Ahead"
+    end)
 
-    puts "The number of data points is #{DataPoint.count}, user is #{user}."
+    newbid = {
+        market_id: day_ahead_market["id"],
+        date: Date.tomorrow.to_s,
+        bid_items_attributes: day_ahead_market["blocks"].map do |b|
+          {
+              block_id: b["id"].to_i,
+              volume: rand(10.0...200.0),
+              price: rand(1.0...20.0)
+          }
+        end
+
+    }
+
+    bid = JSON.parse rest_resource['bids'].post bid: newbid, user_email: user, user_token: token, format: :json
+
+    puts "The number of data points is #{DataPoint.count}, user is #{user}. Bid is #{bid}."
     # Do something later
   end
 end
