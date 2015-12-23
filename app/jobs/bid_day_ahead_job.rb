@@ -30,10 +30,13 @@ class BidDayAheadJob < ActiveJob::Base
               price: rand(1.0...20.0)
           }
         end
-
     }
+    request_object = {
+        bid: newbid, user_email: user, user_token: token
+    }
+    # puts day_ahead_market["blocks"], request_object.to_json
 
-    bid = JSON.parse rest_resource['bids'].post bid: newbid, user_email: user, user_token: token, format: :json
+    bid = JSON.parse rest_resource['bids'].post request_object.to_json, :content_type => :json, :accept => :json
 
     puts "The number of data points is #{DataPoint.count}, user is #{user}. Bid is #{bid}."
     # Do something later
