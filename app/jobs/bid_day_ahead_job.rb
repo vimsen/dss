@@ -1,10 +1,13 @@
 require 'rest_client'
 require 'yaml'
+require 'fetch_asynch/download_and_publish'
 
 class BidDayAheadJob < ActiveJob::Base
   queue_as :default
 
   def perform(*args)
+
+    FetchAsynch::DownloadAndPublish.new(Prosumer.all, 2, Date.yesterday, Time.now, nil, true)
 
     config = YAML.load_file('config/config.yml')
 
