@@ -9,10 +9,11 @@ module FetchAsynch
   # This class downloads prosumption data from the EDMS, and then inserts them
   # in the DB, and publishes the results to the appropriate rabbitMQ channel.
   class DownloadAndPublish
-    def initialize(prosumers, interval, startdate, enddate, channel, async = false)
+    def initialize(prosumers, interval, startdate, enddate, channel, async = false, overwrite_data = false)
       @prosumers = prosumers
       @startdate = startdate
       @enddate = enddate
+      @overwrite_data = overwrite_data
       ActiveRecord::Base.connection_pool.with_connection do
         @interval = Interval.find(interval)
       end
@@ -85,7 +86,7 @@ module FetchAsynch
           dupe_finder = {}
 
 
-          new_data_points = data.reject do |r|
+          new_data_points = @overwrite_data ? data : data.reject do |r|
             is_duplicate = dupe_finder.has_key?("#{r['timestamp'].to_datetime.to_i},#{procs[r['procumer_id']].id},#{@interval.id}")
             dupe_finder["#{r['timestamp'].to_datetime.to_i},#{procs[r['procumer_id']].id},#{@interval.id}"] = 1
             r['timestamp'].to_datetime.future? ||
@@ -135,10 +136,13 @@ module FetchAsynch
      end
 
     def db_prepare(d, procs)
-     DataPoint.new(
-         timestamp: d['timestamp'].to_datetime,
-         prosumer: procs[d['procumer_id']],
-         interval: @interval,
+     dp = DataPoint.where(
+             timestamp: d['timestamp'].to_datetime,
+             prosumer: procs[d['procumer_id']],
+             interval: @interval
+         ).first_or_initialize()
+
+     dp.assign_attributes(
          production: d['actual']['production'],
          consumption: d['actual']['consumption'],
          storage: d['actual']['storage'],
@@ -149,7 +153,7 @@ module FetchAsynch
          dr: d['dr'],
          reliability: d['reliability']
      )
-
+     dp
     end
 
     def prepare(d, procs)
