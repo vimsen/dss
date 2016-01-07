@@ -8,7 +8,7 @@ class BidDayAheadJob < ActiveJob::Base
   def perform(*args)
 
     puts "Downloading data"
-    FetchAsynch::DownloadAndPublish.new(Prosumer.all, 2, Date.yesterday.to_datetime, Time.now, nil, true)
+    FetchAsynch::DownloadAndPublish.new(Prosumer.all, 2, Date.yesterday.to_datetime, Time.now, nil, true, true)
 
     puts "Downloaded data"
     config = YAML.load_file('config/config.yml')
@@ -32,12 +32,13 @@ class BidDayAheadJob < ActiveJob::Base
         market_id: day_ahead_market["id"],
         date: Date.tomorrow.to_s,
         bid_items_attributes: day_ahead_market["blocks"].map do |b|
-          vol = DataPoint.where(f_timestamp: Date.tomorrow.to_datetime + b["starting"].seconds).map{|dp| (dp.f_consumption - dp.f_production)}.sum
           {
               block_id: b["id"].to_i,
-              volume: vol,
+              volume: DataPoint.where(f_timestamp: Date.tomorrow.to_datetime + b["starting"].seconds).map{|dp| (dp.f_consumption - dp.f_production)}.sum,
               price: rand(1.0...20.0)
           }
+        end.reject do |b|
+          b[:volume] == 0
         end
     }
     puts "created bid"
