@@ -65,9 +65,38 @@ module FetchAsynch
       new_data_points = []
       procs = []
 
-      ActiveRecord::Base.connection_pool.with_connection do
+      Upsert.logger = Logger.new("/dev/null")
+
+      ActiveRecord::Base.connection_pool.with_connection do | conn |
         procs = Hash[@prosumers.map {|p| [p.intelen_id, p]}]
 
+        Upsert.batch(conn, DataPoint.table_name) do |upsert|
+          data.each do | d |
+            upsert.row({
+                           timestamp: d['timestamp'].to_datetime,
+                           prosumer_id: procs[d['procumer_id']].id,
+                           interval_id: @interval.id
+                       }, {
+                           production: d['actual']['production'],
+                           consumption: d['actual']['consumption'],
+                           storage: d['actual']['storage'],
+                           f_timestamp: d['forecast']['timestamp'].to_datetime,
+                           f_production: d['forecast']['production'],
+                           f_consumption: d['forecast']['consumption'],
+                           f_storage: d['forecast']['storage'],
+                           dr: d['dr'],
+                           reliability: d['reliability']
+                       }
+            ) unless d['timestamp'].to_datetime.future?
+          end
+        end
+
+        new_data_points = data.reject do |d|
+          d['timestamp'].to_datetime.future?
+        end
+
+
+=begin
         ActiveRecord::Base.transaction do
           ActiveRecord::Base.connection.execute("LOCK TABLE data_points IN EXCLUSIVE MODE;")
           old_data_points = Hash[DataPoint
@@ -104,6 +133,7 @@ module FetchAsynch
             x.publish({data:  "Interval #{@interval.name}: Inserted datapoints.", event: "output"}.to_json) if x
           end
         end
+=end
       end
 
       begin
@@ -136,24 +166,20 @@ module FetchAsynch
      end
 
     def db_prepare(d, procs)
-     dp = DataPoint.where(
-             timestamp: d['timestamp'].to_datetime,
-             prosumer: procs[d['procumer_id']],
-             interval: @interval
-         ).first_or_initialize()
-
-     dp.assign_attributes(
-         production: d['actual']['production'],
-         consumption: d['actual']['consumption'],
-         storage: d['actual']['storage'],
-         f_timestamp: d['forecast']['timestamp'].to_datetime,
-         f_production: d['forecast']['production'],
-         f_consumption: d['forecast']['consumption'],
-         f_storage: d['forecast']['storage'],
-         dr: d['dr'],
-         reliability: d['reliability']
+     DataPoint.new(
+        timestamp: d['timestamp'].to_datetime,
+        prosumer: procs[d['procumer_id']],
+        interval: @interval,
+        production: d['actual']['production'],
+        consumption: d['actual']['consumption'],
+        storage: d['actual']['storage'],
+        f_timestamp: d['forecast']['timestamp'].to_datetime,
+        f_production: d['forecast']['production'],
+        f_consumption: d['forecast']['consumption'],
+        f_storage: d['forecast']['storage'],
+        dr: d['dr'],
+        reliability: d['reliability']
      )
-     dp
     end
 
     def prepare(d, procs)
