@@ -85,3 +85,5 @@ gem 'seed_dump' # Needed for generatic seeds from existing data
 gem 'whenever', require: false
 
 gem 'rest-client'
+
+gem 'upsert'
