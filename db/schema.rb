@@ -16,7 +16,7 @@ ActiveRecord::Schema.define(version: 20150901125140) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "ancillary_services_data", force: true do |t|
+  create_table "ancillary_services_data", force: :cascade do |t|
     t.date     "date"
     t.integer  "dayhour"
     t.float    "purchased_volumes"
@@ -30,33 +30,33 @@ ActiveRecord::Schema.define(version: 20150901125140) do
     t.datetime "updated_at"
   end
 
-  create_table "building_types", force: true do |t|
-    t.string   "name"
+  create_table "building_types", force: :cascade do |t|
+    t.string   "name",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "clusterings", force: true do |t|
-    t.string   "name"
+  create_table "clusterings", force: :cascade do |t|
+    t.string   "name",        limit: 255
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "clusters", force: true do |t|
-    t.string   "name"
+  create_table "clusters", force: :cascade do |t|
+    t.string   "name",        limit: 255
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "connection_types", force: true do |t|
-    t.string   "name"
+  create_table "connection_types", force: :cascade do |t|
+    t.string   "name",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "data_points", force: true do |t|
+  create_table "data_points", force: :cascade do |t|
     t.integer  "prosumer_id"
     t.integer  "interval_id"
     t.datetime "timestamp"
@@ -75,7 +75,7 @@ ActiveRecord::Schema.define(version: 20150901125140) do
 
   add_index "data_points", ["timestamp", "prosumer_id", "interval_id"], name: "index_data_points_on_timestamp_and_prosumer_id_and_interval_id", unique: true, using: :btree
 
-  create_table "day_ahead_energy_demands", force: true do |t|
+  create_table "day_ahead_energy_demands", force: :cascade do |t|
     t.date     "date"
     t.integer  "dayhour"
     t.float    "demand"
@@ -84,7 +84,7 @@ ActiveRecord::Schema.define(version: 20150901125140) do
     t.datetime "updated_at"
   end
 
-  create_table "day_ahead_energy_prices", force: true do |t|
+  create_table "day_ahead_energy_prices", force: :cascade do |t|
     t.date     "date"
     t.integer  "dayhour"
     t.float    "price"
@@ -93,7 +93,7 @@ ActiveRecord::Schema.define(version: 20150901125140) do
     t.datetime "updated_at"
   end
 
-  create_table "day_ahead_energy_volumes", force: true do |t|
+  create_table "day_ahead_energy_volumes", force: :cascade do |t|
     t.date     "date"
     t.integer  "dayhour"
     t.float    "purchases"
@@ -103,7 +103,7 @@ ActiveRecord::Schema.define(version: 20150901125140) do
     t.datetime "updated_at"
   end
 
-  create_table "day_ahead_hours", force: true do |t|
+  create_table "day_ahead_hours", force: :cascade do |t|
     t.integer  "day_ahead_id"
     t.integer  "time"
     t.float    "production"
@@ -114,7 +114,7 @@ ActiveRecord::Schema.define(version: 20150901125140) do
 
   add_index "day_ahead_hours", ["day_ahead_id"], name: "index_day_ahead_hours_on_day_ahead_id", using: :btree
 
-  create_table "day_aheads", force: true do |t|
+  create_table "day_aheads", force: :cascade do |t|
     t.integer  "prosumer_id"
     t.date     "date"
     t.datetime "created_at"
@@ -123,9 +123,9 @@ ActiveRecord::Schema.define(version: 20150901125140) do
 
   add_index "day_aheads", ["prosumer_id"], name: "index_day_aheads_on_prosumer_id", using: :btree
 
-  create_table "energy_efficiency_certificates", force: true do |t|
+  create_table "energy_efficiency_certificates", force: :cascade do |t|
     t.datetime "date"
-    t.string   "cert_type"
+    t.string   "cert_type",                limit: 255
     t.float    "price_reference"
     t.float    "price_cumulative_average"
     t.float    "price_minimum"
@@ -135,7 +135,7 @@ ActiveRecord::Schema.define(version: 20150901125140) do
     t.datetime "updated_at"
   end
 
-  create_table "energy_type_prosumers", force: true do |t|
+  create_table "energy_type_prosumers", force: :cascade do |t|
     t.float    "power"
     t.integer  "energy_type_id"
     t.integer  "prosumer_id"
@@ -146,16 +146,16 @@ ActiveRecord::Schema.define(version: 20150901125140) do
   add_index "energy_type_prosumers", ["energy_type_id"], name: "index_energy_type_prosumers_on_energy_type_id", using: :btree
   add_index "energy_type_prosumers", ["prosumer_id"], name: "index_energy_type_prosumers_on_prosumer_id", using: :btree
 
-  create_table "energy_types", force: true do |t|
-    t.string   "name"
+  create_table "energy_types", force: :cascade do |t|
+    t.string   "name",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "green_certificates", force: true do |t|
+  create_table "green_certificates", force: :cascade do |t|
     t.datetime "date"
-    t.string   "certificate_type"
-    t.string   "reference_year"
+    t.string   "certificate_type", limit: 255
+    t.string   "reference_year",   limit: 255
     t.float    "traded_volumes"
     t.float    "price_reference"
     t.float    "price_minimum"
@@ -164,27 +164,27 @@ ActiveRecord::Schema.define(version: 20150901125140) do
     t.datetime "updated_at"
   end
 
-  create_table "instances", force: true do |t|
+  create_table "instances", force: :cascade do |t|
     t.integer  "user_id"
     t.integer  "configuration_id"
-    t.string   "results"
-    t.string   "status"
-    t.string   "reason"
-    t.string   "instance_name"
-    t.string   "worker"
+    t.string   "results",              limit: 255
+    t.string   "status",               limit: 255
+    t.string   "reason",               limit: 255
+    t.string   "instance_name",        limit: 255
+    t.string   "worker",               limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "total_execution_time"
   end
 
-  create_table "intervals", force: true do |t|
+  create_table "intervals", force: :cascade do |t|
     t.integer  "duration"
-    t.string   "name"
+    t.string   "name",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "intra_day_energy_prices", force: true do |t|
+  create_table "intra_day_energy_prices", force: :cascade do |t|
     t.date     "date"
     t.integer  "dayhour"
     t.float    "price"
@@ -194,7 +194,7 @@ ActiveRecord::Schema.define(version: 20150901125140) do
     t.datetime "updated_at"
   end
 
-  create_table "intra_day_energy_volumes", force: true do |t|
+  create_table "intra_day_energy_volumes", force: :cascade do |t|
     t.date     "date"
     t.integer  "dayhour"
     t.float    "purchases"
@@ -205,28 +205,28 @@ ActiveRecord::Schema.define(version: 20150901125140) do
     t.datetime "updated_at"
   end
 
-  create_table "log_instances", force: true do |t|
+  create_table "log_instances", force: :cascade do |t|
     t.integer  "instance_id"
     t.integer  "status"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "market_operators", force: true do |t|
-    t.string   "name"
+  create_table "market_operators", force: :cascade do |t|
+    t.string   "name",        limit: 255
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "market_regions", force: true do |t|
+  create_table "market_regions", force: :cascade do |t|
     t.integer  "mo_id"
-    t.string   "name"
+    t.string   "name",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "mb_provisional_total_data", force: true do |t|
+  create_table "mb_provisional_total_data", force: :cascade do |t|
     t.date     "date"
     t.integer  "dayhour"
     t.float    "purchased_revoked"
@@ -238,8 +238,8 @@ ActiveRecord::Schema.define(version: 20150901125140) do
     t.datetime "updated_at"
   end
 
-  create_table "meters", force: true do |t|
-    t.string   "mac"
+  create_table "meters", force: :cascade do |t|
+    t.string   "mac",         limit: 255
     t.integer  "prosumer_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -247,9 +247,9 @@ ActiveRecord::Schema.define(version: 20150901125140) do
 
   add_index "meters", ["prosumer_id"], name: "index_meters_on_prosumer_id", using: :btree
 
-  create_table "prosumers", force: true do |t|
-    t.string   "name"
-    t.string   "location"
+  create_table "prosumers", force: :cascade do |t|
+    t.string   "name",               limit: 255
+    t.string   "location",           limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "cluster_id"
@@ -264,24 +264,24 @@ ActiveRecord::Schema.define(version: 20150901125140) do
   add_index "prosumers", ["connection_type_id"], name: "index_prosumers_on_connection_type_id", using: :btree
   add_index "prosumers", ["intelen_id"], name: "index_prosumers_on_intelen_id", unique: true, using: :btree
 
-  create_table "prosumers_temp_clusters", force: true do |t|
+  create_table "prosumers_temp_clusters", force: :cascade do |t|
     t.integer "prosumer_id"
     t.integer "temp_cluster_id"
   end
 
   add_index "prosumers_temp_clusters", ["prosumer_id", "temp_cluster_id"], name: "index_prosumers_temp_clusters_on_prosumer_id_and_temp_cluster", using: :btree
 
-  create_table "prosumers_users", id: false, force: true do |t|
+  create_table "prosumers_users", id: false, force: :cascade do |t|
     t.integer "prosumer_id"
     t.integer "user_id"
   end
 
   add_index "prosumers_users", ["prosumer_id", "user_id"], name: "index_prosumers_users_on_prosumer_id_and_user_id", using: :btree
 
-  create_table "roles", force: true do |t|
-    t.string   "name"
+  create_table "roles", force: :cascade do |t|
+    t.string   "name",          limit: 255
     t.integer  "resource_id"
-    t.string   "resource_type"
+    t.string   "resource_type", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -289,8 +289,8 @@ ActiveRecord::Schema.define(version: 20150901125140) do
   add_index "roles", ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id", using: :btree
   add_index "roles", ["name"], name: "index_roles_on_name", using: :btree
 
-  create_table "temp_clusters", force: true do |t|
-    t.string   "name"
+  create_table "temp_clusters", force: :cascade do |t|
+    t.string   "name",          limit: 255
     t.text     "description"
     t.integer  "clustering_id"
     t.datetime "created_at"
@@ -299,13 +299,13 @@ ActiveRecord::Schema.define(version: 20150901125140) do
 
   add_index "temp_clusters", ["clustering_id"], name: "index_temp_clusters_on_clustering_id", using: :btree
 
-  create_table "users", force: true do |t|
-    t.string   "email",                  default: "", null: false
-    t.string   "encrypted_password",     default: "", null: false
-    t.string   "reset_password_token"
+  create_table "users", force: :cascade do |t|
+    t.string   "email",                  limit: 255, default: "", null: false
+    t.string   "encrypted_password",     limit: 255, default: "", null: false
+    t.string   "reset_password_token",   limit: 255
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          default: 0,  null: false
+    t.integer  "sign_in_count",                      default: 0,  null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.inet     "current_sign_in_ip"
@@ -317,7 +317,7 @@ ActiveRecord::Schema.define(version: 20150901125140) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
-  create_table "users_roles", id: false, force: true do |t|
+  create_table "users_roles", id: false, force: :cascade do |t|
     t.integer "user_id"
     t.integer "role_id"
   end
