@@ -87,7 +87,7 @@ module FetchAsynch
                            dr: d['dr'],
                            reliability: d['reliability']
                        }
-            ) unless d['timestamp'].to_datetime.future?
+            ) # unless d['timestamp'].to_datetime.future?
           end
         end
 

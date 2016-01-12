@@ -8,7 +8,7 @@ class BidDayAheadJob < ActiveJob::Base
   def perform(*args)
 
     puts "Downloading data"
-    FetchAsynch::DownloadAndPublish.new(Prosumer.all, 2, DateTime.now - 2.weeks, Time.now, nil, true, true)
+    FetchAsynch::DownloadAndPublish.new(Prosumer.all, 2, DateTime.now - 2.weeks, Time.now + 48.hours, nil, true, true)
 
     puts "Downloaded data"
     config = YAML.load_file('config/config.yml')
