@@ -27,6 +27,9 @@ module Ai4r
        @population = []
        puts "INIT: TARGETS: #{@options[:targets]}"
        puts "INIT: REAL: #{@options[:real_prosumption]}" unless @options[:real_prosumption].nil?
+
+       @options[:stats] ||= {}
+       @options[:stats][:start_run] = Time.now
        @population_size.times do
          population << @chromosomeClass.seed(@options)
        end
@@ -64,6 +67,7 @@ module Ai4r
       #     5. Return the best chromosome
       def run
         generate_initial_population                    #Generate initial population
+
         @max_generation.times do |i|
 
           message = "Generation: #{i}, best fitness: #{@population[0].fitness}"
@@ -72,9 +76,8 @@ module Ai4r
               fitness: @population[0].fitness,
               time: Time.now - @options[:stats][:start_run]
           }
-          if @options[:rb_channel].nil?
-            puts message
-          else
+          puts message
+          unless @options[:rb_channel].nil?
             @options[:rb_channel].publish({data: message, event: 'output'}.to_json)
           end
 
