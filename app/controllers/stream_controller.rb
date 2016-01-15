@@ -295,7 +295,7 @@ class StreamController < ApplicationController
       sleep 1;
       sse.write("OK".to_json, event: 'messages.keepalive')
     end
-  rescue IOError
+  rescue IOError, ActionController::Live::ClientDisconnected
   ensure
     consumer.cancel unless consumer.nil?
     sse.close
