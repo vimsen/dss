@@ -3,9 +3,9 @@
 one:
   name: MyString
   location: MyString
-  intelen_id: 1000
+  intelen_id: 1
 
 two:
   name: MyString
   location: MyString
-  intelen_id: 2000
+  intelen_id: 2
