@@ -41,6 +41,11 @@
    font-size:18px;
 }
 
+.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus,
+.nav > li > a:hover, .nav > li > a:focus {
+  color: #000000;
+}
+
 /*
 .equal, .equal > div[class*='col-'] {
   display: -webkit-box;
