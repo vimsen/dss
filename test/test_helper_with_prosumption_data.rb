@@ -90,3 +90,12 @@ class ActionDispatch::IntegrationTestWithProsumptionData < ActionDispatch::Integ
   end
 
 end
+
+class ActiveJob::TestCaseWithProsumptionData < ActiveJob::TestCase
+  include ProsumptionData
+
+  setup do
+    load_prosumption_data
+  end
+
+end

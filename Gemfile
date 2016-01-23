@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.1.6'
+gem 'rails', '4.2.5'
 # Use postgres instead of sqlite
 gem 'pg'
 
@@ -82,3 +82,8 @@ gem 'aws-sdk', '~> 2'
 
 gem 'seed_dump' # Needed for generatic seeds from existing data 
 
+gem 'whenever', require: false
+
+gem 'rest-client'
+
+gem 'upsert'
