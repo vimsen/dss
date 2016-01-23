@@ -11,7 +11,7 @@ Rails.application.configure do
   config.cache_classes = true
 
   # Do not eager load code on boot.
-  config.eager_load = false
+  config.eager_load = true # Changed due to http://stackoverflow.com/questions/18055342/rails-4-live-streaming-stays-open-blocking-requests
 
   # Show full error reports and disable caching.
   config.consider_all_requests_local       = true

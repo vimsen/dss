@@ -9,10 +9,11 @@ module FetchAsynch
   # This class downloads prosumption data from the EDMS, and then inserts them
   # in the DB, and publishes the results to the appropriate rabbitMQ channel.
   class DownloadAndPublish
-    def initialize(prosumers, interval, startdate, enddate, channel, async = false)
+    def initialize(prosumers, interval, startdate, enddate, channel, async = false, overwrite_data = false)
       @prosumers = prosumers
       @startdate = startdate
       @enddate = enddate
+      @overwrite_data = overwrite_data
       ActiveRecord::Base.connection_pool.with_connection do
         @interval = Interval.find(interval)
       end
@@ -64,9 +65,38 @@ module FetchAsynch
       new_data_points = []
       procs = []
 
-      ActiveRecord::Base.connection_pool.with_connection do
+      Upsert.logger = Logger.new("/dev/null")
+
+      ActiveRecord::Base.connection_pool.with_connection do | conn |
         procs = Hash[@prosumers.map {|p| [p.intelen_id, p]}]
 
+        Upsert.batch(conn, DataPoint.table_name) do |upsert|
+          data.each do | d |
+            upsert.row({
+                           timestamp: d['timestamp'].to_datetime,
+                           prosumer_id: procs[d['procumer_id']].id,
+                           interval_id: @interval.id
+                       }, {
+                           production: d['actual']['production'],
+                           consumption: d['actual']['consumption'],
+                           storage: d['actual']['storage'],
+                           f_timestamp: d['forecast']['timestamp'].to_datetime,
+                           f_production: d['forecast']['production'],
+                           f_consumption: d['forecast']['consumption'],
+                           f_storage: d['forecast']['storage'],
+                           dr: d['dr'],
+                           reliability: d['reliability']
+                       }
+            ) # unless d['timestamp'].to_datetime.future?
+          end
+        end
+
+        new_data_points = data.reject do |d|
+          d['timestamp'].to_datetime.future?
+        end
+
+
+=begin
         ActiveRecord::Base.transaction do
           ActiveRecord::Base.connection.execute("LOCK TABLE data_points IN EXCLUSIVE MODE;")
           old_data_points = Hash[DataPoint
@@ -85,7 +115,7 @@ module FetchAsynch
           dupe_finder = {}
 
 
-          new_data_points = data.reject do |r|
+          new_data_points = @overwrite_data ? data : data.reject do |r|
             is_duplicate = dupe_finder.has_key?("#{r['timestamp'].to_datetime.to_i},#{procs[r['procumer_id']].id},#{@interval.id}")
             dupe_finder["#{r['timestamp'].to_datetime.to_i},#{procs[r['procumer_id']].id},#{@interval.id}"] = 1
             r['timestamp'].to_datetime.future? ||
@@ -103,6 +133,7 @@ module FetchAsynch
             x.publish({data:  "Interval #{@interval.name}: Inserted datapoints.", event: "output"}.to_json) if x
           end
         end
+=end
       end
 
       begin
@@ -136,20 +167,19 @@ module FetchAsynch
 
     def db_prepare(d, procs)
      DataPoint.new(
-         timestamp: d['timestamp'].to_datetime,
-         prosumer: procs[d['procumer_id']],
-         interval: @interval,
-         production: d['actual']['production'],
-         consumption: d['actual']['consumption'],
-         storage: d['actual']['storage'],
-         f_timestamp: d['forecast']['timestamp'].to_datetime,
-         f_production: d['forecast']['production'],
-         f_consumption: d['forecast']['consumption'],
-         f_storage: d['forecast']['storage'],
-         dr: d['dr'],
-         reliability: d['reliability']
+        timestamp: d['timestamp'].to_datetime,
+        prosumer: procs[d['procumer_id']],
+        interval: @interval,
+        production: d['actual']['production'],
+        consumption: d['actual']['consumption'],
+        storage: d['actual']['storage'],
+        f_timestamp: d['forecast']['timestamp'].to_datetime,
+        f_production: d['forecast']['production'],
+        f_consumption: d['forecast']['consumption'],
+        f_storage: d['forecast']['storage'],
+        dr: d['dr'],
+        reliability: d['reliability']
      )
-
     end
 
     def prepare(d, procs)
