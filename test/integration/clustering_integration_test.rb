@@ -3,6 +3,8 @@ require 'test_helper_with_pros_and_market_data'
 require 'database_cleaner'
 require 'clustering/clustering_module'
 require 'delorean'
+require 'capybara'
+require 'capybara/dsl'
 
 Capybara.app = Rails.application.class
 Capybara.default_driver = :rack_test
