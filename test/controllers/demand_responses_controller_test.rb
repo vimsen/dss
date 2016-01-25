@@ -48,4 +48,22 @@ class DemandResponsesControllerTest < ActionController::TestCase
 
     assert_redirected_to demand_responses_path
   end
+
+  test "index with token authentication via query params" do
+    sign_out User.first
+    get :index, { user_email: users(:one).email, user_token: users(:one).authentication_token, format: :json }
+    puts @request.parameters
+    puts @response.body
+    assert_response :success
+  end
+
+  test "index with token authentication via request headers" do
+    sign_out User.first
+
+    @request.headers['X-User-Email'] = users(:one).email
+    @request.headers['X-User-Token'] = users(:one).authentication_token
+
+    get :index, format: :json
+    assert_response :success
+  end
 end
