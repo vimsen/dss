@@ -77,17 +77,16 @@ class DemandResponsesControllerTest < ActionController::TestCase
         dr_targets_attributes: 10.times.map do | i |
           {
               volume: rand(5.0...50.0),
-              timestamp: (starttime + i * Interval.find_by_name("15 minutes").duration.seconds).to_s
+              timestamp: (starttime + (i * Interval.find_by_name("15 minutes").duration).seconds).to_s
           }
-
         end
-
     }
 
     json = ""
     assert_difference('DemandResponse.count') do
       post :create, demand_response: newDRsignal, user_email: users(:one).email, user_token: users(:one).authentication_token, format: :json
       json = JSON.parse @response.body
+      puts @response.body
     end
     assert_response 201
 
