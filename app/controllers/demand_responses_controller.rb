@@ -4,7 +4,7 @@ class DemandResponsesController < ApplicationController
   # GET /demand_responses
   # GET /demand_responses.json
   def index
-    @demand_responses = DemandResponse.all
+    @demand_responses = DemandResponse.paginate(page: params[:page])
   end
 
   # GET /demand_responses/1
