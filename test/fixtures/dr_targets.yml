@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  volume: 1.5
+  timestamp: 2016-01-25 10:47:11
+  demand_response_id: 
+
+two:
+  volume: 1.5
+  timestamp: 2016-01-25 10:47:11
+  demand_response_id: 

@@ -1,0 +1,27 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Demand Responses</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Interval</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @demand_responses.each do |demand_response| %>
+      <tr>
+        <td><%= demand_response.interval %></td>
+        <td><%= link_to 'Show', demand_response %></td>
+        <td><%= link_to 'Edit', edit_demand_response_path(demand_response) %></td>
+        <td><%= link_to 'Destroy', demand_response, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Demand response', new_demand_response_path %>
