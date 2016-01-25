@@ -13,12 +13,12 @@ class DemandResponse < ActiveRecord::Base
 
 
   def starttime
-    @startime ||= self.dr_targets.min_by{|t| t.timestamp}.timestamp
+    @startime ||= self.dr_targets.min_by{|t| t.timestamp}.timestamp unless self.dr_targets.nil?
     return @startime
   end
 
   def stoptime
-    @stoptime ||= self.dr_targets.max_by{|t| t.timestamp}.timestamp
+    @stoptime ||= self.dr_targets.max_by{|t| t.timestamp}.timestamp unless self.dr_targets.nil?
     return @stoptime
   end
 
