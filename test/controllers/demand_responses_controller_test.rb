@@ -92,11 +92,11 @@ class DemandResponsesControllerTest < ActionController::TestCase
     assert_response 201
 
     assert_equal newDRsignal[:interval_id], json["interval_id"]
-    puts "SENT: #{newDRsignal}"
-    puts "RECV: #{json}"
 
+    newDRsignal[:dr_targets_attributes].zip(json["dr_targets"]).each do |e,a|
+      assert_equal DateTime.parse(e[:timestamp]), DateTime.parse(a["timestamp"])
+      assert_in_delta e[:volume], a["volume"], 0.00001
+    end
 
   end
-
-
 end
