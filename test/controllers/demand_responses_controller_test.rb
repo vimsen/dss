@@ -52,8 +52,8 @@ class DemandResponsesControllerTest < ActionController::TestCase
   test "index with token authentication via query params" do
     sign_out User.first
     get :index, { user_email: users(:one).email, user_token: users(:one).authentication_token, format: :json }
-    puts @request.parameters
-    puts @response.body
+    # puts @request.parameters
+    # puts @response.body
     assert_response :success
   end
 
@@ -66,4 +66,37 @@ class DemandResponsesControllerTest < ActionController::TestCase
     get :index, format: :json
     assert_response :success
   end
+
+  test "should submit DR evant through the API" do
+    sign_out User.first
+
+    starttime = DateTime.now + 1.hour
+
+    newDRsignal = {
+        interval_id: Interval.find_by_name("15 minutes").id,
+        dr_targets_attributes: 10.times.map do | i |
+          {
+              volume: rand(5.0...50.0),
+              timestamp: (starttime + i * Interval.find_by_name("15 minutes").duration.seconds).to_s
+          }
+
+        end
+
+    }
+
+    json = ""
+    assert_difference('DemandResponse.count') do
+      post :create, demand_response: newDRsignal, user_email: users(:one).email, user_token: users(:one).authentication_token, format: :json
+      json = JSON.parse @response.body
+    end
+    assert_response 201
+
+    assert_equal newDRsignal[:interval_id], json["interval_id"]
+    puts "SENT: #{newDRsignal}"
+    puts "RECV: #{json}"
+
+
+  end
+
+
 end

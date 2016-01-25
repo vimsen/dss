@@ -69,6 +69,6 @@ class DemandResponsesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def demand_response_params
-      params.require(:demand_response).permit(:interval_id)
+      params.require(:demand_response).permit(:interval_id, dr_targets_attributes: [:id, :volume, :timestamp])
     end
 end
