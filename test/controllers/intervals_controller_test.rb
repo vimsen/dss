@@ -42,10 +42,14 @@ class IntervalsControllerTest < ActionController::TestCase
   end
 
   test "should destroy interval" do
-    assert_difference('Interval.count', -1) do
-      delete :destroy, id: @interval
+    assert_difference('Interval.count', 0) do # Should NOT destroy interval when it is referenced
+      begin
+        delete :destroy, id: @interval
+      rescue
+
+      end
     end
 
-    assert_redirected_to intervals_path
+    assert_response 200
   end
 end
