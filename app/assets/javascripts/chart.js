@@ -158,6 +158,8 @@ var plotHelper = (function() {
 
       if (type == "kw") {
         unit = "KW";
+      } else if (type == "kw ") {
+        unit = "KW ";  // And this an even bigger hack :/
       } else {
         unit = "KWh"; // WARNING this is a hack
       }
