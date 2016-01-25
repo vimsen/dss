@@ -19,8 +19,8 @@
             <tbody>
             <% @demand_responses.each do |demand_response| %>
                 <tr>
-                  <td><%= demand_response.dr_targets.min_by{|t| t.timestamp}.timestamp unless demand_response.dr_targets.empty? %></td>
-                  <td><%= demand_response.dr_targets.max_by{|t| t.timestamp}.timestamp unless demand_response.dr_targets.empty? %></td>
+                  <td><%= demand_response.starttime %></td>
+                  <td><%= demand_response.stoptime %></td>
                   <td><%= demand_response.interval.duration %></td>
                   <td><%= link_to 'Show', demand_response, class: 'btn btn-success btn-xs' %></td>
                   <td><%= link_to 'Edit', edit_demand_response_path(demand_response), class: 'btn btn-info btn-xs' %></td>
