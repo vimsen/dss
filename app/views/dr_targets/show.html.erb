@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Volume:</strong>
+  <%= @dr_target.volume %>
+</p>
+
+<p>
+  <strong>Timestamp:</strong>
+  <%= @dr_target.timestamp %>
+</p>
+
+<p>
+  <strong>Demand response:</strong>
+  <%= @dr_target.demand_response %>
+</p>
+
+<%= link_to 'Edit', edit_dr_target_path(@dr_target) %> |
+<%= link_to 'Back', dr_targets_path %>

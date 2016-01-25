@@ -1,0 +1,33 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Dr Actuals</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Prosumer</th>
+      <th>Volume</th>
+      <th>Timestamp</th>
+      <th>Demand response</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @dr_actuals.each do |dr_actual| %>
+      <tr>
+        <td><%= dr_actual.prosumer %></td>
+        <td><%= dr_actual.volume %></td>
+        <td><%= dr_actual.timestamp %></td>
+        <td><%= dr_actual.demand_response %></td>
+        <td><%= link_to 'Show', dr_actual %></td>
+        <td><%= link_to 'Edit', edit_dr_actual_path(dr_actual) %></td>
+        <td><%= link_to 'Destroy', dr_actual, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Dr actual', new_dr_actual_path %>

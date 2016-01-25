@@ -1,0 +1,33 @@
+<%= form_for(@dr_actual) do |f| %>
+  <% if @dr_actual.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@dr_actual.errors.count, "error") %> prohibited this dr_actual from being saved:</h2>
+
+      <ul>
+      <% @dr_actual.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :prosumer_id %><br>
+    <%= f.text_field :prosumer_id %>
+  </div>
+  <div class="field">
+    <%= f.label :volume %><br>
+    <%= f.text_field :volume %>
+  </div>
+  <div class="field">
+    <%= f.label :timestamp %><br>
+    <%= f.datetime_select :timestamp %>
+  </div>
+  <div class="field">
+    <%= f.label :demand_response_id %><br>
+    <%= f.text_field :demand_response_id %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
