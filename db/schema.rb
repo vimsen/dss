@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160126072903) do
+ActiveRecord::Schema.define(version: 20160126134827) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -142,6 +142,7 @@ ActiveRecord::Schema.define(version: 20160126072903) do
   end
 
   add_index "dr_actuals", ["demand_response_id"], name: "index_dr_actuals_on_demand_response_id", using: :btree
+  add_index "dr_actuals", ["prosumer_id", "timestamp", "demand_response_id"], name: "pros_time_dr_index", unique: true, using: :btree
   add_index "dr_actuals", ["prosumer_id"], name: "index_dr_actuals_on_prosumer_id", using: :btree
 
   create_table "dr_planneds", force: :cascade do |t|
