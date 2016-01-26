@@ -1,4 +1,4 @@
-require 'fetch_asynch/download_demand_response'
+require 'fetch_asynch/demand_response_agent'
 
 class DemandResponse < ActiveRecord::Base
   belongs_to :interval
@@ -26,7 +26,7 @@ class DemandResponse < ActiveRecord::Base
 
     ActiveRecord::Base.connection_pool.with_connection do
       if self.dr_planneds.count < self.dr_targets.count
-        FetchAsynch::DownloadDemandResponse.new self.id
+        FetchAsynch::DemandResponseAgent.new self.id
       end
       {
           targets: Hash[self.dr_targets.map {|t| [t.timestamp.to_i * 1000, [t.timestamp.to_i * 1000, t.volume]] }]
