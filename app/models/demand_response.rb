@@ -11,6 +11,10 @@ class DemandResponse < ActiveRecord::Base
   has_many :dr_planneds, dependent: :destroy
   has_many :dr_actuals, dependent: :destroy
 
+  after_create do
+    agent = FetchAsynch::DemandResponseAgent.new
+    agent.dr_activation self.id
+  end
 
   def starttime
     @startime ||= self.dr_targets.min_by{|t| t.timestamp}.timestamp unless self.dr_targets.empty?
@@ -25,12 +29,17 @@ class DemandResponse < ActiveRecord::Base
   def request_cached(channel)
 
     ActiveRecord::Base.connection_pool.with_connection do
-      if self.dr_planneds.count < self.dr_targets.count
-        FetchAsynch::DemandResponseAgent.new self.id
+      if self.dr_planneds.count < self.dr_targets.count ||
+          self.dr_actuals.count < self.dr_targets.count
+        agent = FetchAsynch::DemandResponseAgent.new
+        agent.refresh_status self.id
       end
       {
-          targets: Hash[self.dr_targets.map {|t| [t.timestamp.to_i * 1000, [t.timestamp.to_i * 1000, t.volume]] }]
+          targets: Hash[self.dr_targets.map {|t| [t.timestamp.to_i * 1000, [t.timestamp.to_i * 1000, t.volume]] }],
+          planned: Hash[self.dr_planneds.group(:timestamp).order(timestamp: :asc).sum(:volume).map {|k,v| [k.to_i * 1000, [k.to_i * 1000, v]]}],
+          actual: Hash[self.dr_actuals.group(:timestamp).order(timestamp: :asc).sum(:volume).map {|k,v| [k.to_i * 1000, [k.to_i * 1000, v]]}]
       }
     end
   end
+
 end
