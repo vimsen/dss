@@ -1,6 +1,7 @@
 require 'test_helper'
+require 'test_helper_with_prosumption_data'
 
-class DemandResponsesControllerTest < ActionController::TestCase
+class DemandResponsesControllerTest < ActionController::TestCaseWithProsumptionData
   setup do
     sign_in User.first
     @demand_response = demand_responses(:one)
@@ -19,7 +20,7 @@ class DemandResponsesControllerTest < ActionController::TestCase
 
   test "should create demand_response" do
     assert_difference('DemandResponse.count') do
-      post :create, demand_response: { interval_id: @demand_response.interval_id }
+      post :create, demand_response: { interval_id: @demand_response.interval_id, dr_targets_attributes: @demand_response.dr_targets.map{|t| {volume: t.volume, timestamp: t.timestamp}} }
       # puts "AAAAAAAAAAAAAAAAA", @response
     end
 

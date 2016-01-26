@@ -29,8 +29,8 @@ class DemandResponse < ActiveRecord::Base
   def request_cached(channel)
 
     ActiveRecord::Base.connection_pool.with_connection do
-      if self.dr_planneds.count < self.dr_targets.count ||
-         self.dr_actuals.count < self.dr_targets.count
+      if (self.dr_planneds.count < self.dr_targets.count ||
+         self.dr_actuals.count < self.dr_targets.count) && !self.starttime.nil?
         agent = FetchAsynch::DemandResponseAgent.new
         agent.refresh_status self.id
         self.reload
