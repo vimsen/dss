@@ -58,8 +58,8 @@ module FetchAsynch
         #               "10":[6.86, 5.91, 12.24]
         #             }
         #         }'
-        puts "RESULT:  #{result}"
-        puts "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaa, #{dr_obj.plan_id}"
+        Rails.logger.debug "RESULT:  #{result}"
+        Rails.logger.debug "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaa, #{dr_obj.plan_id}"
         json = JSON.parse result
         puts json
 
@@ -92,9 +92,9 @@ module FetchAsynch
                                prosumer_id: Prosumer.find_by_intelen_id(k).id,
                                timestamp: dr_target.timestamp,
                                demand_response_id: demand_response_id,
-                               created_at: DateTime.now
                            },{
                                volume: v[i],
+                               created_at: DateTime.now,
                                updated_at: DateTime.now
                            })
               end
