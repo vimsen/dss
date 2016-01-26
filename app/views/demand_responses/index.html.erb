@@ -9,6 +9,7 @@
           <table class="table table-striped table-bordered table-hover" id="dataTables-data-points">
             <thead>
             <tr>
+              <th>plan id</th>
               <th><%= "starttime"-%></th>
               <th><%= "starttime" -%></th>
               <th><%= "interval" -%></th>
@@ -19,6 +20,7 @@
             <tbody>
             <% @demand_responses.each do |demand_response| %>
                 <tr>
+                  <td><%= demand_response.plan_id %></td>
                   <td><%= demand_response.starttime %></td>
                   <td><%= demand_response.stoptime %></td>
                   <td><%= demand_response.interval.duration %></td>

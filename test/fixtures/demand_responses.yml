@@ -2,6 +2,8 @@
 
 one:
   interval_id: 1
+  plan_id: 56
 
 two:
   interval_id: 2
+  plan_id: 56
