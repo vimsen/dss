@@ -70,10 +70,10 @@ module FetchAsynch
               upsert.row({
                              prosumer_id: Prosumer.find_by_intelen_id(k).id,
                              timestamp: dr_target.timestamp,
-                             demand_response_id: demand_response_id,
-                             created_at: DateTime.now
+                             demand_response_id: demand_response_id
                          },{
                              volume: v[i],
+                             created_at: DateTime.now,
                              updated_at: DateTime.now
                          })
             end
