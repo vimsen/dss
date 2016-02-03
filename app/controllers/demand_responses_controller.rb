@@ -12,6 +12,7 @@ class DemandResponsesController < ApplicationController
   def show
     @idata = @demand_response.request_cached(nil)
   rescue RestClient::Exception => e
+    @idata = @demand_response.dr_properties
     flash.now[:alert] = "Failed to connect to GDRMS"
     puts e.message
     puts e.response
