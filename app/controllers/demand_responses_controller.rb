@@ -10,6 +10,12 @@ class DemandResponsesController < ApplicationController
   # GET /demand_responses/1
   # GET /demand_responses/1.json
   def show
+    @idata = @demand_response.request_cached(nil)
+  rescue RestClient::Exception => e
+    flash.now[:alert] = "Failed to connect to GDRMS"
+    puts e.message
+    puts e.response
+
   end
 
   # GET /demand_responses/new
