@@ -26,8 +26,15 @@ class DemandResponse < ActiveRecord::Base
     return @stoptime
   end
 
-  def request_cached(channel)
+  def dr_properties
+    {
+        targets: Hash[self.dr_targets.map {|t| [t.timestamp.to_i * 1000, [t.timestamp.to_i * 1000, t.volume]] }],
+        planned: Hash[self.dr_planneds.group(:timestamp).order(timestamp: :asc).sum(:volume).map {|k,v| [k.to_i * 1000, [k.to_i * 1000, v]]}],
+        actual: Hash[self.dr_actuals.group(:timestamp).order(timestamp: :asc).sum(:volume).map {|k,v| [k.to_i * 1000, [k.to_i * 1000, v]]}]
+    }
+  end
 
+  def request_cached(channel)
     ActiveRecord::Base.connection_pool.with_connection do
       if (self.dr_planneds.group(:timestamp).count.count< self.dr_targets.count ||
          self.dr_actuals.group(:timestamp).count.count < self.dr_targets.count) && !self.starttime.nil?
@@ -35,12 +42,7 @@ class DemandResponse < ActiveRecord::Base
         agent.refresh_status self.id
         self.reload
       end
-
-      {
-          targets: Hash[self.dr_targets.map {|t| [t.timestamp.to_i * 1000, [t.timestamp.to_i * 1000, t.volume]] }],
-          planned: Hash[self.dr_planneds.group(:timestamp).order(timestamp: :asc).sum(:volume).map {|k,v| [k.to_i * 1000, [k.to_i * 1000, v]]}],
-          actual: Hash[self.dr_actuals.group(:timestamp).order(timestamp: :asc).sum(:volume).map {|k,v| [k.to_i * 1000, [k.to_i * 1000, v]]}]
-      }
+      dr_properties
     end
   end
 
