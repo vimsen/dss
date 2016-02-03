@@ -52,18 +52,7 @@
     var data = <%= @idata.to_json.html_safe %>;
     console.log(data);
 
-/*
-    var daf = {};
-
-    $.each(targets, function(i, d) {
-      daf[d[0]] = d;
-    });
-    console.log(daf);
-
-    var data = { targets: targets };
- */
     plotHelper.drawChart("<%= "/stream/#{@demand_response.id}/demand_response?" -%>",data, "kw ", false);
-
 
   });
 </script>
