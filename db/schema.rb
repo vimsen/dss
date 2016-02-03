@@ -31,27 +31,27 @@ ActiveRecord::Schema.define(version: 20160126134827) do
   end
 
   create_table "building_types", force: :cascade do |t|
-    t.string   "name"
+    t.string   "name",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "clusterings", force: :cascade do |t|
-    t.string   "name"
+    t.string   "name",        limit: 255
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "clusters", force: :cascade do |t|
-    t.string   "name"
+    t.string   "name",        limit: 255
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "connection_types", force: :cascade do |t|
-    t.string   "name"
+    t.string   "name",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -169,7 +169,7 @@ ActiveRecord::Schema.define(version: 20160126134827) do
 
   create_table "energy_efficiency_certificates", force: :cascade do |t|
     t.datetime "date"
-    t.string   "cert_type"
+    t.string   "cert_type",                limit: 255
     t.float    "price_reference"
     t.float    "price_cumulative_average"
     t.float    "price_minimum"
@@ -191,15 +191,15 @@ ActiveRecord::Schema.define(version: 20160126134827) do
   add_index "energy_type_prosumers", ["prosumer_id"], name: "index_energy_type_prosumers_on_prosumer_id", using: :btree
 
   create_table "energy_types", force: :cascade do |t|
-    t.string   "name"
+    t.string   "name",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "green_certificates", force: :cascade do |t|
     t.datetime "date"
-    t.string   "certificate_type"
-    t.string   "reference_year"
+    t.string   "certificate_type", limit: 255
+    t.string   "reference_year",   limit: 255
     t.float    "traded_volumes"
     t.float    "price_reference"
     t.float    "price_minimum"
@@ -211,11 +211,11 @@ ActiveRecord::Schema.define(version: 20160126134827) do
   create_table "instances", force: :cascade do |t|
     t.integer  "user_id"
     t.integer  "configuration_id"
-    t.string   "results"
-    t.string   "status"
-    t.string   "reason"
-    t.string   "instance_name"
-    t.string   "worker"
+    t.string   "results",              limit: 255
+    t.string   "status",               limit: 255
+    t.string   "reason",               limit: 255
+    t.string   "instance_name",        limit: 255
+    t.string   "worker",               limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "total_execution_time"
@@ -223,7 +223,7 @@ ActiveRecord::Schema.define(version: 20160126134827) do
 
   create_table "intervals", force: :cascade do |t|
     t.integer  "duration"
-    t.string   "name"
+    t.string   "name",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -257,7 +257,7 @@ ActiveRecord::Schema.define(version: 20160126134827) do
   end
 
   create_table "market_operators", force: :cascade do |t|
-    t.string   "name"
+    t.string   "name",        limit: 255
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -265,7 +265,7 @@ ActiveRecord::Schema.define(version: 20160126134827) do
 
   create_table "market_regions", force: :cascade do |t|
     t.integer  "mo_id"
-    t.string   "name"
+    t.string   "name",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -283,7 +283,7 @@ ActiveRecord::Schema.define(version: 20160126134827) do
   end
 
   create_table "meters", force: :cascade do |t|
-    t.string   "mac"
+    t.string   "mac",         limit: 255
     t.integer  "prosumer_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -292,8 +292,8 @@ ActiveRecord::Schema.define(version: 20160126134827) do
   add_index "meters", ["prosumer_id"], name: "index_meters_on_prosumer_id", using: :btree
 
   create_table "prosumers", force: :cascade do |t|
-    t.string   "name"
-    t.string   "location"
+    t.string   "name",               limit: 255
+    t.string   "location",           limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "cluster_id"
@@ -323,9 +323,9 @@ ActiveRecord::Schema.define(version: 20160126134827) do
   add_index "prosumers_users", ["prosumer_id", "user_id"], name: "index_prosumers_users_on_prosumer_id_and_user_id", using: :btree
 
   create_table "roles", force: :cascade do |t|
-    t.string   "name"
+    t.string   "name",          limit: 255
     t.integer  "resource_id"
-    t.string   "resource_type"
+    t.string   "resource_type", limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -333,15 +333,8 @@ ActiveRecord::Schema.define(version: 20160126134827) do
   add_index "roles", ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id", using: :btree
   add_index "roles", ["name"], name: "index_roles_on_name", using: :btree
 
-  create_table "targets", force: :cascade do |t|
-    t.float    "volume"
-    t.datetime "timestamp"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "temp_clusters", force: :cascade do |t|
-    t.string   "name"
+    t.string   "name",          limit: 255
     t.text     "description"
     t.integer  "clustering_id"
     t.datetime "created_at"
@@ -351,12 +344,12 @@ ActiveRecord::Schema.define(version: 20160126134827) do
   add_index "temp_clusters", ["clustering_id"], name: "index_temp_clusters_on_clustering_id", using: :btree
 
   create_table "users", force: :cascade do |t|
-    t.string   "email",                  default: "", null: false
-    t.string   "encrypted_password",     default: "", null: false
-    t.string   "reset_password_token"
+    t.string   "email",                  limit: 255, default: "", null: false
+    t.string   "encrypted_password",     limit: 255, default: "", null: false
+    t.string   "reset_password_token",   limit: 255
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          default: 0,  null: false
+    t.integer  "sign_in_count",                      default: 0,  null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.inet     "current_sign_in_ip"
