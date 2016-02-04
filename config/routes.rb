@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
 
+  resources :dr_actuals
+  resources :dr_planneds
+  resources :dr_targets
+  resources :demand_responses
   resources :meters
 
   resources :market_prices

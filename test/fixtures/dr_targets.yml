@@ -1,0 +1,16 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  volume: 0.06
+  timestamp: <%= Time.at((DateTime.now.to_f / 15.minutes).ceil * 15.minutes) %>
+  demand_response: one
+
+two:
+  volume: 0.15
+  timestamp: <%= Time.at((DateTime.now.to_f / 15.minutes).ceil * 15.minutes + 15.minutes) %>
+  demand_response: one
+
+three:
+  volume: 0.18
+  timestamp: <%= Time.at((DateTime.now.to_f / 15.minutes).ceil * 15.minutes + 30.minutes) %>
+  demand_response: one

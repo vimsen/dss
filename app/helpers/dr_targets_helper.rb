@@ -1,0 +1,2 @@
+module DrTargetsHelper
+end

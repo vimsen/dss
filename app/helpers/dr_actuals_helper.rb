@@ -1,0 +1,2 @@
+module DrActualsHelper
+end

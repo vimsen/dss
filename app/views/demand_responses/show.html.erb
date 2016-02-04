@@ -1,0 +1,61 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h3 class="page-header"><small>Demand Response:</small> <%= @demand_response.id -%>
+      <small>
+        | <%= link_to 'All demand response events - Back', demand_responses_path, class: 'btn btn-warning btn-xs'%>
+      </small>
+    </h3>
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+
+<div class="row ">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Demand response info
+      </div>
+      <div class="panel-body">
+        <dl class="dl-horizontal">
+          <dt>Plan id:</dt>
+          <dd><%= @demand_response.plan_id %></dd>
+
+          <dt>Start time:</dt>
+          <dd><%= @demand_response.starttime %></dd>
+
+          <dt>End time:</dt>
+          <dd><%= @demand_response.stoptime %></dd>
+
+          <dt>Interval</dt>
+          <dd><%= @demand_response.interval.duration -%> sec.</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Demand Response Data
+      </div>
+      <div class="panel-body">
+        <div id="placeholder" style="width:100%;height:400px;min-width=600px" ></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+    var data = <%= @idata.to_json.html_safe %>;
+    console.log(data);
+
+    plotHelper.drawChart("<%= "/stream/#{@demand_response.id}/demand_response?" -%>",data, "kw ", false);
+
+  });
+</script>
+
+
+

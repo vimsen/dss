@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150901125140) do
+ActiveRecord::Schema.define(version: 20160126134827) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -122,6 +122,50 @@ ActiveRecord::Schema.define(version: 20150901125140) do
   end
 
   add_index "day_aheads", ["prosumer_id"], name: "index_day_aheads_on_prosumer_id", using: :btree
+
+  create_table "demand_responses", force: :cascade do |t|
+    t.integer  "interval_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.integer  "plan_id"
+  end
+
+  add_index "demand_responses", ["interval_id"], name: "index_demand_responses_on_interval_id", using: :btree
+
+  create_table "dr_actuals", force: :cascade do |t|
+    t.integer  "prosumer_id"
+    t.float    "volume"
+    t.datetime "timestamp"
+    t.integer  "demand_response_id"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  add_index "dr_actuals", ["demand_response_id"], name: "index_dr_actuals_on_demand_response_id", using: :btree
+  add_index "dr_actuals", ["prosumer_id", "timestamp", "demand_response_id"], name: "pros_time_dr_index", unique: true, using: :btree
+  add_index "dr_actuals", ["prosumer_id"], name: "index_dr_actuals_on_prosumer_id", using: :btree
+
+  create_table "dr_planneds", force: :cascade do |t|
+    t.integer  "prosumer_id"
+    t.float    "volume"
+    t.datetime "timestamp"
+    t.integer  "demand_response_id"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  add_index "dr_planneds", ["demand_response_id"], name: "index_dr_planneds_on_demand_response_id", using: :btree
+  add_index "dr_planneds", ["prosumer_id"], name: "index_dr_planneds_on_prosumer_id", using: :btree
+
+  create_table "dr_targets", force: :cascade do |t|
+    t.float    "volume"
+    t.datetime "timestamp"
+    t.integer  "demand_response_id"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  add_index "dr_targets", ["demand_response_id"], name: "index_dr_targets_on_demand_response_id", using: :btree
 
   create_table "energy_efficiency_certificates", force: :cascade do |t|
     t.datetime "date"
@@ -312,8 +356,10 @@ ActiveRecord::Schema.define(version: 20150901125140) do
     t.inet     "last_sign_in_ip"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "authentication_token"
   end
 
+  add_index "users", ["authentication_token"], name: "index_users_on_authentication_token", using: :btree
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
@@ -324,4 +370,10 @@ ActiveRecord::Schema.define(version: 20150901125140) do
 
   add_index "users_roles", ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id", using: :btree
 
+  add_foreign_key "demand_responses", "intervals"
+  add_foreign_key "dr_actuals", "demand_responses"
+  add_foreign_key "dr_actuals", "prosumers"
+  add_foreign_key "dr_planneds", "demand_responses"
+  add_foreign_key "dr_planneds", "prosumers"
+  add_foreign_key "dr_targets", "demand_responses"
 end
