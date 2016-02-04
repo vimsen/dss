@@ -92,6 +92,8 @@ SimpleNavigation::Configuration.run do |navigation|
       sub_nav.dom_class = 'nav nav-second-level collapse'
     end
 
+    primary.item :menu_demand_responses, 'Demand Responses', demand_responses_path
+
     primary.item :menu_meters, 'Meters', '#' do |sub_nav|
       HierMenu::HierMenu.new('meters_hier', Proc.new { |p| meter_url(p) }, :mac, 4).fill_node sub_nav, Meter.all.order(id: :asc)
       sub_nav.dom_class = 'nav nav-second-level collapse'

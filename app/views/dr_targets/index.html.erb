@@ -1,0 +1,31 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Dr Targets</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Volume</th>
+      <th>Timestamp</th>
+      <th>Demand response</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @dr_targets.each do |dr_target| %>
+      <tr>
+        <td><%= dr_target.volume %></td>
+        <td><%= dr_target.timestamp %></td>
+        <td><%= dr_target.demand_response %></td>
+        <td><%= link_to 'Show', dr_target %></td>
+        <td><%= link_to 'Edit', edit_dr_target_path(dr_target) %></td>
+        <td><%= link_to 'Destroy', dr_target, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Dr target', new_dr_target_path %>

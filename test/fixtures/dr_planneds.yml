@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  prosumer_id: 
+  volume: 1.5
+  timestamp: 2016-01-25 10:48:02
+  demand_response_id: 
+
+two:
+  prosumer_id: 
+  volume: 1.5
+  timestamp: 2016-01-25 10:48:02
+  demand_response_id: 
