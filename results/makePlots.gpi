@@ -57,9 +57,11 @@ set xrange [*:*]
 set yrange [0.4:1.4]
 set xlabel 'Time'
 set ylabel "Fitness"
-unset key
+set key bottom right
 
-plot for [run=0:9] "smart_".run using 2:3 w l lt 1, \
+plot "smart_0" using 2:3 w l lt 1 title 'smart', \
+     for [run=1:9] "smart_".run using 2:3 w l lt 1, \
+     "static_0" using 2:3 w l lt 2 title 'static', \
      for [run=0:9] "static_".run using 2:3 w l lt 2
 
 set out "evolution_se.".ext
@@ -69,9 +71,12 @@ plot "<awk '1' smart_se" using 2:5:3:4:6:7 with xyerrorbars t 'smart' ps 0, \
 
 set out "evolution_gen.".ext
 set xlabel "Generation"
-unset key
-plot for [run=0:9] "smart_".run using 1:3 w l lt 1, \
-     for [run=0:9] "static_".run using 1:3 w l lt 2
+# unset key
+plot \
+     "smart_0" using 1:3 w l lt 1 title 'smart', \
+     for [run=1:9] "smart_".run using 1:3 w l lt 1, \
+     "static_0" using 1:3 w l lt 2 title 'static', \
+     for [run=1:9] "static_".run using 1:3 w l lt 2
 
 set out "evolution_gen_se.".ext
 set key bottom right
