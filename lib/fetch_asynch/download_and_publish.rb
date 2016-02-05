@@ -19,7 +19,7 @@ module FetchAsynch
       end
 
       puts "Starting new Thread..."
-      thread = Thread.new do
+      thread = Thread.new(abort_on_exception: true) do
         ActiveRecord::Base.forbid_implicit_checkout_for_thread!
         #   sleep 1
         i = 0
@@ -40,8 +40,14 @@ module FetchAsynch
         if newAPI? prosumers
           puts "Hello"
           rest_resource = RestClient::Resource.new(u)
-          result = rest_resource['getdataVGW'].get params: params
-          Rails.logger.debug "RAW: #{result}"
+          raw = rest_resource['getdataVGW'].get params: params
+          Rails.logger.debug "RAW: #{raw}"
+          result = JSON.parse raw
+          Rails.logger.debug "Result: #{result}"
+          result_conv = convert_new_to_old_api result
+          Rails.logger.debug "Result_conv: #{result_conv}"
+          datareceived(result_conv, channel)
+          # datareceived_new(result, channel)
 
 
         else
@@ -79,6 +85,29 @@ module FetchAsynch
       end
     end
 
+    def convert_new_to_old_api(data)
+      data.map do |d|
+        {
+            "timestamp" => d["Date"],
+            "procumer_id" => d["Mac"],
+            "interval" => @interval.duration,
+            "actual" => {
+                "production" => nil,
+                "consumption" => d["Kwh"],
+                "storage" => nil
+            },
+            "forecast" => {
+                "timestamp" => "",
+                "production" => nil,
+                "consumption" => nil,
+                "storage" => nil
+            },
+            "dr" => nil,
+            "reliability" => nil
+        }
+      end
+   end
+
     def datareceived(data, channel)
 
       Rails.logger.debug "Connecting to channel"
@@ -101,6 +130,19 @@ module FetchAsynch
 
         Upsert.batch(conn, DataPoint.table_name) do |upsert|
           data.each do | d |
+            puts "TEST!!!!!!!!!!!!!!!!!!!!!"
+            puts "#{ { timestamp: d['timestamp'].to_datetime, prosumer_id: procs[d['procumer_id'].to_s].id, interval_id: @interval.id } }"
+            puts "#{ {
+                production: d['actual']['production'],
+                consumption: d['actual']['consumption'],
+                storage: d['actual']['storage'],
+                f_timestamp: d['forecast']['timestamp'].to_datetime,
+                f_production: d['forecast']['production'],
+                f_consumption: d['forecast']['consumption'],
+                f_storage: d['forecast']['storage'],
+                dr: d['dr'],
+                reliability: d['reliability']
+            } }"
             upsert.row({
                            timestamp: d['timestamp'].to_datetime,
                            prosumer_id: procs[d['procumer_id'].to_s].id,
@@ -117,6 +159,7 @@ module FetchAsynch
                            reliability: d['reliability']
                        }
             ) # unless d['timestamp'].to_datetime.future?
+            puts "AFTER TEST!!!!!!!!!!!!!!!!!!!!!"
           end
         end
 
@@ -197,7 +240,7 @@ module FetchAsynch
     def db_prepare(d, procs)
      DataPoint.new(
         timestamp: d['timestamp'].to_datetime,
-        prosumer: procs[d['procumer_id']],
+        prosumer: procs[d['procumer_id'].to_s],
         interval: @interval,
         production: d['actual']['production'],
         consumption: d['actual']['consumption'],
@@ -215,8 +258,8 @@ module FetchAsynch
       k = d.deep_dup
 
       k['timestamp'] = d['timestamp'].to_datetime.to_i
-      k['prosumer_id'] = procs[d['procumer_id']].id
-      k['prosumer_name'] = procs[d['procumer_id']].name
+      k['prosumer_id'] = procs[d['procumer_id'].to_s].id
+      k['prosumer_name'] = procs[d['procumer_id'].to_s].name
       k['forecast']['timestamp'] =
           d['forecast']['timestamp'].to_datetime.to_i
       return k
