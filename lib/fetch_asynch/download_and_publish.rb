@@ -26,8 +26,7 @@ module FetchAsynch
         u = YAML.load_file('config/config.yml')[Rails.env]['intellen_host']
 
         puts i; i=i+1;
-        uri = URI.parse(u + '/getdata')
-        puts i; i=i+1;
+
         params = {}
         ActiveRecord::Base.connection_pool.with_connection do
           params = { prosumers: prosumers.map {|p| p.intelen_id}.join(","),
@@ -36,19 +35,49 @@ module FetchAsynch
                      interval: @interval.duration }
         end
         puts i; i=i+1;
-        uri.query = URI.encode_www_form(params)
-        puts i; i=i+1;
 
-        puts "In the new Thread..."
-        Rails.logger.debug "Connecting to: #{uri}"
-        result = JSON.parse(uri.open.read)
-        datareceived(result, channel)
+
+        if newAPI? prosumers
+          puts "Hello"
+          rest_resource = RestClient::Resource.new(u)
+          result = rest_resource['getdataVGW'].get params: params
+          Rails.logger.debug "RAW: #{result}"
+
+
+        else
+          puts "OLD API"
+          uri = URI.parse(u + '/getdata')
+          puts i; i=i+1;
+          uri.query = URI.encode_www_form(params)
+          puts i; i=i+1;
+
+          puts "In the new Thread..."
+          Rails.logger.debug "Connecting to: #{uri}"
+          raw = uri.open.read
+          Rails.logger.debug "RAW: #{raw}"
+          result = JSON.parse(raw)
+          datareceived(result, channel)
+        end
+
         Rails.logger.debug 'done'
       end
       thread.join if (async)
+
+
     end
 
     private
+
+    def is_integer?(num)
+      !!(num =~ /\A[-+]?[0-9]+\z/)
+    end
+
+    def newAPI?(prosumers)
+      ActiveRecord::Base.connection_pool.with_connection do
+        Rails.logger.debug "AAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        prosumers.reject {|p| is_integer?(p.intelen_id) }.count > 0
+      end
+    end
 
     def datareceived(data, channel)
 
@@ -74,7 +103,7 @@ module FetchAsynch
           data.each do | d |
             upsert.row({
                            timestamp: d['timestamp'].to_datetime,
-                           prosumer_id: procs[d['procumer_id']].id,
+                           prosumer_id: procs[d['procumer_id'].to_s].id,
                            interval_id: @interval.id
                        }, {
                            production: d['actual']['production'],
