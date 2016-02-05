@@ -19,7 +19,8 @@ module FetchAsynch
       end
 
       puts "Starting new Thread..."
-      thread = Thread.new(abort_on_exception: true) do
+      # Thread.abort_on_exception = true
+      thread = Thread.new do
         ActiveRecord::Base.forbid_implicit_checkout_for_thread!
         #   sleep 1
         i = 0
@@ -28,33 +29,39 @@ module FetchAsynch
         puts i; i=i+1;
 
         params = {}
+
+        new_api_prosumer_ids = prosumers.map {|p| p.intelen_id}.reject{|id| is_integer? id }
+        old_api_prosumer_ids = prosumers.map {|p| p.intelen_id}.select{|id| is_integer? id }
+
         ActiveRecord::Base.connection_pool.with_connection do
-          params = { prosumers: prosumers.map {|p| p.intelen_id}.join(","),
+          params = { # prosumers: prosumers.map {|p| p.intelen_id}.reject{|id| is_integer? id },
                      startdate: startdate.to_s,
                      enddate: enddate.to_s,
                      interval: @interval.duration }
         end
-        puts i; i=i+1;
 
-
-        if newAPI? prosumers
+        if new_api_prosumer_ids.count > 0
+          puts i; i=i+1;
           puts "Hello"
-          rest_resource = RestClient::Resource.new(u)
-          raw = rest_resource['getdataVGW'].get params: params
-          Rails.logger.debug "RAW: #{raw}"
-          result = JSON.parse raw
-          Rails.logger.debug "Result: #{result}"
-          result_conv = convert_new_to_old_api result
-          Rails.logger.debug "Result_conv: #{result_conv}"
-          datareceived(result_conv, channel)
+          new_api_prosumer_ids. each do |id|
+            rest_resource = RestClient::Resource.new(u)
+            raw = rest_resource['getdataVGW'].get params: params.merge(prosumers: id)
+            Rails.logger.debug "RAW: #{raw}"
+            result = JSON.parse raw
+            Rails.logger.debug "Result: #{result}"
+            result_conv = convert_new_to_old_api result
+            Rails.logger.debug "Result_conv: #{result_conv}"
+            datareceived(result_conv, channel)
+          end
           # datareceived_new(result, channel)
+        end
 
-
-        else
+        if old_api_prosumer_ids.count > 0
+          puts i; i=i+1;
           puts "OLD API"
           uri = URI.parse(u + '/getdata')
           puts i; i=i+1;
-          uri.query = URI.encode_www_form(params)
+          uri.query = URI.encode_www_form(params.merge prosumers: old_api_prosumer_ids.join(","))
           puts i; i=i+1;
 
           puts "In the new Thread..."
