@@ -133,7 +133,7 @@ class StreamController < ApplicationController
       sse.write("OK".to_json, event: 'messages.keepalive')
       ActiveRecord::Base.clear_active_connections!
     end
-  rescue IOError
+  rescue IOError, ActionController::Live::ClientDisconnected
   ensure
     ActiveRecord::Base.clear_active_connections!
     consumer.cancel unless consumer.nil?
@@ -170,7 +170,7 @@ class StreamController < ApplicationController
       sse.write("OK".to_json, event: 'messages.keepalive')
       ActiveRecord::Base.clear_active_connections!
     end
-  rescue => e
+  rescue ActionController::Live::ClientDisconnected => e
     # puts e.message
     # puts e.backtrace
   ensure
@@ -235,7 +235,7 @@ class StreamController < ApplicationController
     puts "Stream closed3."
 
 
-  rescue IOError
+  rescue IOError, ActionController::Live::ClientDisconnected
   ensure
     consumer.cancel unless consumer.nil?
     sse.close
