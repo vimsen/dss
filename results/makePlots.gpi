@@ -23,7 +23,7 @@ set datafile separator "\t"
 set xlabel "Week"
 
 set out "genetic.".ext
-set ylabel "Penalty Reduction"
+set ylabel "Penalty Reduction (%)"
 set yrange [-20:120]
 set xrange [0:10]
 
@@ -89,7 +89,7 @@ plot "<awk '1' smart_se" using 1:5:6:7 with errorbars t 'smart' ps 0, \
 set out "neg_cons_k.".ext
 set key noautotitle
 set xlabel 'Kappa'
-set ylabel "Penalty Reduction"
+set ylabel "Penalty Reduction (%)"
 set yrange [-20:120]
 
 set key top right
@@ -114,7 +114,7 @@ plot for [col=2:10] 'adaptive_k_0.csv' using 1:col w lp t 'Cluster '.(col -2)
 
 set out "comparison_k.".ext
 set key top right
-set ylabel "Average penalty reduction per cluster"
+set ylabel "Average penalty reduction per cluster (%)"
 plot \
      "genetic_k_avg.csv" using 1:2 t 'Genetic' w lp, \
      "pos_error_k_avg.csv" using 1:2 t 'Pesitive Error' w lp, \
@@ -126,7 +126,7 @@ plot \
 set out "comparison_k_sum.".ext
 set yrange [*:*]
 set key bottom left
-set ylabel "Total reduction in penalties payed"
+set ylabel "Total reduction in penalties payed (%)"
 plot \
      "genetic_k_tot_impr.csv" using 1:2 t 'Genetic' w lp, \
      "pos_error_k_tot_impr.csv" using 1:2 t 'Pesitive Error' w lp, \
