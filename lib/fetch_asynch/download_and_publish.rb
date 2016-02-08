@@ -161,7 +161,6 @@ module FetchAsynch
         Upsert.batch(conn, DataPoint.table_name) do |upsert|
           data.each do | d |
             # puts "Data Point: #{d}"
-
             upsert.row({
                            timestamp: d['timestamp'].to_datetime,
                            prosumer_id: procs[d['procumer_id'].to_s].id,
@@ -177,13 +176,12 @@ module FetchAsynch
                            dr: d['dr'],
                            reliability: d['reliability']
                        }
-            ) # unless d['timestamp'].to_datetime.future?
-            # puts "AFTER TEST!!!!!!!!!!!!!!!!!!!!!"
+            ) if valid_time_stamp d['timestamp']
           end
         end
 
         new_data_points = data.reject do |d|
-          d['timestamp'].to_datetime.future?
+          !valid_time_stamp(d['timestamp']) || d['timestamp'].to_datetime.future?
         end
 
       end
@@ -225,6 +223,14 @@ module FetchAsynch
       k['forecast']['timestamp'] =
           d['forecast']['timestamp'].to_datetime.to_i
       return k
+    end
+
+    def valid_time_stamp(str)
+      Time.iso8601(str.to_s)
+      return true
+    rescue ArgumentError => e
+      puts "Received junk input"
+      return false
     end
   end
 end
