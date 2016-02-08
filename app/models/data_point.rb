@@ -24,14 +24,21 @@ class DataPoint < ActiveRecord::Base
   end
 
   def add_data_doint dp
-    self.production += dp.production
-    self.consumption += dp.consumption
-    self.storage += dp.storage
-    self.f_production += dp.f_production
-    self.f_consumption += dp.f_consumption
-    self.f_storage += dp.f_storage
+    self.production = sum_null self.production, dp.production
+    self.consumption = sum_null self.consumption, dp.consumption
+    self.storage = sum_null self.storage, dp.storage
+    self.f_production = sum_null self.f_production, dp.f_production
+    self.f_consumption = sum_null self.f_consumption, dp.f_consumption
+    self.f_storage = sum_null self.f_storage, dp.f_storage
   end
-  
+
+  def sum_null(a, b)
+    return b if a.nil?
+    return a if b.nil?
+    a + b
+  end
+
+
   def init_zero timestamp, prosumer_id, interval, f_timestamp
     self.timestamp = timestamp
     self.prosumer_id = prosumer_id

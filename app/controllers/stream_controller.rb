@@ -28,7 +28,7 @@ class StreamController < ApplicationController
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
       begin
         msg = JSON.parse(data)
-        puts "Stream Controller received: #{msg['event']},\ndata: #{msg['data'].count}"
+        # puts "Stream Controller received: #{msg['event']},\ndata: #{msg['data']}"
 
         # puts JSON.pretty_generate msg
         if msg['event'] == 'datapoints'
@@ -67,7 +67,7 @@ class StreamController < ApplicationController
       ActiveRecord::Base.clear_active_connections!
     end
           
-  rescue IOError
+  rescue IOError, ActionController::Live::ClientDisconnected
   ensure
     ActiveRecord::Base.clear_active_connections!
     consumer.cancel unless consumer.nil?
