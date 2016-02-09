@@ -101,8 +101,8 @@ module FetchAsynch
           Rails.logger.debug "market data published."
           Rails.logger.debug 'done'
         rescue => e
-          print e
-          print e.backtrace.join("\n")
+          Rails.logger.debug e
+          Rails.logger.debug e.backtrace.join("\n")
         end
       end
 
