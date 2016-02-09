@@ -271,24 +271,28 @@ class StreamController < ApplicationController
     end
 
     Thread.new do
-      ActiveRecord::Base.forbid_implicit_checkout_for_thread!
-      ActiveRecord::Base.connection_pool.with_connection do
-        puts "Running algorithm"
-        tm = ClusteringModule::TargetMatcher.new(
-            startDate: DateTime.parse(params[:startDate]),
-            endDate: DateTime.parse(params[:endDate]),
-            interval: params[:interval].to_i,
-            targets: JSON.parse(params[:targets]).map{|v| v[1]},
-            rb_channel: channel_name
-        )
-        puts "Object created"
-        results = tm.run
-        sse.write(results.to_json, event: "result")
+      begin
+        ActiveRecord::Base.forbid_implicit_checkout_for_thread!
+        ActiveRecord::Base.connection_pool.with_connection do
+          puts "Running algorithm"
+          tm = ClusteringModule::TargetMatcher.new(
+              startDate: DateTime.parse(params[:startDate]),
+              endDate: DateTime.parse(params[:endDate]),
+              interval: params[:interval].to_i,
+              targets: JSON.parse(params[:targets]).map{|v| v[1]},
+              rb_channel: channel_name
+          )
+          puts "Object created"
+          results = tm.run
+          sse.write(results.to_json, event: "result")
 
-        puts JSON.pretty_generate results
+          puts JSON.pretty_generate results
 
+        end
+      rescue => e
+        Rails.logger.debug e
+        Rails.logger.debug e.backtrace.join("\n")
       end
-
     end
 
     loop do
