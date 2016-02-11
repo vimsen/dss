@@ -49,7 +49,6 @@ module FetchAsynch
               puts i; i=i+1;
               puts "Hello"
               # new_api_prosumer_ids. each do |id|
-              RestClient.log = $stdout
               rest_resource = RestClient::Resource.new(u)
               raw = rest_resource['getdataVGW'].get params: params.merge(prosumers: new_api_prosumer_ids.join(","))
               # Rails.logger.debug "RAW: #{raw}"
