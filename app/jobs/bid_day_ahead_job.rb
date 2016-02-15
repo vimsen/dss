@@ -10,7 +10,7 @@ class BidDayAheadJob < ActiveJob::Base
     puts "Arguments:  #{ENV["download"]}"
     puts "Downloading data:"
 
-    if ENV["download"] == "true"
+    if ENV["download"] != "false"
       FetchAsynch::DownloadAndPublish.new(Prosumer.all, 2, DateTime.now - 2.weeks, DateTime.now + 48.hours, nil, true, true)
     end
 
