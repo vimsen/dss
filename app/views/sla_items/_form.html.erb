@@ -1,0 +1,37 @@
+<%= form_for(@sla_item) do |f| %>
+  <% if @sla_item.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@sla_item.errors.count, "error") %> prohibited this sla_item from being saved:</h2>
+
+      <ul>
+      <% @sla_item.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :bid_id %><br>
+    <%= f.text_field :bid_id %>
+  </div>
+  <div class="field">
+    <%= f.label :timestamp %><br>
+    <%= f.datetime_select :timestamp %>
+  </div>
+  <div class="field">
+    <%= f.label :interval_id %><br>
+    <%= f.text_field :interval_id %>
+  </div>
+  <div class="field">
+    <%= f.label :volume %><br>
+    <%= f.text_field :volume %>
+  </div>
+  <div class="field">
+    <%= f.label :price %><br>
+    <%= f.text_field :price %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

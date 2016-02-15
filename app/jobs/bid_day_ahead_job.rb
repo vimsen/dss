@@ -59,10 +59,10 @@ class BidDayAheadJob < ActiveJob::Base
 
     json_response = JSON.parse result
 
-    Bid.crete date: json_response["date"],
-              mo_id: json_response["date"]
-
-
+    if json_response["status"] == "submitted"
+      Bid.create date: json_response["date"],
+                 mo_id: json_response["id"]
+    end
 
    # bid = JSON.parse(rest_resource['bids'].post(request_object.to_json, :content_type => :json, :accept => :json))
    # puts "Posted new bid"

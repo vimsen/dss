@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  bid_id: 
+  timestamp: 2016-02-15 19:07:20
+  interval_id: 
+  volume: 1.5
+  price: 1.5
+
+two:
+  bid_id: 
+  timestamp: 2016-02-15 19:07:20
+  interval_id: 
+  volume: 1.5
+  price: 1.5

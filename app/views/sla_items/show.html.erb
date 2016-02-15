@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Bid:</strong>
+  <%= @sla_item.bid %>
+</p>
+
+<p>
+  <strong>Timestamp:</strong>
+  <%= @sla_item.timestamp %>
+</p>
+
+<p>
+  <strong>Interval:</strong>
+  <%= @sla_item.interval %>
+</p>
+
+<p>
+  <strong>Volume:</strong>
+  <%= @sla_item.volume %>
+</p>
+
+<p>
+  <strong>Price:</strong>
+  <%= @sla_item.price %>
+</p>
+
+<%= link_to 'Edit', edit_sla_item_path(@sla_item) %> |
+<%= link_to 'Back', sla_items_path %>
