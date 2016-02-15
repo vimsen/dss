@@ -19,47 +19,139 @@ module FetchAsynch
       end
 
       puts "Starting new Thread..."
+      # Thread.abort_on_exception = true
       thread = Thread.new do
-        ActiveRecord::Base.forbid_implicit_checkout_for_thread!
-        #   sleep 1
-        i = 0
-        u = YAML.load_file('config/config.yml')[Rails.env]['intellen_host']
+        begin
+          ActiveRecord::Base.forbid_implicit_checkout_for_thread!
+          i = 0
+          u = YAML.load_file('config/config.yml')[Rails.env]['intellen_host']
+          puts i; i=i+1;
 
-        puts i; i=i+1;
-        uri = URI.parse(u + '/getdata')
-        puts i; i=i+1;
-        params = {}
-        ActiveRecord::Base.connection_pool.with_connection do
-          params = { prosumers: prosumers.map {|p| p.intelen_id}.join(","),
-                     startdate: startdate.to_s,
-                     enddate: enddate.to_s,
-                     interval: @interval.duration }
+          x = nil
+          begin
+            bunny_channel = $bunny.create_channel if channel
+            x = bunny_channel.fanout(channel) if channel
+          rescue Bunny::Exception # Don't block if channel can't be fanned out
+            Rails.logger.debug "Can't fanout channel #{channel}"
+            x = nil
+          end
+
+          ActiveRecord::Base.connection_pool.with_connection do
+
+            params = { # prosumers: prosumers.map {|p| p.intelen_id}.reject{|id| is_integer? id },
+                       startdate: startdate.to_s,
+                       enddate: enddate.to_s,
+                       interval: @interval.duration }
+
+            new_api_prosumer_ids = prosumers.map {|p| p.intelen_id}.reject{|id| is_integer? id }
+            old_api_prosumer_ids = prosumers.map {|p| p.intelen_id}.select{|id| is_integer? id }
+            if new_api_prosumer_ids.count > 0
+              puts i; i=i+1;
+              puts "Hello"
+              # new_api_prosumer_ids. each do |id|
+              rest_resource = RestClient::Resource.new(u)
+              raw = rest_resource['getdataVGW'].get params: params.merge(prosumers: new_api_prosumer_ids.join(","))
+              # Rails.logger.debug "RAW: #{raw}"
+              result = JSON.parse raw
+             #  Rails.logger.debug "Result: #{result}"
+              result_conv = convert_new_to_old_api result
+             #  Rails.logger.debug "Result_conv: #{result_conv}"
+              x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{new_api_prosumer_ids.join(",")}.", event: "output"}.to_json) if x
+              Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{new_api_prosumer_ids.join(",")}."
+              datareceived(result_conv, x)
+              # end
+              # datareceived_new(result, channel)
+            end
+
+            if old_api_prosumer_ids.count > 0
+              puts i; i=i+1;
+              puts "OLD API"
+              uri = URI.parse(u + '/getdata')
+              puts i; i=i+1;
+
+              old_api_prosumer_ids.each_slice(10) do |slice|
+                uri.query = URI.encode_www_form(params.merge prosumers: slice.join(","))
+                puts i; i=i+1;
+
+                puts "In the new Thread..."
+                Rails.logger.debug "Connecting to: #{uri}"
+                raw = uri.open.read
+                #   Rails.logger.debug "RAW: #{raw}"
+                result = JSON.parse(raw)
+                x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{slice.join(",")}.", event: "output"}.to_json) if x
+                Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{slice.join(",")}."
+                datareceived(result, x)
+              end
+            end
+
+          end
+
+          Rails.logger.debug "publshing market data"
+          begin
+            Rails.logger.debug "Trying to publish market data"
+            x.publish({data: Market::Calculator.new(prosumers: @prosumers,
+                                                    startDate: @startdate,
+                                                    endDate: @enddate).calcCosts,
+                       event: 'market'}.to_json) if x
+            Rails.logger.debug "publshed market data"
+            ActiveRecord::Base.connection_pool.with_connection do
+              x.publish({data:  "Interval #{@interval.name}: complete.", event: "output"}.to_json) if x
+            end
+            Rails.logger.debug "pushed end message"
+          rescue Bunny::Exception # Don't block if channel can't be fanned out
+            Rails.logger.debug "Can't publish to channel #{channel}"
+          end
+          Rails.logger.debug "market data published."
+          Rails.logger.debug 'done'
+        rescue => e
+          Rails.logger.debug "EXCEPTION: #{e.inspect}"
+          Rails.logger.debug "MESSAGE: #{e.message}"
+          Rails.logger.debug e.backtrace.join("\n")
         end
-        puts i; i=i+1;
-        uri.query = URI.encode_www_form(params)
-        puts i; i=i+1;
-
-        puts "In the new Thread..."
-        Rails.logger.debug "Connecting to: #{uri}"
-        result = JSON.parse(uri.open.read)
-        datareceived(result, channel)
-        Rails.logger.debug 'done'
       end
+
       thread.join if (async)
+
+
     end
 
     private
 
-    def datareceived(data, channel)
+    def is_integer?(num)
+      !!(num =~ /\A[-+]?[0-9]+\z/)
+    end
 
-      Rails.logger.debug "Connecting to channel"
-      begin
-        bunny_channel = $bunny.create_channel if channel
-        x = bunny_channel.fanout(channel) if channel
-      rescue Bunny::Exception # Don't block if channel can't be fanned out
-        Rails.logger.debug "Can't fanout channel #{channel}"
-        x = nil
+    def newAPI?(prosumers)
+      ActiveRecord::Base.connection_pool.with_connection do
+        Rails.logger.debug "AAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        prosumers.reject {|p| is_integer?(p.intelen_id) }.count > 0
       end
+    end
+
+    def convert_new_to_old_api(data)
+      data.map do |d|
+        {
+            "timestamp" => d["Date"],
+            "procumer_id" => d["Mac"],
+            "interval" => @interval.duration,
+            "actual" => {
+                "production" => nil,
+                "consumption" => d["Kwh"],
+                "storage" => nil
+            },
+            "forecast" => {
+                "timestamp" => "",
+                "production" => nil,
+                "consumption" => nil,
+                "storage" => nil
+            },
+            "dr" => nil,
+            "reliability" => nil
+        } if is_integer? d["Kwh"].to_s
+      end.compact
+   end
+
+    def datareceived(data, x)
 
       Rails.logger.debug "Finding existing datapoints"
       new_data_points = []
@@ -70,70 +162,45 @@ module FetchAsynch
       ActiveRecord::Base.connection_pool.with_connection do | conn |
         procs = Hash[@prosumers.map {|p| [p.intelen_id, p]}]
 
-        Upsert.batch(conn, DataPoint.table_name) do |upsert|
-          data.each do | d |
-            upsert.row({
-                           timestamp: d['timestamp'].to_datetime,
-                           prosumer_id: procs[d['procumer_id']].id,
-                           interval_id: @interval.id
-                       }, {
-                           production: d['actual']['production'],
-                           consumption: d['actual']['consumption'],
-                           storage: d['actual']['storage'],
-                           f_timestamp: d['forecast']['timestamp'].to_datetime,
-                           f_production: d['forecast']['production'],
-                           f_consumption: d['forecast']['consumption'],
-                           f_storage: d['forecast']['storage'],
-                           dr: d['dr'],
-                           reliability: d['reliability']
-                       }
-            ) # unless d['timestamp'].to_datetime.future?
+        begin
+          upsert_status = Upsert.batch(conn, DataPoint.table_name) do |upsert|
+            data.each do | d |
+              # puts "Data Point: #{d}"
+              upsert.row({
+                             timestamp: d['timestamp'].to_datetime,
+                             prosumer_id: procs[d['procumer_id'].to_s].id,
+                             interval_id: @interval.id
+                         }, {
+                             production: d['actual']['production'],
+                             consumption: d['actual']['consumption'],
+                             storage: d['actual']['storage'],
+                             f_timestamp: d['forecast']['timestamp'].to_datetime,
+                             f_production: d['forecast']['production'],
+                             f_consumption: d['forecast']['consumption'],
+                             f_storage: d['forecast']['storage'],
+                             dr: d['dr'],
+                             reliability: d['reliability']
+                         }
+              ) if valid_time_stamp d['timestamp']
+            end
           end
+          x.publish({data:  "Interval #{@interval.name}: UPSERT status: #{upsert_status.count}", event: "output"}.to_json) if x
+          Rails.logger.debug "Interval #{@interval.name}: UPSERT status: #{upsert_status.count}"
+        rescue PG::InvalidTextRepresentation => e
+          x.publish({data:  "Interval #{@interval.name}: BAD DATA FORMAT: #{upsert_status}", event: "output"}.to_json)
+          # x.publish({data:  "BAD DATA FORMAT: #{data}", event: "output"}.to_json)
+          Rails.logger.debug "Interval #{@interval.name}: BAD DATA FORMAT: #{upsert_status}"
+          # Rails.logger.debug "BAD DATA FORMAT: #{data}"
+          raise e
         end
+
+
+
 
         new_data_points = data.reject do |d|
-          d['timestamp'].to_datetime.future?
+          !valid_time_stamp(d['timestamp']) || d['timestamp'].to_datetime.future?
         end
 
-
-=begin
-        ActiveRecord::Base.transaction do
-          ActiveRecord::Base.connection.execute("LOCK TABLE data_points IN EXCLUSIVE MODE;")
-          old_data_points = Hash[DataPoint
-                                     .where(prosumer: @prosumers,
-                                            timestamp: (@startdate - 2.days) ..
-                                                (@enddate + 2.days),
-                                            interval: @interval)
-                                     .map do |dp|
-                                   ["#{dp.timestamp.to_i},#{dp.prosumer_id},#{dp.interval_id}", 1]
-                                 end]
-          Rails.logger.debug "#{old_data_points.count} datapoints found"
-          x.publish({data:  "Interval #{@interval.name}: #{old_data_points.count} datapoints found.", event: "output"}.to_json) if x
-          Rails.logger.debug "#{data.count} datapoints received"
-          x.publish({data:  "Interval #{@interval.name}: #{data.count} datapoints received.", event: "output"}.to_json) if x
-
-          dupe_finder = {}
-
-
-          new_data_points = @overwrite_data ? data : data.reject do |r|
-            is_duplicate = dupe_finder.has_key?("#{r['timestamp'].to_datetime.to_i},#{procs[r['procumer_id']].id},#{@interval.id}")
-            dupe_finder["#{r['timestamp'].to_datetime.to_i},#{procs[r['procumer_id']].id},#{@interval.id}"] = 1
-            r['timestamp'].to_datetime.future? ||
-                old_data_points.has_key?("#{r['timestamp'].to_datetime.to_i},#{procs[r['procumer_id']].id},#{@interval.id}") ||
-                is_duplicate
-          end
-
-          Rails.logger.debug "#{new_data_points.count} datapoints remaining"
-          x.publish({data:  "Interval #{@interval.name}: #{new_data_points.count} datapoints remaining.", event: "output"}.to_json) if x
-
-          (new_data_points.map do |d|
-            db_prepare(d, procs)
-          end).each_slice(5000) do |slice|
-            DataPoint.import(slice)
-            x.publish({data:  "Interval #{@interval.name}: Inserted datapoints.", event: "output"}.to_json) if x
-          end
-        end
-=end
       end
 
       begin
@@ -145,30 +212,12 @@ module FetchAsynch
         Rails.logger.debug "Can't publish to channel #{channel}"
       ensure
       end
-
-      Rails.logger.debug "publshing market data"
-      begin
-
-        Rails.logger.debug "Trying to publish market data"
-        x.publish({data: Market::Calculator.new(prosumers: @prosumers,
-                                                startDate: @startdate,
-                                                endDate: @enddate).calcCosts,
-                event: 'market'}.to_json) if x
-        Rails.logger.debug "publshed market data"
-        ActiveRecord::Base.connection_pool.with_connection do
-          x.publish({data:  "Interval #{@interval.name}: complete.", event: "output"}.to_json) if x
-        end
-        Rails.logger.debug "pushed end message"
-      rescue Bunny::Exception # Don't block if channel can't be fanned out
-        Rails.logger.debug "Can't publish to channel #{channel}"
-      end
-      Rails.logger.debug "market data published."
-     end
+    end
 
     def db_prepare(d, procs)
      DataPoint.new(
         timestamp: d['timestamp'].to_datetime,
-        prosumer: procs[d['procumer_id']],
+        prosumer: procs[d['procumer_id'].to_s],
         interval: @interval,
         production: d['actual']['production'],
         consumption: d['actual']['consumption'],
@@ -186,11 +235,19 @@ module FetchAsynch
       k = d.deep_dup
 
       k['timestamp'] = d['timestamp'].to_datetime.to_i
-      k['prosumer_id'] = procs[d['procumer_id']].id
-      k['prosumer_name'] = procs[d['procumer_id']].name
+      k['prosumer_id'] = procs[d['procumer_id'].to_s].id
+      k['prosumer_name'] = procs[d['procumer_id'].to_s].name
       k['forecast']['timestamp'] =
           d['forecast']['timestamp'].to_datetime.to_i
       return k
+    end
+
+    def valid_time_stamp(str)
+      Time.iso8601(str.to_s)
+      return true
+    rescue ArgumentError => e
+      puts "Received junk input"
+      return false
     end
   end
 end
