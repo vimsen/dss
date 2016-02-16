@@ -7,6 +7,7 @@
     <tr>
       <th>Date</th>
       <th>Mo</th>
+      <th>Status</th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -16,6 +17,7 @@
       <tr>
         <td><%= bid.date %></td>
         <td><%= bid.mo_id %></td>
+        <td><%= bid.status %></td>
         <td><%= link_to 'Show', bid %></td>
         <td><%= link_to 'Edit', edit_bid_path(bid) %></td>
         <td><%= link_to 'Destroy', bid, method: :delete, data: { confirm: 'Are you sure?' } %></td>

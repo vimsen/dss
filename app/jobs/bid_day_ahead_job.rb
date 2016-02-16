@@ -23,7 +23,7 @@ class BidDayAheadJob < ActiveJob::Base
     token = config[Rails.env]["market_operator"]["token"]
     base_uri = config[Rails.env]["market_operator"]["host"]
 
-    rest_resource = RestClient::Resource.new(base_uri, verify_ssl: OpenSSL::SSL::VERIFY_NONE)
+    rest_resource = RestClient::Resource.new(base_uri)
 
     markets = JSON.parse rest_resource['markets'].get params: {user_email: user, user_token: token, format: :json}
 
@@ -61,7 +61,8 @@ class BidDayAheadJob < ActiveJob::Base
 
     if json_response["status"] == "submitted"
       Bid.create date: json_response["date"],
-                 mo_id: json_response["id"]
+                 mo_id: json_response["id"],
+                 status: json_response["status"]
     end
 
    # bid = JSON.parse(rest_resource['bids'].post(request_object.to_json, :content_type => :json, :accept => :json))
