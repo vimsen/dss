@@ -14,7 +14,7 @@
               <th>Date</th>
               <th>Mo</th>
               <th>Status</th>
-              <th colspan="3"></th>
+              <th colspan="1"></th>
             </tr>
             </thead>
 
@@ -24,9 +24,9 @@
                   <td><%= bid.date %></td>
                   <td><%= bid.mo_id %></td>
                   <td><%= bid.status %></td>
-                  <td><%= link_to 'Show', bid %></td>
-                  <td><%= link_to 'Edit', edit_bid_path(bid) %></td>
-                  <td><%= link_to 'Destroy', bid, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+                  <td><%= link_to 'Show', bid, class: 'btn btn-success btn-xs'  %></td>
+                  <!--td><%#= link_to 'Edit', edit_bid_path(bid) %></td>
+                  <td><%#= link_to 'Destroy', bid, method: :delete, data: { confirm: 'Are you sure?' } %></td-->
                 </tr>
             <% end %>
             </tbody>

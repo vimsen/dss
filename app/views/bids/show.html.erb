@@ -1,20 +1,140 @@
-<p id="notice"><%= notice %></p>
+<div class="row">
+  <div class="col-lg-12">
+    <h3 class="page-header"><small>Bid:</small> <%= @bid.mo_id -%>
+      <small>
+        <!--| <%#= link_to 'Edit', edit_clustering_path(@clustering), class: 'btn btn-info btn-xs' %>-->
+        | <%= link_to 'All bids', bids_path, class: 'btn btn-warning btn-xs'%>
+      </small>
+    </h3>
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
 
-<p>
-  <strong>Date:</strong>
-  <%= @bid.date %>
-</p>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Bid info
+      </div>
+      <div class="panel-body">
+        <dl class="dl-horizontal">
+          <dt>Date:</dt>
+          <dd><%= @bid.date %></dd>
 
-<p>
-  <strong>Mo:</strong>
-  <%= @bid.mo_id %>
-</p>
+          <dt>Market Operator ID:</dt>
+          <dd><%= @bid.mo_id %></dd>
 
-<p>
-  <strong>status:</strong>
-  <%= @bid.status %>
-</p>
+          <dt>Status:</dt>
+          <dd><%= @bid.status %></dd>
 
+          <% if @bid.status == "accepted" %>
+            <dt>Sla:</dt>
+            <dd>
+              <div class="table-responsive">
+                <table class="table">
+                  <tr>
+                    <th></th>
+                    <% @bid.sla_items.each do |sla_item| %>
+                        <th><%= sla_item.timestamp.strftime("%H:%M") %> - <%= (sla_item.timestamp + sla_item.interval.duration).strftime("%H:%M")%></th>
+                    <% end %>
+                  </tr>
+                  <tr>
+                    <th>Volume:</th>
+                    <% @bid.sla_items.each do |sla_item| %>
+                        <td><%= sla_item.volume.round(2) %> </td>
+                    <% end %>
+                  </tr>
+                  <tr>
+                    <th>Price:</th>
+                    <% @bid.sla_items.each do |sla_item| %>
+                        <td><%= sla_item.price.round(2) %></td>
+                    <% end %>
+                  </tr>
+                </table>
+              </div>
+            </dd>
+          <% end %>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
 
-<%= link_to 'Edit', edit_bid_path(@bid) %> |
-<%= link_to 'Back', bids_path %>
+<div class="row">
+  <div class="col-lg-6" >
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Volumes
+      </div>
+      <div class="panel-body">
+        <div id="chart_volumes" style="height: 200px; width: 100%;" ></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6" >
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Prices
+      </div>
+      <div class="panel-body">
+        <div id="chart_prices" style="height: 200px; width: 100%;" ></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function(){
+    var plot_options = {
+      series: {
+        lines: {
+          show: true
+        },
+        points: {
+          show: true
+        }
+      },
+      grid: {
+        hoverable: true,
+        clickable: true
+      },
+      tooltip: true,
+      tooltipOpts: {
+        content: "'%s'<br/>%x<br/>%y.2",
+        shifts: {
+          x: -60,
+          y: 25
+        }
+      },
+      xaxis: {
+        mode: "time",
+        timeformat: "%d/%m/%Y<br/>%h:%M:%S",
+        timezone: "browser",
+        ticks: 2 /*,
+         timeformat : "%y/%m/%d-%h:%M:%S",
+         tickSize : [12, "hour"]*/
+      },
+      yaxis: {
+        tickDecimals: 2
+      },
+      legend:{
+        container: null,
+        noColumns: 0
+      }
+    };
+
+    var volumes = [{
+      "label": "volume",
+      "data": <%= JSON.pretty_generate(@bid.sla_items.map{|si| [si.timestamp.to_i * 1000, si.volume]  } ).html_safe -%>
+    }];
+
+    var prices = [{
+      "label": "price",
+      "data": <%= JSON.pretty_generate(@bid.sla_items.map{|si| [si.timestamp.to_i * 1000, si.price]  } ).html_safe -%>
+    }];
+
+    $.plot("#chart_volumes", volumes, plot_options);
+    $.plot("#chart_prices", prices, plot_options);
+
+  });
+</script>
