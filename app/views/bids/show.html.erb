@@ -60,81 +60,84 @@
   </div>
 </div>
 
-<div class="row">
-  <div class="col-lg-6" >
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        Volumes
-      </div>
-      <div class="panel-body">
-        <div id="chart_volumes" style="height: 200px; width: 100%;" ></div>
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-6" >
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        Prices
-      </div>
-      <div class="panel-body">
-        <div id="chart_prices" style="height: 200px; width: 100%;" ></div>
-      </div>
-    </div>
-  </div>
-</div>
+<% if @bid.status == "accepted" %>
 
-<script>
-  $(function(){
-    var plot_options = {
-      series: {
-        lines: {
-          show: true
+  <div class="row">
+    <div class="col-lg-6" >
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Volumes
+        </div>
+        <div class="panel-body">
+          <div id="chart_volumes" style="height: 200px; width: 100%;" ></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6" >
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Prices
+        </div>
+        <div class="panel-body">
+          <div id="chart_prices" style="height: 200px; width: 100%;" ></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(function(){
+      var plot_options = {
+        series: {
+          lines: {
+            show: true
+          },
+          points: {
+            show: true
+          }
         },
-        points: {
-          show: true
+        grid: {
+          hoverable: true,
+          clickable: true
+        },
+        tooltip: true,
+        tooltipOpts: {
+          content: "'%s'<br/>%x<br/>%y.2",
+          shifts: {
+            x: -60,
+            y: 25
+          }
+        },
+        xaxis: {
+          mode: "time",
+          timeformat: "%d/%m/%Y<br/>%h:%M:%S",
+          timezone: "browser",
+          ticks: 2 /*,
+           timeformat : "%y/%m/%d-%h:%M:%S",
+           tickSize : [12, "hour"]*/
+        },
+        yaxis: {
+          tickDecimals: 2
+        },
+        legend:{
+          container: null,
+          noColumns: 0
         }
-      },
-      grid: {
-        hoverable: true,
-        clickable: true
-      },
-      tooltip: true,
-      tooltipOpts: {
-        content: "'%s'<br/>%x<br/>%y.2",
-        shifts: {
-          x: -60,
-          y: 25
-        }
-      },
-      xaxis: {
-        mode: "time",
-        timeformat: "%d/%m/%Y<br/>%h:%M:%S",
-        timezone: "browser",
-        ticks: 2 /*,
-         timeformat : "%y/%m/%d-%h:%M:%S",
-         tickSize : [12, "hour"]*/
-      },
-      yaxis: {
-        tickDecimals: 2
-      },
-      legend:{
-        container: null,
-        noColumns: 0
-      }
-    };
+      };
 
-    var volumes = [{
-      "label": "volume",
-      "data": <%= JSON.pretty_generate(@bid.sla_items.map{|si| [si.timestamp.to_i * 1000, si.volume]  } ).html_safe -%>
-    }];
+      var volumes = [{
+        "label": "volume",
+        "data": <%= JSON.pretty_generate(@bid.sla_items.map{|si| [si.timestamp.to_i * 1000, si.volume]  } ).html_safe -%>
+      }];
 
-    var prices = [{
-      "label": "price",
-      "data": <%= JSON.pretty_generate(@bid.sla_items.map{|si| [si.timestamp.to_i * 1000, si.price]  } ).html_safe -%>
-    }];
+      var prices = [{
+        "label": "price",
+        "data": <%= JSON.pretty_generate(@bid.sla_items.map{|si| [si.timestamp.to_i * 1000, si.price]  } ).html_safe -%>
+      }];
 
-    $.plot("#chart_volumes", volumes, plot_options);
-    $.plot("#chart_prices", prices, plot_options);
+      $.plot("#chart_volumes", volumes, plot_options);
+      $.plot("#chart_prices", prices, plot_options);
 
-  });
-</script>
+    });
+  </script>
+<% end %>
