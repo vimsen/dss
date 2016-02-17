@@ -17,13 +17,14 @@ class CheckBidStatusJob < ActiveJob::Base
 
       b.status = json["status"]
 
-      json["sla_items"].each do |sla_item|
-        b.sla_items.build(timestamp: DateTime.parse("#{json["date"]} #{sla_item["block"].split(/ /).first} +#{ActiveSupport::TimeZone['EET'].now.utc_offset/3600}"),
-                                   interval: Interval.find_by_duration(3600),
-                                   volume: sla_item["volume"],
-                                   price: sla_item["price"]
-        )
-
+      if json["status"] == "accepted"
+        json["sla_items"].each do |sla_item|
+          b.sla_items.build(timestamp: DateTime.parse("#{json["date"]} #{sla_item["block"].split(/ /).first} +#{ActiveSupport::TimeZone['EET'].now.utc_offset/3600}"),
+                            interval: Interval.find_by_duration(3600),
+                            volume: sla_item["volume"],
+                            price: sla_item["price"]
+          )
+        end
       end
       b.save
     end
