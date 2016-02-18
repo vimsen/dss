@@ -11,7 +11,7 @@ class BidDayAheadJob < ActiveJob::Base
     puts "Downloading data:"
 
     if ENV["download"] != "false"
-      FetchAsynch::DownloadAndPublish.new(Prosumer.all, 2, DateTime.now - 2.weeks, DateTime.now + 48.hours, nil, true, true)
+      FetchAsynch::DownloadAndPublish.new(Prosumer.all, 2, DateTime.now - 2.weeks, DateTime.now + 48.hours, nil, true)
     end
 
 
