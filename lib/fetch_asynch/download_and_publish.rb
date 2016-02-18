@@ -53,7 +53,7 @@ module FetchAsynch
               # Rails.logger.debug "RAW: #{raw}"
               result = JSON.parse raw
              #  Rails.logger.debug "Result: #{result}"
-              result_conv = convert_new_to_old_api_v2 result, new_api_prosumer_ids
+              result_conv = convert_new_to_old_api_v2 result
              #  Rails.logger.debug "Result_conv: #{result_conv}"
               x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{new_api_prosumer_ids.join(",")}.", event: "output"}.to_json) if x
               Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{new_api_prosumer_ids.join(",")}."
@@ -182,32 +182,27 @@ module FetchAsynch
       }
     end
 
-    def convert_new_to_old_api_v2(data, prosumers)
+    def convert_new_to_old_api_v2(data)
 
-      puts "INSIDE, prosumers: #{prosumers}"
       intermediate_data = {}
-     #  puts "input: #{data}"
       result = data.first
       result["Production"].map(&method(:hash_to_key_value)).map do | key,value |
         intermediate_data[key] ||= empty_data_point_object key
-        intermediate_data[key]["procumer_id"] = prosumers.first
+        intermediate_data[key]["procumer_id"] = result["ProsumerId"]
         intermediate_data[key]["actual"]["production"] = value
-        puts "Production: The key is #{key}"
       end
       result["Storage"].map(&method(:hash_to_key_value)).map do | key,value |
         intermediate_data[key] ||= empty_data_point_object key
-        intermediate_data[key]["procumer_id"] = prosumers.first
+        intermediate_data[key]["procumer_id"] = result["ProsumerId"]
         intermediate_data[key]["actual"]["storage"] = value
-        puts "Storage: The key is #{key}"
       end
       result["Consumption"].map(&method(:hash_to_key_value)).map do | key,value |
         intermediate_data[key] ||= empty_data_point_object key
-        intermediate_data[key]["procumer_id"] = prosumers.first
+        intermediate_data[key]["procumer_id"] = result["ProsumerId"]
         intermediate_data[key]["actual"]["consumption"] = value
-        puts "Consumption: The key is #{key}"
       end
 
-      puts JSON.pretty_generate intermediate_data
+      # puts JSON.pretty_generate intermediate_data
       intermediate_data.values
     end
 
