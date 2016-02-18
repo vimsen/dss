@@ -9,11 +9,10 @@ module FetchAsynch
   # This class downloads prosumption data from the EDMS, and then inserts them
   # in the DB, and publishes the results to the appropriate rabbitMQ channel.
   class DownloadAndPublish
-    def initialize(prosumers, interval, startdate, enddate, channel, async = false, overwrite_data = false)
+    def initialize(prosumers, interval, startdate, enddate, channel, async = false)
       @prosumers = prosumers
       @startdate = startdate
       @enddate = enddate
-      @overwrite_data = overwrite_data
       ActiveRecord::Base.connection_pool.with_connection do
         @interval = Interval.find(interval)
       end
@@ -50,11 +49,11 @@ module FetchAsynch
               puts "Hello"
               # new_api_prosumer_ids. each do |id|
               rest_resource = RestClient::Resource.new(u)
-              raw = rest_resource['getdataVGW'].get params: params.merge(prosumers: new_api_prosumer_ids.join(","))
+              raw = rest_resource['getdataVGW'].get params: params.merge(prosumers: new_api_prosumer_ids.join(","), pointer: 2)
               # Rails.logger.debug "RAW: #{raw}"
               result = JSON.parse raw
              #  Rails.logger.debug "Result: #{result}"
-              result_conv = convert_new_to_old_api result
+              result_conv = convert_new_to_old_api_v2 result, new_api_prosumer_ids
              #  Rails.logger.debug "Result_conv: #{result_conv}"
               x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{new_api_prosumer_ids.join(",")}.", event: "output"}.to_json) if x
               Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{new_api_prosumer_ids.join(",")}."
@@ -105,8 +104,11 @@ module FetchAsynch
           Rails.logger.debug 'done'
         rescue => e
           Rails.logger.debug "EXCEPTION: #{e.inspect}"
+          puts "EXCEPTION: #{e.inspect}"
           Rails.logger.debug "MESSAGE: #{e.message}"
+          puts "MESSAGE: #{e.message}"
           Rails.logger.debug e.backtrace.join("\n")
+          puts e.backtrace.join("\n")
         end
       end
 
@@ -149,7 +151,65 @@ module FetchAsynch
             "reliability" => nil
         } if is_integer? d["Kwh"].to_s
       end.compact
-   end
+    end
+
+    def hash_to_key_value(hash)
+      key, value = hash.first
+      [
+          DateTime.parse(key).to_s,
+          value.scan(/\d+[,.]?\d?/).first.gsub(/,/, ".").to_f
+      ]
+    end
+
+    def empty_data_point_object(timestamp)
+      {
+          "timestamp" => timestamp,
+          "procumer_id" => nil,
+          "interval" => @interval.duration,
+          "actual" => {
+              "production" => nil,
+              "consumption" => nil,
+              "storage" => nil
+          },
+          "forecast" => {
+              "timestamp" => "",
+              "production" => nil,
+              "consumption" => nil,
+              "storage" => nil
+          },
+          "dr" => nil,
+          "reliability" => nil
+      }
+    end
+
+    def convert_new_to_old_api_v2(data, prosumers)
+
+      puts "INSIDE, prosumers: #{prosumers}"
+      intermediate_data = {}
+     #  puts "input: #{data}"
+      result = data.first
+      result["Production"].map(&method(:hash_to_key_value)).map do | key,value |
+        intermediate_data[key] ||= empty_data_point_object key
+        intermediate_data[key]["procumer_id"] = prosumers.first
+        intermediate_data[key]["actual"]["production"] = value
+        puts "Production: The key is #{key}"
+      end
+      result["Storage"].map(&method(:hash_to_key_value)).map do | key,value |
+        intermediate_data[key] ||= empty_data_point_object key
+        intermediate_data[key]["procumer_id"] = prosumers.first
+        intermediate_data[key]["actual"]["storage"] = value
+        puts "Storage: The key is #{key}"
+      end
+      result["Consumption"].map(&method(:hash_to_key_value)).map do | key,value |
+        intermediate_data[key] ||= empty_data_point_object key
+        intermediate_data[key]["procumer_id"] = prosumers.first
+        intermediate_data[key]["actual"]["consumption"] = value
+        puts "Consumption: The key is #{key}"
+      end
+
+      puts JSON.pretty_generate intermediate_data
+      intermediate_data.values
+    end
 
     def datareceived(data, x)
 
@@ -246,7 +306,7 @@ module FetchAsynch
       Time.iso8601(str.to_s)
       return true
     rescue ArgumentError => e
-      puts "Received junk input"
+      puts "Received junk input: #{str}"
       return false
     end
   end

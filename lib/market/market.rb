@@ -33,8 +33,8 @@ module Market
                 }, {
                     label: "ideal",
                     data: real.map do |f|
-                      aggr_costs[:ideal] += f.consumption * real_price(f.timestamp)
-                      [f.timestamp.to_i * 1000, f.consumption * real_price(f.timestamp)]
+                      aggr_costs[:ideal] += f.consumption * real_price(f.timestamp) unless f.consumption.nil?
+                      [f.timestamp.to_i * 1000, f.consumption * real_price(f.timestamp)] unless f.consumption.nil?
                     end
                 },  {
                     label: "individual",
@@ -74,8 +74,8 @@ module Market
                       interval: 2,
                       timestamp: @startDate .. @endDate).each do |dp|
         ideal_cost[dp.prosumer_id] ||= 0
-        ideal_cost[dp.prosumer_id] += dp.consumption * real_price(dp.timestamp)
-        total_costs[:ideal] += dp.consumption * real_price(dp.timestamp)
+        ideal_cost[dp.prosumer_id] += dp.consumption * real_price(dp.timestamp) unless dp.consumption.nil?
+        total_costs[:ideal] += dp.consumption * real_price(dp.timestamp) unless dp.consumption.nil?
         real_cost[dp.prosumer_id] ||= 0
         real_cost[dp.prosumer_id] += real_cost(dp, forecast_cache[dp.prosumer_id], price_cache)
         total_costs[:real] += real_cost(dp, forecast_cache[dp.prosumer_id], price_cache)
@@ -152,10 +152,10 @@ module Market
                       timestamp: @startDate .. @endDate).inject({}) do |sum, dp|
         sum[dp.timestamp.to_i] ||= 0
         sum[dp.timestamp.to_i] +=
-            real_cost(dp, {
+            (real_cost(dp, {
                             dp.timestamp.to_i =>
                                 for_cache[[dp.prosumer_id, dp.timestamp.to_i]]
-                        }, {dp.timestamp.to_i => real_price(dp.timestamp)})
+                        }, {dp.timestamp.to_i => real_price(dp.timestamp)})) || 0
         sum
       end.map {|k,v| [k*1000,v]}.sort {|a,b| a[0] <=> b[0]}
 
@@ -165,12 +165,12 @@ module Market
       forecasts ||= {}
       forecasts[f.timestamp.to_i] ||= 0
       prices[f.timestamp.to_i] ||= 0
+      return 0 if f.consumption.nil?
       f.consumption > forecasts[f.timestamp.to_i] ?
-          forecasts[f.timestamp.to_i] * prices[f.timestamp.to_i] +
-              (f.consumption - forecasts[f.timestamp.to_i]) * (1 + @penalty_violation) * real_price(f.timestamp) :
-          f.consumption * prices[f.timestamp.to_i] +
-              (forecasts[f.timestamp.to_i] - f.consumption) * @penalty_satisfaction * real_price(f.timestamp)
-
+            forecasts[f.timestamp.to_i] * prices[f.timestamp.to_i] +
+                (f.consumption - forecasts[f.timestamp.to_i]) * (1 + @penalty_violation) * real_price(f.timestamp) :
+            f.consumption * prices[f.timestamp.to_i] +
+                (forecasts[f.timestamp.to_i] - f.consumption) * @penalty_satisfaction * real_price(f.timestamp)
     end
 
     def penalty_for_single(day_ahead_amount)
