@@ -34,19 +34,19 @@
                 <table class="table">
                   <tr>
                     <th></th>
-                    <% @bid.sla_items.each do |sla_item| %>
+                    <% @bid.sla_items.order(timestamp: :asc).each do |sla_item| %>
                         <th><%= sla_item.timestamp.strftime("%H:%M") %> - <%= (sla_item.timestamp + sla_item.interval.duration).strftime("%H:%M")%></th>
                     <% end %>
                   </tr>
                   <tr>
                     <th>Volume:</th>
-                    <% @bid.sla_items.each do |sla_item| %>
+                    <% @bid.sla_items.order(timestamp: :asc).each do |sla_item| %>
                         <td><%= sla_item.volume.round(2) %> </td>
                     <% end %>
                   </tr>
                   <tr>
                     <th>Price:</th>
-                    <% @bid.sla_items.each do |sla_item| %>
+                    <% @bid.sla_items.order(timestamp: :asc).each do |sla_item| %>
                         <td><%= sla_item.price.round(2) %></td>
                     <% end %>
                   </tr>
