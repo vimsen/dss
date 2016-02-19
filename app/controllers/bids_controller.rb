@@ -4,7 +4,7 @@ class BidsController < ApplicationController
   # GET /bids
   # GET /bids.json
   def index
-    @bids = Bid.all
+    @bids = Bid.all.order(date: :desc)
   end
 
   # GET /bids/1
