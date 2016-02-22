@@ -30,9 +30,8 @@
         Date
       </div>
       <div class="panel-body">
-        <form>
+        <form id="dateform">
         <input type="text" id="datepicker" name="date" value="<%= @date.to_s %>" class="form-control">
-        <input type="submit" value="submit" class="btn-default" />
         </form>
       </div>
     </div>
@@ -96,7 +95,14 @@
 
     $.plot("#monitor_plot", data, plot_options);
 
-    jQuery('#datepicker').datetimepicker({dateFormat: 'yy-mm-dd', format: 'Y-m-d', timepicker: false});
+    jQuery('#datepicker').datetimepicker({
+      dateFormat: 'yy-mm-dd',
+      format: 'Y-m-d',
+      timepicker: false,
+      onChangeDateTime: function(dp,$input){
+        $('#dateform').submit();
+    }
+    });
 
   });
 </script>
