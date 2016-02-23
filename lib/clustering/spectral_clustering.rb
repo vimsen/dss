@@ -34,8 +34,8 @@ module ClusteringModule
 
       @errors = Hash[@real.map do |(pid,timestamp),v|
                        # @timestamps[pid] ||= []
-                       @timestamps[pid].push timestamp
-                       [ [pid, timestamp], v - (@forecasts[[pid, timestamp]] || 0)]
+                       @timestamps[pid].push timestamp unless v.nil?
+                       [ [pid, timestamp], (v || 0) - (@forecasts[[pid, timestamp]] || 0)]
                      end]
 
       @similarity_matrix = generate_similarity_matrix
@@ -60,6 +60,7 @@ module ClusteringModule
     end
 
     def cross_correlation(vector, pid1, pid2)
+
       common_timestamps = @timestamps[pid1] & @timestamps[pid2]
 
       s12 = common_timestamps.sum{|ts| vector[[pid1, ts]] * vector[[pid2, ts]]}
