@@ -32,7 +32,7 @@ module ClusteringModule
                      [[dp.prosumer_id, dp.timestamp.to_i], dp.consumption]
                    end]
       @errors = Hash[real.map do |k, v|
-                       [k, v - (forecasts[k] || 0)]
+                       [k, (v || 0) - (forecasts[k] || 0)]
                      end]
     end
 
