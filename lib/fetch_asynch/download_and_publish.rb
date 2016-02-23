@@ -47,18 +47,18 @@ module FetchAsynch
             if new_api_prosumer_ids.count > 0
               puts i; i=i+1;
               puts "Hello"
-              # new_api_prosumer_ids. each do |id|
-              rest_resource = RestClient::Resource.new(u)
-              raw = rest_resource['getdataVGW'].get params: params.merge(prosumers: new_api_prosumer_ids.join(","), pointer: 2)
-              # Rails.logger.debug "RAW: #{raw}"
-              result = JSON.parse raw
-             #  Rails.logger.debug "Result: #{result}"
-              result_conv = convert_new_to_old_api_v2 result
-             #  Rails.logger.debug "Result_conv: #{result_conv}"
-              x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{new_api_prosumer_ids.join(",")}.", event: "output"}.to_json) if x
-              Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{new_api_prosumer_ids.join(",")}."
-              datareceived(result_conv, x)
-              # end
+              new_api_prosumer_ids. each do |id|
+                rest_resource = RestClient::Resource.new(u)
+                raw = rest_resource['getdataVGW'].get params: params.merge(prosumers: id, pointer: 2)
+                # Rails.logger.debug "RAW: #{raw}"
+                result = JSON.parse raw
+               #  Rails.logger.debug "Result: #{result}"
+                result_conv = convert_new_to_old_api_v2 result
+               #  Rails.logger.debug "Result_conv: #{result_conv}"
+                x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{id}.", event: "output"}.to_json) if x
+                Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{id}."
+                datareceived(result_conv, x)
+              end
               # datareceived_new(result, channel)
             end
 

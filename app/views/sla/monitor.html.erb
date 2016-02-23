@@ -95,13 +95,13 @@
 
     $.plot("#monitor_plot", data, plot_options);
 
-    jQuery('#datepicker').datetimepicker({
+    $('#datepicker').datetimepicker({
       dateFormat: 'yy-mm-dd',
       format: 'Y-m-d',
       timepicker: false,
       onChangeDateTime: function(dp,$input){
         $('#dateform').submit();
-    }
+      }
     });
 
   });
