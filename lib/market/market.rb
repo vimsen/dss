@@ -197,13 +197,13 @@ module Market
     end
 
     def real_price(cons_timestamp)
-      @real_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day - 2.hours) .. (@endDate - 1.year), region_id: 1).map { |d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price * 0.001 ] }] # Convert euro/MWh to euro/KWh
+      @real_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 365.days - 1.day - 2.hours) .. (@endDate - 365.days), region_id: 1).map { |d| [(d.date.to_datetime + 365.days + d.dayhour.hours).to_i, d.price * 0.001 ] }] # Convert euro/MWh to euro/KWh
       # puts "ts: #{cons_timestamp}, Cache: #{@real_price_cache}"
       @real_price_cache[cons_timestamp.to_i] ||= 0
     end
 
     def forecast_price(cons_timestamp, fore_timestamp)
-      @forecast_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day - 2.hours) .. (@endDate - 1.year), region_id: 1).map { |d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price * 0.001 ] }] # Convert euro/MWh to euro/KWh      puts "timestamp: #{cons_timestamp}, price: #{@forecast_price_cache[cons_timestamp.to_i]}, total: #{@forecast_price_cache}"
+      @forecast_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 365.days - 1.day - 2.hours) .. (@endDate - 365.days), region_id: 1).map { |d| [(d.date.to_datetime + 365.days + d.dayhour.hours).to_i, d.price * 0.001 ] }] # Convert euro/MWh to euro/KWh      puts "timestamp: #{cons_timestamp}, price: #{@forecast_price_cache[cons_timestamp.to_i]}, total: #{@forecast_price_cache}"
     #   puts "ts: #{cons_timestamp}, For. Cache: #{@forecast_price_cache}"
       @forecast_price_cache[cons_timestamp.to_i]
     end
