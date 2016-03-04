@@ -11,7 +11,7 @@ module FetchAsynch
       params = {:prosumers => prosumers,
                 :date => date}
       uri.query = URI.encode_www_form(params);
-      puts uri, prosumers, date
+      Rails.logger.debug "#{uri}, #{prosumers}, #{date}"
       ActiveRecord::Base.connection.close
       result = JSON.parse(uri.open.read)
       datareceived result, dayahead

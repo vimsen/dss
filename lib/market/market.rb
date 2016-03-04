@@ -25,8 +25,8 @@ module Market
                     data: forecast.map do |f|
                       forecast_cache[f.f_timestamp.to_i] = f.fc
                       price_cache[f.f_timestamp.to_i] = forecast_price(f.f_timestamp, f.timestamp)
-                     #  puts "timestamp: #{f.f_timestamp}, price: #{forecast_price(f.f_timestamp, f.timestamp)}"
-                      puts "fc: #{f.fc}, pc: #{price_cache[f.f_timestamp.to_i]}, ts: #{f.f_timestamp.to_i}, cache: #{price_cache}" unless price_cache[f.f_timestamp.to_i]
+                     #  Rails.logger.debug "timestamp: #{f.f_timestamp}, price: #{forecast_price(f.f_timestamp, f.timestamp)}"
+                      Rails.logger.debug "fc: #{f.fc}, pc: #{price_cache[f.f_timestamp.to_i]}, ts: #{f.f_timestamp.to_i}, cache: #{price_cache}" unless price_cache[f.f_timestamp.to_i]
                       aggr_costs[:forecast] += f.fc * price_cache[f.f_timestamp.to_i]
                       [f.f_timestamp.to_i * 1000, f.fc * price_cache[f.f_timestamp.to_i]]
                     end
@@ -198,7 +198,7 @@ module Market
 
     def real_price(cons_timestamp)
       @real_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 365.days - 1.day - 2.hours) .. (@endDate - 365.days), region_id: 1).map { |d| [(d.date.to_datetime + 365.days + d.dayhour.hours).to_i, d.price * 0.001 ] }] # Convert euro/MWh to euro/KWh
-      # puts "ts: #{cons_timestamp}, Cache: #{@real_price_cache}"
+      # Rails.logger.debug "ts: #{cons_timestamp}, Cache: #{@real_price_cache}"
       @real_price_cache[cons_timestamp.to_i] ||= 0
     end
 

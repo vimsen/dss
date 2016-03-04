@@ -17,14 +17,14 @@ module FetchAsynch
         @interval = Interval.find(interval)
       end
 
-      puts "Starting new Thread..."
+      Rails.logger.debug "Starting new Thread..."
       # Thread.abort_on_exception = true
       thread = Thread.new do
         begin
           ActiveRecord::Base.forbid_implicit_checkout_for_thread!
           i = 0
           u = YAML.load_file('config/config.yml')[Rails.env]['intellen_host']
-          puts i; i=i+1;
+          Rails.logger.debug i; i=i+1;
 
           x = nil
           begin
@@ -45,8 +45,8 @@ module FetchAsynch
             new_api_prosumer_ids = prosumers.map {|p| p.intelen_id}.reject{|id| is_integer? id }
             old_api_prosumer_ids = prosumers.map {|p| p.intelen_id}.select{|id| is_integer? id }
             if new_api_prosumer_ids.count > 0
-              puts i; i=i+1;
-              puts "Hello"
+              Rails.logger.debug i; i=i+1;
+              Rails.logger.debug "Hello"
               new_api_prosumer_ids. each do |id|
                 rest_resource = RestClient::Resource.new(u)
                 raw = rest_resource['getdataVGW'].get params: params.merge(prosumers: id, pointer: 2)
@@ -63,16 +63,16 @@ module FetchAsynch
             end
 
             if old_api_prosumer_ids.count > 0
-              puts i; i=i+1;
-              puts "OLD API"
+              Rails.logger.debug i; i=i+1;
+              Rails.logger.debug "OLD API"
               uri = URI.parse(u + '/getdata')
-              puts i; i=i+1;
+              Rails.logger.debug i; i=i+1;
 
               old_api_prosumer_ids.each_slice(10) do |slice|
                 uri.query = URI.encode_www_form(params.merge prosumers: slice.join(","))
-                puts i; i=i+1;
+                Rails.logger.debug i; i=i+1;
 
-                puts "In the new Thread..."
+                Rails.logger.debug "In the new Thread..."
                 Rails.logger.debug "Connecting to: #{uri}"
                 raw = uri.open.read
                 #   Rails.logger.debug "RAW: #{raw}"
@@ -301,7 +301,7 @@ module FetchAsynch
       Time.iso8601(str.to_s)
       return true
     rescue ArgumentError => e
-      puts "Received junk input: #{str}"
+      Rails.logger.debug "Received junk input: #{str}"
       return false
     end
   end

@@ -25,9 +25,9 @@ class DownloadAndPublishTest < ActiveSupport::TestCase
     prosumer = prosumers(:one)
 
 
-    FetchAsynch::DownloadAndPublish.new( [prosumer], Interval.find_by_duration(3600), startdate, enddate, nil, true)
+    FetchAsynch::DownloadAndPublish.new( [prosumer], Interval.find_by_duration(3600).id, startdate, enddate, nil, true)
     # puts Prosumer.first.data_points.count
-    validate_data_points(prosumer)
+    validate_data_points(prosumer, Interval.find_by_duration(3600).id, startdate, enddate)
 
   end
 
@@ -38,16 +38,16 @@ class DownloadAndPublishTest < ActiveSupport::TestCase
     prosumer = prosumers(:two)
 
 
-    FetchAsynch::DownloadAndPublish.new( [prosumer], Interval.find_by_duration(3600), startdate, enddate, nil, true)
+    FetchAsynch::DownloadAndPublish.new( [prosumer], Interval.find_by_duration(3600).id, startdate, enddate, nil, true)
     # puts Prosumer.first.data_points.count
-    validate_data_points(prosumer)
+    validate_data_points(prosumer, Interval.find_by_duration(3600).id, startdate, enddate)
 
 
   end
 
   private
-  def validate_data_points(prosumer)
-    assert_equal 25, prosumer.data_points.count, "We should receive 25 data points"
+  def validate_data_points(prosumer, interval_id, startdate, enddate)
+      assert_equal 24, prosumer.data_points.where(interval_id: interval_id, timestamp: startdate...enddate).count, "We should receive 24 data points"
   end
 
 end

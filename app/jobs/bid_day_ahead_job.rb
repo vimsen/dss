@@ -7,8 +7,8 @@ class BidDayAheadJob < ActiveJob::Base
 
   def perform(*args)
 
-    puts "Arguments:  #{ENV["download"]}"
-    puts "Downloading data:"
+    Rails.logger.debug "Arguments:  #{ENV["download"]}"
+    Rails.logger.debug "Downloading data:"
 
     if ENV["download"] != "false"
       FetchAsynch::DownloadAndPublish.new(Prosumer.all, 2, DateTime.now - 2.weeks, DateTime.now + 48.hours, nil, true)
@@ -16,7 +16,7 @@ class BidDayAheadJob < ActiveJob::Base
 
 
 
-    puts "Downloaded data"
+    Rails.logger.debug "Downloaded data"
     config = YAML.load_file('config/config.yml')
 
     user = config[Rails.env]["market_operator"]["user"]
@@ -27,13 +27,13 @@ class BidDayAheadJob < ActiveJob::Base
 
     markets = JSON.parse rest_resource['markets'].get params: {user_email: user, user_token: token, format: :json}
 
-    puts "Downloaded markets"
+    Rails.logger.debug "Downloaded markets"
 
     day_ahead_market = (markets.find do |m|
       m["name"] == "Day Ahead"
     end)
 
-    puts "found day ahead market"
+    Rails.logger.debug "found day ahead market"
     newbid = {
         market_id: day_ahead_market["id"],
         date: Date.tomorrow.to_s,
@@ -47,15 +47,15 @@ class BidDayAheadJob < ActiveJob::Base
           b[:volume] == 0
         end
     }
-    puts "created bid"
+    Rails.logger.debug "created bid"
     request_object = {
         bid: newbid, user_email: user, user_token: token
     }
-    puts "created request object"
-    puts day_ahead_market["blocks"], request_object.to_json
+    Rails.logger.debug "created request object"
+    Rails.logger.debug "#{day_ahead_market["blocks"]}, #{request_object.to_json}"
 
     result = rest_resource['bids'].post(request_object.to_json, :content_type => :json, :accept => :json)
-    puts "The result is #{result}"
+    Rails.logger.debug "The result is #{result}"
 
     json_response = JSON.parse result
 
@@ -66,9 +66,9 @@ class BidDayAheadJob < ActiveJob::Base
     end
 
    # bid = JSON.parse(rest_resource['bids'].post(request_object.to_json, :content_type => :json, :accept => :json))
-   # puts "Posted new bid"
+   # Rails.logger.debug "Posted new bid"
 
-   # puts "The number of data points is #{DataPoint.count}, user is #{user}. Bid is #{bid}."
+   # Rails.logger.debug "The number of data points is #{DataPoint.count}, user is #{user}. Bid is #{bid}."
     # Do something later
   end
 end
