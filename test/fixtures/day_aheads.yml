@@ -1,9 +1,9 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  prosumer: one 
+  prosumer_id: 1
   date: 2014-11-10
 
 two:
-  prosumer: two
+  prosumer_id: 45
   date: 2014-11-10

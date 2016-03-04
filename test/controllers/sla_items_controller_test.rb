@@ -2,6 +2,7 @@ require 'test_helper'
 
 class SlaItemsControllerTest < ActionController::TestCase
   setup do
+    sign_in User.first
     @sla_item = sla_items(:one)
   end
 
@@ -18,9 +19,8 @@ class SlaItemsControllerTest < ActionController::TestCase
 
   test "should create sla_item" do
     assert_difference('SlaItem.count') do
-      post :create, sla_item: { bid_id: @sla_item.bid_id, interval_id: @sla_item.interval_id, price: @sla_item.price, timestamp: @sla_item.timestamp, volume: @sla_item.volume }
+      post :create, sla_item: { bid_id: @sla_item.bid_id, interval_id: @sla_item.interval_id, price: @sla_item.price, timestamp: @sla_item.timestamp + Interval.find(@sla_item.interval_id).duration, volume: @sla_item.volume }
     end
-
     assert_redirected_to sla_item_path(assigns(:sla_item))
   end
 
