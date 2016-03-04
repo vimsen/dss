@@ -24,7 +24,7 @@ module ClusteringModule
       # puts decomposition.eigenvectors.take(kappa).join(",\n")
       # puts u
 
-      puts y.join(",\n")
+      # puts y.join(",\n")
 
       clusters = y.sample(kappa).map{|i| [y.index(i)]}
 
@@ -43,7 +43,7 @@ module ClusteringModule
           clusters[closest].push i
         end
 
-        puts JSON.pretty_generate clusters
+        # puts JSON.pretty_generate clusters
         centroids = clusters.map{ |cl| get_centroid(cl, y) }
 
         break if centroids <=> old_centroids
