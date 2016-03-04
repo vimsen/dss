@@ -1,11 +1,11 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
+  id: 1
   name: Prosumer1
-  location: MyString
   intelen_id: 1
 
 two:
+  id: 45
   name: Prosumer2
-  location: MyString
   intelen_id: b827eb4c14af

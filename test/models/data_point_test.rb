@@ -17,7 +17,7 @@ class DataPointTest < ActiveSupport::TestCaseWithProsumptionData
         ).where("consumption > ?", 0).count
       end
 
-      puts "#{p.id}: #{p.name}: #{p.intelen_id}: #{points}"
+      Rails.logger.debug "#{p.id}: #{p.name}: #{p.intelen_id}: #{points}"
     end
 
     points = @prosumers.map do |p|

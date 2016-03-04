@@ -2,6 +2,7 @@ require 'test_helper'
 
 class BidsControllerTest < ActionController::TestCase
   setup do
+    sign_in User.first
     @bid = bids(:one)
   end
 
