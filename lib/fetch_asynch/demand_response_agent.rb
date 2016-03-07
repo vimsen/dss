@@ -4,7 +4,7 @@ module FetchAsynch
       config = YAML.load_file('config/config.yml')
       base_uri = config[Rails.env]["gdrms_host"]
 
-      @rest_resource = RestClient::Resource.new(base_uri)
+      @rest_resource = RestClient::Resource.new(base_uri, :read_timeout => 10, :open_timeout => 10)
 
     end
 
