@@ -39,25 +39,28 @@ module FetchAsynch
       ActiveRecord::Base.connection_pool.with_connection do |conn|
         dr_obj = DemandResponse.find(demand_response_id)
         result = @rest_resource['status_check'].get params: {plan_id: dr_obj.plan_id}
-        # result = '{
-        #              "status":"ok",
-        #              "start_time":"2015-10-19T13:00:00.000+02:00",
-        #             "plan_id":438912148531487,
-        #             "interval":900,
-        #             "unit":"kW",
-        #             "planned_dr":{
-        #               "1":[10.20, 19.64, 18.60, 18.43, 20.41, 30.21, 11.41, 0.90, 14.78],
-        #               "4":[14.50, 1.29, 14.28, 22.55, 7.58, 15.59, 18.02, 12.62, 16.17],
-        #               "7":[18.72, 18.12, 10.40, 6.44, 19.24, 6.02, 7.34, 6.26, 17.51],
-        #               "10":[6.91, 6.10, 12.85, 20.72, 17.95, 11.32, 10.37, 8.38, 12.69]
-        #             },
-        #             "actual_dr":{
-        #               "1":[0.02, 19.21, 17.77],
-        #               "4":[13.62, 0.33, 14.18],
-        #               "7":[17.74, 17.81, 9.49],
-        #               "10":[6.86, 5.91, 12.24]
-        #             }
-        #         }'
+        # t1 =  DateTime.parse("2016-03-10 17:00:00 +0200")
+        # result = {
+        #      status: "ok",
+        #      start_time: t1,
+        #      plan_id: 12345,
+        #      interval: 900,
+        #      unit: "kW",
+        #      planned_dr: {
+        #          "1": [10.20, 19.64, 18.60, 18.43, 20.41, 30.21, 11.41, 0.90, 14.78],
+        #          "4": [14.50, 1.29, 14.28, 22.55, 7.58, 15.59, 18.02, 12.62, 16.17],
+        #          "7": [18.72, 18.12, 10.40, 6.44, 19.24, 6.02, 7.34, 6.26, 17.51],
+        #          "10": [6.91, 6.10, 12.85, 20.72, 17.95, 11.32, 10.37, 8.38, 12.69]
+        #      },
+        #      actual_dr: {
+        #          "1": ((Time.zone.now - t1)/900+1).to_i.times.map{|i| rand(0.0..10.0)},
+        #          "4": ((Time.zone.now - t1)/900+1).to_i.times.map{|i| rand(0.0..10.0)},
+        #          "7": ((Time.zone.now - t1)/900+1).to_i.times.map{|i| rand(0.0..10.0)},
+        #          "10": ((Time.zone.now - t1)/900+1).to_i.times.map{|i| rand(0.0..10.0)}
+        #      }
+        # }.to_json
+        # sleep(3)
+
         Rails.logger.debug "RESULT:  #{result}"
         Rails.logger.debug "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaa, #{dr_obj.plan_id}"
         json = JSON.parse result
@@ -102,8 +105,6 @@ module FetchAsynch
             i += 1
           end
         end
-
-
       end
     end
   end

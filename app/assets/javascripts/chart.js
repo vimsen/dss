@@ -193,7 +193,18 @@ var plotHelper = (function() {
         window.setTimeout(redraw, 100, data);
       });
 
-      source.addEventListener('market', function(e) {
+        source.addEventListener('messages.demand_response_data', function(e) {
+            var message = JSON.parse(e.data);
+            console.log("Dr received ", message);
+            replot(message)
+            /*
+            data = readSingle(message, type, forecast, data);
+            changed = true;
+            window.setTimeout(redraw, 100, data);*/
+        });
+
+
+        source.addEventListener('market', function(e) {
           var message = JSON.parse(e.data);
           console.log("Received market data: ", message)
           $.plot($("#cost_placeholder"), message.plot, {
