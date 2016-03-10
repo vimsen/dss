@@ -25,16 +25,16 @@ module Market
                     data: forecast.map do |f|
                       forecast_cache[f.f_timestamp.to_i] = f.fc
                       price_cache[f.f_timestamp.to_i] = forecast_price(f.f_timestamp, f.timestamp)
-                     #  puts "timestamp: #{f.f_timestamp}, price: #{forecast_price(f.f_timestamp, f.timestamp)}"
-                      puts "fc: #{f.fc}, pc: #{price_cache[f.f_timestamp.to_i]}, ts: #{f.f_timestamp.to_i}, cache: #{price_cache}" unless price_cache[f.f_timestamp.to_i]
+                     #  Rails.logger.debug "timestamp: #{f.f_timestamp}, price: #{forecast_price(f.f_timestamp, f.timestamp)}"
+                      Rails.logger.debug "fc: #{f.fc}, pc: #{price_cache[f.f_timestamp.to_i]}, ts: #{f.f_timestamp.to_i}, cache: #{price_cache}" unless price_cache[f.f_timestamp.to_i]
                       aggr_costs[:forecast] += f.fc * price_cache[f.f_timestamp.to_i]
                       [f.f_timestamp.to_i * 1000, f.fc * price_cache[f.f_timestamp.to_i]]
                     end
                 }, {
                     label: "ideal",
                     data: real.map do |f|
-                      aggr_costs[:ideal] += f.consumption * real_price(f.timestamp)
-                      [f.timestamp.to_i * 1000, f.consumption * real_price(f.timestamp)]
+                      aggr_costs[:ideal] += f.consumption * real_price(f.timestamp) unless f.consumption.nil?
+                      [f.timestamp.to_i * 1000, f.consumption * real_price(f.timestamp)] unless f.consumption.nil?
                     end
                 },  {
                     label: "individual",
@@ -74,8 +74,8 @@ module Market
                       interval: 2,
                       timestamp: @startDate .. @endDate).each do |dp|
         ideal_cost[dp.prosumer_id] ||= 0
-        ideal_cost[dp.prosumer_id] += dp.consumption * real_price(dp.timestamp)
-        total_costs[:ideal] += dp.consumption * real_price(dp.timestamp)
+        ideal_cost[dp.prosumer_id] += dp.consumption * real_price(dp.timestamp) unless dp.consumption.nil?
+        total_costs[:ideal] += dp.consumption * real_price(dp.timestamp) unless dp.consumption.nil?
         real_cost[dp.prosumer_id] ||= 0
         real_cost[dp.prosumer_id] += real_cost(dp, forecast_cache[dp.prosumer_id], price_cache)
         total_costs[:real] += real_cost(dp, forecast_cache[dp.prosumer_id], price_cache)
@@ -152,10 +152,10 @@ module Market
                       timestamp: @startDate .. @endDate).inject({}) do |sum, dp|
         sum[dp.timestamp.to_i] ||= 0
         sum[dp.timestamp.to_i] +=
-            real_cost(dp, {
+            (real_cost(dp, {
                             dp.timestamp.to_i =>
                                 for_cache[[dp.prosumer_id, dp.timestamp.to_i]]
-                        }, {dp.timestamp.to_i => real_price(dp.timestamp)})
+                        }, {dp.timestamp.to_i => real_price(dp.timestamp)})) || 0
         sum
       end.map {|k,v| [k*1000,v]}.sort {|a,b| a[0] <=> b[0]}
 
@@ -165,12 +165,12 @@ module Market
       forecasts ||= {}
       forecasts[f.timestamp.to_i] ||= 0
       prices[f.timestamp.to_i] ||= 0
+      return 0 if f.consumption.nil?
       f.consumption > forecasts[f.timestamp.to_i] ?
-          forecasts[f.timestamp.to_i] * prices[f.timestamp.to_i] +
-              (f.consumption - forecasts[f.timestamp.to_i]) * (1 + @penalty_violation) * real_price(f.timestamp) :
-          f.consumption * prices[f.timestamp.to_i] +
-              (forecasts[f.timestamp.to_i] - f.consumption) * @penalty_satisfaction * real_price(f.timestamp)
-
+            forecasts[f.timestamp.to_i] * prices[f.timestamp.to_i] +
+                (f.consumption - forecasts[f.timestamp.to_i]) * (1 + @penalty_violation) * real_price(f.timestamp) :
+            f.consumption * prices[f.timestamp.to_i] +
+                (forecasts[f.timestamp.to_i] - f.consumption) * @penalty_satisfaction * real_price(f.timestamp)
     end
 
     def penalty_for_single(day_ahead_amount)
@@ -197,13 +197,13 @@ module Market
     end
 
     def real_price(cons_timestamp)
-      @real_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day - 2.hours) .. (@endDate - 1.year), region_id: 1).map { |d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price * 0.001 ] }] # Convert euro/MWh to euro/KWh
-      # puts "ts: #{cons_timestamp}, Cache: #{@real_price_cache}"
+      @real_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 365.days - 1.day - 2.hours) .. (@endDate - 365.days), region_id: 1).map { |d| [(d.date.to_datetime + 365.days + d.dayhour.hours).to_i, d.price * 0.001 ] }] # Convert euro/MWh to euro/KWh
+      # Rails.logger.debug "ts: #{cons_timestamp}, Cache: #{@real_price_cache}"
       @real_price_cache[cons_timestamp.to_i] ||= 0
     end
 
     def forecast_price(cons_timestamp, fore_timestamp)
-      @forecast_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 1.year - 1.day - 2.hours) .. (@endDate - 1.year), region_id: 1).map { |d| [(d.date.to_datetime + 1.year + d.dayhour.hours).to_i, d.price * 0.001 ] }] # Convert euro/MWh to euro/KWh      puts "timestamp: #{cons_timestamp}, price: #{@forecast_price_cache[cons_timestamp.to_i]}, total: #{@forecast_price_cache}"
+      @forecast_price_cache ||= Hash[DayAheadEnergyPrice.where(date: (@startDate - 365.days - 1.day - 2.hours) .. (@endDate - 365.days), region_id: 1).map { |d| [(d.date.to_datetime + 365.days + d.dayhour.hours).to_i, d.price * 0.001 ] }] # Convert euro/MWh to euro/KWh      puts "timestamp: #{cons_timestamp}, price: #{@forecast_price_cache[cons_timestamp.to_i]}, total: #{@forecast_price_cache}"
     #   puts "ts: #{cons_timestamp}, For. Cache: #{@forecast_price_cache}"
       @forecast_price_cache[cons_timestamp.to_i]
     end

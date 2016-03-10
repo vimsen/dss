@@ -49,7 +49,7 @@
 	     startdate =  DateTime.parse(@day_ahead.date.to_s)
 	     
 	     
-	     puts "= =============== Startdate : #{startdate}"
+	     Rails.logger.debug "= =============== Startdate : #{startdate}"
 	     enddate = startdate + 21.hours
 	  %>
 	  

@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
 
+  get 'sla/monitor'
+
+  resources :sla_items
+  resources :bids
   resources :dr_actuals
   resources :dr_planneds
   resources :dr_targets

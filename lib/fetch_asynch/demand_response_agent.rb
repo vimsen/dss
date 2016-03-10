@@ -4,7 +4,7 @@ module FetchAsynch
       config = YAML.load_file('config/config.yml')
       base_uri = config[Rails.env]["gdrms_host"]
 
-      @rest_resource = RestClient::Resource.new(base_uri)
+      @rest_resource = RestClient::Resource.new(base_uri, :read_timeout => 10, :open_timeout => 10)
 
     end
 
@@ -19,7 +19,7 @@ module FetchAsynch
             prosumers_primary: [1,4,7,10],
             prosumers_secondary: [2, 3, 8, 11, 16]
         }
-        puts "The request object is #{request_object.to_json}"
+        Rails.logger.debug "The request object is #{request_object.to_json}"
         result = @rest_resource['add_request'].post(request_object.to_json, :content_type => :json, :accept => :json)
 
 #         result = '{"status":"REGISTERED","plan_id":12345}';
@@ -28,9 +28,9 @@ module FetchAsynch
         if json["status"] == "REGISTERED"
           dr_obj.plan_id = json["plan_id"]
           dr_obj.save
-          puts "SUCEESS: The result is #{result}"
+          Rails.logger.debug "SUCEESS: The result is #{result}"
         else
-          puts "FAILURE: The result is #{result}"
+          Rails.logger.debug "FAILURE: The result is #{result}"
         end
       end
     end
@@ -61,7 +61,7 @@ module FetchAsynch
         Rails.logger.debug "RESULT:  #{result}"
         Rails.logger.debug "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaa, #{dr_obj.plan_id}"
         json = JSON.parse result
-        puts json
+        Rails.logger.debug json
 
         i = 0
         Upsert.batch(conn, DrPlanned.table_name) do |upsert|
@@ -86,7 +86,7 @@ module FetchAsynch
           Rails.logger.debug "AAAAAAAAAAAAAAAAAA: #{json["actual_dr"]}"
           dr_obj.dr_targets.order(timestamp: :asc).each do |dr_target|
             json["actual_dr"].each do |k,v|
-              puts "#{k},#{v}"
+              Rails.logger.debug "#{k},#{v}"
               unless v[i].nil?
                 upsert.row({
                                prosumer_id: Prosumer.find_by_intelen_id(k).id,

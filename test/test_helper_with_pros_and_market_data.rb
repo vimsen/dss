@@ -2,7 +2,7 @@ require 'test_helper_with_prosumption_data'
 
 module MarketData
   def load_market_data
-    puts "Importing market data"
+    Rails.logger.debug "Importing market data"
     if DayAheadEnergyPrice.count < 37
       dbconn = ActiveRecord::Base.connection_pool.checkout
       raw  = dbconn.raw_connection
@@ -16,9 +16,9 @@ module MarketData
         # raw.put_copy_data File.read("../prosumers.sql")
       end
       ActiveRecord::Base.connection_pool.checkin(dbconn)
-      puts "We have #{DayAheadEnergyPrice.count} prices"
+      Rails.logger.debug "We have #{DayAheadEnergyPrice.count} prices"
     end
-    puts "Market Data created."
+    Rails.logger.debug "Market Data created."
   end
 end
 

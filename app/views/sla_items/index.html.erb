@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Sla Items</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Bid</th>
+      <th>Timestamp</th>
+      <th>Interval</th>
+      <th>Volume</th>
+      <th>Price</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @sla_items.each do |sla_item| %>
+      <tr>
+        <td><%= sla_item.bid %></td>
+        <td><%= sla_item.timestamp %></td>
+        <td><%= sla_item.interval %></td>
+        <td><%= sla_item.volume %></td>
+        <td><%= sla_item.price %></td>
+        <td><%= link_to 'Show', sla_item %></td>
+        <td><%= link_to 'Edit', edit_sla_item_path(sla_item) %></td>
+        <td><%= link_to 'Destroy', sla_item, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Sla item', new_sla_item_path %>
