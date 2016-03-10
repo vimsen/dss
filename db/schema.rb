@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160204154259) do
+ActiveRecord::Schema.define(version: 20160216100223) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,6 +29,16 @@ ActiveRecord::Schema.define(version: 20160204154259) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "bids", force: :cascade do |t|
+    t.date     "date"
+    t.integer  "mo_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer  "status"
+  end
+
+  add_index "bids", ["status"], name: "index_bids_on_status", using: :btree
 
   create_table "building_types", force: :cascade do |t|
     t.string   "name"
@@ -333,6 +343,20 @@ ActiveRecord::Schema.define(version: 20160204154259) do
   add_index "roles", ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id", using: :btree
   add_index "roles", ["name"], name: "index_roles_on_name", using: :btree
 
+  create_table "sla_items", force: :cascade do |t|
+    t.integer  "bid_id"
+    t.datetime "timestamp"
+    t.integer  "interval_id"
+    t.float    "volume"
+    t.float    "price"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "sla_items", ["bid_id"], name: "index_sla_items_on_bid_id", using: :btree
+  add_index "sla_items", ["interval_id"], name: "index_sla_items_on_interval_id", using: :btree
+  add_index "sla_items", ["timestamp", "interval_id", "bid_id"], name: "index_sla_items_on_timestamp_and_interval_id_and_bid_id", unique: true, using: :btree
+
   create_table "targets", force: :cascade do |t|
     t.float    "volume"
     t.datetime "timestamp"
@@ -383,4 +407,6 @@ ActiveRecord::Schema.define(version: 20160204154259) do
   add_foreign_key "dr_planneds", "demand_responses"
   add_foreign_key "dr_planneds", "prosumers"
   add_foreign_key "dr_targets", "demand_responses"
+  add_foreign_key "sla_items", "bids"
+  add_foreign_key "sla_items", "intervals"
 end

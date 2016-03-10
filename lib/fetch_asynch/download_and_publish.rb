@@ -9,23 +9,22 @@ module FetchAsynch
   # This class downloads prosumption data from the EDMS, and then inserts them
   # in the DB, and publishes the results to the appropriate rabbitMQ channel.
   class DownloadAndPublish
-    def initialize(prosumers, interval, startdate, enddate, channel, async = false, overwrite_data = false)
+    def initialize(prosumers, interval, startdate, enddate, channel, async = false)
       @prosumers = prosumers
       @startdate = startdate
       @enddate = enddate
-      @overwrite_data = overwrite_data
       ActiveRecord::Base.connection_pool.with_connection do
         @interval = Interval.find(interval)
       end
 
-      puts "Starting new Thread..."
+      Rails.logger.debug "Starting new Thread..."
       # Thread.abort_on_exception = true
       thread = Thread.new do
         begin
           ActiveRecord::Base.forbid_implicit_checkout_for_thread!
           i = 0
           u = YAML.load_file('config/config.yml')[Rails.env]['intellen_host']
-          puts i; i=i+1;
+          Rails.logger.debug i; i=i+1;
 
           x = nil
           begin
@@ -46,34 +45,34 @@ module FetchAsynch
             new_api_prosumer_ids = prosumers.map {|p| p.intelen_id}.reject{|id| is_integer? id }
             old_api_prosumer_ids = prosumers.map {|p| p.intelen_id}.select{|id| is_integer? id }
             if new_api_prosumer_ids.count > 0
-              puts i; i=i+1;
-              puts "Hello"
-              # new_api_prosumer_ids. each do |id|
-              rest_resource = RestClient::Resource.new(u)
-              raw = rest_resource['getdataVGW'].get params: params.merge(prosumers: new_api_prosumer_ids.join(","))
-              # Rails.logger.debug "RAW: #{raw}"
-              result = JSON.parse raw
-             #  Rails.logger.debug "Result: #{result}"
-              result_conv = convert_new_to_old_api result
-             #  Rails.logger.debug "Result_conv: #{result_conv}"
-              x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{new_api_prosumer_ids.join(",")}.", event: "output"}.to_json) if x
-              Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{new_api_prosumer_ids.join(",")}."
-              datareceived(result_conv, x)
-              # end
+              Rails.logger.debug i; i=i+1;
+              Rails.logger.debug "Hello"
+              new_api_prosumer_ids. each do |id|
+                rest_resource = RestClient::Resource.new(u)
+                raw = rest_resource['getdataVGW'].get params: params.merge(prosumers: id, pointer: 2)
+                # Rails.logger.debug "RAW: #{raw}"
+                result = JSON.parse raw
+               #  Rails.logger.debug "Result: #{result}"
+                result_conv = convert_new_to_old_api_v2 result
+               #  Rails.logger.debug "Result_conv: #{result_conv}"
+                x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{id}.", event: "output"}.to_json) if x
+                Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{id}."
+                datareceived(result_conv, x)
+              end
               # datareceived_new(result, channel)
             end
 
             if old_api_prosumer_ids.count > 0
-              puts i; i=i+1;
-              puts "OLD API"
+              Rails.logger.debug i; i=i+1;
+              Rails.logger.debug "OLD API"
               uri = URI.parse(u + '/getdata')
-              puts i; i=i+1;
+              Rails.logger.debug i; i=i+1;
 
               old_api_prosumer_ids.each_slice(10) do |slice|
                 uri.query = URI.encode_www_form(params.merge prosumers: slice.join(","))
-                puts i; i=i+1;
+                Rails.logger.debug i; i=i+1;
 
-                puts "In the new Thread..."
+                Rails.logger.debug "In the new Thread..."
                 Rails.logger.debug "Connecting to: #{uri}"
                 raw = uri.open.read
                 #   Rails.logger.debug "RAW: #{raw}"
@@ -105,8 +104,11 @@ module FetchAsynch
           Rails.logger.debug 'done'
         rescue => e
           Rails.logger.debug "EXCEPTION: #{e.inspect}"
+          puts "EXCEPTION: #{e.inspect}"
           Rails.logger.debug "MESSAGE: #{e.message}"
+          puts "MESSAGE: #{e.message}"
           Rails.logger.debug e.backtrace.join("\n")
+          puts e.backtrace.join("\n")
         end
       end
 
@@ -149,7 +151,60 @@ module FetchAsynch
             "reliability" => nil
         } if is_integer? d["Kwh"].to_s
       end.compact
-   end
+    end
+
+    def hash_to_key_value(hash)
+      key, value = hash.first
+      [
+          DateTime.parse(key).to_s,
+          value.scan(/\d+[,.]?\d?/).first.gsub(/,/, ".").to_f
+      ]
+    end
+
+    def empty_data_point_object(timestamp)
+      {
+          "timestamp" => timestamp,
+          "procumer_id" => nil,
+          "interval" => @interval.duration,
+          "actual" => {
+              "production" => nil,
+              "consumption" => nil,
+              "storage" => nil
+          },
+          "forecast" => {
+              "timestamp" => "",
+              "production" => nil,
+              "consumption" => nil,
+              "storage" => nil
+          },
+          "dr" => nil,
+          "reliability" => nil
+      }
+    end
+
+    def convert_new_to_old_api_v2(data)
+
+      intermediate_data = {}
+      result = data.first
+      result["Production"].map(&method(:hash_to_key_value)).map do | key,value |
+        intermediate_data[key] ||= empty_data_point_object key
+        intermediate_data[key]["procumer_id"] = result["ProsumerId"]
+        intermediate_data[key]["actual"]["production"] = value
+      end
+      result["Storage"].map(&method(:hash_to_key_value)).map do | key,value |
+        intermediate_data[key] ||= empty_data_point_object key
+        intermediate_data[key]["procumer_id"] = result["ProsumerId"]
+        intermediate_data[key]["actual"]["storage"] = value
+      end
+      result["Consumption"].map(&method(:hash_to_key_value)).map do | key,value |
+        intermediate_data[key] ||= empty_data_point_object key
+        intermediate_data[key]["procumer_id"] = result["ProsumerId"]
+        intermediate_data[key]["actual"]["consumption"] = value
+      end
+
+      # puts JSON.pretty_generate intermediate_data
+      intermediate_data.values
+    end
 
     def datareceived(data, x)
 
@@ -246,7 +301,7 @@ module FetchAsynch
       Time.iso8601(str.to_s)
       return true
     rescue ArgumentError => e
-      puts "Received junk input"
+      Rails.logger.debug "Received junk input: #{str}"
       return false
     end
   end

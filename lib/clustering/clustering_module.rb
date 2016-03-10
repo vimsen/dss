@@ -218,7 +218,7 @@ module ClusteringModule
     centroids = result.map { |cl| get_centroid_dr(cl, dr_vector) }
     loop do
       old_centroids = Array.new centroids
-      puts "Old centroids: ", old_centroids
+      Rails.logger.debug "Old centroids: #{old_centroids}"
       result.each { |cl| cl.clear }
       dr_prosumers.each do |p|
         cl = find_closest_dr(dr_vector[p.id], centroids)
@@ -237,7 +237,7 @@ module ClusteringModule
       result.push cl
     end
     result.map.with_index do |c, i|
-      puts "Prosumer ids are: #{c}"
+      Rails.logger.debug "Prosumer ids are: #{c}"
       cl = TempCluster.new name: "Dr: #{i}",
                            description: "Demand Response based cluster #{i}"
       c.each do |p|
