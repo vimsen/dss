@@ -13,12 +13,16 @@ class StreamController < ApplicationController
     dr_id = params[:id]
 
     loop do
+      begin
+        ActiveRecord::Base.connection_pool.with_connection do
+          sse.write(DemandResponse.find(dr_id).request_cached(nil).to_json, event: 'messages.demand_response_data')
+        end
+      rescue RestClient::Exception, Errno::ECONNREFUSED => e
+        sse.write("Failed to connect to GDRMS".to_json, event: 'messages.gdrms_unavailable')
+        reachable = false
+      end
       ActiveRecord::Base.clear_active_connections!
       sleep 10;
-      ActiveRecord::Base.connection_pool.with_connection do
-        sse.write(DemandResponse.find(dr_id).request_cached(nil).to_json, event: 'messages.demand_response_data')
-        break unless DemandResponse.find(dr_id).need_more_data
-      end
     end
 
   rescue IOError, ActionController::Live::ClientDisconnected
