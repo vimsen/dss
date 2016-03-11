@@ -22,7 +22,7 @@ class StreamController < ApplicationController
         reachable = false
       end
       ActiveRecord::Base.clear_active_connections!
-      sleep 10;
+      sleep 30;
     end
 
   rescue IOError, ActionController::Live::ClientDisconnected
