@@ -27,17 +27,17 @@ class DemandResponse < ActiveRecord::Base
   end
 
   def dr_properties
-    {
-        targets: Hash[self.dr_targets.map {|t| [t.timestamp.to_i * 1000, [t.timestamp.to_i * 1000, t.volume]] }],
-        planned: Hash[self.dr_planneds.group(:timestamp).order(timestamp: :asc).sum(:volume).map {|k,v| [k.to_i * 1000, [k.to_i * 1000, v]]}],
-        actual: Hash[self.dr_actuals.group(:timestamp).order(timestamp: :asc).sum(:volume).map {|k,v| [k.to_i * 1000, [k.to_i * 1000, v]]}]
-    }
+    ActiveRecord::Base.connection_pool.with_connection do{
+          targets: Hash[self.dr_targets.map {|t| [t.timestamp.to_i * 1000, [t.timestamp.to_i * 1000, t.volume]] }],
+          planned: Hash[self.dr_planneds.group(:timestamp).order(timestamp: :asc).sum(:volume).map {|k,v| [k.to_i * 1000, [k.to_i * 1000, v]]}],
+          actual: Hash[self.dr_actuals.group(:timestamp).order(timestamp: :asc).sum(:volume).map {|k,v| [k.to_i * 1000, [k.to_i * 1000, v]]}]
+      }
+    end
   end
 
   def request_cached(channel)
     ActiveRecord::Base.connection_pool.with_connection do
-      if (self.dr_planneds.group(:timestamp).count.count< self.dr_targets.count ||
-         self.dr_actuals.group(:timestamp).count.count < self.dr_targets.count) && !self.starttime.nil?
+      if self.need_more_data
         agent = FetchAsynch::DemandResponseAgent.new
         agent.refresh_status self.id
         self.reload
@@ -46,4 +46,10 @@ class DemandResponse < ActiveRecord::Base
     end
   end
 
+  def need_more_data
+    ActiveRecord::Base.connection_pool.with_connection do
+      (self.dr_planneds.group(:timestamp).count.count< self.dr_targets.count ||
+          self.dr_actuals.group(:timestamp).count.count < self.dr_targets.count) && !self.starttime.nil?
+    end
+  end
 end

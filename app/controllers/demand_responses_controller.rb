@@ -10,7 +10,7 @@ class DemandResponsesController < ApplicationController
   # GET /demand_responses/1
   # GET /demand_responses/1.json
   def show
-    @idata = @demand_response.request_cached(nil)
+    @idata = @demand_response.dr_properties
   rescue RestClient::Exception, Errno::ECONNREFUSED => e
     @idata = @demand_response.dr_properties
     flash.now[:alert] = "Failed to connect to GDRMS"
