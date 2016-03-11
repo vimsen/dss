@@ -3,9 +3,9 @@
 one:
   id: 1
   name: Prosumer1
-  intelen_id: 1
+  edms_id: 1
 
 two:
   id: 45
   name: Prosumer2
-  intelen_id: b827eb4c14af
+  edms_id: b827eb4c14af
