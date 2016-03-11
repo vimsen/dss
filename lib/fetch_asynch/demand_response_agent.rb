@@ -75,7 +75,7 @@ module FetchAsynch
           dr_obj.dr_targets.order(timestamp: :asc).each do |dr_target|
             json["planned_dr"].each do |k,v|
               upsert.row({
-                             prosumer_id: Prosumer.find_by_intelen_id(k).id,
+                             prosumer_id: Prosumer.find_by_edms_id(k).id,
                              timestamp: dr_target.timestamp,
                              demand_response_id: demand_response_id
                          },{
@@ -96,7 +96,7 @@ module FetchAsynch
               Rails.logger.debug "#{k},#{v}"
               unless v[i].nil?
                 upsert.row({
-                               prosumer_id: Prosumer.find_by_intelen_id(k).id,
+                               prosumer_id: Prosumer.find_by_edms_id(k).id,
                                timestamp: dr_target.timestamp,
                                demand_response_id: demand_response_id,
                            },{

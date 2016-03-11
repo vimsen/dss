@@ -23,7 +23,7 @@ module FetchAsynch
         begin
           ActiveRecord::Base.forbid_implicit_checkout_for_thread!
           i = 0
-          u = YAML.load_file('config/config.yml')[Rails.env]['intellen_host']
+          u = YAML.load_file('config/config.yml')[Rails.env]['edms_host']
           Rails.logger.debug i; i=i+1;
 
           x = nil
@@ -37,13 +37,13 @@ module FetchAsynch
 
           ActiveRecord::Base.connection_pool.with_connection do
 
-            params = { # prosumers: prosumers.map {|p| p.intelen_id}.reject{|id| is_integer? id },
+            params = { # prosumers: prosumers.map {|p| p.edms_id}.reject{|id| is_integer? id },
                        startdate: startdate.to_s,
                        enddate: enddate.to_s,
                        interval: @interval.duration }
 
-            new_api_prosumer_ids = prosumers.map {|p| p.intelen_id}.reject{|id| is_integer? id }
-            old_api_prosumer_ids = prosumers.map {|p| p.intelen_id}.select{|id| is_integer? id }
+            new_api_prosumer_ids = prosumers.map {|p| p.edms_id}.reject{|id| is_integer? id }
+            old_api_prosumer_ids = prosumers.map {|p| p.edms_id}.select{|id| is_integer? id }
             if new_api_prosumer_ids.count > 0
               Rails.logger.debug i; i=i+1;
               Rails.logger.debug "Hello"
@@ -126,7 +126,7 @@ module FetchAsynch
     def newAPI?(prosumers)
       ActiveRecord::Base.connection_pool.with_connection do
         Rails.logger.debug "AAAAAAAAAAAAAAAAAAAAAAAAAAA"
-        prosumers.reject {|p| is_integer?(p.intelen_id) }.count > 0
+        prosumers.reject {|p| is_integer?(p.edms_id) }.count > 0
       end
     end
 
@@ -215,7 +215,7 @@ module FetchAsynch
       Upsert.logger = Logger.new("/dev/null")
 
       ActiveRecord::Base.connection_pool.with_connection do | conn |
-        procs = Hash[@prosumers.map {|p| [p.intelen_id, p]}]
+        procs = Hash[@prosumers.map {|p| [p.edms_id, p]}]
 
         begin
           upsert_status = Upsert.batch(conn, DataPoint.table_name) do |upsert|
