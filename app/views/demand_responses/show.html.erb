@@ -52,7 +52,7 @@
     var data = <%= @idata.to_json.html_safe %>;
     console.log(data);
 
-    plotHelper.drawChart("<%= "/stream/#{@demand_response.id}/demand_response?" -%>",data, "kw ", false);
+    plotHelper.drawChart("<%= "/stream/#{@demand_response.id}/demand_response?" -%>", data, "kw ", false);
 
   });
 </script>

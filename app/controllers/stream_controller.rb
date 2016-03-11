@@ -6,6 +6,33 @@ require 'fetch_asynch/download_and_publish'
 class StreamController < ApplicationController
   include ActionController::Live
 
+  def demand_response
+    response.headers['Content-Type'] = 'text/event-stream'
+    ActiveRecord::Base.forbid_implicit_checkout_for_thread!
+    sse = Streamer::SSE.new(response.stream)
+    dr_id = params[:id]
+
+    loop do
+      begin
+        ActiveRecord::Base.connection_pool.with_connection do
+          sse.write(DemandResponse.find(dr_id).request_cached(nil).to_json, event: 'messages.demand_response_data')
+        end
+      rescue RestClient::Exception, Errno::ECONNREFUSED => e
+        sse.write("Failed to connect to GDRMS".to_json, event: 'messages.gdrms_unavailable')
+        reachable = false
+      end
+      ActiveRecord::Base.clear_active_connections!
+      sleep 30;
+    end
+
+  rescue IOError, ActionController::Live::ClientDisconnected
+  ensure
+    ActiveRecord::Base.clear_active_connections!
+    sse.close
+    puts "Stream closed."
+  end
+
+
   def clusterfeed
     response.headers['Content-Type'] = 'text/event-stream'
     ActiveRecord::Base.forbid_implicit_checkout_for_thread!
@@ -129,9 +156,11 @@ class StreamController < ApplicationController
     ActiveRecord::Base.clear_active_connections!
     
     loop do
-      sleep 1;
-      sse.write("OK".to_json, event: 'messages.keepalive')
       ActiveRecord::Base.clear_active_connections!
+      sleep 1;
+      ActiveRecord::Base.connection_pool.with_connection do
+        sse.write("OK".to_json, event: 'messages.keepalive')
+      end
     end
   rescue IOError, ActionController::Live::ClientDisconnected
   ensure

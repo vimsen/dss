@@ -193,7 +193,28 @@ var plotHelper = (function() {
         window.setTimeout(redraw, 100, data);
       });
 
-      source.addEventListener('market', function(e) {
+        source.addEventListener('messages.demand_response_data', function(e) {
+            var message = JSON.parse(e.data);
+            console.log("Dr received ", message);
+            replot(message)
+
+            if ($("#GDMRS_message").length) {
+                $("#GDMRS_message").remove();
+            }
+
+        });
+
+        source.addEventListener('messages.gdrms_unavailable', function(e) {
+            var message = JSON.parse(e.data);
+
+            if (!$("#GDMRS_message").length) {
+               $("#page-wrapper").prepend( "<p id='GDMRS_message' class='alert alert-danger'>" + message + "</p>" );
+            }
+            console.log("Message received ", message);
+
+        });
+
+        source.addEventListener('market', function(e) {
           var message = JSON.parse(e.data);
           console.log("Received market data: ", message)
           $.plot($("#cost_placeholder"), message.plot, {
