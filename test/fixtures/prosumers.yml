@@ -9,3 +9,8 @@ two:
   id: 45
   name: Prosumer2
   edms_id: b827eb4c14af
+
+three:
+  id: 46
+  name: Prosumer3
+  edms_id: b827eb725029
