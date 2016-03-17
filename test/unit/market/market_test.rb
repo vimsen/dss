@@ -8,6 +8,8 @@ class MarketTest < ActiveSupport::TestCaseWithProsAndMarketData
     @startdate = @enddate - 3.days
     @prosumers = [Prosumer.find_by(edms_id: "b827eb725029")]
     # @prosumers = [Prosumer.find_by(edms_id: 1)]
+    # @prosumers = Prosumer.all
+
     FetchAsynch::DownloadAndPublish.new( @prosumers, Interval.find_by_duration(3600).id, @startdate, @enddate, nil, true)
   end
 
