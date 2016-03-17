@@ -62,14 +62,16 @@ module Market
       total_costs = {id: -1, name: :sum, forecast: 0, ideal: 0, real: 0}
       DataPoint.where(prosumer: @prosumers,
                       interval: 2,
-                      f_timestamp: @startDate .. @endDate).each do |dp|
+                      f_timestamp: @startDate .. @endDate)
+          .select("timestamp, f_timestamp, prosumer_id, COALESCE(f_consumption,0) - COALESCE(f_production,0) as f_prosumption").each do |dp|
         forecast_cache[dp.prosumer_id] ||= {}
-        forecast_cache[dp.prosumer_id][dp.f_timestamp.to_i] = dp.f_consumption
+        forecast_cache[dp.prosumer_id][dp.f_timestamp.to_i] = dp.f_prosumption
         price_cache ||= {}
         price_cache[dp.f_timestamp.to_i] = forecast_price(dp.f_timestamp, dp.timestamp)
         fore_cost[dp.prosumer_id] ||= 0
-        fore_cost[dp.prosumer_id] += dp.f_consumption * price_cache[dp.f_timestamp.to_i]
-        total_costs[:forecast] += dp.f_consumption * price_cache[dp.f_timestamp.to_i]
+        puts "#{dp.f_prosumption}, #{price_cache[dp.f_timestamp.to_i]}"
+        fore_cost[dp.prosumer_id] += dp.f_prosumption * price_cache[dp.f_timestamp.to_i]
+        total_costs[:forecast] += dp.f_prosumption * price_cache[dp.f_timestamp.to_i]
       end
       DataPoint.where(prosumer: @prosumers,
                       interval: 2,
