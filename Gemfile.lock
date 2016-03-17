@@ -124,6 +124,7 @@ GEM
     nokogiri (1.6.7.2)
       mini_portile2 (~> 2.0.0.rc2)
     orm_adapter (0.5.0)
+    parallel (1.6.2)
     pg (0.18.4)
     puma (2.15.3)
     rack (1.6.4)
@@ -259,6 +260,7 @@ DEPENDENCIES
   gmaps4rails
   jbuilder (~> 2.0)
   jquery-rails
+  parallel
   pg
   puma
   railroady
