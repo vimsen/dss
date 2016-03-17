@@ -22,9 +22,8 @@ module FetchAsynch
       thread = Thread.new do
         begin
           ActiveRecord::Base.forbid_implicit_checkout_for_thread!
+
           i = 0
-          u = YAML.load_file('config/config.yml')[Rails.env]['edms_host']
-          Rails.logger.debug i; i=i+1;
 
           x = nil
           begin
@@ -35,6 +34,8 @@ module FetchAsynch
             x = nil
           end
 
+          jobs = []
+
           ActiveRecord::Base.connection_pool.with_connection do
 
             params = { # prosumers: prosumers.map {|p| p.edms_id}.reject{|id| is_integer? id },
@@ -44,6 +45,61 @@ module FetchAsynch
 
             new_api_prosumer_ids = prosumers.map {|p| p.edms_id}.reject{|id| is_integer? id }
             old_api_prosumer_ids = prosumers.map {|p| p.edms_id}.select{|id| is_integer? id }
+
+
+            # Old api jobs
+            old_api_prosumer_ids.each_slice(10) do |slice|
+              jobs.push params: params.merge(prosumers: slice.join(",")), api: :old
+            end
+
+            new_api_prosumer_ids.each do | pr_id |
+              # for real data:
+              jobs.push params: params.merge(prosumers: pr_id, pointer: 2), api: :new
+
+              # for forecasts:
+              ((startdate - 1.day)...enddate).each do | d |
+                jobs.push params: params.merge(prosumers: pr_id, pointer: 2, startdate: d, enddate: d + 1.hour), api: :new
+              end
+            end
+
+          end
+
+
+          Rails.logger.debug JSON.pretty_generate jobs
+
+          u = YAML.load_file('config/config.yml')[Rails.env]['edms_host']
+          rest_resource = RestClient::Resource.new(u)
+
+          Parallel.each(jobs, in_threads: jobs.count) do |job|
+            case job[:api]
+              when :new
+                raw = rest_resource['getdataVGW'].get params: job[:params], :content_type => :json, :accept => :json
+                # Rails.logger.debug "RAW: #{raw}"
+                result = JSON.parse raw
+                Rails.logger.debug "Result: #{result}"
+                result_conv = convert_new_to_old_api_v2 result
+                #  Rails.logger.debug "Result_conv: #{result_conv}"
+                ActiveRecord::Base.connection_pool.with_connection do
+                  x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}.", event: "output"}.to_json) if x
+                  Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}."
+                  datareceived(result_conv, x)
+                end
+              when :old
+                raw = rest_resource['getdata'].get params: job[:params], :content_type => :json, :accept => :json
+                result = JSON.parse(raw)
+                Rails.logger.debug "Result: #{result}"
+
+                ActiveRecord::Base.connection_pool.with_connection do
+                  x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}.", event: "output"}.to_json) if x
+                  Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}."
+                  datareceived(result, x)
+                end
+            end
+          end
+
+
+=begin
+
             if new_api_prosumer_ids.count > 0
               Rails.logger.debug i; i=i+1;
               Rails.logger.debug "Hello"
@@ -52,7 +108,7 @@ module FetchAsynch
                 raw = rest_resource['getdataVGW'].get params: params.merge(prosumers: id, pointer: 2)
                 # Rails.logger.debug "RAW: #{raw}"
                 result = JSON.parse raw
-               #  Rails.logger.debug "Result: #{result}"
+                Rails.logger.debug "Result: #{result}"
                 result_conv = convert_new_to_old_api_v2 result
                #  Rails.logger.debug "Result_conv: #{result_conv}"
                 x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{id}.", event: "output"}.to_json) if x
@@ -84,17 +140,20 @@ module FetchAsynch
             end
 
           end
+=end
 
           Rails.logger.debug "publshing market data"
           begin
-            Rails.logger.debug "Trying to publish market data"
-            x.publish({data: Market::Calculator.new(prosumers: @prosumers,
-                                                    startDate: @startdate,
-                                                    endDate: @enddate).calcCosts,
-                       event: 'market'}.to_json) if x
-            Rails.logger.debug "publshed market data"
             ActiveRecord::Base.connection_pool.with_connection do
-              x.publish({data:  "Interval #{@interval.name}: complete.", event: "output"}.to_json) if x
+              Rails.logger.debug "Trying to publish market data"
+              x.publish({data: Market::Calculator.new(prosumers: @prosumers,
+                                                      startDate: @startdate,
+                                                      endDate: @enddate).calcCosts,
+                         event: 'market'}.to_json) if x
+              Rails.logger.debug "publshed market data"
+              ActiveRecord::Base.connection_pool.with_connection do
+                x.publish({data:  "Interval #{@interval.name}: complete.", event: "output"}.to_json) if x
+              end
             end
             Rails.logger.debug "pushed end message"
           rescue Bunny::Exception # Don't block if channel can't be fanned out
@@ -186,23 +245,37 @@ module FetchAsynch
 
       intermediate_data = {}
       result = data.first
-      result["Production"].map(&method(:hash_to_key_value)).map do | key,value |
+      Rails.logger.debug JSON.pretty_generate result
+      result["Production"].map(&method(:hash_to_key_value)).each do | key,value |
         intermediate_data[key] ||= empty_data_point_object key
         intermediate_data[key]["procumer_id"] = result["ProsumerId"]
         intermediate_data[key]["actual"]["production"] = value
       end
-      result["Storage"].map(&method(:hash_to_key_value)).map do | key,value |
+      result["Storage"].map(&method(:hash_to_key_value)).each do | key,value |
         intermediate_data[key] ||= empty_data_point_object key
         intermediate_data[key]["procumer_id"] = result["ProsumerId"]
         intermediate_data[key]["actual"]["storage"] = value
       end
-      result["Consumption"].map(&method(:hash_to_key_value)).map do | key,value |
+      result["Consumption"].map(&method(:hash_to_key_value)).each do | key,value |
         intermediate_data[key] ||= empty_data_point_object key
         intermediate_data[key]["procumer_id"] = result["ProsumerId"]
         intermediate_data[key]["actual"]["consumption"] = value
       end
-
-      # puts JSON.pretty_generate intermediate_data
+      result["ForecastConsumption"].map(&method(:hash_to_key_value)).each do | key,value |
+        timestamp = DateTime.parse(key) - 24.hours
+        intermediate_data[timestamp] ||= empty_data_point_object timestamp
+        intermediate_data[timestamp]["procumer_id"] = result["ProsumerId"]
+        intermediate_data[timestamp]["forecast"]["consumption"] = value
+        intermediate_data[timestamp]["forecast"]["timestamp"] = DateTime.parse(key)
+      end
+      result["ForecastProduction"].map(&method(:hash_to_key_value)).each do | key,value |
+        timestamp = DateTime.parse(key) - 24.hours
+        intermediate_data[timestamp] ||= empty_data_point_object timestamp
+        intermediate_data[timestamp]["procumer_id"] = result["ProsumerId"]
+        intermediate_data[timestamp]["forecast"]["production"] = value
+        intermediate_data[timestamp]["forecast"]["timestamp"] = DateTime.parse(key)
+      end
+      Rails.logger.debug JSON.pretty_generate intermediate_data
       intermediate_data.values
     end
 
