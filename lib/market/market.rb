@@ -69,7 +69,7 @@ module Market
         price_cache ||= {}
         price_cache[dp.f_timestamp.to_i] = forecast_price(dp.f_timestamp, dp.timestamp)
         fore_cost[dp.prosumer_id] ||= 0
-        puts "#{dp.f_prosumption}, #{price_cache[dp.f_timestamp.to_i]}"
+        # puts "#{dp.f_prosumption}, #{price_cache[dp.f_timestamp.to_i]}"
         fore_cost[dp.prosumer_id] += dp.f_prosumption * price_cache[dp.f_timestamp.to_i]
         total_costs[:forecast] += dp.f_prosumption * price_cache[dp.f_timestamp.to_i]
       end
