@@ -65,82 +65,39 @@ module FetchAsynch
           end
 
 
-          Rails.logger.debug JSON.pretty_generate jobs
+          # Rails.logger.debug JSON.pretty_generate jobs
 
           u = YAML.load_file('config/config.yml')[Rails.env]['edms_host']
           rest_resource = RestClient::Resource.new(u)
 
-          Parallel.each(jobs, in_threads: jobs.count) do |job|
+          Parallel.each(jobs, in_threads: 5) do |job|
             case job[:api]
               when :new
                 raw = rest_resource['getdataVGW'].get params: job[:params], :content_type => :json, :accept => :json
                 # Rails.logger.debug "RAW: #{raw}"
                 result = JSON.parse raw
-                Rails.logger.debug "Result: #{result}"
+                # Rails.logger.debug "Result: #{result}"
                 result_conv = convert_new_to_old_api_v2 result
                 #  Rails.logger.debug "Result_conv: #{result_conv}"
                 ActiveRecord::Base.connection_pool.with_connection do
                   x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}.", event: "output"}.to_json) if x
                   Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}."
-                  datareceived(result_conv, x)
                 end
+                datareceived(result_conv, x)
+
               when :old
                 raw = rest_resource['getdata'].get params: job[:params], :content_type => :json, :accept => :json
                 result = JSON.parse(raw)
-                Rails.logger.debug "Result: #{result}"
+                # Rails.logger.debug "Result: #{result}"
 
                 ActiveRecord::Base.connection_pool.with_connection do
                   x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}.", event: "output"}.to_json) if x
                   Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}."
-                  datareceived(result, x)
                 end
-            end
-          end
-
-
-=begin
-
-            if new_api_prosumer_ids.count > 0
-              Rails.logger.debug i; i=i+1;
-              Rails.logger.debug "Hello"
-              new_api_prosumer_ids. each do |id|
-                rest_resource = RestClient::Resource.new(u)
-                raw = rest_resource['getdataVGW'].get params: params.merge(prosumers: id, pointer: 2)
-                # Rails.logger.debug "RAW: #{raw}"
-                result = JSON.parse raw
-                Rails.logger.debug "Result: #{result}"
-                result_conv = convert_new_to_old_api_v2 result
-               #  Rails.logger.debug "Result_conv: #{result_conv}"
-                x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{id}.", event: "output"}.to_json) if x
-                Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{id}."
-                datareceived(result_conv, x)
-              end
-              # datareceived_new(result, channel)
-            end
-
-            if old_api_prosumer_ids.count > 0
-              Rails.logger.debug i; i=i+1;
-              Rails.logger.debug "OLD API"
-              uri = URI.parse(u + '/getdata')
-              Rails.logger.debug i; i=i+1;
-
-              old_api_prosumer_ids.each_slice(10) do |slice|
-                uri.query = URI.encode_www_form(params.merge prosumers: slice.join(","))
-                Rails.logger.debug i; i=i+1;
-
-                Rails.logger.debug "In the new Thread..."
-                Rails.logger.debug "Connecting to: #{uri}"
-                raw = uri.open.read
-                #   Rails.logger.debug "RAW: #{raw}"
-                result = JSON.parse(raw)
-                x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{slice.join(",")}.", event: "output"}.to_json) if x
-                Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{slice.join(",")}."
                 datareceived(result, x)
-              end
-            end
 
+            end
           end
-=end
 
           Rails.logger.debug "publshing market data"
           begin
@@ -184,7 +141,7 @@ module FetchAsynch
 
     def newAPI?(prosumers)
       ActiveRecord::Base.connection_pool.with_connection do
-        Rails.logger.debug "AAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        # Rails.logger.debug "AAAAAAAAAAAAAAAAAAAAAAAAAAA"
         prosumers.reject {|p| is_integer?(p.edms_id) }.count > 0
       end
     end
@@ -245,7 +202,7 @@ module FetchAsynch
 
       intermediate_data = {}
       result = data.first
-      Rails.logger.debug JSON.pretty_generate result
+      # Rails.logger.debug JSON.pretty_generate result
       result["Production"].map(&method(:hash_to_key_value)).each do | key,value |
         intermediate_data[key] ||= empty_data_point_object key
         intermediate_data[key]["procumer_id"] = result["ProsumerId"]
@@ -275,7 +232,7 @@ module FetchAsynch
         intermediate_data[timestamp]["forecast"]["production"] = value
         intermediate_data[timestamp]["forecast"]["timestamp"] = DateTime.parse(key)
       end
-      Rails.logger.debug JSON.pretty_generate intermediate_data
+      # Rails.logger.debug JSON.pretty_generate intermediate_data
       intermediate_data.values
     end
 
@@ -294,22 +251,28 @@ module FetchAsynch
           upsert_status = Upsert.batch(conn, DataPoint.table_name) do |upsert|
             data.each do | d |
               # puts "Data Point: #{d}"
-              upsert.row({
-                             timestamp: d['timestamp'].to_datetime,
-                             prosumer_id: procs[d['procumer_id'].to_s].id,
-                             interval_id: @interval.id
-                         }, {
-                             production: d['actual']['production'],
-                             consumption: d['actual']['consumption'],
-                             storage: d['actual']['storage'],
-                             f_timestamp: d['forecast']['timestamp'].to_datetime,
-                             f_production: d['forecast']['production'],
-                             f_consumption: d['forecast']['consumption'],
-                             f_storage: d['forecast']['storage'],
-                             dr: d['dr'],
-                             reliability: d['reliability']
-                         }
-              ) if valid_time_stamp d['timestamp']
+
+              selector = {
+                  timestamp: d['timestamp'].to_datetime,
+                  prosumer_id: procs[d['procumer_id'].to_s].id,
+                  interval_id: @interval.id
+              }
+
+              setter = {
+                  production: d['actual']['production'],
+                  consumption: d['actual']['consumption'],
+                  storage: d['actual']['storage'],
+                  f_timestamp: d['forecast']['timestamp'].to_datetime,
+                  f_production: d['forecast']['production'],
+                  f_consumption: d['forecast']['consumption'],
+                  f_storage: d['forecast']['storage'],
+                  dr: d['dr'],
+                  reliability: d['reliability']
+              }
+
+              setter.reject!{|k,v| v.nil?}
+
+              upsert.row(selector, setter) if valid_time_stamp d['timestamp']
             end
           end
           x.publish({data:  "Interval #{@interval.name}: UPSERT status: #{upsert_status.count}", event: "output"}.to_json) if x
