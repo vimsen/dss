@@ -70,7 +70,7 @@ module FetchAsynch
           u = YAML.load_file('config/config.yml')[Rails.env]['edms_host']
           rest_resource = RestClient::Resource.new(u)
 
-          Parallel.each(jobs, in_threads: 5) do |job|
+          Parallel.each(jobs, in_threads: 3) do |job|
             case job[:api]
               when :new
                 raw = rest_resource['getdataVGW'].get params: job[:params], :content_type => :json, :accept => :json
