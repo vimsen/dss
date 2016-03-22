@@ -73,17 +73,28 @@ module FetchAsynch
           Parallel.each(jobs, in_threads: 3) do |job|
             case job[:api]
               when :new
-                raw = rest_resource['getdataVGW'].get params: job[:params], :content_type => :json, :accept => :json
-                # Rails.logger.debug "RAW: #{raw}"
-                result = JSON.parse raw
-                # Rails.logger.debug "Result: #{result}"
-                result_conv = convert_new_to_old_api_v2 result
-                #  Rails.logger.debug "Result_conv: #{result_conv}"
-                ActiveRecord::Base.connection_pool.with_connection do
-                  x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}.", event: "output"}.to_json) if x
-                  Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}."
+
+                begin
+                  raw = rest_resource['getdataVGW'].get params: job[:params], :content_type => :json, :accept => :json
+                  # Rails.logger.debug "RAW: #{raw}"
+                  result = JSON.parse raw
+                  # Rails.logger.debug "Result: #{result}"
+                  result_conv = convert_new_to_old_api_v2 result
+                  #  Rails.logger.debug "Result_conv: #{result_conv}"
+                  ActiveRecord::Base.connection_pool.with_connection do
+                    x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}.", event: "output"}.to_json) if x
+                    Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}."
+                  end
+                  datareceived(result_conv, x)
+                rescue Exception => e
+                  Rails.logger.debug "EXCEPTION: #{e.inspect}"
+                  puts "EXCEPTION: #{e.inspect}"
+                  Rails.logger.debug "MESSAGE: #{e.message}"
+                  puts "MESSAGE: #{e.message}"
+                  Rails.logger.debug e.backtrace.join("\n")
+                  puts e.backtrace.join("\n")
                 end
-                datareceived(result_conv, x)
+
 
               when :old
                 raw = rest_resource['getdata'].get params: job[:params], :content_type => :json, :accept => :json
