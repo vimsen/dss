@@ -40,7 +40,9 @@ class BidDayAheadJob < ActiveJob::Base
         bid_items_attributes: day_ahead_market["blocks"].map do |b|
           {
               block_id: b["id"].to_i,
-              volume: DataPoint.where(interval_id: 2, f_timestamp: Date.tomorrow.beginning_of_day + b["starting"].seconds + 1.hour).map{|dp| (dp.f_consumption - dp.f_production)}.sum,
+              volume: DataPoint.where(interval_id: 2, f_timestamp: Date.tomorrow.beginning_of_day + b["starting"].seconds + 1.hour)
+                          .select('sum(COALESCE(consumption,0) - COALESCE(production,0)) as prosumption')
+                          .group(:f_timestamp).map{|dp| dp}.first.prosumption,
               price: 50.0
           }
         end.reject do |b|
