@@ -16,7 +16,7 @@ module FetchAsynch
             interval: dr_obj.interval.duration,
             unit: "kW",
             target_reduction: dr_obj.dr_targets.order(timestamp: :asc).map{|t| t.volume},
-            prosumers_primary: [1,4,7,10],
+            prosumers_primary: [26, 27, 29, 30, 31],
             prosumers_secondary: [2, 3, 8, 11, 16]
         }
         Rails.logger.debug "The request object is #{request_object.to_json}"
