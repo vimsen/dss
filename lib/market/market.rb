@@ -100,16 +100,19 @@ module Market
       for_cache = Hash[DataPoint.where(prosumer: @prosumers,
                                        interval: 2,
                                        f_timestamp: @startDate .. @endDate)
+                           .select("f_timestamp, prosumer_id, COALESCE(f_consumption,0) - COALESCE(f_production,0) as f_prosumption")
                            .map do |dp|
-                         [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_consumption]
-                       end]
+        [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_prosumption]
+      end]
       DataPoint.where(prosumer: @prosumers,
                       interval: 2,
-                      timestamp: @startDate .. @endDate).map do |dp|
+                      timestamp: @startDate .. @endDate)
+          .select("timestamp, prosumer_id, COALESCE(consumption,0) - COALESCE(production,0) as prosumption")
+          .map do |dp|
         {
             timestamp: dp.timestamp,
-            prosumer: dp.prosumer.name,
-            real: dp.consumption,
+            prosumer: Prosumer.find(prosumer_id).name,
+            real: dp.prosumption,
             forecast: for_cache[[dp.prosumer_id, dp.timestamp.to_i]],
             price: real_price(dp.timestamp)
 
@@ -148,8 +151,9 @@ module Market
       for_cache = Hash[DataPoint.where(prosumer: @prosumers,
                                        interval: 2,
                                        f_timestamp: @startDate .. @endDate)
+                           .select("f_timestamp, prosumer_id, COALESCE(f_consumption,0) - COALESCE(f_production,0) as f_prosumption")
                            .map do |dp|
-                         [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_consumption]
+                         [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_prosumption]
                        end]
       DataPoint.where(prosumer: @prosumers,
                       interval: 2,
@@ -186,9 +190,9 @@ module Market
 
       raise "Multiple Results" if f.length > 1
 
-      f = [ Struct.new(:timestamp, :consumption).new(@startDate, 0) ] if f.length == 0
+      f = [ Struct.new(:timestamp, :prosumption).new(@startDate, 0) ] if f.length == 0
 
-      actual_amount = f.first.consumption
+      actual_amount = f.first.prosumption
 
       #final_cost = real_cost(f.first,
       #                       {@startDate.to_i => day_ahead_amount},

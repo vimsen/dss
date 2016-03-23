@@ -261,7 +261,6 @@ module FetchAsynch
         begin
           upsert_status = Upsert.batch(conn, DataPoint.table_name) do |upsert|
             data.each do | d |
-              # puts "Data Point: #{d}"
 
               selector = {
                   timestamp: d['timestamp'].to_datetime,
@@ -341,6 +340,8 @@ module FetchAsynch
       k['prosumer_name'] = procs[d['procumer_id'].to_s].name
       k['forecast']['timestamp'] =
           d['forecast']['timestamp'].to_datetime.to_i
+      k['actual']['prosumption'] = (d['actual']['consumption'].to_f || 0) - (d['actual']['production'].to_f || 0)
+      k['forecast']['prosumption'] = (d['forecast']['consumption'].to_f || 0) - (d['forecast']['production'].to_f || 0)
       return k
     end
 

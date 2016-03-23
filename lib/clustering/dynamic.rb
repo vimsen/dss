@@ -10,9 +10,10 @@ module ClusteringModule
       @forecasts = Hash[DataPoint.where(prosumer: @clusters.map{|tc| tc.prosumers}.flatten,
                                        interval: 2,
                                        f_timestamp: @date.midnight .. (@date + 1.day).midnight)
-                           .map do |dp|
-                         [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_consumption]
-                       end]
+                            .select("f_timestamp, prosumer_id, COALESCE(f_consumption,0) - COALESCE(f_production,0) as f_prosumption")
+                            .map do |dp|
+        [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_prosumption]
+      end]
 
       cluster_of = @clusters.map do |tc|
         Hash[tc.prosumers.map do |p|
@@ -28,9 +29,10 @@ module ClusteringModule
       real_per_hour = Hash[DataPoint.where(prosumer: @clusters.map{|tc| tc.prosumers}.flatten,
                                   interval: 2,
                                   timestamp: @date.midnight .. (@date + 1.day).midnight)
-                      .map do |dp|
-                    [[dp.prosumer_id, dp.timestamp.to_i], dp.consumption]
-                  end]
+                               .select("timestamp, prosumer_id, COALESCE(consumption,0) - COALESCE(production,0) as prosumption")
+                               .map do |dp|
+        [[dp.prosumer_id, dp.timestamp.to_i], dp.prosumption]
+      end]
 
       @real_per_hour_cluster = real_per_hour.each_with_object({}) do |((pr_id, timestamp), value), h|
         h[[cluster_of[pr_id],timestamp]] ||= 0
@@ -40,9 +42,10 @@ module ClusteringModule
       @real_per_quarter = Hash[DataPoint.where(prosumer: @clusters.map{|tc| tc.prosumers}.flatten,
                                            interval: 1,
                                            timestamp: @date.midnight .. (@date + 1.day).midnight)
-                               .map do |dp|
-                             [[dp.prosumer_id, dp.timestamp.to_i], dp.consumption]
-                           end]
+                                   .select("timestamp, prosumer_id, COALESCE(consumption,0) - COALESCE(production,0) as prosumption")
+                                   .map do |dp|
+        [[dp.prosumer_id, dp.timestamp.to_i], dp.prosumption]
+      end]
 
       @real_per_quarter_cluster = @real_per_quarter.each_with_object({}) do |((pr_id, timestamp), value), h|
         h[[cluster_of[pr_id],timestamp]] ||= 0
@@ -51,33 +54,6 @@ module ClusteringModule
 
 
       puts @forecasts_per_cluster, @real_per_hour_cluster, @real_per_quarter_cluster
-
-=begin
-
-      forecasts = Hash[DataPoint.where(prosumer: @prosumers,
-                                       interval: 2,
-                                       f_timestamp: day_ahead_date.midnight .. @date.midnight)
-                           .map do |dp|
-                         [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_consumption]
-                       end]
-
-
-
-
-
-
-
-
-      real = Hash[DataPoint.where(prosumer: @prosumers,
-                                  interval: 2,
-                                  timestamp: @startDate .. @endDate)
-                      .map do |dp|
-                    [[dp.prosumer_id, dp.timestamp.to_i], dp.consumption]
-                  end]
-      @errors = Hash[real.map do |k, v|
-                       [k, v - (forecasts[k] || 0)]
-                     end]
-=end
 
     end
 
