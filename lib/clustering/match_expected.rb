@@ -95,11 +95,7 @@ module ClusteringModule
       timestamps.map do |ts|
         DataPoint.where(prosumer: @prosumers,
                         interval: 2,
-                        timestamp: ts).select(:prosumer_id, 'CASE
-                                                                  WHEN production is NULL THEN consumption
-                                                                  WHEN consumption is NULL THEN -production
-	                                                                ELSE (consumption - production)
-	                                                           END as prosumption')
+                        timestamp: ts).select(:prosumer_id, 'COALESCE(consumption,0) - COALESCE(production,0) as prosumption')
             .map do |dp|
           result[dp.prosumer_id][timestamps.index(ts)] = dp[:prosumption]
 

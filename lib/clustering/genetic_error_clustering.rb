@@ -15,15 +15,18 @@ module ClusteringModule
       @forecasts = Hash[DataPoint.where(prosumer: @prosumers,
                                         interval: 2,
                                         f_timestamp: @startDate .. @endDate)
+                            .select("f_timestamp, prosumer_id, COALESCE(f_consumption,0) - COALESCE(f_production,0) as f_prosumption")
                             .map do |dp|
-                          [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_consumption]
-                        end]
+        [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_prosumption]
+      end]
       @real =  Hash[DataPoint.where(prosumer: @prosumers,
                                     interval: 2,
                                     timestamp: @startDate .. @endDate)
+                        .select("timestamp, prosumer_id, COALESCE(consumption,0) - COALESCE(production,0) as prosumption")
                         .map do |dp|
-                      [[dp.prosumer_id, dp.timestamp.to_i], dp.consumption]
-                    end]
+        [[dp.prosumer_id, dp.timestamp.to_i], dp.prosumption]
+      end]
+
       @@errors = Hash[@real.map do |k,v|
                        [ k, v - (@forecasts[k] || 0)]
                      end]

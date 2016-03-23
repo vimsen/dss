@@ -131,7 +131,9 @@
 <script>
   $(function () {
 
-    var energy_consumption = <%= JSON.pretty_generate(Prosumer.all.map { |p| {id: p.id, dr: p.max_dr, dps: p.data_points.where(interval: 3, timestamp: (Time.now - 7.days)..Time.now).map { |dp| {time: dp.timestamp.to_i, value: dp.consumption} } } }).html_safe -%>;
+    var energy_consumption = <%= JSON.pretty_generate(Prosumer.all.map { |p| {id: p.id, dr: p.max_dr, dps: p.data_points.where(interval: 3, timestamp: (Time.now - 7.days)..Time.now)
+                                                                                                                        .select("timestamp, prosumer_id, COALESCE(consumption,0) - COALESCE(production,0) as prosumption")
+                                                                                                                        .map { |dp| {time: dp.timestamp.to_i, value: dp.prosumption} } } }).html_safe -%>;
 
     var threshold = parseFloat($("#threshold_input").val());
 
@@ -173,7 +175,7 @@
       }
 
       return [{
-        label: "Consumption&nbsp;&nbsp;",
+        label: "Prosumption&nbsp;&nbsp;",
         data: aggr.sort()
       }, {
         label: "initial&nbsp;&nbsp;",
