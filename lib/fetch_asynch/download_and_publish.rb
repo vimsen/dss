@@ -209,58 +209,81 @@ module FetchAsynch
       }
     end
 
+    def validate_value(value)
+      case @interval.duration
+        when 900
+          value < 50
+        when 3600
+          value < 200
+        when 86400
+          value < 3000
+      end
+    end
+
     def convert_new_to_old_api_v2(data)
 
       intermediate_data = {}
       result = data.first
       # Rails.logger.debug JSON.pretty_generate result
       result["Production"].map(&method(:hash_to_key_value)).each do | key,value |
-        intermediate_data[key] ||= empty_data_point_object key
-        intermediate_data[key]["procumer_id"] = result["ProsumerId"]
-        intermediate_data[key]["actual"]["production"] = value
+        if validate_value(value)
+          intermediate_data[key] ||= empty_data_point_object key
+          intermediate_data[key]["procumer_id"] = result["ProsumerId"]
+          intermediate_data[key]["actual"]["production"] = value
+        end
       end
       result["Storage"].map(&method(:hash_to_key_value)).each do | key,value |
-        intermediate_data[key] ||= empty_data_point_object key
-        intermediate_data[key]["procumer_id"] = result["ProsumerId"]
-        intermediate_data[key]["actual"]["storage"] = value
+        if validate_value(value)
+          intermediate_data[key] ||= empty_data_point_object key
+          intermediate_data[key]["procumer_id"] = result["ProsumerId"]
+          intermediate_data[key]["actual"]["storage"] = value
+        end
       end
       result["Consumption"].map(&method(:hash_to_key_value)).each do | key,value |
-        intermediate_data[key] ||= empty_data_point_object key
-        intermediate_data[key]["procumer_id"] = result["ProsumerId"]
-        intermediate_data[key]["actual"]["consumption"] = value
+        if validate_value(value)
+          intermediate_data[key] ||= empty_data_point_object key
+          intermediate_data[key]["procumer_id"] = result["ProsumerId"]
+          intermediate_data[key]["actual"]["consumption"] = value
+        end
       end
       result["ForecastConsumption"].map(&method(:hash_to_key_value)).each do | key,value |
         timestamp = case @interval.duration
-                      when 9600
+                      when 900
                         DateTime.parse(key) - 24.hours
                       when 3600
                         (DateTime.parse(key) - 24.hours).beginning_of_hour
                       when 86400
                         (DateTime.parse(key) - 24.hours).utc.beginning_of_day.new_offset Time.zone.formatted_offset
                     end
-        intermediate_data[timestamp] ||= empty_data_point_object timestamp
-        intermediate_data[timestamp]["procumer_id"] = result["ProsumerId"]
-        intermediate_data[timestamp]["forecast"]["consumption"] ||= 0
-        intermediate_data[timestamp]["forecast"]["consumption"] += value
-        intermediate_data[timestamp]["forecast"]["timestamp"] = timestamp + 24.hours
+        puts "#{key}: #{DateTime.parse(key) - 24.hours} --- #{timestamp}"
 
-        puts "#{DateTime.parse(key) - 24.hours} --- #{timestamp}"
+        if timestamp && validate_value(value)
+          intermediate_data[timestamp] ||= empty_data_point_object timestamp
+          intermediate_data[timestamp]["procumer_id"] = result["ProsumerId"]
+          intermediate_data[timestamp]["forecast"]["consumption"] ||= 0
+          intermediate_data[timestamp]["forecast"]["consumption"] += value
+          intermediate_data[timestamp]["forecast"]["timestamp"] = timestamp + 24.hours
+        end
       end if result["ForecastConsumption"].length > 0
 
       result["ForecastProduction"].map(&method(:hash_to_key_value)).each do | key,value |
         timestamp = case @interval.duration
-                      when 9600
+                      when 900
                         DateTime.parse(key) - 24.hours
                       when 3600
                         (DateTime.parse(key) - 24.hours).beginning_of_hour
                       when 86400
                         (DateTime.parse(key) - 24.hours).utc.beginning_of_day.new_offset Time.zone.formatted_offset
                     end
-        intermediate_data[timestamp] ||= empty_data_point_object timestamp
-        intermediate_data[timestamp]["procumer_id"] = result["ProsumerId"]
-        intermediate_data[timestamp]["forecast"]["production"] ||= 0
-        intermediate_data[timestamp]["forecast"]["production"] += value
-        intermediate_data[timestamp]["forecast"]["timestamp"] = timestamp + 24.hours
+
+        if timestamp && validate_value(value)
+          intermediate_data[timestamp] ||= empty_data_point_object timestamp
+          intermediate_data[timestamp]["procumer_id"] = result["ProsumerId"]
+          intermediate_data[timestamp]["forecast"]["production"] ||= 0
+          intermediate_data[timestamp]["forecast"]["production"] += value
+          intermediate_data[timestamp]["forecast"]["timestamp"] = timestamp + 24.hours
+        end
+
       end if result["ForecastProduction"].length > 0
 
       # Rails.logger.debug JSON.pretty_generate intermediate_data
