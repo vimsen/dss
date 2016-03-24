@@ -54,7 +54,7 @@ module FetchAsynch
 
             new_api_prosumer_ids.each do | pr_id |
               # for real data:
-              jobs.push params: params.merge(prosumers: pr_id, pointer: 2), api: :new
+              jobs.unshift params: params.merge(prosumers: pr_id, pointer: 2), api: :new
 
               # for forecasts:
               ((startdate - 1.day)...enddate).each do | d |
@@ -245,7 +245,8 @@ module FetchAsynch
         intermediate_data[timestamp]["forecast"]["timestamp"] = timestamp + 24.hours
 
         puts "#{DateTime.parse(key) - 24.hours} --- #{timestamp}"
-      end
+      end if result["ForecastConsumption"].length > 0
+
       result["ForecastProduction"].map(&method(:hash_to_key_value)).each do | key,value |
         timestamp = case @interval.duration
                       when 9600
@@ -260,7 +261,8 @@ module FetchAsynch
         intermediate_data[timestamp]["forecast"]["production"] ||= 0
         intermediate_data[timestamp]["forecast"]["production"] += value
         intermediate_data[timestamp]["forecast"]["timestamp"] = timestamp + 24.hours
-      end
+      end if result["ForecastProduction"].length > 0
+
       # Rails.logger.debug JSON.pretty_generate intermediate_data
       intermediate_data.values
     end
