@@ -236,7 +236,7 @@ module FetchAsynch
                       when 3600
                         (DateTime.parse(key) - 24.hours).beginning_of_hour
                       when 86400
-                        (DateTime.parse(key) - 24.hours).beginning_of_day
+                        (DateTime.parse(key) - 24.hours).utc.beginning_of_day.new_offset Time.zone.formatted_offset
                     end
         intermediate_data[timestamp] ||= empty_data_point_object timestamp
         intermediate_data[timestamp]["procumer_id"] = result["ProsumerId"]
@@ -254,7 +254,7 @@ module FetchAsynch
                       when 3600
                         (DateTime.parse(key) - 24.hours).beginning_of_hour
                       when 86400
-                        (DateTime.parse(key) - 24.hours).beginning_of_day
+                        (DateTime.parse(key) - 24.hours).utc.beginning_of_day.new_offset Time.zone.formatted_offset
                     end
         intermediate_data[timestamp] ||= empty_data_point_object timestamp
         intermediate_data[timestamp]["procumer_id"] = result["ProsumerId"]
