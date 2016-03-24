@@ -230,18 +230,36 @@ module FetchAsynch
         intermediate_data[key]["actual"]["consumption"] = value
       end
       result["ForecastConsumption"].map(&method(:hash_to_key_value)).each do | key,value |
-        timestamp = DateTime.parse(key) - 24.hours
+        timestamp = case @interval.duration
+                      when 9600
+                        DateTime.parse(key) - 24.hours
+                      when 3600
+                        (DateTime.parse(key) - 24.hours).beginning_of_hour
+                      when 86400
+                        (DateTime.parse(key) - 24.hours).beginning_of_day
+                    end
         intermediate_data[timestamp] ||= empty_data_point_object timestamp
         intermediate_data[timestamp]["procumer_id"] = result["ProsumerId"]
-        intermediate_data[timestamp]["forecast"]["consumption"] = value
-        intermediate_data[timestamp]["forecast"]["timestamp"] = DateTime.parse(key)
+        intermediate_data[timestamp]["forecast"]["consumption"] ||= 0
+        intermediate_data[timestamp]["forecast"]["consumption"] += value
+        intermediate_data[timestamp]["forecast"]["timestamp"] = timestamp + 24.hours
+
+        puts "#{DateTime.parse(key) - 24.hours} --- #{timestamp}"
       end
       result["ForecastProduction"].map(&method(:hash_to_key_value)).each do | key,value |
-        timestamp = DateTime.parse(key) - 24.hours
+        timestamp = case @interval.duration
+                      when 9600
+                        DateTime.parse(key) - 24.hours
+                      when 3600
+                        (DateTime.parse(key) - 24.hours).beginning_of_hour
+                      when 86400
+                        (DateTime.parse(key) - 24.hours).beginning_of_day
+                    end
         intermediate_data[timestamp] ||= empty_data_point_object timestamp
         intermediate_data[timestamp]["procumer_id"] = result["ProsumerId"]
-        intermediate_data[timestamp]["forecast"]["production"] = value
-        intermediate_data[timestamp]["forecast"]["timestamp"] = DateTime.parse(key)
+        intermediate_data[timestamp]["forecast"]["production"] ||= 0
+        intermediate_data[timestamp]["forecast"]["production"] += value
+        intermediate_data[timestamp]["forecast"]["timestamp"] = timestamp + 24.hours
       end
       # Rails.logger.debug JSON.pretty_generate intermediate_data
       intermediate_data.values
@@ -262,27 +280,30 @@ module FetchAsynch
           upsert_status = Upsert.batch(conn, DataPoint.table_name) do |upsert|
             data.each do | d |
 
-              selector = {
-                  timestamp: d['timestamp'].to_datetime,
-                  prosumer_id: procs[d['procumer_id'].to_s].id,
-                  interval_id: @interval.id
-              }
+              if procs[d['procumer_id'].to_s]
+                # puts "Received: #{d}"
+                selector = {
+                    timestamp: d['timestamp'].to_datetime,
+                    prosumer_id: procs[d['procumer_id'].to_s].id,
+                    interval_id: @interval.id
+                }
 
-              setter = {
-                  production: d['actual']['production'],
-                  consumption: d['actual']['consumption'],
-                  storage: d['actual']['storage'],
-                  f_timestamp: d['forecast']['timestamp'].to_datetime,
-                  f_production: d['forecast']['production'],
-                  f_consumption: d['forecast']['consumption'],
-                  f_storage: d['forecast']['storage'],
-                  dr: d['dr'],
-                  reliability: d['reliability']
-              }
+                setter = {
+                    production: d['actual']['production'],
+                    consumption: d['actual']['consumption'],
+                    storage: d['actual']['storage'],
+                    f_timestamp: d['forecast']['timestamp'].to_datetime,
+                    f_production: d['forecast']['production'],
+                    f_consumption: d['forecast']['consumption'],
+                    f_storage: d['forecast']['storage'],
+                    dr: d['dr'],
+                    reliability: d['reliability']
+                }
 
-              setter.reject!{|k,v| v.nil?}
+                setter.reject!{|k,v| v.nil?}
 
-              upsert.row(selector, setter) if valid_time_stamp d['timestamp']
+                upsert.row(selector, setter) if valid_time_stamp d['timestamp']
+              end
             end
           end
           x.publish({data:  "Interval #{@interval.name}: UPSERT status: #{upsert_status.count}", event: "output"}.to_json) if x
@@ -307,7 +328,7 @@ module FetchAsynch
       begin
         message = new_data_points.map do |d|
           prepare(d, procs)
-        end
+        end.compact
         x.publish({data: message, event: 'datapoints'}.to_json) unless x.nil?
       rescue Bunny::Exception # Don't block if channel can't be fanned out
         Rails.logger.debug "Can't publish to channel #{channel}"
@@ -333,16 +354,21 @@ module FetchAsynch
     end
 
     def prepare(d, procs)
-      k = d.deep_dup
 
-      k['timestamp'] = d['timestamp'].to_datetime.to_i
-      k['prosumer_id'] = procs[d['procumer_id'].to_s].id
-      k['prosumer_name'] = procs[d['procumer_id'].to_s].name
-      k['forecast']['timestamp'] =
-          d['forecast']['timestamp'].to_datetime.to_i
-      k['actual']['prosumption'] = (d['actual']['consumption'].to_f || 0) - (d['actual']['production'].to_f || 0)
-      k['forecast']['prosumption'] = (d['forecast']['consumption'].to_f || 0) - (d['forecast']['production'].to_f || 0)
-      return k
+      if procs[d['procumer_id'].to_s]
+        k = d.deep_dup
+
+        k['timestamp'] = d['timestamp'].to_datetime.to_i
+        k['prosumer_id'] = procs[d['procumer_id'].to_s].id
+        k['prosumer_name'] = procs[d['procumer_id'].to_s].name
+        k['forecast']['timestamp'] =
+            d['forecast']['timestamp'].to_datetime.to_i
+        k['actual']['prosumption'] = (d['actual']['consumption'].to_f || 0) - (d['actual']['production'].to_f || 0)
+        k['forecast']['prosumption'] = (d['forecast']['consumption'].to_f || 0) - (d['forecast']['production'].to_f || 0)
+        return k
+      else
+        return nil
+      end
     end
 
     def valid_time_stamp(str)
