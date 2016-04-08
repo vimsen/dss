@@ -1,6 +1,8 @@
 class DrActualsController < ApplicationController
   before_action :set_dr_actual, only: [:show, :edit, :update, :destroy]
 
+  load_and_authorize_resource
+
   # GET /dr_actuals
   # GET /dr_actuals.json
   def index

@@ -1,4 +1,5 @@
 class SlaController < ApplicationController
+
   def monitor
     @date = params[:date].to_date unless params[:date].nil?
     @date ||= Date.today

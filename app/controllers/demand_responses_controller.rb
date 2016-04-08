@@ -1,6 +1,8 @@
 class DemandResponsesController < ApplicationController
   before_action :set_demand_response, only: [:show, :edit, :update, :destroy]
 
+  load_and_authorize_resource
+
   # GET /demand_responses
   # GET /demand_responses.json
   def index

@@ -1,6 +1,8 @@
 class DrTargetsController < ApplicationController
   before_action :set_dr_target, only: [:show, :edit, :update, :destroy]
 
+  load_and_authorize_resource
+
   # GET /dr_targets
   # GET /dr_targets.json
   def index
