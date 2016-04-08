@@ -101,7 +101,9 @@ module ClusteringModule
       result = clusters.map do |c, i|
         DataPoint.where(prosumer: c.prosumers.map{|p| p.id},
                         interval: 2,
-                        f_timestamp: ts).sum(:f_consumption)
+                        f_timestamp: ts)
+            .select("f_timestamp, prosumer_id, COALESCE(f_consumption,0) - COALESCE(f_production,0) as f_prosumption")
+            .sum(:f_prosumption)
       end
       puts "TARGET first: #{result}"
       result
@@ -111,7 +113,9 @@ module ClusteringModule
       result = clusters.map do |c, i|
         DataPoint.where(prosumer: c.prosumers.map{|p| p.id},
                         interval: 2,
-                        timestamp: ts).sum(:consumption)
+                        timestamp: ts)
+            .select("timestamp, prosumer_id, COALESCE(consumption,0) - COALESCE(production,0) as prosumption")
+            .sum(:prosumption)
       end
       puts "REAL BEFORE first: #{result}"
       result
@@ -131,9 +135,10 @@ module ClusteringModule
       result = Hash[DataPoint.where(prosumer: clusters.map{|tc| tc.prosumers}.flatten,
                            interval: 2,
                            timestamp: ts)
-               .map do |dp|
-                      [dp.prosumer_id, dp.consumption]
-                    end]
+                        .select("timestamp, prosumer_id, COALESCE(consumption,0) - COALESCE(production,0) as prosumption")
+                        .map do |dp|
+        [dp.prosumer_id, dp.prosumption]
+      end]
       puts "result: #{result}"
       result
     end

@@ -6,7 +6,7 @@ module ProsumptionData
       Upsert.batch(dbconn, :prosumers) do |upsert|
         CSV.foreach "test/fixtures/prosumers.sql", col_sep: "\t" do |row|
           upsert.row({
-                         intelen_id: row[6]
+                         edms_id: row[6]
                      }, {
                          id: row[0].to_i,
                          name: row[1],
@@ -57,7 +57,7 @@ module ProsumptionData
 
     max = (@startdate .. @trainend).count * 24
     Rails.logger.debug "max = #{max}"
-    @prosumers = Prosumer.where(intelen_id: 1..37).reject do |p|
+    @prosumers = Prosumer.where(edms_id: 1..37).reject do |p|
 #       Rails.logger.debug p.data_points.where(interval: 2, timestamp: startdate .. enddate).count
       p.data_points
           .where(interval: 2, timestamp: @startdate .. @trainend)
