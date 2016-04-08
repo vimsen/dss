@@ -255,7 +255,7 @@ module FetchAsynch
                       when 86400
                         (DateTime.parse(key) - 24.hours).utc.beginning_of_day.new_offset Time.zone.formatted_offset
                     end
-        puts "#{key}: #{DateTime.parse(key) - 24.hours} --- #{timestamp}"
+#         puts "#{key}: #{DateTime.parse(key) - 24.hours} --- #{timestamp}"
 
         if timestamp && validate_value(value)
           intermediate_data[timestamp] ||= empty_data_point_object timestamp

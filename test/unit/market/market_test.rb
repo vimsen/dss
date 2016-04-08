@@ -19,7 +19,7 @@ class MarketTest < ActiveSupport::TestCaseWithProsAndMarketData
                                    startDate: @startdate,
                                    endDate: @enddate).calcCosts
 
-    puts JSON.pretty_generate costs
+    # puts JSON.pretty_generate costs
 
   end
 
