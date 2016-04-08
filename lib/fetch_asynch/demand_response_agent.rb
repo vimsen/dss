@@ -1,7 +1,7 @@
 module FetchAsynch
   class DemandResponseAgent
     def initialize
-      config = YAML.load_file('config/config.yml')
+      config = YAML.load_file('config/vimsen_hosts.yml')
       base_uri = config[Rails.env]["gdrms_host"]
 
       @rest_resource = RestClient::Resource.new(base_uri, :read_timeout => 10, :open_timeout => 10)

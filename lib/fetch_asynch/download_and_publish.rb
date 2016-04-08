@@ -67,7 +67,7 @@ module FetchAsynch
 
           # Rails.logger.debug JSON.pretty_generate jobs
 
-          u = YAML.load_file('config/config.yml')[Rails.env]['edms_host']
+          u = YAML.load_file('config/vimsen_hosts.yml')[Rails.env]['edms_host']
           rest_resource = RestClient::Resource.new(u)
 
           Parallel.each(jobs, in_threads: 3) do |job|
