@@ -1,6 +1,8 @@
 class DrPlannedsController < ApplicationController
   before_action :set_dr_planned, only: [:show, :edit, :update, :destroy]
 
+  load_and_authorize_resource
+
   # GET /dr_planneds
   # GET /dr_planneds.json
   def index

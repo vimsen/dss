@@ -6,8 +6,12 @@ class ClusteringsController < ApplicationController
 
   before_action :set_clustering, only: [:show, :edit, :update, :destroy, :apply]
 
+  load_and_authorize_resource
+
+#  skip_authorize_resource :only => [:select, :confirm]
+
   respond_to :json, :html
-  authorize_resource class: false
+#  authorize_resource class: false
 
   def index
     @clusterings = Clustering.all
