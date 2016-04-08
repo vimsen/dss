@@ -246,8 +246,8 @@ class StreamController < ApplicationController
     startdate = DateTime.now - 2.weeks
     enddate = DateTime.now
 
-    remaining = 3
-    FetchAsynch::DownloadAndPublish.new(Prosumer.all, 1, startdate, enddate, channel_name)
+    remaining = 2
+    # FetchAsynch::DownloadAndPublish.new(Prosumer.all, 1, startdate, enddate, channel_name)
     FetchAsynch::DownloadAndPublish.new(Prosumer.all, 2, startdate, enddate, channel_name)
     FetchAsynch::DownloadAndPublish.new(Prosumer.all, 3, startdate, enddate, channel_name)
 

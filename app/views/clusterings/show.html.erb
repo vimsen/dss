@@ -123,13 +123,13 @@
             {
                 id: tc.id,
                 vals: [{
-                    label: :consumption,
+                    label: :prosumption,
                     data: DataPoint.where(prosumer: tc.prosumers,
                                       interval: 3,
                                       timestamp: @startDate..@endDate)
                                .order(timestamp: :asc)
                                .group(:timestamp)
-                               .select("timestamp as ts, sum(consumption) as s")
+                               .select("timestamp as ts, sum(COALESCE(consumption,0) - COALESCE(production,0)) as s")
                                .map{|p| [p.ts.to_i * 1000, p.s] }
                 },{
                     label: :forecast,
@@ -138,7 +138,7 @@
                                       f_timestamp: @startDate..@endDate)
                                .order(f_timestamp: :asc)
                                .group(:f_timestamp)
-                               .select("f_timestamp as ts, sum(f_consumption) as s")
+                               .select("f_timestamp as ts, sum(COALESCE(f_consumption,0) - COALESCE(f_production,0)) as s")
                                .map{|p| [p.ts.to_i * 1000, p.s] }
                 }]
             }

@@ -89,3 +89,5 @@ gem 'whenever', require: false
 gem 'rest-client'
 
 gem 'upsert'
+
+gem 'parallel' # parallel tasks for downloading EDMS data

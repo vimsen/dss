@@ -1,7 +1,7 @@
 module FetchAsynch
   class DemandResponseAgent
     def initialize
-      config = YAML.load_file('config/config.yml')
+      config = YAML.load_file('config/vimsen_hosts.yml')
       base_uri = config[Rails.env]["gdrms_host"]
 
       @rest_resource = RestClient::Resource.new(base_uri, :read_timeout => 10, :open_timeout => 10)
@@ -16,7 +16,7 @@ module FetchAsynch
             interval: dr_obj.interval.duration,
             unit: "kW",
             target_reduction: dr_obj.dr_targets.order(timestamp: :asc).map{|t| t.volume},
-            prosumers_primary: [1,4,7,10],
+            prosumers_primary: [26, 27, 29, 30, 31],
             prosumers_secondary: [2, 3, 8, 11, 16]
         }
         Rails.logger.debug "The request object is #{request_object.to_json}"
@@ -75,7 +75,7 @@ module FetchAsynch
           dr_obj.dr_targets.order(timestamp: :asc).each do |dr_target|
             json["planned_dr"].each do |k,v|
               upsert.row({
-                             prosumer_id: Prosumer.find_by_intelen_id(k).id,
+                             prosumer_id: Prosumer.find(k).id,
                              timestamp: dr_target.timestamp,
                              demand_response_id: demand_response_id
                          },{
@@ -96,7 +96,7 @@ module FetchAsynch
               Rails.logger.debug "#{k},#{v}"
               unless v[i].nil?
                 upsert.row({
-                               prosumer_id: Prosumer.find_by_intelen_id(k).id,
+                               prosumer_id: Prosumer.find(k).id,
                                timestamp: dr_target.timestamp,
                                demand_response_id: demand_response_id,
                            },{
