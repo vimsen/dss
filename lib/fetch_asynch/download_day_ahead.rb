@@ -6,7 +6,7 @@ require 'yaml'
 module FetchAsynch
   class DownloadDayAhead
     def initialize prosumers, dayahead, date
-      u = YAML.load_file('config/config.yml')[Rails.env]["edms_host"]
+      u = YAML.load_file('config/vimsen_hosts.yml')[Rails.env]["edms_host"]
       uri = URI.parse(u+'/getdayahead');
       params = {:prosumers => prosumers,
                 :date => date}

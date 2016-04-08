@@ -17,7 +17,7 @@ class BidDayAheadJob < ActiveJob::Base
 
 
     Rails.logger.debug "Downloaded data"
-    config = YAML.load_file('config/config.yml')
+    config = YAML.load_file('config/vimsen_hosts.yml')
 
     user = config[Rails.env]["market_operator"]["user"]
     token = config[Rails.env]["market_operator"]["token"]
