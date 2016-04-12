@@ -6,10 +6,9 @@
 #
 one: 
   email: ***REMOVED***
-  authentication_token: KPT_m79rDgxUrTsjTcz5
+  authentication_token: ***REMOVED***
   prosumers: [ "one", "two" ]
-  roles: [ "admin", "test" ]
-  
+
 #
 two: 
   email: ***REMOVED***
