@@ -43,8 +43,8 @@ module FetchAsynch
                        enddate: enddate.to_s,
                        interval: @interval.duration }
 
-            new_api_prosumer_ids = prosumers.map {|p| p.edms_id}.reject{|id| is_integer? id }
-            old_api_prosumer_ids = prosumers.map {|p| p.edms_id}.select{|id| is_integer? id }
+            new_api_prosumer_ids = prosumers.map {|p| p.edms_id}.select{|id| newAPI? id }
+            old_api_prosumer_ids = prosumers.map {|p| p.edms_id}.reject{|id| newAPI? id }
 
 
             # Old api jobs
@@ -150,10 +150,9 @@ module FetchAsynch
       !!(num =~ /\A[-+]?[0-9]+\z/)
     end
 
-    def newAPI?(prosumers)
+    def newAPI?(id)
       ActiveRecord::Base.connection_pool.with_connection do
-        # Rails.logger.debug "AAAAAAAAAAAAAAAAAAAAAAAAAAA"
-        prosumers.reject {|p| is_integer?(p.edms_id) }.count > 0
+        (! is_integer?(id)) || (id.to_i > 100)
       end
     end
 
