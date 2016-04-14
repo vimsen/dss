@@ -11,7 +11,8 @@ module ClusteringModule
                    startDate: Time.now - 1.week,
                    endDate: Time.now,
                    algorithm: Ai4r::GeneticAlgorithm::StaticChromosome,
-                   penalty_violation: 0.3, penalty_satisfaction: 0.2)
+                   penalty_violation: 0.3, penalty_satisfaction: 0.2,
+                   population_size: 200, generations: 100)
       method(__method__).parameters.each do |type, k|
         next unless type == :key
         v = eval(k.to_s)
@@ -44,7 +45,7 @@ module ClusteringModule
 
       puts "Beginning genetic search, please wait... "
       search = Ai4r::GeneticAlgorithm::GeneticSearchWithOptions.new(
-          200, 100, errors: @errors, prosumers: @prosumers, kappa: kappa,
+          @population_size, @generations, errors: @errors, prosumers: @prosumers, kappa: kappa,
           penalty_violation: @penalty_violation,
           penalty_satisfaction: @penalty_satisfaction,
           class: @algorithm,
@@ -66,6 +67,48 @@ module ClusteringModule
                         description: "Genetic clustering #{i}",
                         prosumers: cl.map { |p| @prosumers[p]})
       end
+    end
+
+    def run_cluster(kappa = 5)
+      @lastRunSTats = {start_run: Time.now}
+
+      puts "Beginning genetic search, please wait... "
+
+      params = [@population_size, @generations, {errors: @errors, prosumer_ids: @prosumers.map{|p| p.id}, kappa: kappa,
+                penalty_violation: @penalty_violation,
+                penalty_satisfaction: @penalty_satisfaction,
+                class: @algorithm,
+                stats: @lastRunSTats}]
+
+      filename = "/home/dimitriv/upatras/vimsen/worker/vals.json"
+      File.open(filename, "w") do |file|
+        file.puts JSON.pretty_generate params
+      end
+      output = `/home/dimitriv/upatras/vimsen/worker/worker.rb '#{filename}'`
+
+
+      res = JSON.parse output[/###RESULT####(.*?)###RESULT####/m, 1]
+
+
+      puts "Fitness #{res["fitness"]}"
+      data = res["data"]
+
+      puts "Data is: #{data}"
+
+      result = []
+      data.each_with_index do |g, i|
+        result[g] ||= []
+        result[g].push i
+      end
+      result.reject{ |c| c.nil? || c.empty?}
+
+      result.map.with_index do |cl, i|
+        TempCluster.new(name: "Genetic #{i}",
+                        description: "Genetic clustering #{i}",
+                        prosumers: cl.map { |p| @prosumers[p]})
+      end
+
+
     end
 
     def dump_stats(file)
