@@ -112,7 +112,7 @@ SimpleNavigation::Configuration.run do |navigation|
       sub_nav.dom_class = 'nav nav-second-level collapse'
     end
     primary.item :menu_data_points, 'Data points', data_points_path, :icon => ['fa fa-bar-chart-o fa-fw']
-    primary.item :menu_day_aheads, 'Day-ahead forecasts', day_aheads_path, :icon => ['fa fa-bar-chart-o fa-fw']
+#     primary.item :menu_day_aheads, 'Day-ahead forecasts', day_aheads_path, :icon => ['fa fa-bar-chart-o fa-fw']
     primary.item :menu_market_prices, 'Market Prices', market_prices_path, :icon => ['fa fa-bar-chart-o fa-fw']
     primary.item :menu_cloud_platform, 'Cloud Platform', '/cloud_platform', :icon => ['fa fa-cog fa-fw']
     primary.item :menu_users, 'Users', users_path, :icon => ['fa fa-user fa-fw']
