@@ -229,22 +229,23 @@ module FetchAsynch
         if validate_value(value)
           intermediate_data[key] ||= empty_data_point_object key
           intermediate_data[key]["procumer_id"] = result["ProsumerId"]
-          intermediate_data[key]["actual"]["production"] = value
+          intermediate_data[key]["actual"]["production"] = value.nil? ? nil : value.to_f
         end
       end
       result["Storage"].map(&method(:hash_to_key_value)).each do | key,value |
         if validate_value(value)
           intermediate_data[key] ||= empty_data_point_object key
           intermediate_data[key]["procumer_id"] = result["ProsumerId"]
-          intermediate_data[key]["actual"]["storage"] = value
+          intermediate_data[key]["actual"]["storage"] = value.nil? ? nil : value.to_f
         end
       end
       result["Consumption"].map(&method(:hash_to_key_value)).each do | key,value |
-        # Rails.logger.debug "Consumption: #{key}: #{DateTime.parse(key) - 24.hours}"
+        Rails.logger.debug "Consumption: #{key}: Value #{value}"
         if validate_value(value)
           intermediate_data[key] ||= empty_data_point_object key
           intermediate_data[key]["procumer_id"] = result["ProsumerId"]
-          intermediate_data[key]["actual"]["consumption"] = value
+          intermediate_data[key]["actual"]["consumption"] = value.nil? ? nil : value.to_f
+          Rails.logger.debug "Consumption2: #{key}: Value #{intermediate_data[key]["actual"]["consumption"]}"
         end
       end
       result["ForecastConsumption"].map(&method(:hash_to_key_value)).each do | key,value |
@@ -264,7 +265,7 @@ module FetchAsynch
           intermediate_data[timestamp] ||= empty_data_point_object timestamp
           intermediate_data[timestamp]["procumer_id"] = result["ProsumerId"]
           intermediate_data[timestamp]["forecast"]["consumption"] ||= 0
-          intermediate_data[timestamp]["forecast"]["consumption"] += value
+          intermediate_data[timestamp]["forecast"]["consumption"] += value.to_f unless value.nil?
           intermediate_data[timestamp]["forecast"]["timestamp"] = timestamp + 24.hours
         end
       end if result["ForecastConsumption"].length > 0
@@ -285,7 +286,7 @@ module FetchAsynch
           intermediate_data[timestamp] ||= empty_data_point_object timestamp
           intermediate_data[timestamp]["procumer_id"] = result["ProsumerId"]
           intermediate_data[timestamp]["forecast"]["production"] ||= 0
-          intermediate_data[timestamp]["forecast"]["production"] += value
+          intermediate_data[timestamp]["forecast"]["production"] += value.to_f unless value.nil?
           intermediate_data[timestamp]["forecast"]["timestamp"] = timestamp + 24.hours
         end
 
