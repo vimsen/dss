@@ -225,6 +225,7 @@ module FetchAsynch
       result = data.first
       # Rails.logger.debug JSON.pretty_generate result
       result["Production"].map(&method(:hash_to_key_value)).each do | key,value |
+        # Rails.logger.debug "Production: #{key}: #{DateTime.parse(key) - 24.hours}"
         if validate_value(value)
           intermediate_data[key] ||= empty_data_point_object key
           intermediate_data[key]["procumer_id"] = result["ProsumerId"]
@@ -239,6 +240,7 @@ module FetchAsynch
         end
       end
       result["Consumption"].map(&method(:hash_to_key_value)).each do | key,value |
+        # Rails.logger.debug "Consumption: #{key}: #{DateTime.parse(key) - 24.hours}"
         if validate_value(value)
           intermediate_data[key] ||= empty_data_point_object key
           intermediate_data[key]["procumer_id"] = result["ProsumerId"]
@@ -252,9 +254,11 @@ module FetchAsynch
                       when 3600
                         (DateTime.parse(key) - 24.hours).beginning_of_hour
                       when 86400
-                        (DateTime.parse(key) - 24.hours).utc.beginning_of_day.new_offset Time.zone.formatted_offset
+                        DateTime.parse(key).utc_offset == 7200 ? # Reject wrong timezones
+                            (DateTime.parse(key) - 24.hours).beginning_of_day + Time.zone.parse(key).utc_offset.seconds :
+                            nil
                     end
-#         puts "#{key}: #{DateTime.parse(key) - 24.hours} --- #{timestamp}"
+        #  Rails.logger.debug "ForecastConsumption: #{key}: #{DateTime.parse(key) - 24.hours} --- #{timestamp}"
 
         if timestamp && validate_value(value)
           intermediate_data[timestamp] ||= empty_data_point_object timestamp
@@ -272,8 +276,10 @@ module FetchAsynch
                       when 3600
                         (DateTime.parse(key) - 24.hours).beginning_of_hour
                       when 86400
-                        (DateTime.parse(key) - 24.hours).utc.beginning_of_day.new_offset Time.zone.formatted_offset
-                    end
+                        DateTime.parse(key).utc_offset == 7200 ? # Reject wrong timezones
+                            (DateTime.parse(key) - 24.hours).beginning_of_day + Time.zone.parse(key).utc_offset.seconds :
+                            nil                    end
+        # Rails.logger.debug "ForecastProduction: #{key}: #{DateTime.parse(key) - 24.hours} --- #{timestamp}"
 
         if timestamp && validate_value(value)
           intermediate_data[timestamp] ||= empty_data_point_object timestamp
