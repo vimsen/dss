@@ -393,12 +393,17 @@ module FetchAsynch
         k['prosumer_name'] = procs[d['procumer_id'].to_s].name
         k['forecast']['timestamp'] =
             d['forecast']['timestamp'].to_datetime.to_i
-        k['actual']['prosumption'] = (d['actual']['consumption'].to_f || 0) - (d['actual']['production'].to_f || 0)
-        k['forecast']['prosumption'] = (d['forecast']['consumption'].to_f || 0) - (d['forecast']['production'].to_f || 0)
+        k['actual']['prosumption'] = prosumption(d['actual']['consumption'], d['actual']['production'])
+        k['forecast']['prosumption'] = prosumption(d['forecast']['consumption'], d['forecast']['production'])
         return k
       else
         return nil
       end
+    end
+
+    def prosumption(consumption, production)
+      return nil if consumption.nil? && production.nil?
+      consumption.to_f - production.to_f
     end
 
     def valid_time_stamp(str)

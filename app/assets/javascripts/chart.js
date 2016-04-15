@@ -125,14 +125,21 @@ var plotHelper = (function() {
     if (res[label] == null) {
       res[label] = {};
     }
-    res[label][d.timestamp] = [d.timestamp * 1000, d.actual[type]];
+
+    console.log("old value: " + res[label][d.timestamp] + "  new value: ");
+    console.log(d);
+    if (d.actual[type]) {
+        res[label][d.timestamp] = [d.timestamp * 1000, d.actual[type]];
+    }
 
     if (forecast) {
       var label = d.prosumer_name + ": " + type + ", forecast";
       if (res[label] == null) {
         res[label] = {};
       }
-      res[label][d.timestamp] = [d.forecast.timestamp * 1000, d.forecast[type]];
+      if (d.forecast[type]) {
+        res[label][d.timestamp] = [d.forecast.timestamp * 1000, d.forecast[type]];
+      }
     }
 
     return res;
