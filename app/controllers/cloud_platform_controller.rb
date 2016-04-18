@@ -1,6 +1,9 @@
+require 'rest-client'
 
 class CloudPlatformController < ApplicationController
 
+  #before_action :authenticate_user!, :except => [:dataset]
+  #skip_before_action :authenticate_user!, only: :dataset
   before_action :authenticate_user!, :except => [:dataset]
 
    def index
@@ -52,9 +55,30 @@ class CloudPlatformController < ApplicationController
    end
 
    def resources  
-   end
+
+     @date = params[:date].to_date unless params[:date].nil?
+     @date ||= Date.today
+
+     @period = params[:resources_period] unless params[:resources_period].nil?
+     @period ||= "day"
+	
+     @response_summary =  RestClient.get 'http://' + ENGINE_CONFIG[:engine][:websocket_address] + ':9000/api/v1/summary/' + @period +'/' + @date.to_s
+     @response_providers = RestClient.get 'http://' + ENGINE_CONFIG[:engine][:websocket_address] + ':9000/api/v1/providers/' + @period +'/' + @date.to_s
+     @response_tasks = RestClient.get 'http://' + ENGINE_CONFIG[:engine][:websocket_address] + ':9000/api/v1/tasks/'+ @period +'/' + @date.to_s 
+
+  end
 
    def resource 
+
+     @engine_id = params[:id]
+
+     @period = params[:resources_period] unless params[:resources_period].nil?
+     @period ||= "day"
+
+     @engine_profile =  RestClient.get 'http://' + ENGINE_CONFIG[:engine][:websocket_address] + ':9000/api/v1/engine/' + @engine_id
+     @engine_utilization = RestClient.get 'http://' + ENGINE_CONFIG[:engine][:websocket_address] + ':9000/api/v1/engine_utilization/'+ @engine_id +'/' + @period
+
+
    end
 
 =begin
