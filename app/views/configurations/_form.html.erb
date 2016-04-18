@@ -1,0 +1,70 @@
+
+<%= form_for @configuration, html: {class: "form-horizontal"} do |f| %>
+  <% if @configuration.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@configuration.errors.count, "error") %> prohibited this configuration from being saved:</h2>
+      <ul>
+        <% @configuration.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :name, class: "col-sm-2 control-label" %>
+    <div class="col-sm-8">
+      <%= f.text_field :name, class: 'form-control' %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :algorithm_id, class: "col-sm-2 control-label" %>
+    <div class="col-sm-5">
+      <select class="form-control" id="algorithm_id" name="algorithm_id">
+        <option value="1">Algorithm 1</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label "Number of clusters", class: "col-sm-2 control-label" %>
+    <div class="col-sm-3">
+      <input type="text" name="kappa" id="kappa" class="form-control" value="<%= @kappa %>"/>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label "Generations", class: "col-sm-2 control-label" %>
+    <div class="col-sm-3">
+      <input type="text" name="generations" id="generations" class="form-control" value="<%= @generations %>" />
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label "Population size", class: "col-sm-2 control-label" %>
+    <div class="col-sm-3">
+      <input type="text" name="population_size" id="population_size" class="form-control" value="<%= @population_size %>" />
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label "Violation penalty", class: "col-sm-2 control-label" %>
+    <div class="col-sm-3">
+      <input type="text" name="penalty_violation" id="penalty_violation" class="form-control" value="<%= @penalty_violation %>" />
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label "Satisfaction penalty", class: "col-sm-2 control-label" %>
+    <div class="col-sm-3">
+      <input type="text" name="penalty_satisfaction" id="penalty_satisfaction" class="form-control" value="<%= @penalty_satisfaction %>" />
+    </div>
+  </div>
+
+  <div class="actions">
+    <%= f.submit class: "btn btn-primary" %>
+  </div>
+
+<% end %>
+

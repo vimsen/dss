@@ -1,0 +1,126 @@
+
+<div class="row">
+  <div class="col-lg-12">
+    <h3 class="page-header">Cloud Platform</h3>
+  </div>
+</div>
+
+<!--
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Select Period
+      </div>
+      <div class="panel-body">
+        <form class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Period</label>
+            <select  class="col-sm-3 form-control" id="resources_period" name="resources_period">
+             <option value="day">Day</option>
+             <option value="month">Month</option>
+             <option value="year">Year</option>
+            </select>
+            <input type="text" class="col-sm-5 form-control" id="datepicker" value=""/>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+-->
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Summary
+      </div>
+      <div class="panel-body">
+        <form class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Total Engines</label>
+            <label class="col-sm-2 control-label text-label" id="total_engines"></label>
+            <label class="col-sm-2 control-label">Failed Engines</label>
+            <label class="col-sm-2 control-label text-label" id="failed_engines"></label>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Total Tasks</label>
+            <label class="col-sm-2 control-label text-label" id="total_tasks"></label>
+            <label class="col-sm-2 control-label">Failed Tasks</label>
+            <label class="col-sm-2 control-label text-label" id="failed_tasks"></label>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Total Cost (Euros)</label>
+            <label class="col-sm-2 control-label text-label" id="total_cost"></label>
+          </div>
+        </form>  
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+ <div class="col-lg-6">
+   <div class="panel panel-default">
+      <div class="panel-heading">
+         Resource Providers - Machines
+      </div>
+      <div class="panel-body">
+         <div class="flot-chart-min">
+             <div class="flot-chart-content" id="machines-pie-chart"></div>
+         </div>
+      </div>
+   </div>
+ </div>
+ <div class="col-lg-6">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+        Resource Providers - Tasks
+    </div>
+    <div class="panel-body">
+      <div class="flot-chart-min">
+        <div class="flot-chart-content" id="tasks-pie-chart"></div>
+      </div>
+    </div>
+   </div>
+ </div>
+</div>
+
+<div class="row">
+ <div class="col-lg-6">
+   <div class="panel panel-default">
+      <div class="panel-heading">
+         Resource Providers - Cost (&euro;)
+      </div>
+      <div class="panel-body">
+         <div class="flot-chart-min">
+              <div class="flot-chart-content" id="cost-pie-chart"></div>
+         </div>
+      </div>
+   </div>
+ </div>
+ <div class="col-lg-6">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+        Cost Analysis
+    </div>
+    <div class="panel-body">
+      <div class="flot-chart-min">
+        <div class="flot-chart-content" id="cost-line-chart"></div>
+      </div>
+    </div>
+   </div>
+ </div>
+</div>
+
+
+ <script type="text/javascript">
+
+  $(document).ready(function() {
+     //$( "#datepicker" ).datepicker();
+     CloudPlatforms.loadResourcesData('<%= ENGINE_CONFIG[:engine][:websocket_address] %>',80);
+  } );
+
+</script>
+
