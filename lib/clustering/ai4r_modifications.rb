@@ -32,7 +32,7 @@ module Ai4r
        @options[:stats][:start_run] = Time.now
        puts "The class is #{@chromosomeClass}"
        @population_size.times do
-         population << Object.const_get(@chromosomeClass).seed(@options)
+         population << @chromosomeClass.seed(@options)
        end
       end
 
@@ -48,10 +48,10 @@ module Ai4r
       def reproduction(selected_to_breed)
         offsprings = []
         0.upto(selected_to_breed.length/2-1) do |i|
-          offsprings << Object.const_get(@chromosomeClass).reproduce(selected_to_breed[2*i], selected_to_breed[2*i+1])
+          offsprings << @chromosomeClass.reproduce(selected_to_breed[2*i], selected_to_breed[2*i+1])
         end
         @population.each do |individual|
-          Object.const_get(@chromosomeClass).mutate(individual)
+          @chromosomeClass.mutate(individual)
         end
         return offsprings
       end
@@ -215,6 +215,7 @@ module Ai4r
       # use some problem domain knowledge, to generate a 
       # (probably) better initial solution.
       def self.seed(options)
+        # puts "#{options}"
         data_size = options[:prosumer_ids].length
         kappa = options[:kappa]
 

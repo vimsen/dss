@@ -45,7 +45,7 @@ module ClusteringModule
 
       puts "Beginning genetic search, please wait... "
       search = Ai4r::GeneticAlgorithm::GeneticSearchWithOptions.new(
-          @population_size, @generations, errors: @errors, prosumers: @prosumers, kappa: kappa,
+          @population_size, @generations, errors: @errors, prosumer_ids: @prosumers.map{|p| p.id}, kappa: kappa,
           penalty_violation: @penalty_violation,
           penalty_satisfaction: @penalty_satisfaction,
           class: @algorithm,
