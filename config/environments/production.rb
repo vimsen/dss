@@ -80,4 +80,8 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+   ENGINE_CONFIG = HashWithIndifferentAccess.new(YAML.load(File.read(File.expand_path('../../cloud_engine.yml', __FILE__))))   
+
+
 end
