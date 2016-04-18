@@ -15,6 +15,7 @@
               <th><%= "endtime" -%></th>
               <th><%= "interval" -%></th>
               <th><%= "issuer" -%></th>
+              <th><%= "feeder id" -%></th>
               <th colspan="2"></th>
             </tr>
             </thead>
@@ -27,6 +28,7 @@
                   <td><%= demand_response.stoptime %></td>
                   <td><%= demand_response.interval.duration %></td>
                   <td><%= demand_response.issuer %></td>
+                  <td><%= demand_response.feeder_id %></td>
                   <td><%= link_to 'Show', demand_response, class: 'btn btn-success btn-xs' %></td>
                   <td><%= link_to 'Destroy', demand_response, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-xs' %></td>
                 </tr>
