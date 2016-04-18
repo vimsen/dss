@@ -5,30 +5,45 @@
   </div>
 </div>
 
-<!--
 <div class="row">
   <div class="col-lg-12">
     <div class="panel panel-default">
       <div class="panel-heading">
-        Select Period
+        Select Monitoring Period
       </div>
       <div class="panel-body">
         <form class="form-horizontal">
           <div class="form-group">
-            <label class="col-sm-2 control-label">Period</label>
-            <select  class="col-sm-3 form-control" id="resources_period" name="resources_period">
-             <option value="day">Day</option>
-             <option value="month">Month</option>
-             <option value="year">Year</option>
-            </select>
-            <input type="text" class="col-sm-5 form-control" id="datepicker" value=""/>
+            <label class="col-sm-1 control-label">Period</label>
+            <div class="col-sm-2">
+              <select  class="form-control" id="resources_period" name="resources_period">
+                <% if @period=="day" %> 
+                  <option value="day">Day</option>
+                <% else %>
+                  <option value="day" selected>Day</option>
+                <% end %> 
+                <% if @period=="month" %>
+                   <option value="month" selected>Month</option>
+                <% else %>
+                   <option value="month">Month</option>
+                <% end %>
+                <% if @period=="year" %>
+                   <option value="year" selected>Year</option>
+                <% else %>
+                   <option value="year">Year</option>
+                <% end %>
+              </select>
+            </div>
+            <div class="col-sm-2">
+              <input type="text" class="form-control" id="datepicker" name="date" value="<%= @date.to_s %>"/>
+            </div>           
+            <button type="submit" class="btn btn-primary">Show</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 </div>
--->
 
 <div class="row">
   <div class="col-lg-12">
@@ -100,6 +115,7 @@
       </div>
    </div>
  </div>
+ <!--
  <div class="col-lg-6">
   <div class="panel panel-default">
     <div class="panel-heading">
@@ -112,14 +128,23 @@
     </div>
    </div>
  </div>
+-->
 </div>
 
 
  <script type="text/javascript">
 
   $(document).ready(function() {
-     //$( "#datepicker" ).datepicker();
-     CloudPlatforms.loadResourcesData('<%= ENGINE_CONFIG[:engine][:websocket_address] %>',80);
+ 
+    $('#datepicker').datetimepicker({
+      dateFormat: 'yy-mm-dd',
+      format: 'Y-m-d',
+      timepicker: false,
+      onChangeDateTime: function(dp,$input){
+        $('#dateform').submit();
+      }
+    });
+     CloudPlatforms.loadResourcesData('<%= @response_summary %>', '<%= @response_providers %>', '<%= @response_tasks %>');
   } );
 
 </script>
