@@ -8,15 +8,20 @@ module FetchAsynch
 
     end
 
-    def dr_activation(demand_response_id)
+    def dr_activation(demand_response_id, feeder_id)
       ActiveRecord::Base.connection_pool.with_connection do
         dr_obj = DemandResponse.find(demand_response_id)
+
+        prosumers = feeder_id.nil? ?
+            [26, 27, 29, 30, 31] :
+            Prosumer.where(feeder_id: feeder_id).pluck(:id)
+
         request_object = {
             start_time: dr_obj.starttime.to_datetime.to_s,
             interval: dr_obj.interval.duration,
             unit: "kW",
             target_reduction: dr_obj.dr_targets.order(timestamp: :asc).map{|t| t.volume},
-            prosumers_primary: [26, 27, 29, 30, 31],
+            prosumers_primary: prosumers,
             prosumers_secondary: [2, 3, 8, 11, 16]
         }
         Rails.logger.debug "The request object is #{request_object.to_json}"
