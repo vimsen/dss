@@ -64,12 +64,17 @@ CloudPlatforms.loadDataTable = function(){
                       "data" : "instance_name",
                       render: function(data, type, row){
                         if (row.status == "Done")
-                          return '<a href="/cloud_platform/results/'+row.id+'" class="instance-result">'+data+'</a>'
+                          return '<a href="/cloud_platform/results/'+row.id+'" class="instance-result">'+data+'</a>';
                         else
                           return data;
                       } 
                     },
-                    { "data" : "worker" },
+                    { 
+                      "data" : "worker",
+                      render : function ( data, type, row ) {
+                         return '<a href="/cloud_platform/resource/'+data+'" class="instance-result">'+data+'</a>';
+                      } 
+                    },
                     { "data" : "status" },
                     { "data" : "created_at"},
                     { "data" : "updated_at" },
@@ -133,38 +138,23 @@ CloudPlatforms.submitTask = function(){
 
 }
 
-CloudPlatforms.loadResourcesData = function(host, port){
-   
-  var providers;
-  var tasks; 
-  var cost; 
+CloudPlatforms.loadResourcesData = function(summary, providers, tasks){
 
-  //$.ajax({
-  //  url: "http://"+host+":"+port+"/api/v1/summary"
-  //}).done(function( data ) {
-  //   console.log(data);
-     data = '{ "tasks": 0, "failed_engines": 0, "cost": 0, "failed_tasks": 0, "engines": 2 }'
-     json = $.parseJSON(data);
-     $('#total_engines').html(json.engines);
-     $('#failed_engines').html(json.failed_engines);
-     $('#total_tasks').html(json.tasks);
-     $('#failed_tasks').html(json.failed_tasks);
-     $('#total_cost').html(json.cost);
-  //}).error(function( data ) {
-  //   console.log(data);
-  //});
-data = '{"static_total_engines": 2, "static_running_engines": 2, "rackspace_terminated_engines": 0, "aws_total_cost": 0, "static_terminated_engines": 0, "openstack_total_engines": 0, "aws_total_engines": 0, "rackspace_tasks": 0, "openstack_total_cost": 12, "aws_running_engines": 0, "rackspace_total_cost": 0, "rackspace_running_engines": 0, "aws_tasks": 0, "openstack_running_engines": 0, "aws_terminated_engines": 0, "openstack_tasks": 0, "openstack_terminated_engines": 0, "static_total_cost": 25, "rackspace_total_engines": 0, "static_tasks": 43}'
+  summary_json = $.parseJSON(summary.replace(/&quot;/g, '"'));
 
-    providers = $.parseJSON(data);
+  $('#total_engines').html(summary_json.engines);
+  $('#failed_engines').html(summary_json.failed_engines);
+  $('#total_tasks').html(summary_json.tasks);
+  $('#failed_tasks').html(summary_json.failed_tasks);
+  $('#total_cost').html(summary_json.cost);
 
-data = '{"aws_total_tasks": 0, "rackspace_failed_tasks": 0, "rackspace_total_tasks": 0, "rackspace_tasks_per_machine_flavor": {}, "aws_tasks_per_machine_flavor": {}, "openstack_tasks_per_machine_flavor": {}, "static_tasks_per_machine_flavor": {"simple": 2, "static": 41}, "aws_failed_tasks": 0, "openstack_total_tasks": 0, "static_total_tasks": 43, "static_failed_tasks": 6, "openstack_failed_tasks": 0}'
+  providers_json = $.parseJSON(providers.replace(/&quot;/g, '"'));
 
-    tasks = $.parseJSON(data);
+  tasks_json = $.parseJSON(tasks.replace(/&quot;/g, '"'));
 
+  CloudPlatforms.loadMachineAndTaskCharts(providers_json, tasks_json);
  
-  CloudPlatforms.loadMachineAndTaskCharts(providers, tasks);
- 
-  //CloudPlatforms.loadCostCharts(providers, cost);  
+  //CloudPlatforms.loadCostCharts(providers_json, cost_json);  
 
 }
 
@@ -191,9 +181,6 @@ CloudPlatforms.loadMachineAndTaskCharts = function(providers, tasks){
    cost_data.push([providers.aws_total_cost,2]);
    cost_data.push([providers.rackspace_total_cost,3]);
  
-   //CloudPlatforms.pieChart("machines-pie-chart", machines_data);
-   //CloudPlatforms.pieChart("tasks-pie-chart", tasks_data);
-   //CloudPlatforms.pieChart("cost-pie-chart", cost_data);
    CloudPlatforms.barChart("machines-pie-chart", machines_data, { ticks: ticks, color: '#EDC240'});
    CloudPlatforms.barChart("tasks-pie-chart", tasks_data, { ticks: ticks, color: '#FF5482'});
    CloudPlatforms.barChart("cost-pie-chart", cost_data, { ticks: ticks, color: '#5482FF'});
@@ -202,6 +189,37 @@ CloudPlatforms.loadMachineAndTaskCharts = function(providers, tasks){
 
 CloudPlatforms.loadCostCharts = function(providers, cost){
 
+
+}
+
+CloudPlatforms.loadUtilizationData = function(engine, utilization){
+
+   engine_json = $.parseJSON(engine.replace(/&quot;/g, '"'));
+   utilization_json = $.parseJSON(utilization.replace(/&quot;/g, '"'));
+
+   $('#machine_flavor').html(engine_json.machine_flavor);
+   $('#provider').html(engine_json.provider);
+
+   if( engine_json.running == 1 )
+      $('#current_state').html('Running');
+   else
+     $('#current_state').html('Terminated')
+
+   $('#launched_at').html(engine_json.launched_at);
+
+   if( engine_json.terminated_at.length == 0 )
+     $('#terminated_at').html(engine_json.terminated_at);
+   else
+     $('#terminated_at').html('-');
+
+   $('#total_tasks').html(engine_json.total_tasks);
+   $('#failed_tasks').html(engine_json.failed_tasks);
+
+   $('#machine_hourly_cost').html(engine_json.machine_hourly_cost);
+   $('#launched_hours').html(engine_json.launched_hours);
+   $('#current_cost').html(engine_json.current_cost);
+
+   CloudPlatforms.loadUtilizationCharts(utilization_json);
 }
 
 CloudPlatforms.barChart = function(container, rawData, settings ) {
@@ -280,31 +298,40 @@ CloudPlatforms.pieChart = function(chart_id, data){
 }
 
 
-/*
-CloudPlatforms.loadCloudPlatformCharts = function(){
-  $.ajax({
-      url: "/cloud_platform/chartData",
-  }).done(function( data ) {
-      loadExecutionTimeChart(data);
-  }).error(function(data){
-      console.log(data);
-  });
+CloudPlatforms.loadUtilizationCharts = function(data){
 
+   if ( $.isEmptyObject(data) )
+     return false;
+
+   var cpu = [];
+   var memory = [];
+
+   for (var i = 0; i < data.cpu_utilization.length; i+=1) {
+     if (data.period=="day"){
+        if( i%2 == 0 ) 
+         cpu.push([i/2, data.cpu_utilization[i]]);
+     }
+     else
+       cpu.push([i+1, data.cpu_utilization[i]]);
+   }
+
+   for (var i = 0; i < data.memory_utilization.length; i += 1) {   
+     if (data.period=="day"){
+        if( i%2 == 0 )
+         memory.push([i/2, data.memory_utilization[i]]);
+     }
+     else
+        memory.push([i+1, data.memory_utilization[i]]);
+   }
+
+   xaxis_label  = { "day": "Hours", "year":"Months", "month": "Days" }   
+
+   CloudPlatforms.lineChart("cpu-utilization-chart", cpu, "CPU", xaxis_label[data.period], '#EDC240');
+   CloudPlatforms.lineChart("memory-utilization-chart", memory, "Memory", xaxis_label[data.period], '#FF5482' );
 }
 
-CloudPlatforms.loadExecutionTimeChart = function(data){
-
-    var simple = [];
-    var cloud = [];
-
-     for (var i = 0; i < data[0].data.length; i+=1) {
-           simple.push([data[0].data[i][0], data[0].data[i][1]]);
-     }
-
-     for (var i = 0; i < data[1].data.length; i += 1) {
-          cloud.push([data[1].data[i][0], data[1].data[i][1]]);
-    }
-
+CloudPlatforms.lineChart = function(wrapper_id, data, chart_label, xaxis_label, color) {
+ 
     var options = {
            series: {
                 lines: { show: true },
@@ -315,7 +342,7 @@ CloudPlatforms.loadExecutionTimeChart = function(data){
             },
             yaxis:{
 		min:0,
-                axisLabel: 'Total Execution Time (secs)',
+                axilsLabel: 'Utilization (%)',
                 axisLabelUseCanvas: true,
                 axisLabelFontSizePixels: 12,
                 axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
@@ -325,7 +352,7 @@ CloudPlatforms.loadExecutionTimeChart = function(data){
                 min:1,
                 ticks:20,
                 tickDecimals: 0,
-                axisLabel: 'Number of Tasks',
+                axisLabel: xaxis_label,
                 axisLabelUseCanvas: true,
                 axisLabelFontSizePixels: 12,
                 axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
@@ -333,15 +360,12 @@ CloudPlatforms.loadExecutionTimeChart = function(data){
             },
             tooltip: true,
             tooltipOpts: {
-                content: "'%s' <br/> Number of Tasks: %x<br/> Total Execution Time: %y",
+                content: "%s Utilization: %y",
                 shifts: { x: -60, y: 25 }
-            }
+            },
+            colors: [color]
         };
 
-        var plotObj = $.plot($("#cloud-platform-execution-time"),[
-                          {data: simple, label: data[0].label },
-                          {data: cloud, label: data[1].label }],options);
-
+        $.plot($("#"+wrapper_id),[{data: data, label: chart_label }], options);
 }
 
-*/
