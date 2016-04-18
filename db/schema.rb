@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160311141904) do
+ActiveRecord::Schema.define(version: 20160418095531) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -138,6 +138,8 @@ ActiveRecord::Schema.define(version: 20160311141904) do
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
     t.integer  "plan_id"
+    t.integer  "feeder_id"
+    t.string   "issuer"
   end
 
   add_index "demand_responses", ["interval_id"], name: "index_demand_responses_on_interval_id", using: :btree

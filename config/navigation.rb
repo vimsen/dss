@@ -96,10 +96,10 @@ SimpleNavigation::Configuration.run do |navigation|
     primary.item :menu_bids, 'Bids', bids_path
     primary.item :menu_sla, 'Monitor SLA progress', sla_monitor_path
 
-    primary.item :menu_meters, 'Meters', '#' do |sub_nav|
-      HierMenu::HierMenu.new('meters_hier', Proc.new { |p| meter_url(p) }, :mac, 4).fill_node sub_nav, Meter.all.order(id: :asc)
-      sub_nav.dom_class = 'nav nav-second-level collapse'
-    end
+   # primary.item :menu_meters, 'Meters', '#' do |sub_nav|
+   #   HierMenu::HierMenu.new('meters_hier', Proc.new { |p| meter_url(p) }, :mac, 4).fill_node sub_nav, Meter.all.order(id: :asc)
+   #   sub_nav.dom_class = 'nav nav-second-level collapse'
+   # end
     primary.item :menu_algorithms, 'Algorithms', "#" do |sub_nav|
       sub_nav.item :menu_clustering, 'Clustering', "/clusterings/select"
       sub_nav.item :menu_dunamic_adaptation, 'Dynamic Adaptation', "/clusterings/new_from_existing"
