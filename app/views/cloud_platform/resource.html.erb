@@ -1,0 +1,122 @@
+
+<div class="row">
+  <div class="col-lg-12">
+    <h3 class="page-header">Details Machine - <%= @engine_id %></h3>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Select Monitoring Period
+      </div>
+      <div class="panel-body">
+        <form class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-1 control-label">Period</label>
+            <div class="col-sm-2">
+              <select  class="form-control" id="resources_period" name="resources_period">
+                <% if @period=="day" %> 
+                  <option value="day">Day</option>
+                <% else %>
+                  <option value="day" selected>Day</option>
+                <% end %> 
+                <% if @period=="month" %>
+                   <option value="month" selected>Month</option>
+                <% else %>
+                   <option value="month">Month</option>
+                <% end %>
+                <% if @period=="year" %>
+                   <option value="year" selected>Year</option>
+                <% else %>
+                   <option value="year">Year</option>
+                <% end %>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Show</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Summary
+      </div>
+      <div class="panel-body">
+        <form class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Machine Flavor</label>
+            <label class="col-sm-2 control-label text-label" id="machine_flavor"></label>
+            <label class="col-sm-2 control-label">Resource Provider</label>
+            <label class="col-sm-2 control-label text-label" id="provider"></label>
+            <label class="col-sm-2 control-label">State</label>
+            <label class="col-sm-2 control-label text-label" id="current_state"></label>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Launched at</label>
+            <label class="col-sm-2 control-label text-label" id="launched_at"></label>
+            <label class="col-sm-2 control-label">Terminated at</label>
+            <label class="col-sm-2 control-label text-label" id="terminated_at"></label>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Total Tasks</label>
+            <label class="col-sm-2 control-label text-label" id="total_tasks"></label>
+            <label class="col-sm-2 control-label">Failed Tasks</label>
+            <label class="col-sm-2 control-label text-label" id="failed_tasks"></label>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Hourly Cost (Euros)</label>
+            <label class="col-sm-2 control-label text-label" id="machine_hourly_cost"></label>
+            <label class="col-sm-2 control-label">Launched Hours</label>
+            <label class="col-sm-2 control-label text-label" id="launched_hours"></label>
+            <label class="col-sm-2 control-label">Cost (Euros)</label>
+            <label class="col-sm-2 control-label text-label" id="current_cost"></label>
+          </div>
+        </form>  
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+ <div class="col-lg-6">
+   <div class="panel panel-default">
+      <div class="panel-heading">
+         CPU Utilization
+      </div>
+      <div class="panel-body">
+         <div class="flot-chart">
+             <div class="flot-chart-content" id="cpu-utilization-chart"></div>
+         </div>
+      </div>
+   </div>
+ </div>
+ <div class="col-lg-6">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+        Memory Utilization
+    </div>
+    <div class="panel-body">
+      <div class="flot-chart">
+        <div class="flot-chart-content" id="memory-utilization-chart"></div>
+      </div>
+    </div>
+   </div>
+ </div>
+</div>
+
+
+ <script type="text/javascript">
+
+  $(document).ready(function() {
+     CloudPlatforms.loadUtilizationData('<%= @engine_profile %>', '<%= @engine_utilization %>');
+  } );
+
+</script>
+
