@@ -211,11 +211,11 @@ module FetchAsynch
     def validate_value(value)
       case @interval.duration
         when 900
-          value < 50
+          value < 500
         when 3600
-          value < 200
+          value < 2000
         when 86400
-          value < 3000
+          value < 30000
       end
     end
 
