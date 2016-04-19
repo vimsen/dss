@@ -1,0 +1,50 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h3 class="page-header">Instance Details</h3>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Configuration Details
+      </div>
+      <div class="panel-body">
+	      <form class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-2 control-label"> Generations </label>
+            <label class="col-sm-3 control-label text-label"><%=  @input_params["generations"] %></label> 
+          </div>
+           <div class="form-group">
+            <label class="col-sm-2 control-label"> Population size </label>
+            <label class="col-sm-3 control-label text-label"><%=  @input_params["population_size"] %></label>  
+          </div>
+           <div class="form-group">
+            <label class="col-sm-2 control-label"> Violation penalty </label>
+            <label class="col-sm-3 control-label text-label"><%=  @input_params["penalty_violation"] %></label>
+          </div>
+           <div class="form-group">
+            <label class="col-sm-2 control-label"> Satisfaction penalty </label>
+            <label class="col-sm-3 control-label text-label"><%= @input_params["penalty_satisfaction"] %></label> 
+          </div>
+        </form>          
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Instance Results
+      </div>
+      <div class="panel-body">
+        <code>
+          <%= @results %>
+        </code>
+      </div>
+    </div>
+  </div>
+</div>

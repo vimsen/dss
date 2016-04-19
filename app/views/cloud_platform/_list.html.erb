@@ -1,3 +1,10 @@
+
+<div style="padding:10px 0 20px 0;">
+    <button  type="button" class="btn btn-primary" onclick="CloudPlatforms.refreshTable();">Refresh</button>
+    <button  type="button" class="btn btn-primary" onclick="CloudPlatforms.deleteInstances();">Delete</button>
+    <!--<a class="btn btn-primary" style="color: #fff; background-color: #428bca;border-color: #357ebd;" href="/cloud_platform/chart">Charts</a> -->
+</div>
+
 <table id="instances-table" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%">
     <thead>
         <tr>
@@ -11,51 +18,15 @@
     </thead>
 </table>
 
-<div style="padding:10px 0;">
-    <button  type="button" class="btn btn-primary" onclick="refresh_instances_table();">Refresh</button>
-    <button  type="button" class="btn btn-primary" onclick="delete_instances();">Delete</button>
-    <a class="btn btn-primary" style="color: #fff; background-color: #428bca;border-color: #357ebd;" href="/cloud_platform/chart">Chart</a>
-</div>
-
  <script type="text/javascript">
 
   $(document).ready(function() {
 
-     var table = $('#instances-table').DataTable({
-                "processing": true,
-                "serverSide": false,
-                "paging":   true,
-                "ordering": false,
-  		"info": true,
-                "filter": false,
-                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-                "ajax": "/cloud_platform/instances",
-                "columns": [
-                  {
-                	data:   "state",
-	                render: function ( data, type, row ) {
-        	            if ( type === 'display' ) {
-                	        return '<input type="checkbox" class="editor-active" id="checkbox_instance_'+row.id+'">';
-	                    }
-        	            return data;
-                	},
-	                className: "dt-body-center"
-        	    },
-                    { "data" : "instance_name" },
-                    { "data" : "worker" },
-                    { "data" : "status" },
-                    { "data" : "created_at"},
-                    { "data" : "updated_at" },
-                    { "data" : "id", "visible":false} 		   	
-                ]
-        }
-     );
- 
-    //refresh every 15secs
-    setInterval( function () {
-         table.ajax.reload( null, false ); // user paging is not reset on reload
-    }, 15000 );
+    CloudPlatforms.loadWebSocket('<%= ENGINE_CONFIG[:engine][:websocket_address] %>', <%= ENGINE_CONFIG[:engine][:websocket_port] %>);
+
+    CloudPlatforms.loadDataTable();
 
   } );
 
 </script>
+
