@@ -29,9 +29,6 @@ table_names.each do |tbl_name|
       rows << row
       lastid = row["id"].to_i
     end
-    # puts "id: #{row["id"]}"
-    # puts "date: #{row["date"]}"
-    do_update = false if row["date"].to_date > '1/1/2015'.to_date # Don;t import data we have
   end
 
   puts "#{tbl_name} read, #{rows.length}"
@@ -44,7 +41,7 @@ table_names.each do |tbl_name|
       row["date"] = (row["date"].to_date + 1.year).to_s
       #puts "id: #{row["id"]}"
       #puts "date: #{row["date"]}"
-      csv << row unless row["date"].to_date > '1/1/2016'.to_date
+      csv << row unless tbl_name == DayAheadEnergyPrice && row["region_id"] == '1'
     end
   end
   puts "#{tbl_name} written"
