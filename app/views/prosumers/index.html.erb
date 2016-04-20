@@ -53,8 +53,8 @@
 
               <% @prosumers.each do |prosumer| %>
               <tr>
-                <td><%= prosumer.name %></td>
-                <td><%= prosumer.edms_id %></td>
+                <td style="min-width: 10em; word-break: break-all;"> <%= prosumer.name %></td>
+                <td style="word-break: break-all;"><%= prosumer.edms_id %></td>
                 <td><%= prosumer.location %></td>
                 <td><%= link_to prosumer.cluster.name, prosumer.cluster unless prosumer.cluster.nil?  %></td>
                 <td><%= link_to prosumer.building_type.name, prosumer.building_type unless prosumer.building_type.nil? %></td>
