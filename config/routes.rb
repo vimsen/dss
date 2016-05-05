@@ -35,6 +35,8 @@ Rails.application.routes.draw do
   get 'cloud_platform/dataset/:id' => 'cloud_platform#dataset'
   get 'cloud_platform/resources' => 'cloud_platform#resources'
   get 'cloud_platform/resource/:id' => 'cloud_platform#resource'
+  get 'cloud_platform/machines' => 'cloud_platform#machines'
+  get 'cloud_platform/tasks' => 'cloud_platform#tasks'
 
   get 'clusterings/new_from_existing', as: :new_from_existing_clustering
   get 'clusterings/select'

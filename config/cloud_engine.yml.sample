@@ -8,3 +8,7 @@ aws:
   access_key_id: 
   secret_access_key: 
   request_queue_url: 
+
+rest_api:
+  address: 127.0.0.1
+  port: 8000 

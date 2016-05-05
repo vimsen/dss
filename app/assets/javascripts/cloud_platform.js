@@ -138,9 +138,12 @@ CloudPlatforms.submitTask = function(){
 
 }
 
-CloudPlatforms.loadResourcesData = function(summary, providers, tasks){
+CloudPlatforms.loadResourcesData = function(summary, providers, tasks, analysis){
 
   summary_json = $.parseJSON(summary.replace(/&quot;/g, '"'));
+  providers_json = $.parseJSON(providers.replace(/&quot;/g, '"'));
+  tasks_json = $.parseJSON(tasks.replace(/&quot;/g, '"'));
+  analysis_json = $.parseJSON(analysis.replace(/&quot;/g, '"'));
 
   $('#total_engines').html(summary_json.engines);
   $('#failed_engines').html(summary_json.failed_engines);
@@ -148,42 +151,57 @@ CloudPlatforms.loadResourcesData = function(summary, providers, tasks){
   $('#failed_tasks').html(summary_json.failed_tasks);
   $('#total_cost').html(summary_json.cost);
 
-  providers_json = $.parseJSON(providers.replace(/&quot;/g, '"'));
-
-  tasks_json = $.parseJSON(tasks.replace(/&quot;/g, '"'));
-
-  CloudPlatforms.loadMachineAndTaskCharts(providers_json, tasks_json);
+  CloudPlatforms.loadCloudResourcesCharts(providers_json, tasks_json, analysis_json);
  
   //CloudPlatforms.loadCostCharts(providers_json, cost_json);  
 
 }
 
-CloudPlatforms.loadMachineAndTaskCharts = function(providers, tasks){
+CloudPlatforms.loadCloudResourcesCharts = function(providers, tasks, analysis){
 
-   var machines_data = [];
-   var tasks_data = [];
-   var cost_data = [];
+    var machines_data = [];
+    var tasks_data = [];
+    var cost_data = [];
 
-   var ticks = [[0,'Static'],[1,'OpenStack'],[2,'AWS'],[3,'RackSpace']];
+    var machines_analysis = [];
+    var tasks_analysis = [];
+    var cost_analysis = [];
 
-   machines_data.push([providers.static_total_engines,0]);
-   machines_data.push([providers.openstack_total_engines,1]);
-   machines_data.push([providers.aws_total_engines,2]);
-   machines_data.push([providers.rackspace_total_engines,3]);
+    var ticks = [[0,'Static'],[1,'OpenStack'],[2,'AWS'],[3,'RackSpace']];
+
+    machines_data.push([providers.static_total_engines,0]);
+    machines_data.push([providers.openstack_total_engines,1]);
+    machines_data.push([providers.aws_total_engines,2]);
+    machines_data.push([providers.rackspace_total_engines,3]);
  
-   tasks_data.push([tasks.static_total_tasks,0]);
-   tasks_data.push([tasks.openstack_total_tasks,1]);
-   tasks_data.push([tasks.aws_total_tasks,2]);
-   tasks_data.push([tasks.rackspace_total_tasks,3]);
-
-   cost_data.push([providers.static_total_cost,0]);
-   cost_data.push([providers.openstack_total_cost,1]);
-   cost_data.push([providers.aws_total_cost,2]);
-   cost_data.push([providers.rackspace_total_cost,3]);
+    tasks_data.push([tasks.static_total_tasks,0]);
+    tasks_data.push([tasks.openstack_total_tasks,1]);
+    tasks_data.push([tasks.aws_total_tasks,2]);
+    tasks_data.push([tasks.rackspace_total_tasks,3]);
+  
+    cost_data.push([providers.static_total_cost,0]);
+    cost_data.push([providers.openstack_total_cost,1]);
+    cost_data.push([providers.aws_total_cost,2]);
+    cost_data.push([providers.rackspace_total_cost,3]);
  
-   CloudPlatforms.barChart("machines-pie-chart", machines_data, { ticks: ticks, color: '#EDC240'});
-   CloudPlatforms.barChart("tasks-pie-chart", tasks_data, { ticks: ticks, color: '#FF5482'});
-   CloudPlatforms.barChart("cost-pie-chart", cost_data, { ticks: ticks, color: '#5482FF'});
+    CloudPlatforms.barChart("machines-pie-chart", machines_data, { ticks: ticks, color: '#EDC240'});
+    CloudPlatforms.barChart("tasks-pie-chart", tasks_data, { ticks: ticks, color: '#FF5482'});
+    CloudPlatforms.barChart("cost-pie-chart", cost_data, { ticks: ticks, color: '#5482FF'});
+    
+    console.log(analysis);
+    console.log(analysis.cost);
+
+    for (var i = 0; i < analysis.cost.length; i += 1) {   
+      machines_analysis.push([i+1, analysis.engines[i]]);
+      tasks_analysis.push([i+1, analysis.tasks[i]])
+      cost_analysis.push([i+1, analysis.cost[i]])
+    }
+  
+    xaxis_label  = { "day": "Hours", "year":"Months", "month": "Days", "interval": "Days" }   
+
+    CloudPlatforms.lineChart("machines-line-chart", machines_analysis, "Machines Number", xaxis_label[analysis.period], '#EDC240');
+    CloudPlatforms.lineChart("tasks-line-chart", tasks_analysis, "Tasks Number", xaxis_label[analysis.period], '#FF5482');
+    CloudPlatforms.lineChart("cost-line-chart", cost_analysis, "Cost", xaxis_label[analysis.period], '#5482FF');
 
 }
 
@@ -192,10 +210,13 @@ CloudPlatforms.loadCostCharts = function(providers, cost){
 
 }
 
-CloudPlatforms.loadUtilizationData = function(engine, utilization){
+CloudPlatforms.loadUtilizationData = function(engine, utilization, cost){
+
+   var cost_analysis = [];
 
    engine_json = $.parseJSON(engine.replace(/&quot;/g, '"'));
    utilization_json = $.parseJSON(utilization.replace(/&quot;/g, '"'));
+   cost_json = $.parseJSON(cost.replace(/&quot;/g, '"'));
 
    $('#machine_flavor').html(engine_json.machine_flavor);
    $('#provider').html(engine_json.provider);
@@ -220,6 +241,15 @@ CloudPlatforms.loadUtilizationData = function(engine, utilization){
    $('#current_cost').html(engine_json.current_cost);
 
    CloudPlatforms.loadUtilizationCharts(utilization_json);
+
+   xaxis_label  = { "day": "Hours", "year":"Months", "month": "Days" }   
+
+   for (var i = 0; i < cost_json.cost.length; i += 1) {   
+      cost_analysis.push([i+1, cost_json.cost[i]])
+   }
+
+  CloudPlatforms.lineChart("engine-cost-chart", cost_analysis, "Cost", xaxis_label[cost_json.period], '#5482FF');
+
 }
 
 CloudPlatforms.barChart = function(container, rawData, settings ) {
@@ -332,6 +362,11 @@ CloudPlatforms.loadUtilizationCharts = function(data){
 
 CloudPlatforms.lineChart = function(wrapper_id, data, chart_label, xaxis_label, color) {
  
+    if ( wrapper_id == "cpu-utilization-chart" || wrapper_id == "memory-utilization-chart" )
+      tooltip_content = "%s Utilization: %y";
+    else
+      tooltip_content = "%s: %y";
+
     var options = {
            series: {
                 lines: { show: true },
@@ -341,8 +376,8 @@ CloudPlatforms.lineChart = function(wrapper_id, data, chart_label, xaxis_label, 
                 hoverable: true //IMPORTANT! this is needed for tooltip to work
             },
             yaxis:{
-		min:0,
-                axilsLabel: 'Utilization (%)',
+		            min:0,
+                //axilsLabel: 'Utilization (%)',
                 axisLabelUseCanvas: true,
                 axisLabelFontSizePixels: 12,
                 axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
@@ -360,7 +395,7 @@ CloudPlatforms.lineChart = function(wrapper_id, data, chart_label, xaxis_label, 
             },
             tooltip: true,
             tooltipOpts: {
-                content: "%s Utilization: %y",
+                content: tooltip_content,
                 shifts: { x: -60, y: 25 }
             },
             colors: [color]
