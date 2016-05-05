@@ -41,10 +41,27 @@
         Instance Results
       </div>
       <div class="panel-body">
-        <code>
-          <%= @results %>
-        </code>
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#results" data-toggle="tab" aria-expanded="true"><i class="fa fa-terminal" aria-hidden="true"></i>&nbsp;Results</a></li>
+          <li class=""><a href="#logging" data-toggle="tab" aria-expanded="false"><i class="fa fa-book" aria-hidden="true"></i>&nbsp;Execution Logging</a></li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content">
+          <div class="tab-pane fade active in" id="results">
+              result presentation here
+          </div>
+          <div class="tab-pane fade" id="logging">
+            <code>
+                <%= @results %>
+            </code>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
+
+                      
+
+                       

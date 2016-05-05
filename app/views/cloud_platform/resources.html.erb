@@ -91,11 +91,38 @@
  <div class="col-lg-6">
   <div class="panel panel-default">
     <div class="panel-heading">
+        Machines Analysis
+    </div>
+    <div class="panel-body">
+      <div class="flot-chart-min">
+        <div class="flot-chart-content" id="machines-line-chart"></div>
+      </div>
+    </div>
+   </div>
+ </div>
+</div>
+
+<div class="row">
+ <div class="col-lg-6">
+  <div class="panel panel-default">
+    <div class="panel-heading">
         Resource Providers - Tasks
     </div>
     <div class="panel-body">
       <div class="flot-chart-min">
         <div class="flot-chart-content" id="tasks-pie-chart"></div>
+      </div>
+    </div>
+   </div>
+ </div>
+  <div class="col-lg-6">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+        Tasks Analysis
+    </div>
+    <div class="panel-body">
+      <div class="flot-chart-min">
+        <div class="flot-chart-content" id="tasks-line-chart"></div>
       </div>
     </div>
    </div>
@@ -115,20 +142,18 @@
       </div>
    </div>
  </div>
- <!--
- <div class="col-lg-6">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-        Cost Analysis
-    </div>
-    <div class="panel-body">
-      <div class="flot-chart-min">
-        <div class="flot-chart-content" id="cost-line-chart"></div>
+  <div class="col-lg-6">
+   <div class="panel panel-default">
+      <div class="panel-heading">
+        Cost (&euro;) Analysis
       </div>
-    </div>
+      <div class="panel-body">
+         <div class="flot-chart-min">
+              <div class="flot-chart-content" id="cost-line-chart"></div>
+         </div>
+      </div>
    </div>
  </div>
--->
 </div>
 
 
@@ -144,7 +169,7 @@
         $('#dateform').submit();
       }
     });
-     CloudPlatforms.loadResourcesData('<%= @response_summary %>', '<%= @response_providers %>', '<%= @response_tasks %>');
+     CloudPlatforms.loadResourcesData('<%= @response_summary %>', '<%= @response_providers %>', '<%= @response_tasks %>', '<%= @response_analysis %>');
   } );
 
 </script>
