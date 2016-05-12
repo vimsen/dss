@@ -91,6 +91,17 @@ class CloudPlatformController < ApplicationController
    end
 
    def tasks
+
+     @date = params[:date].to_date unless params[:date].nil?
+     @date ||= Date.today
+
+     @period = params[:resources_period] unless params[:resources_period].nil?
+     @period ||= "day"
+  
+     rest_url = 'http://' + ENGINE_CONFIG[:rest_api][:address] + ':'+ ENGINE_CONFIG[:rest_api][:port].to_s + '/api/v1'
+
+     @response_tasks = RestClient.get rest_url + '/tasks/'+ @period +'/' + @date.to_s 
+
    end 
 
    def chart
