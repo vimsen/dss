@@ -187,9 +187,7 @@ CloudPlatforms.loadCloudResourcesCharts = function(providers, tasks, analysis){
     CloudPlatforms.barChart("machines-pie-chart", machines_data, { ticks: ticks, color: '#EDC240'});
     CloudPlatforms.barChart("tasks-pie-chart", tasks_data, { ticks: ticks, color: '#FF5482'});
     CloudPlatforms.barChart("cost-pie-chart", cost_data, { ticks: ticks, color: '#5482FF'});
-    
-    console.log(analysis);
-    console.log(analysis.cost);
+  
 
     for (var i = 0; i < analysis.cost.length; i += 1) {   
       machines_analysis.push([i+1, analysis.engines[i]]);
@@ -249,6 +247,66 @@ CloudPlatforms.loadUtilizationData = function(engine, utilization, cost){
    }
 
   CloudPlatforms.lineChart("engine-cost-chart", cost_analysis, "Cost", xaxis_label[cost_json.period], '#5482FF');
+
+}
+
+
+CloudPlatforms.loadTasksData = function(tasks){
+
+    var providers = [[0,'Static'],[1,'OpenStack'],[2,'AWS'],[3,'RackSpace']];
+
+    var total_data = [];
+    var failed_data = [];
+    var static_data = [];
+    var openstack_data = [];
+    var aws_data = [];
+    var rackspace_data = [];
+
+    tasks_json = $.parseJSON(tasks.replace(/&quot;/g, '"'));
+
+    total_data.push([tasks_json.static_total_tasks,0]);
+    total_data.push([tasks_json.openstack_total_tasks,1]);
+    total_data.push([tasks_json.aws_total_tasks,2]);
+    total_data.push([tasks_json.rackspace_total_tasks,3]);
+
+    failed_data.push([tasks_json.static_failed_tasks,0]);
+    failed_data.push([tasks_json.openstack_failed_tasks,1]);
+    failed_data.push([tasks_json.aws_failed_tasks,2]);
+    failed_data.push([tasks.rackspace_failed_tasks,3]);
+
+    $.each(tasks_json.static_tasks_per_machine_flavor, function(machine_flavor, count) {
+      static_data.push({label: machine_flavor, data: count});
+    });
+
+    $.each(tasks_json.openstack_tasks_per_machine_flavor, function(machine_flavor, count) {
+      openstack_data.push({label: machine_flavor, data: count});
+    });
+
+    $.each(tasks_json.aws_tasks_per_machine_flavor, function(machine_flavor, count) {
+      aws_data.push({label: machine_flavor, data: count});
+    });
+
+    $.each(tasks_json.rackspace_tasks_per_machine_flavor, function(machine_flavor, count) {
+      rackspace_data.push({label: machine_flavor, data: count});
+    });
+    
+    CloudPlatforms.barChart("total-tasks-chart", total_data, { ticks: providers, color: '#EDC240'});
+    CloudPlatforms.barChart("failed-tasks-chart", failed_data, { ticks: providers, color: '#FF5482'});
+    
+    if ( static_data.length > 0 )
+      CloudPlatforms.donutChart("tasks-static-chart", static_data);         
+    
+    if ( openstack_data.length > 0 )
+      CloudPlatforms.donutChart("tasks-openstack-chart", openstack_data);   
+    
+    if ( aws_data.length > 0 )
+      CloudPlatforms.donutChart("tasks-aws-chart", aws_data);               
+    
+    if ( rackspace_data.length > 0 )
+      CloudPlatforms.donutChart("tasks-rackspace-chart", rackspace_data); 
+    
+    $('#total_tasks').html(tasks_json.total_tasks);
+    $('#failed_tasks').html(tasks_json.failed_tasks);
 
 }
 
@@ -327,6 +385,32 @@ CloudPlatforms.pieChart = function(chart_id, data){
     });
 }
 
+CloudPlatforms.donutChart = function(container, rawData) {
+
+  var options = {
+    series: {
+      pie: {
+        show: true,
+        radius: 1,
+        innerRadius: 0.5,
+        label: { show: false }
+      }
+    },
+    grid: { hoverable: true },
+    tooltip: true,
+    tooltipOpts: {
+      content: function(label, xval, yval) {
+            return '<b>%s</b>: '+yval;
+      },
+      shifts: { x:20, y: 0 }
+    },
+    defaultTheme: true,
+    legend: { show: false }
+  };
+
+  $.plot($('#'+container), rawData, options);
+
+}
 
 CloudPlatforms.loadUtilizationCharts = function(data){
 
