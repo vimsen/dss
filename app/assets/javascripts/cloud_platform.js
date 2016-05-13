@@ -196,6 +196,9 @@ CloudPlatforms.loadResourcesData = function(summary, providers, tasks, analysis)
   tasks_json = $.parseJSON(tasks.replace(/&quot;/g, '"'));
   analysis_json = $.parseJSON(analysis.replace(/&quot;/g, '"'));
 
+  if ( $.isEmptyObject(summary_json) )
+    return false;
+
   $('#total_engines').html(summary_json.engines);
   $('#failed_engines').html(summary_json.failed_engines);
   $('#total_tasks').html(summary_json.tasks);
@@ -267,6 +270,9 @@ CloudPlatforms.loadUtilizationData = function(engine, utilization, cost){
    utilization_json = $.parseJSON(utilization.replace(/&quot;/g, '"'));
    cost_json = $.parseJSON(cost.replace(/&quot;/g, '"'));
 
+   if ( $.isEmptyObject(engine_json) )
+    return false;
+
    $('#machine_flavor').html(engine_json.machine_flavor);
    $('#provider').html(engine_json.provider);
 
@@ -314,6 +320,9 @@ CloudPlatforms.loadTasksData = function(tasks){
     var rackspace_data = [];
 
     tasks_json = $.parseJSON(tasks.replace(/&quot;/g, '"'));
+
+    if ( $.isEmptyObject(tasks_json) )
+      return false;
 
     total_data.push([tasks_json.static_total_tasks,0]);
     total_data.push([tasks_json.openstack_total_tasks,1]);
@@ -367,6 +376,9 @@ CloudPlatforms.loadMachinesData = function(rawData){
     var cost_analysis = [];
 
     var data = $.parseJSON(rawData.replace(/&quot;/g, '"'));
+
+    if ( $.isEmptyObject(data) )
+      return false;
 
     $('#total_engines').html(data.summary.engines);
     $('#failed_engines').html(data.summary.failed_engines);

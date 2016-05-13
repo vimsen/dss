@@ -62,10 +62,18 @@ class CloudPlatformController < ApplicationController
 	
      rest_url = 'http://' + ENGINE_CONFIG[:rest_api][:address] + ':'+ ENGINE_CONFIG[:rest_api][:port].to_s + '/api/v1'
 
-     @response_summary =  RestClient.get rest_url + '/summary/' + @period +'/' + @date.to_s
-     @response_providers = RestClient.get rest_url + '/providers/' + @period +'/' + @date.to_s
-     @response_tasks = RestClient.get rest_url + '/tasks/'+ @period +'/' + @date.to_s 
-     @response_analysis = RestClient.get rest_url + '/analysis/'+ @period +'/' + @date.to_s 
+      begin
+        @response_summary =  RestClient.get rest_url + '/summary/' + @period +'/' + @date.to_s
+        @response_providers = RestClient.get rest_url + '/providers/' + @period +'/' + @date.to_s
+        @response_tasks = RestClient.get rest_url + '/tasks/'+ @period +'/' + @date.to_s 
+        @response_analysis = RestClient.get rest_url + '/analysis/'+ @period +'/' + @date.to_s 
+      rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET,Errno::ECONNREFUSED
+        flash[:ce_error] = "Unable to connect to Cloud Engine."
+        @response_summary = Hash.new
+        @response_providers = Hash.new
+        @response_tasks = Hash.new
+        @response_analysis = Hash.new
+      end
 
   end
 
@@ -81,37 +89,54 @@ class CloudPlatformController < ApplicationController
 
      rest_url = 'http://' + ENGINE_CONFIG[:rest_api][:address] + ':'+ ENGINE_CONFIG[:rest_api][:port].to_s + '/api/v1'
 
-     @engine_profile =  RestClient.get rest_url + '/engine/' + @engine_id
-     @engine_utilization = RestClient.get rest_url + '/engine_utilization/' + @engine_id + '/' + @period + '/' + @date.to_s
-     @engine_cost = RestClient.get rest_url + '/engine_cost/'+ @engine_id +'/' + @period + '/' + @date.to_s
-
+      begin
+        @engine_profile =  RestClient.get rest_url + '/engine/' + @engine_id
+        @engine_utilization = RestClient.get rest_url + '/engine_utilization/' + @engine_id + '/' + @period + '/' + @date.to_s
+        @engine_cost = RestClient.get rest_url + '/engine_cost/'+ @engine_id +'/' + @period + '/' + @date.to_s
+      rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET,Errno::ECONNREFUSED
+        flash[:ce_error] = "Unable to connect to Cloud Engine."
+        @engine_profile = Hash.new
+        @engine_utilization = Hash.new
+        @engine_cost = Hash.new
+      end
+   
    end
 
    def machines
 
-     @date = params[:date].to_date unless params[:date].nil?
-     @date ||= Date.today
+      @date = params[:date].to_date unless params[:date].nil?
+      @date ||= Date.today
 
-     @period = params[:resources_period] unless params[:resources_period].nil?
-     @period ||= "day"
+      @period = params[:resources_period] unless params[:resources_period].nil?
+      @period ||= "day"
   
-     rest_url = 'http://' + ENGINE_CONFIG[:rest_api][:address] + ':'+ ENGINE_CONFIG[:rest_api][:port].to_s + '/api/v1'
+      rest_url = 'http://' + ENGINE_CONFIG[:rest_api][:address] + ':'+ ENGINE_CONFIG[:rest_api][:port].to_s + '/api/v1'
 
-     @response_engines = RestClient.get rest_url + '/engines/'+ @period +'/' + @date.to_s
+      begin
+        @response_engines = RestClient.get rest_url + '/engines/'+ @period +'/' + @date.to_s
+      rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET,Errno::ECONNREFUSED
+        flash[:ce_error] = "Unable to connect to Cloud Engine."
+        @response_engines = Hash.new
+      end
 
    end
 
    def tasks
 
-     @date = params[:date].to_date unless params[:date].nil?
-     @date ||= Date.today
+      @date = params[:date].to_date unless params[:date].nil?
+      @date ||= Date.today
 
-     @period = params[:resources_period] unless params[:resources_period].nil?
-     @period ||= "day"
+      @period = params[:resources_period] unless params[:resources_period].nil?
+      @period ||= "day"
   
-     rest_url = 'http://' + ENGINE_CONFIG[:rest_api][:address] + ':'+ ENGINE_CONFIG[:rest_api][:port].to_s + '/api/v1'
+      rest_url = 'http://' + ENGINE_CONFIG[:rest_api][:address] + ':'+ ENGINE_CONFIG[:rest_api][:port].to_s + '/api/v1'
 
-     @response_tasks = RestClient.get rest_url + '/tasks/'+ @period +'/' + @date.to_s 
+      begin
+        @response_tasks = RestClient.get rest_url + '/tasks/'+ @period +'/' + @date.to_s 
+      rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET,Errno::ECONNREFUSED
+        flash[:ce_error] = "Unable to connect to Cloud Engine."
+        @response_tasks = Hash.new
+      end
 
    end 
 
