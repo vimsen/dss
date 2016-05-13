@@ -84,6 +84,57 @@ CloudPlatforms.loadDataTable = function(){
      );
 }
 
+CloudPlatforms.loadMachinesTable = function(data){
+
+  var table = $('#machines-table').DataTable({
+        "processing": true,
+        "serverSide": false,
+        "paging":   true,
+        "ordering": false,
+        "info": true,
+        "filter": false,
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        "data": data,
+        "columns": [
+          { 
+            "data" : "engine_id",
+              render : function ( data, type, row ) {
+                return '<a href="/cloud_platform/resource/'+data+'" class="instance-result">'+data+'</a>';
+              } 
+          },
+          { "data" : "provider", "className" : "dt-body-center" },
+          { "data" : "machine_flavor", "className" : "dt-body-center" },
+          { 
+            "data" : "running",
+            render : function(data, type, row){
+              if( data == 1 )
+                return "Running";
+              else
+                return "Terminated";
+            },
+            "className" : "dt-body-center" 
+          },
+          { 
+            "data" : "launched_hours", 
+            render : function(data, type, row){
+              if ( data < 24 )
+                return data + " Hour(s)";
+              else
+              {
+                days = parseInt(data/24);
+                hours = data - days*24;
+                return days + " Day(s) - " + hours + " Hour(s)"
+              }
+            },
+            "className" : "dt-body-center" 
+          },
+          { "data" : "cost", "className" : "dt-body-center" }
+        ]            
+        }
+     );
+}
+
+
 CloudPlatforms.deleteInstances = function(){
 
   ids = []
@@ -307,6 +358,32 @@ CloudPlatforms.loadTasksData = function(tasks){
     
     $('#total_tasks').html(tasks_json.total_tasks);
     $('#failed_tasks').html(tasks_json.failed_tasks);
+
+}
+
+CloudPlatforms.loadMachinesData = function(rawData){
+
+    var machines_analysis = [];
+    var cost_analysis = [];
+
+    var data = $.parseJSON(rawData.replace(/&quot;/g, '"'));
+
+    $('#total_engines').html(data.summary.engines);
+    $('#failed_engines').html(data.summary.failed_engines);
+    $('#total_tasks').html(data.summary.tasks);
+    $('#failed_tasks').html(data.summary.failed_tasks);
+
+    CloudPlatforms.loadMachinesTable(data.engines);
+
+    for (var i = 0; i < data.analysis.cost.length; i += 1) {   
+      machines_analysis.push([i+1, data.analysis.engines[i]]);
+      cost_analysis.push([i+1, data.analysis.cost[i]])
+    }
+  
+    xaxis_label  = { "day": "Hours", "year":"Months", "month": "Days", "interval": "Days" }   
+
+    CloudPlatforms.lineChart("machines-number-chart", machines_analysis, "Machines Number", xaxis_label[data.analysis.period], '#EDC240');
+    CloudPlatforms.lineChart("machines-cost-chart", cost_analysis, "Cost", xaxis_label[data.analysis.period], '#5482FF');
 
 }
 

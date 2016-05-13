@@ -88,6 +88,17 @@ class CloudPlatformController < ApplicationController
    end
 
    def machines
+
+     @date = params[:date].to_date unless params[:date].nil?
+     @date ||= Date.today
+
+     @period = params[:resources_period] unless params[:resources_period].nil?
+     @period ||= "day"
+  
+     rest_url = 'http://' + ENGINE_CONFIG[:rest_api][:address] + ':'+ ENGINE_CONFIG[:rest_api][:port].to_s + '/api/v1'
+
+     @response_engines = RestClient.get rest_url + '/engines/'+ @period +'/' + @date.to_s
+
    end
 
    def tasks
