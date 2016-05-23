@@ -53,8 +53,18 @@ module FetchAsynch
             end
 
             new_api_prosumer_ids.each do | pr_id |
-              # for real data:
-              jobs.unshift params: params.merge(prosumers: pr_id, pointer: 2), api: :new
+
+              thresh = Date.today.beginning_of_day.to_datetime
+
+              #Ugly hack because Jiannis cant handle caching properly
+              if startdate < thresh && thresh < enddate
+                jobs.unshift params: params.merge(prosumers: pr_id, pointer: 2, startdate: startdate.to_s, enddate: thresh.to_s), api: :new
+                jobs.unshift params: params.merge(prosumers: pr_id, pointer: 2, startdate: thresh.to_s, enddate: enddate.to_s), api: :new
+              else
+                # for real data:
+                jobs.unshift params: params.merge(prosumers: pr_id, pointer: 2), api: :new
+              end
+
 
               # for forecasts:
               ((startdate - 1.day)...enddate).each do | d |
