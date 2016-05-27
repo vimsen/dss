@@ -26,7 +26,9 @@ module ClusteringModule
 
       raise "Wrong targets size. targets: #{@targets.length }, time: #{timestamps.length}" if @targets.length != timestamps.length
 
-      @prosumers = reject_zeros(@prosumers, real_prosumption)
+      @prosumption_vector ||= real_prosumption
+
+      @prosumers = reject_zeros(@prosumers, @prosumption_vector)
 
       if ! @rb_channel.nil?
         Rails.logger.debug "Connecting to channel..."
@@ -47,7 +49,7 @@ module ClusteringModule
           200, 100, prosumers: @prosumers,
           class: Ai4r::GeneticAlgorithm::MatchChromosome,
           targets: @targets,
-          real_prosumption: @prosumption_vector || real_prosumption,
+          real_prosumption: @prosumption_vector,
           rb_channel: @x
       )
 
@@ -162,6 +164,7 @@ module Ai4r
               puts "total: #{total_consumption}"
               puts "real: #{@real_prosumption}"
               puts "prosumers: #{@prosumers}"
+              puts "i: #{i}"
               puts "prosumers[i]: #{@prosumers[i]}"
               puts "prosumers[i].id: #{@prosumers[i].id}"
             end
