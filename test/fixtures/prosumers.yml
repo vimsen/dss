@@ -1,16 +1,16 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  id: 1
+  id: 100
   name: Prosumer1
   edms_id: 1
 
 two:
-  id: 45
+  id: 145
   name: Prosumer2
   edms_id: b827eb4c14af
 
 three:
-  id: 46
+  id: 146
   name: Prosumer3
   edms_id: b827eb725029

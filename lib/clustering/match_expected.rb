@@ -57,6 +57,7 @@ module ClusteringModule
           prosumers: best.data.zip(@prosumers).select do |ch, pr|
             ch == 1
           end.map do |ch, pr|
+
             Prosumer.find(pr.id)
           end.sort_by{|p| p.name},
           consumption: timestamps.map{|ts| ts.to_i * 1000 }.zip(best.result)
@@ -157,6 +158,13 @@ module Ai4r
        #   puts "d= #{d}, i=#{i}"
 
           if d == 1
+            if @prosumers[i].nil?
+              puts "total: #{total_consumption}"
+              puts "real: #{@real_prosumption}"
+              puts "prosumers: #{@prosumers}"
+              puts "prosumers[i]: #{@prosumers[i]}"
+              puts "prosumers[i].id: #{@prosumers[i].id}"
+            end
             total_consumption = total_consumption.zip(@real_prosumption[@prosumers[i].id]).map do |t,r|
               t + r
             end
