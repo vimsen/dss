@@ -25,7 +25,7 @@ class TargetTest < ActiveSupport::TestCaseWithHednoData
     interval = 15.minutes
     train_duration = 7.days
 
-    49.times do |i|
+    50.times do |i|
       10.step(300,10) do |order|
 
         train_start = rand(Time.at(@startdate)..Time.at(@enddate - train_duration - (points * interval).seconds)).beginning_of_hour
@@ -41,8 +41,20 @@ class TargetTest < ActiveSupport::TestCaseWithHednoData
         puts "#{@prosumers.map{|p| p.id}}"
 
         valid_prosumers = @prosumers.reject do |p|
-          puts "#{total_timestamps_count}: #{p.data_points.where(timestamp: train_start .. stop, interval: Interval.find_by(duration: interval)).count}"
-          p.data_points.where(timestamp: train_start .. stop, interval: Interval.find_by(duration: interval)).count != total_timestamps_count
+          all_data_points = p.data_points.where(
+              timestamp: train_start .. stop,
+              interval: Interval.find_by(duration: interval)
+          )
+          max = p.data_points.where(
+              timestamp: start .. stop,
+              interval: Interval.find_by(duration: interval)
+          ).maximum('COALESCE(consumption,0) - COALESCE(production,0)')
+          min = p.data_points.where(
+              timestamp: start .. stop,
+              interval: Interval.find_by(duration: interval)
+          ).minimum('COALESCE(consumption,0) - COALESCE(production,0)')
+          puts "#{total_timestamps_count}: #{all_data_points.count} -- #{min} - #{max}"
+          all_data_points.count != total_timestamps_count || (min == 0 && max == 0)
         end
         puts "tr_st: #{train_start}, stop:#{stop}}, interval: #{interval}, ratio: #{total_timestamps_count}, prosumers: #{valid_prosumers.count}"
 
