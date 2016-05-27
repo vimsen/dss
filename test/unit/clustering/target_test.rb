@@ -54,7 +54,7 @@ class TargetTest < ActiveSupport::TestCaseWithHednoData
               interval: Interval.find_by(duration: interval)
           ).minimum('COALESCE(consumption,0) - COALESCE(production,0)')
           puts "#{total_timestamps_count}: #{all_data_points.count} -- #{min} - #{max}"
-          all_data_points.count != total_timestamps_count || (min == 0 && max == 0)
+          all_data_points.count != total_timestamps_count || (min == 0 || max == 0)
         end
         puts "tr_st: #{train_start}, stop:#{stop}}, interval: #{interval}, ratio: #{total_timestamps_count}, prosumers: #{valid_prosumers.count}"
 
