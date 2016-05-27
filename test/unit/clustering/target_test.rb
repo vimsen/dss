@@ -1,8 +1,8 @@
 require 'test_helper'
-require 'test_helper_with_pros_and_market_data'
+require 'test_helper_with_hedno_data'
 require 'clustering/match_expected'
 
-class TargetTest < ActiveSupport::TestCaseWithProsAndMarketData
+class TargetTest < ActiveSupport::TestCaseWithHednoData
 
   # Called before every test method runs. Can be used
   # to set up fixture information.
@@ -22,10 +22,10 @@ class TargetTest < ActiveSupport::TestCaseWithProsAndMarketData
 
     points = 10
     # order = 200
-    interval = 1.hour
-    train_duration = 20.days
+    interval = 15.minutes
+    train_duration = 7.days
 
-    50.times do |i|
+    49.times do |i|
       10.step(300,10) do |order|
 
         train_start = rand(Time.at(@startdate)..Time.at(@enddate - train_duration - (points * interval).seconds)).beginning_of_hour
@@ -36,10 +36,13 @@ class TargetTest < ActiveSupport::TestCaseWithProsAndMarketData
 
         u = "#{points}_#{order}_#{SecureRandom.uuid}"
 
-        total_timestamps_count = (stop.to_f - train_start.to_f)/interval + 1;
+        total_timestamps_count = ((stop.to_f - train_start.to_f)/interval + 1).to_i;
+
+        puts "#{@prosumers.map{|p| p.id}}"
 
         valid_prosumers = @prosumers.reject do |p|
-          p.data_points.where(timestamp: train_start .. stop, interval: 2).count != total_timestamps_count
+          puts "#{total_timestamps_count}: #{p.data_points.where(timestamp: train_start .. stop, interval: Interval.find_by(duration: interval)).count}"
+          p.data_points.where(timestamp: train_start .. stop, interval: Interval.find_by(duration: interval)).count != total_timestamps_count
         end
         puts "tr_st: #{train_start}, stop:#{stop}}, interval: #{interval}, ratio: #{total_timestamps_count}, prosumers: #{valid_prosumers.count}"
 
@@ -88,7 +91,11 @@ class TargetTest < ActiveSupport::TestCaseWithProsAndMarketData
         #  end
         #end
 
-        targets = points.times.map {|ts| rand(5.0 .. 15.0)}
+        # DataPoint.where(prosumers: @prosumers, interval: Interval.find_by(duration: interval), timestamp: )
+
+        # targets = points.times.map {|ts| rand(-25.0 .. -5.0)}
+
+        targets = forecasts.map{|f| 0.25 * f.sum{|v| v.to_f}}
 
         tm = ClusteringModule::TargetMatcher.new(
             prosumers: valid_prosumers,
