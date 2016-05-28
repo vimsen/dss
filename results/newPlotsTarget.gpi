@@ -41,4 +41,4 @@ do for [file in list] {
 
 set out 'target_errors_comparison.eps'
 # set yrange [0:50]
-plot for [for_order=10:300:50] 'target_errors_'.for_order.'.csv' using 1:2 w l t 'forecast '.for_order
+plot for [for_order=10:100:10] 'target_errors_'.for_order.'.csv' using 1:2 w l t 'forecast '.for_order
