@@ -12,11 +12,13 @@ if (ext eq 'eps') {
 
 set datafile separator ','
 
-list = system('ls plot_data_10_210_*.csv')
+list = system('ls plot_data_10_100_*.csv')
 
 do for [file in list] {
   bname = system("basename '".file."' .csv")
   set out bname.'.eps'
+  set xlabel "15 minute time period"
+  set ylabel "Prosumption"
 #  set yrange [0:20]
   plot file using 1:2 w lp t 'target', \
        '' u 1:3 w lp t 'predicted', \
@@ -26,6 +28,8 @@ do for [file in list] {
 }
 
 list = system('ls target_errors_*.csv')
+
+set ylabel "Mean deviation from the target (kWh)"
 
 do for [file in list] {
   bname = system("basename '".file."' .csv")
