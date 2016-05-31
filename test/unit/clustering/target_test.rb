@@ -61,23 +61,42 @@ class TargetTest < ActiveSupport::TestCaseWithHednoData
 
         redo if valid_prosumers.count < 10
 
-        # puts "tr_st: #{train_start}, ts_end:#{train_end}}, interval: #{interval}, ratio: #{(train_end.to_f - train_start.to_f)/interval}"
-        train_timestamps = ClusteringModule::TargetMatcher.new(
-            startDate: train_start,
-            endDate: train_end,
-            interval: interval,
-            targets: ((train_end.to_f - train_start.to_f)/interval + 1).to_i.times.map {|ts| 20}
-        ).timestamps
+         #puts "tr_st: #{train_start}, ts_end:#{train_end}}, interval: #{interval}, ratio: #{(train_end.to_f - train_start.to_f)/interval}"
+         #train_timestamps = ClusteringModule::TargetMatcher.new(
+         #   startDate: train_start,
+         #   endDate: train_end,
+         #   interval: interval,
+         #   targets: ((train_end.to_f - train_start.to_f)/interval + 1).to_i.times.map {|ts| 20}
+         #).timestamps
 
 
         CSV.open("results/input_#{u}.csv", "wb") do |csv|
-          csv << valid_prosumers.map{|p| p.edms_id}
-          train_timestamps.each do |ts|
-            csv << valid_prosumers.map  do |p|
-              pr = DataPoint.select('COALESCE(consumption,0) - COALESCE(production,0) as prosumption').find_by(prosumer: p, timestamp: ts, interval: Interval.find_by(duration: interval))
-              pr.prosumption unless pr.nil?
+          csv << valid_prosumers.map{|p| p.id}
+          data_points = DataPoint
+                            .select('COALESCE(consumption,0) - COALESCE(production,0) as prosumption, prosumer_id, timestamp')
+                            .where(prosumer: valid_prosumers, timestamp: train_start .. train_end, interval: Interval.find_by(duration: interval))
+                            .order(timestamp: :asc, prosumer_id: :asc)
+
+          a= []
+          old = data_points.first.timestamp
+          data_points.each do |dp|
+            if old != dp.timestamp
+              csv << a
+              a = []
+              old = dp.timestamp
             end
+            a[valid_prosumers.index dp.prosumer] = dp.prosumption
           end
+          csv << a
+
+          # csv << ["Seperator"]
+
+          # train_timestamps.each do |ts|
+          #  csv << valid_prosumers.map  do |p|
+          #    pr = DataPoint.select('COALESCE(consumption,0) - COALESCE(production,0) as prosumption').find_by(prosumer: p, timestamp: ts, interval: Interval.find_by(duration: interval))
+          #    pr.prosumption unless pr.nil?
+          #  end
+          # end
         end
 
         system "./runmat_stf.sh #{points} #{u} #{order}"
@@ -86,14 +105,21 @@ class TargetTest < ActiveSupport::TestCaseWithHednoData
 
 
         prosumpton_vector = Hash[valid_prosumers.map {|p| [p.id, points.times.map{|ts| 0}]}]
-        prosumpton_vector_no_forecast = Hash[valid_prosumers.map {|p| [p.id, points.times.map{|ts| DataPoint.select('COALESCE(consumption,0) - COALESCE(production,0) as prosumption').find_by(prosumer: p, timestamp: train_end, interval: Interval.find_by(duration: interval)).prosumption}]}]
-
 
         forecasts.each_with_index do |u, j|
           u.each_with_index do |pr, i|
             prosumpton_vector[valid_prosumers[i].id][j] = pr.to_f
           end
         end
+
+        data_points = DataPoint
+                          .select('COALESCE(consumption,0) - COALESCE(production,0) as prosumption, prosumer_id')
+                          .where(timestamp: train_end, interval: Interval.find_by(duration: interval))
+                          .order(prosumer_id: :asc)
+        prosumpton_vector_no_forecast = Hash[data_points.map {|dp| [dp.prosumer_id, points.times.map{|ts| dp.prosumption}]}]
+        # prosumpton_vector_no_forecast = Hash[valid_prosumers.map {|p| [p.id, points.times.map{|ts| DataPoint.select('COALESCE(consumption,0) - COALESCE(production,0) as prosumption').find_by(prosumer: p, timestamp: train_end, interval: Interval.find_by(duration: interval)).prosumption}]}]
+
+
 
 
         #CSV.open("input_#{u}.csv", "wb") do |csv|
