@@ -130,7 +130,7 @@
                                .order("ts ASC")
                                .group(:ts)
                                .select("timestamp::date  as ts, sum(COALESCE(consumption,0) - COALESCE(production,0)) as s")
-                               .map{|p| puts "#{p.ts} -- #{p.ts.to_datetime}"; [p.ts.to_datetime.to_i * 1000, p.s] }
+                               .map{|p| [p.ts.to_datetime.to_i * 1000, p.s] }
                 },{
                     label: :forecast,
                     data: DataPoint.where(prosumer: tc.prosumers,

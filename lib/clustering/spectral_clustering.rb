@@ -5,7 +5,7 @@ module ClusteringModule
 
   class SpectralClustering
 
-    def initialize(prosumers: Prosumer.where('id < 26'),
+    def initialize(prosumers: Prosumer.all,
                    startDate: Time.now - 1.week,
                    endDate: Time.now)
       method(__method__).parameters.each do |type, k|

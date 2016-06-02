@@ -20,6 +20,7 @@ class TargetTest < ActiveSupport::TestCaseWithHednoData
   # Fake test
   test "target matcher" do
 
+    skip "Test too slow"
     points = 10
     # order = 200
     interval = 15.minutes
