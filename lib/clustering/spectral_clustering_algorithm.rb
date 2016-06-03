@@ -27,15 +27,15 @@ module ClusteringModule
       # puts y.join(",\n")
 
       # Use uniq to prevent duplicate vectors
-      clusters = y.uniq{|v| v.map{|j| j.round(1)}}.sample(kappa).map{|v| [y.index(v)]}
+      clusters = y.uniq{|v| v.map{|j| j.round(0)}}.sample(kappa).map{|v| [y.index(v)]}
 
       centroids = clusters.map{ |cl| get_centroid(cl, y, y[0] - y[0]) }
 
       loop do
-        #   puts "clusters: #{clusters}"
+        # puts "clusters: #{clusters}"
         #  stats(clusters)
 
-        puts "centroids: #{centroids}"
+        # puts "centroids: #{centroids}"
         old_centroids = Array.new(centroids)
         clusters = []
         y.each_with_index do |y_i, i|
@@ -44,7 +44,7 @@ module ClusteringModule
           clusters[closest].push i
         end
 
-        puts JSON.pretty_generate clusters
+        # puts JSON.pretty_generate clusters
         centroids = clusters.map.with_index { |cl, i| get_centroid(cl, y, old_centroids[i]) }
 
         break if centroids <=> old_centroids
