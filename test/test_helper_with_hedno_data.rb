@@ -1,7 +1,7 @@
 module HednoData
   def load_prosumption_data
     Rails.logger.debug "Importing HEDNO prosumers"
-    @prosumers = Prosumer.create(1.upto(40).map do |i|
+    @prosumers = Prosumer.create(1001.upto(1040).map do |i|
       {id: i, name: "pr #{i}", edms_id: i+100000}
     end)
     Rails.logger.debug "Prosumer ids: #{@prosumers.map{|p| p.name}}"
@@ -13,10 +13,8 @@ module HednoData
 
     raw.copy_data "COPY data_points (prosumer_id, interval_id, "\
                 "timestamp, production) FROM stdin;" do
-      c = 0
       File.open("test/fixtures/pv_lv_hedno.sql", 'r').each do |line|
-        c = c + 1
-        raw.put_copy_data line if c > 1
+        raw.put_copy_data line
       end
     end
     ActiveRecord::Base.connection_pool.checkin(dbconn)
