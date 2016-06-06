@@ -115,6 +115,7 @@ class ConfigurationsController < ApplicationController
       instance[:user_id] = session["warden.user.user.key"][0][0]
       instance[:configuration_id] = @configuration[:id]
       instance[:status] = 0 
+      instance[:priority_id] = 1
       instance[:instance_name] = @configuration[:name]+"_"+Time.now.to_i.to_s
       instance.save
 
