@@ -4,7 +4,7 @@ require 'test_helper_with_prosumption_data'
 class DataPointTest < ActiveSupport::TestCaseWithProsumptionData
 
   test "DataPoints should have 16266 data_points" do
-    assert_equal 241809, DataPoint.count
+    assert_equal 221452, DataPoint.where(prosumer: @prosumers).count
 
     @prosumers.sort_by{ |p| p.name }.each do |p|
 
