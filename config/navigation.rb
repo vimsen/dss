@@ -118,6 +118,8 @@ SimpleNavigation::Configuration.run do |navigation|
     primary.item :menu_cloud_platform, 'Cloud Platform', "#" do |sub_nav| 
       sub_nav.item :menu_instances, 'Instances', '/cloud_platform', :icon => ['fa fa-cog fa-fw']
       sub_nav.item :menu_cloud_resources, 'Resources', '/cloud_platform/resources', :icon => ['fa fa-tachometer fa-fw']
+      sub_nav.item :menu_engines, 'Machines', '/cloud_platform/machines', :icon => ['fa fa-server fa-fw']
+      sub_nav.item :menu_tasks, 'Tasks', '/cloud_platform/tasks', :icon => ['fa fa-list fa-fw']
       sub_nav.dom_class = 'nav nav-second-level collapse'
 
     end
