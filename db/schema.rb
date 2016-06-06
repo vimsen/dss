@@ -361,13 +361,6 @@ ActiveRecord::Schema.define(version: 20160510100943) do
   add_index "sla_items", ["interval_id"], name: "index_sla_items_on_interval_id", using: :btree
   add_index "sla_items", ["timestamp", "interval_id", "bid_id"], name: "index_sla_items_on_timestamp_and_interval_id_and_bid_id", unique: true, using: :btree
 
-  create_table "targets", force: :cascade do |t|
-    t.float    "volume"
-    t.datetime "timestamp"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "temp_clusters", force: :cascade do |t|
     t.string   "name"
     t.text     "description"
