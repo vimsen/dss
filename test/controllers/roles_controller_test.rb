@@ -2,7 +2,7 @@ require 'test_helper'
 
 class RolesControllerTest < ActionController::TestCase
   setup do
-    @role = roles(:one)
+    @role = roles(:admin_role)
     sign_in User.first
   end
 

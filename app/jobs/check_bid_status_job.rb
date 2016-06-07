@@ -3,7 +3,7 @@ class CheckBidStatusJob < ActiveJob::Base
 
   def perform(*args)
     Bid.submitted.each do |b|
-      config = YAML.load_file('config/vimsen_hosts.yml')
+      config = YAML.load(ERB.new(File.read("#{Rails.root}/config/vimsen_hosts.yml")).result)
 
       user = config[Rails.env]["market_operator"]["user"]
       token = config[Rails.env]["market_operator"]["token"]

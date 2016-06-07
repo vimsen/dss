@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160311141904) do
+ActiveRecord::Schema.define(version: 20160606130840) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -59,6 +59,17 @@ ActiveRecord::Schema.define(version: 20160311141904) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "configurations", force: :cascade do |t|
+    t.integer  "user_id"
+    t.string   "name"
+    t.integer  "algorithm_id"
+    t.text     "params"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "configurations", ["user_id"], name: "index_configurations_on_user_id", using: :btree
 
   create_table "connection_types", force: :cascade do |t|
     t.string   "name"
@@ -138,6 +149,8 @@ ActiveRecord::Schema.define(version: 20160311141904) do
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
     t.integer  "plan_id"
+    t.integer  "feeder_id"
+    t.string   "issuer"
   end
 
   add_index "demand_responses", ["interval_id"], name: "index_demand_responses_on_interval_id", using: :btree
@@ -229,6 +242,7 @@ ActiveRecord::Schema.define(version: 20160311141904) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "total_execution_time"
+    t.integer  "priority_id",          default: 1
   end
 
   create_table "intervals", force: :cascade do |t|
@@ -358,13 +372,6 @@ ActiveRecord::Schema.define(version: 20160311141904) do
   add_index "sla_items", ["interval_id"], name: "index_sla_items_on_interval_id", using: :btree
   add_index "sla_items", ["timestamp", "interval_id", "bid_id"], name: "index_sla_items_on_timestamp_and_interval_id_and_bid_id", unique: true, using: :btree
 
-  create_table "targets", force: :cascade do |t|
-    t.float    "volume"
-    t.datetime "timestamp"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "temp_clusters", force: :cascade do |t|
     t.string   "name"
     t.text     "description"
@@ -402,6 +409,7 @@ ActiveRecord::Schema.define(version: 20160311141904) do
 
   add_index "users_roles", ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id", using: :btree
 
+  add_foreign_key "configurations", "users"
   add_foreign_key "demand_responses", "intervals"
   add_foreign_key "dr_actuals", "demand_responses"
   add_foreign_key "dr_actuals", "prosumers"
