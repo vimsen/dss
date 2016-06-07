@@ -37,8 +37,6 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test "should update user" do
-    puts "prosumers: ", @user.prosumers
-    
     patch :update, id: @user, user: { email: @user.email, prosumers: @user.prosumers.map{|p| p.id}, roles: @user.roles.map{|p| p.id} }
     assert_redirected_to user_path(assigns(:user))
   end

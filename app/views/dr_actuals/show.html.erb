@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Prosumer:</strong>
+  <%= @dr_actual.prosumer %>
+</p>
+
+<p>
+  <strong>Volume:</strong>
+  <%= @dr_actual.volume %>
+</p>
+
+<p>
+  <strong>Timestamp:</strong>
+  <%= @dr_actual.timestamp %>
+</p>
+
+<p>
+  <strong>Demand response:</strong>
+  <%= @dr_actual.demand_response %>
+</p>
+
+<%= link_to 'Edit', edit_dr_actual_path(@dr_actual) %> |
+<%= link_to 'Back', dr_actuals_path %>

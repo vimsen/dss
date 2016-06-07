@@ -27,6 +27,10 @@ module Ai4r
        @population = []
        puts "INIT: TARGETS: #{@options[:targets]}"
        puts "INIT: REAL: #{@options[:real_prosumption]}" unless @options[:real_prosumption].nil?
+
+       @options[:stats] ||= {}
+       @options[:stats][:start_run] = Time.now
+       puts "The class is #{@chromosomeClass}"
        @population_size.times do
          population << @chromosomeClass.seed(@options)
        end
@@ -64,6 +68,7 @@ module Ai4r
       #     5. Return the best chromosome
       def run
         generate_initial_population                    #Generate initial population
+
         @max_generation.times do |i|
 
           message = "Generation: #{i}, best fitness: #{@population[0].fitness}"
@@ -72,9 +77,8 @@ module Ai4r
               fitness: @population[0].fitness,
               time: Time.now - @options[:stats][:start_run]
           }
-          if @options[:rb_channel].nil?
-            puts message
-          else
+          puts message
+          unless @options[:rb_channel].nil?
             @options[:rb_channel].publish({data: message, event: 'output'}.to_json)
           end
 
@@ -107,7 +111,7 @@ module Ai4r
         @data = data
         @options = options
         @errors = options[:errors]
-        @prosumers = options[:prosumers]
+        @prosumer_ids = options[:prosumer_ids]
       end
 
       # The fitness method quantifies the optimality of a solution 
@@ -126,28 +130,28 @@ module Ai4r
         p_b2 = cls.map { |c| penalty_before(c) }
         p_a2 = cls.map { |c| penalty_after(c) }
 
-        impr2 = p_b2.zip(p_a2).sum do |b,a|
+        impr2 = p_b2.zip(p_a2).map do |b,a|
           b > 0 ? ((b - a)/b) : 0
-        end
+        end.inject(0,:+)
 
         @fitness = impr2
       end
 
       def penalty_before(cluster)
         @cache_penalty_before ||= {}
-        @cache_penalty_before[cluster] ||= cluster.sum do |p|
+        @cache_penalty_before[cluster] ||= cluster.map do |p|
           @options[:penalties_before][p]
-        end
+        end.inject(0,:+)
       end
 
       def penalty_after(cluster)
         @cache_penalty_after||= {}
-        @cache_penalty_after[cluster] ||= @options[:timestamps].sum do |t|
-          v = cluster.sum do |p|
-            @errors[[@prosumers[p].id ,t]] || 0
-          end
+        @cache_penalty_after[cluster] ||= @options[:timestamps].map do |t|
+          v = cluster.map do |p|
+            @errors[[@prosumer_ids[p] ,t]] || 0
+          end.inject(0,:+)
           self.class.penalty(v, @options)
-        end
+        end.inject(0,:+)
       end
 
       # mutation method is used to maintain genetic diversity from one 
@@ -211,7 +215,8 @@ module Ai4r
       # use some problem domain knowledge, to generate a 
       # (probably) better initial solution.
       def self.seed(options)
-        data_size = options[:prosumers].length
+        # puts "#{options}"
+        data_size = options[:prosumer_ids].length
         kappa = options[:kappa]
 
         seed = []
@@ -220,10 +225,10 @@ module Ai4r
         end
 
         options[:timestamps] = options[:errors].map{|(pid,t), v| t}.to_set
-        options[:penalties_before] = options[:prosumers].map do |p|
-          options[:timestamps].sum do |t|
-            penalty(options[:errors][[p.id, t]] || 0, options)
-          end
+        options[:penalties_before] = options[:prosumer_ids].map do |pid|
+          options[:timestamps].map do |t|
+            penalty(options[:errors][[pid, t]] || 0, options)
+          end.inject(0, :+)
         end
 
         # puts "seed options: #{options[:errors].length}, timestamps: #{options[:timestamps]}, pb: #{options[:penalties_before]}"

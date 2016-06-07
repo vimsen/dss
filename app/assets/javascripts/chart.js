@@ -125,14 +125,21 @@ var plotHelper = (function() {
     if (res[label] == null) {
       res[label] = {};
     }
-    res[label][d.timestamp] = [d.timestamp * 1000, d.actual[type]];
+
+    console.log("old value: " + res[label][d.timestamp] + "  new value: ");
+    console.log(d);
+    if (d.actual[type]) {
+        res[label][d.timestamp] = [d.timestamp * 1000, d.actual[type]];
+    }
 
     if (forecast) {
       var label = d.prosumer_name + ": " + type + ", forecast";
       if (res[label] == null) {
         res[label] = {};
       }
-      res[label][d.timestamp] = [d.forecast.timestamp * 1000, d.forecast[type]];
+      if (d.forecast[type]) {
+        res[label][d.timestamp] = [d.forecast.timestamp * 1000, d.forecast[type]];
+      }
     }
 
     return res;
@@ -158,6 +165,8 @@ var plotHelper = (function() {
 
       if (type == "kw") {
         unit = "KW";
+      } else if (type == "kw ") {
+        unit = "KW ";  // And this an even bigger hack :/
       } else {
         unit = "KWh"; // WARNING this is a hack
       }
@@ -191,7 +200,28 @@ var plotHelper = (function() {
         window.setTimeout(redraw, 100, data);
       });
 
-      source.addEventListener('market', function(e) {
+        source.addEventListener('messages.demand_response_data', function(e) {
+            var message = JSON.parse(e.data);
+            console.log("Dr received ", message);
+            replot(message)
+
+            if ($("#GDMRS_message").length) {
+                $("#GDMRS_message").remove();
+            }
+
+        });
+
+        source.addEventListener('messages.gdrms_unavailable', function(e) {
+            var message = JSON.parse(e.data);
+
+            if (!$("#GDMRS_message").length) {
+               $("#page-wrapper").prepend( "<p id='GDMRS_message' class='alert alert-danger'>" + message + "</p>" );
+            }
+            console.log("Message received ", message);
+
+        });
+
+        source.addEventListener('market', function(e) {
           var message = JSON.parse(e.data);
           console.log("Received market data: ", message)
           $.plot($("#cost_placeholder"), message.plot, {

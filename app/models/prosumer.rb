@@ -3,7 +3,7 @@ require 'fetch_asynch/download_and_publish'
 
 class Prosumer < ActiveRecord::Base
   
-  has_many :data_points, dependent: :destroy
+  has_many :data_points, dependent: :delete_all
   has_many :day_aheads, dependent: :destroy
   has_many :meters, dependent: :destroy
 
@@ -22,7 +22,7 @@ class Prosumer < ActiveRecord::Base
   accepts_nested_attributes_for :energy_type_prosumers,
     :allow_destroy => true
 
-  validates :intelen_id, uniqueness: true
+  validates :edms_id, uniqueness: true
   
   include FindGaps
   

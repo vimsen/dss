@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Prosumer:</strong>
+  <%= @dr_planned.prosumer %>
+</p>
+
+<p>
+  <strong>Volume:</strong>
+  <%= @dr_planned.volume %>
+</p>
+
+<p>
+  <strong>Timestamp:</strong>
+  <%= @dr_planned.timestamp %>
+</p>
+
+<p>
+  <strong>Demand response:</strong>
+  <%= @dr_planned.demand_response %>
+</p>
+
+<%= link_to 'Edit', edit_dr_planned_path(@dr_planned) %> |
+<%= link_to 'Back', dr_planneds_path %>

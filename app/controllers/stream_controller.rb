@@ -6,6 +6,33 @@ require 'fetch_asynch/download_and_publish'
 class StreamController < ApplicationController
   include ActionController::Live
 
+  def demand_response
+    response.headers['Content-Type'] = 'text/event-stream'
+    ActiveRecord::Base.forbid_implicit_checkout_for_thread!
+    sse = Streamer::SSE.new(response.stream)
+    dr_id = params[:id]
+
+    loop do
+      begin
+        ActiveRecord::Base.connection_pool.with_connection do
+          sse.write(DemandResponse.find(dr_id).request_cached(nil).to_json, event: 'messages.demand_response_data')
+        end
+      rescue RestClient::Exception, Errno::ECONNREFUSED => e
+        sse.write("Failed to connect to GDRMS".to_json, event: 'messages.gdrms_unavailable')
+        reachable = false
+      end
+      ActiveRecord::Base.clear_active_connections!
+      sleep 30;
+    end
+
+  rescue IOError, ActionController::Live::ClientDisconnected
+  ensure
+    ActiveRecord::Base.clear_active_connections!
+    sse.close
+    puts "Stream closed."
+  end
+
+
   def clusterfeed
     response.headers['Content-Type'] = 'text/event-stream'
     ActiveRecord::Base.forbid_implicit_checkout_for_thread!
@@ -28,7 +55,7 @@ class StreamController < ApplicationController
     consumer = q.subscribe(:block => false) do |delivery_info, properties, data|
       begin
         msg = JSON.parse(data)
-        puts "Stream Controller received: #{msg['event']},\ndata: #{msg['data'].count}"
+        # puts "Stream Controller received: #{msg['event']},\ndata: #{msg['data']}"
 
         # puts JSON.pretty_generate msg
         if msg['event'] == 'datapoints'
@@ -67,7 +94,7 @@ class StreamController < ApplicationController
       ActiveRecord::Base.clear_active_connections!
     end
           
-  rescue IOError
+  rescue IOError, ActionController::Live::ClientDisconnected
   ensure
     ActiveRecord::Base.clear_active_connections!
     consumer.cancel unless consumer.nil?
@@ -129,11 +156,13 @@ class StreamController < ApplicationController
     ActiveRecord::Base.clear_active_connections!
     
     loop do
-      sleep 1;
-      sse.write("OK".to_json, event: 'messages.keepalive')
       ActiveRecord::Base.clear_active_connections!
+      sleep 1;
+      ActiveRecord::Base.connection_pool.with_connection do
+        sse.write("OK".to_json, event: 'messages.keepalive')
+      end
     end
-  rescue IOError
+  rescue IOError, ActionController::Live::ClientDisconnected
   ensure
     ActiveRecord::Base.clear_active_connections!
     consumer.cancel unless consumer.nil?
@@ -170,7 +199,7 @@ class StreamController < ApplicationController
       sse.write("OK".to_json, event: 'messages.keepalive')
       ActiveRecord::Base.clear_active_connections!
     end
-  rescue => e
+  rescue ActionController::Live::ClientDisconnected => e
     # puts e.message
     # puts e.backtrace
   ensure
@@ -217,8 +246,8 @@ class StreamController < ApplicationController
     startdate = DateTime.now - 2.weeks
     enddate = DateTime.now
 
-    remaining = 3
-    FetchAsynch::DownloadAndPublish.new(Prosumer.all, 1, startdate, enddate, channel_name)
+    remaining = 2
+    # FetchAsynch::DownloadAndPublish.new(Prosumer.all, 1, startdate, enddate, channel_name)
     FetchAsynch::DownloadAndPublish.new(Prosumer.all, 2, startdate, enddate, channel_name)
     FetchAsynch::DownloadAndPublish.new(Prosumer.all, 3, startdate, enddate, channel_name)
 
@@ -235,7 +264,7 @@ class StreamController < ApplicationController
     puts "Stream closed3."
 
 
-  rescue IOError
+  rescue IOError, ActionController::Live::ClientDisconnected
   ensure
     consumer.cancel unless consumer.nil?
     sse.close
@@ -271,31 +300,35 @@ class StreamController < ApplicationController
     end
 
     Thread.new do
-      ActiveRecord::Base.forbid_implicit_checkout_for_thread!
-      ActiveRecord::Base.connection_pool.with_connection do
-        puts "Running algorithm"
-        tm = ClusteringModule::TargetMatcher.new(
-            startDate: DateTime.parse(params[:startDate]),
-            endDate: DateTime.parse(params[:endDate]),
-            interval: params[:interval].to_i,
-            targets: JSON.parse(params[:targets]).map{|v| v[1]},
-            rb_channel: channel_name
-        )
-        puts "Object created"
-        results = tm.run
-        sse.write(results.to_json, event: "result")
+      begin
+        ActiveRecord::Base.forbid_implicit_checkout_for_thread!
+        ActiveRecord::Base.connection_pool.with_connection do
+          puts "Running algorithm"
+          tm = ClusteringModule::TargetMatcher.new(
+              startDate: DateTime.parse(params[:startDate]),
+              endDate: DateTime.parse(params[:endDate]),
+              interval: params[:interval].to_i,
+              targets: JSON.parse(params[:targets]).map{|v| v[1]},
+              rb_channel: channel_name
+          )
+          puts "Object created"
+          results = tm.run
+          sse.write(results.to_json, event: "result")
 
-        puts JSON.pretty_generate results
+          puts JSON.pretty_generate results
 
+        end
+      rescue => e
+        Rails.logger.debug e
+        Rails.logger.debug e.backtrace.join("\n")
       end
-
     end
 
     loop do
       sleep 1;
       sse.write("OK".to_json, event: 'messages.keepalive')
     end
-  rescue IOError
+  rescue IOError, ActionController::Live::ClientDisconnected
   ensure
     consumer.cancel unless consumer.nil?
     sse.close

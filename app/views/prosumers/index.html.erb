@@ -39,6 +39,7 @@
             <thead>
               <tr>
                 <th><%= sortable "name", "Name" %></th>
+                <th><%= sortable "edms_id", "EDMS id" %></th>
                 <th><%= sortable "location", "Location" %></th>
                 <th><%= sortable "clusters.name", "Cluster" %></th>
                 <th><%= sortable "building_types.name", "Building Type" %></th>
@@ -52,7 +53,8 @@
 
               <% @prosumers.each do |prosumer| %>
               <tr>
-                <td><%= prosumer.name %></td>
+                <td style="min-width: 10em; word-break: break-all;"> <%= prosumer.name %></td>
+                <td style="word-break: break-all;"><%= prosumer.edms_id %></td>
                 <td><%= prosumer.location %></td>
                 <td><%= link_to prosumer.cluster.name, prosumer.cluster unless prosumer.cluster.nil?  %></td>
                 <td><%= link_to prosumer.building_type.name, prosumer.building_type unless prosumer.building_type.nil? %></td>

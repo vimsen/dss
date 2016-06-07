@@ -17,8 +17,9 @@
         <strong>Real-time updates?</strong>
         <input id="realtime" type="checkbox" checked>
         <select id="type">
+          <option value="prosumption" selected="selected">Prosumption</option>
           <option value="production">Production</option>
-          <option value="consumption" selected="selected">Consumption</option>
+          <option value="consumption">Consumption</option>
           <option value="storage">Storage</option>
         </select>
         <%= collection_select(:interval, :interval_id,
