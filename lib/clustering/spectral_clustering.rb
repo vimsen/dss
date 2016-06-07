@@ -19,23 +19,25 @@ module ClusteringModule
       @forecasts = Hash[DataPoint.where(prosumer: @prosumers,
                                         interval: 2,
                                         f_timestamp: @startDate .. @endDate)
+                            .select("f_timestamp, prosumer_id, COALESCE(f_consumption,0) - COALESCE(f_production,0) as f_prosumption")
                             .map do |dp|
-                          [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_consumption]
-                        end]
+        [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_prosumption]
+      end]
 
       @real =  Hash[DataPoint.where(prosumer: @prosumers,
                                     interval: 2,
                                     timestamp: @startDate .. @endDate)
+                        .select("timestamp, prosumer_id, COALESCE(consumption,0) - COALESCE(production,0) as prosumption")
                         .map do |dp|
-                      [[dp.prosumer_id, dp.timestamp.to_i], dp.consumption]
-                    end]
+        [[dp.prosumer_id, dp.timestamp.to_i], dp.prosumption]
+      end]
 
       @timestamps = Hash[@prosumers.map{|p| [p.id,[]] }]
 
       @errors = Hash[@real.map do |(pid,timestamp),v|
                        # @timestamps[pid] ||= []
-                       @timestamps[pid].push timestamp
-                       [ [pid, timestamp], v - (@forecasts[[pid, timestamp]] || 0)]
+                       @timestamps[pid].push timestamp unless v.nil?
+                       [ [pid, timestamp], (v || 0) - (@forecasts[[pid, timestamp]] || 0)]
                      end]
 
       @similarity_matrix = generate_similarity_matrix
@@ -60,6 +62,7 @@ module ClusteringModule
     end
 
     def cross_correlation(vector, pid1, pid2)
+
       common_timestamps = @timestamps[pid1] & @timestamps[pid2]
 
       s12 = common_timestamps.sum{|ts| vector[[pid1, ts]] * vector[[pid2, ts]]}

@@ -3,6 +3,8 @@ require 'test_helper_with_pros_and_market_data'
 require 'database_cleaner'
 require 'clustering/clustering_module'
 require 'delorean'
+require 'capybara'
+require 'capybara/dsl'
 
 Capybara.app = Rails.application.class
 Capybara.default_driver = :rack_test
@@ -42,11 +44,11 @@ class ClusteringIntegrationTest < ActionDispatch::IntegrationTestWithProsAndMark
       ClusteringModule::algorithms.keys.size.times do |i|
 
         if ClusteringModule::algorithms.keys[i].to_s.include?("genetic")
-          puts "SKIPPING GENETIC - TOO SLOW"
+          Rails.logger.debug "SKIPPING GENETIC - TOO SLOW"
           next
         end
 
-        puts "Testing algorithm: #{ClusteringModule::algorithms.keys[i]}"
+        Rails.logger.debug "Testing algorithm: #{ClusteringModule::algorithms.keys[i]}"
 
 
         visit clusterings_select_path
@@ -63,12 +65,12 @@ class ClusteringIntegrationTest < ActionDispatch::IntegrationTestWithProsAndMark
 
         no_cluster = page.all(:xpath, '//ul[@id="prosumer_list_-1"]')
 
-        assert_equal 1, no_cluster.count, "Single list for unclustered prosumers"
+        assert_includes([0,1], no_cluster.count, "Single list for unclustered prosumers")
 
         get_pros_count = ->(d) { d.all(:xpath, 'li[@id[starts-with(.,"prosumer_")]]').count }
         
         assert_equal 0, no_cluster.sum(&get_pros_count), "No unclustered prosumers"
-        #         puts page.all(:xpath, 'div[@id[starts-with(.,"prosumer_list_")]]').count
+        #         Rails.logger.debug page.all(:xpath, 'div[@id[starts-with(.,"prosumer_list_")]]').count
         assert_equal Prosumer.all.count,
                      page.all(:xpath, '//ul[@id[starts-with(.,"prosumer_list_")]]')
                          .sum(&get_pros_count),
@@ -82,7 +84,7 @@ class ClusteringIntegrationTest < ActionDispatch::IntegrationTestWithProsAndMark
         total_penalties_after = page.first(:xpath, '//dt[text()="Total aggr. sum (€):"]/following::dd[1]').text.split.last.to_f
         total_penalty_reduction = page.first(:xpath, '//dt[text()="Improvement:"]/following::dd[1]').text.split.last.to_f
 
-        puts "before: #{total_penalties_before}, after: #{total_penalties_after}, perc: #{total_penalty_reduction }"
+        Rails.logger.debug "before: #{total_penalties_before}, after: #{total_penalties_after}, perc: #{total_penalty_reduction }"
 
         assert_operator total_penalties_before, :>, 0, "Total penalties before should be positive"
         assert_operator total_penalties_after , :>, 0, "Total penalties after should be positive"
@@ -94,9 +96,9 @@ class ClusteringIntegrationTest < ActionDispatch::IntegrationTestWithProsAndMark
         penalties_after = page.all(:xpath, '//table/tbody/tr/th[text()="aggr."]/following::td[4]').map{|t| t.text.to_f}
         penalty_reduction  = page.all(:xpath, '//table/tbody/tr/th[text()="Perc."]/following::td[4]').map{|t| t.text.to_f}
 
-        puts "penalties before: #{penalties_before}"
-        puts "penalties after: #{penalties_after}"
-        puts "penalty reduction: #{penalty_reduction}"
+        Rails.logger.debug "penalties before: #{penalties_before}"
+        Rails.logger.debug "penalties after: #{penalties_after}"
+        Rails.logger.debug "penalty reduction: #{penalty_reduction}"
 
         assert_operator penalties_before.min, :>=, 0, "All penalties should be positive or zero"
         assert_operator penalties_after.min, :>=, 0, "All penalties should be positive or zero"

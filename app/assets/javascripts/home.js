@@ -55,9 +55,8 @@ function energyPriceChart(){
 
 
 function loadEnergyPriceChart(data){
-  
 
-        var options = {
+          var options = {
             series: {
                 lines: {
                     show: true,

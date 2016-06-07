@@ -1,0 +1,4 @@
+# users_roles.yml
+users_roles1:
+  user: one
+  role: admin

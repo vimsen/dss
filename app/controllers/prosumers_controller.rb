@@ -10,7 +10,7 @@ class ProsumersController < ApplicationController
   # GET /prosumers.json
   def index
     @prosumers = Prosumer.includes(:cluster, :building_type, :connection_type).
-        order(sort_column + ' ' + sort_direction).paginate(page: params[:page])
+        order(sort_column + ' ' + sort_direction).paginate(page: params[:page], per_page: 50)
   end
 
   # GET /prosumers/1
@@ -114,9 +114,9 @@ class ProsumersController < ApplicationController
   # Never trust parameters from the scary internet, only allow the white list
   # through.
   def prosumer_params
-    params.require(:prosumer).permit(:name, :location, :cluster_id,
+    params.require(:prosumer).permit(:name, :feeder_id, :location, :cluster_id,
                                      :building_type_id, :connection_type_id,
-                                     :intelen_id, :location_x,
+                                     :edms_id, :location_x,
                                      :location_y,
                                      energy_type_prosumers_attributes: [
                                        :id, :power, :energy_type_id, :_destroy

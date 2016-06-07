@@ -22,7 +22,7 @@ class ProsumersControllerTest < ActionController::TestCase
     assert_difference('Prosumer.count') do
       pr = post :create, prosumer: { location: @prosumer.location, 
                                      name: @prosumer.name, 
-                                     intelen_id: Prosumer.maximum('intelen_id') + 1 }
+                                     edms_id: SecureRandom.uuid }
     end
 
     assert_redirected_to prosumer_path(assigns(:prosumer))

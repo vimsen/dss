@@ -12,7 +12,8 @@ module ClusteringModule
                    endDate: Time.now,
                    interval: 1.hour,
                    targets: 25.times.map {|ts| 0},
-                   rb_channel: nil
+                   rb_channel: nil,
+                   prosumption_vector: nil
       )
 
       method(__method__).parameters.each do |type, k|
@@ -23,9 +24,11 @@ module ClusteringModule
         Rails.logger.debug("value: #{v}")
       end
 
-      raise "Wrong targets size" if @targets.length != timestamps.length
+      raise "Wrong targets size. targets: #{@targets.length }, time: #{timestamps.length}" if @targets.length != timestamps.length
 
-      @prosumers = reject_zeros(@prosumers, real_prosumption)
+      @prosumption_vector ||= real_prosumption
+
+      @prosumers = reject_zeros(@prosumers, @prosumption_vector)
 
       if ! @rb_channel.nil?
         Rails.logger.debug "Connecting to channel..."
@@ -46,7 +49,7 @@ module ClusteringModule
           200, 100, prosumers: @prosumers,
           class: Ai4r::GeneticAlgorithm::MatchChromosome,
           targets: @targets,
-          real_prosumption: real_prosumption,
+          real_prosumption: @prosumption_vector,
           rb_channel: @x
       )
 
@@ -56,6 +59,7 @@ module ClusteringModule
           prosumers: best.data.zip(@prosumers).select do |ch, pr|
             ch == 1
           end.map do |ch, pr|
+
             Prosumer.find(pr.id)
           end.sort_by{|p| p.name},
           consumption: timestamps.map{|ts| ts.to_i * 1000 }.zip(best.result)
@@ -65,7 +69,7 @@ module ClusteringModule
 
     def reject_zeros(prosumers, rc)
       prosumers.reject do |p|
-        rc[p.id].max == 0
+        rc[p.id].max == 0 && rc[p.id].min == 0
       end
     end
 
@@ -78,6 +82,8 @@ module ClusteringModule
 
     def normalise(timestamp)
       case @interval
+        when 15.minutes
+          Time.at((timestamp.to_f / 900).floor * 900).to_datetime
         when 1.hour
           timestamp.beginning_of_hour
         when 1.day
@@ -94,8 +100,8 @@ module ClusteringModule
 
       timestamps.map do |ts|
         DataPoint.where(prosumer: @prosumers,
-                        interval: 2,
-                        timestamp: ts).select(:prosumer_id, '(consumption - production) as prosumption')
+                        interval: Interval.find_by(duration: @interval),
+                        timestamp: ts).select(:prosumer_id, 'COALESCE(consumption,0) - COALESCE(production,0) as prosumption')
             .map do |dp|
           result[dp.prosumer_id][timestamps.index(ts)] = dp[:prosumption]
 
@@ -154,6 +160,14 @@ module Ai4r
        #   puts "d= #{d}, i=#{i}"
 
           if d == 1
+            if @prosumers[i].nil?
+              puts "total: #{total_consumption}"
+              puts "real: #{@real_prosumption}"
+              puts "prosumers: #{@prosumers}"
+              puts "i: #{i}"
+              puts "prosumers[i]: #{@prosumers[i]}"
+              puts "prosumers[i].id: #{@prosumers[i].id}"
+            end
             total_consumption = total_consumption.zip(@real_prosumption[@prosumers[i].id]).map do |t,r|
               t + r
             end

@@ -1,0 +1,29 @@
+default: &default
+
+development:
+  <<: *default
+  edms_host: https://the.edms.host/and/path
+  gdrms_host: https://the.gdrms.host/and/path
+  market_operator:
+    host: https://the.marketoperator.host/and/path
+    user: user@domain.com
+    token: ffsdfsafsdfsdfsafsdf
+
+
+test:
+  <<: *default
+  edms_host: https://the.edms.host/and/path
+  gdrms_host: https://the.gdrms.host/and/path
+  market_operator:
+    host: https://the.marketoperator.host/and/path
+    user: user@domain.com
+    token: ffsdfsafsdfsdfsafsdf
+
+production:
+  <<: *default
+  edms_host: https://the.edms.host/and/path
+  gdrms_host: https://the.gdrms.host/and/path
+  market_operator:
+    host: https://the.marketoperator.host/and/path
+    user: user@domain.com
+    token: <%= ENV["DSS_AUTHENTICATION_TOKEN"] %>

@@ -31,9 +31,9 @@ class SpectralClusteringTest < ActiveSupport::TestCaseWithProsumptionData
         cl = Clustering.new(name: "Spectral k=#{i}", temp_clusters: clusteringModule.run(i))
         cl.save
         assert_equal(cl.temp_clusters.count, i)
-        puts "#{cl.temp_clusters.map{|tc| tc.prosumers.map{|p| @prosumers.index(Prosumer.find(p.id))}}}"
+        Rails.logger.debug "#{cl.temp_clusters.map{|tc| tc.prosumers.map{|p| @prosumers.index(Prosumer.find(p.id))}}}"
         stats = clusteringModule.stats(cl.temp_clusters.map{|tc| tc.prosumers.map{|p| @prosumers.index(Prosumer.find(p.id))}})
-        puts "#{stats}"
+        Rails.logger.debug "#{stats}"
         failed += 1 if stats[:ingroup] < stats[:outgroup]
       end
     end

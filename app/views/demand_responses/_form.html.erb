@@ -1,0 +1,25 @@
+<%= form_for(@demand_response) do |f| %>
+  <% if @demand_response.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@demand_response.errors.count, "error") %> prohibited this demand_response from being saved:</h2>
+
+      <ul>
+      <% @demand_response.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :interval_id %><br>
+    <%= f.text_field :interval_id %>
+  </div>
+    <div class="field">
+      <%= f.label :plan_id %><br>
+      <%= f.text_field :plan_id %>
+    </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

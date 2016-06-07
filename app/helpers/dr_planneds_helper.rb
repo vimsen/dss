@@ -1,0 +1,2 @@
+module DrPlannedsHelper
+end

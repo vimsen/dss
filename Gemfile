@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.1.6'
+gem 'rails', '4.2.5'
 # Use postgres instead of sqlite
 gem 'pg'
 
@@ -54,6 +54,8 @@ gem 'puma'
 gem "font-awesome-rails"
 
 gem 'devise'     # for authentication
+gem 'simple_token_authentication', '~> 1.0' # see semver.org
+
 gem 'cancancan'  # for authorizaton
 gem 'rolify'     # for role management
 
@@ -82,3 +84,10 @@ gem 'aws-sdk', '~> 2'
 
 gem 'seed_dump' # Needed for generatic seeds from existing data 
 
+gem 'whenever', require: false
+
+gem 'rest-client'
+
+gem 'upsert'
+
+gem 'parallel' # parallel tasks for downloading EDMS data

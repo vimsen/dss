@@ -11,6 +11,7 @@ class Ability
     else
       # cannot :index, User
       can :read, :all
+      can [:select, :confirm], Clustering
       cannot :read, [User]
       can :show, User do |emp|
         user.id == emp.id
