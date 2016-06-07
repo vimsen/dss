@@ -39,6 +39,8 @@ Rails.application.configure do
   # Raises helpful error messages.
   config.assets.raise_runtime_errors = true
 
+  ENGINE_CONFIG = HashWithIndifferentAccess.new(YAML.load(File.read(File.expand_path('../../cloud_engine.yml', __FILE__))))   
+
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 end

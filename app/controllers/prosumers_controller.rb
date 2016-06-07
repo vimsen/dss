@@ -10,7 +10,7 @@ class ProsumersController < ApplicationController
   # GET /prosumers.json
   def index
     @prosumers = Prosumer.includes(:cluster, :building_type, :connection_type).
-        order(sort_column + ' ' + sort_direction).paginate(page: params[:page])
+        order(sort_column + ' ' + sort_direction).paginate(page: params[:page], per_page: 50)
   end
 
   # GET /prosumers/1

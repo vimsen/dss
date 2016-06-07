@@ -13,7 +13,7 @@ class DemandResponse < ActiveRecord::Base
 
   after_create do
     agent = FetchAsynch::DemandResponseAgent.new
-    agent.dr_activation self.id
+    agent.dr_activation self.id, self.feeder_id
   end
 
   def starttime

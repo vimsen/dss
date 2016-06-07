@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  get 'configurations/index'
+
   get 'sla/monitor'
 
   resources :sla_items
@@ -20,14 +22,21 @@ Rails.application.routes.draw do
   get 'market_prices/efficiencyCertificates/:id' => 'market_prices#efficiencyCertificates' 
   get 'market_prices/regions/:id' => 'market_prices#regions'
 
+  resources :configurations
+  get 'configurations/execute/:id' => 'configurations#execute'
+  
   get 'cloud_platform' => 'cloud_platform#index'
   get 'cloud_platform/index' => 'cloud_platform#index'
-  get 'cloud_platform/execute/:cmd' => 'cloud_platform#execute'
+  get 'cloud_platform/results/:id' => 'cloud_platform#show'
   get 'cloud_platform/chart' => 'cloud_platform#chart'
   get 'cloud_platform/chartData' => 'cloud_platform#chartData'
-  get 'cloud_platform/results' => 'cloud_platform#results'
   get 'cloud_platform/instances'  => 'cloud_platform#instances'
   get 'cloud_platform/delete/:id' => 'cloud_platform#delete'
+  get 'cloud_platform/dataset/:id' => 'cloud_platform#dataset'
+  get 'cloud_platform/resources' => 'cloud_platform#resources'
+  get 'cloud_platform/resource/:id' => 'cloud_platform#resource'
+  get 'cloud_platform/machines' => 'cloud_platform#machines'
+  get 'cloud_platform/tasks' => 'cloud_platform#tasks'
 
   get 'clusterings/new_from_existing', as: :new_from_existing_clustering
   get 'clusterings/select'
@@ -85,15 +94,12 @@ Rails.application.routes.draw do
   get 'home/top5Producers' => 'home#top5Producers'
   get 'home/top5Consumers' => 'home#top5Consumers'
  
-
-
   resources :machines
-
 
   get 'target_clustering' => 'target_clustering#index'
 
-
   root :to => 'home#index'
+
  # devise_scope :user do
  #   root :to => 'devise/sessions#new'
  # end

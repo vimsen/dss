@@ -43,8 +43,8 @@ module FetchAsynch
                        enddate: enddate.to_s,
                        interval: @interval.duration }
 
-            new_api_prosumer_ids = prosumers.map {|p| p.edms_id}.reject{|id| is_integer? id }
-            old_api_prosumer_ids = prosumers.map {|p| p.edms_id}.select{|id| is_integer? id }
+            new_api_prosumer_ids = prosumers.map {|p| p.edms_id}.select{|id| newAPI? id }
+            old_api_prosumer_ids = prosumers.map {|p| p.edms_id}.reject{|id| newAPI? id }
 
 
             # Old api jobs
@@ -53,8 +53,18 @@ module FetchAsynch
             end
 
             new_api_prosumer_ids.each do | pr_id |
-              # for real data:
-              jobs.unshift params: params.merge(prosumers: pr_id, pointer: 2), api: :new
+
+              thresh = Date.today.beginning_of_day.to_datetime
+
+              #Ugly hack because Jiannis cant handle caching properly
+              if startdate < thresh && thresh < enddate
+                jobs.unshift params: params.merge(prosumers: pr_id, pointer: 2, startdate: startdate.to_s, enddate: thresh.to_s), api: :new
+                jobs.unshift params: params.merge(prosumers: pr_id, pointer: 2, startdate: thresh.to_s, enddate: enddate.to_s), api: :new
+              else
+                # for real data:
+                jobs.unshift params: params.merge(prosumers: pr_id, pointer: 2), api: :new
+              end
+
 
               # for forecasts:
               ((startdate - 1.day)...enddate).each do | d |
@@ -68,7 +78,7 @@ module FetchAsynch
           # Rails.logger.debug JSON.pretty_generate jobs
 
           u = YAML.load_file('config/vimsen_hosts.yml')[Rails.env]['edms_host']
-          rest_resource = RestClient::Resource.new(u)
+          rest_resource = RestClient::Resource.new u #, verify_ssl: OpenSSL::SSL::VERIFY_NONE
 
           Parallel.each(jobs, in_threads: 3) do |job|
             case job[:api]
@@ -150,10 +160,9 @@ module FetchAsynch
       !!(num =~ /\A[-+]?[0-9]+\z/)
     end
 
-    def newAPI?(prosumers)
+    def newAPI?(id)
       ActiveRecord::Base.connection_pool.with_connection do
-        # Rails.logger.debug "AAAAAAAAAAAAAAAAAAAAAAAAAAA"
-        prosumers.reject {|p| is_integer?(p.edms_id) }.count > 0
+        (! is_integer?(id)) || (id.to_i > 100)
       end
     end
 
@@ -212,11 +221,11 @@ module FetchAsynch
     def validate_value(value)
       case @interval.duration
         when 900
-          value < 50
+          value < 500
         when 3600
-          value < 200
+          value < 2000
         when 86400
-          value < 3000
+          value < 30000
       end
     end
 
@@ -226,24 +235,27 @@ module FetchAsynch
       result = data.first
       # Rails.logger.debug JSON.pretty_generate result
       result["Production"].map(&method(:hash_to_key_value)).each do | key,value |
+        # Rails.logger.debug "Production: #{key}: #{DateTime.parse(key) - 24.hours}"
         if validate_value(value)
           intermediate_data[key] ||= empty_data_point_object key
           intermediate_data[key]["procumer_id"] = result["ProsumerId"]
-          intermediate_data[key]["actual"]["production"] = value
+          intermediate_data[key]["actual"]["production"] = value.nil? ? nil : value.to_f
         end
       end
       result["Storage"].map(&method(:hash_to_key_value)).each do | key,value |
         if validate_value(value)
           intermediate_data[key] ||= empty_data_point_object key
           intermediate_data[key]["procumer_id"] = result["ProsumerId"]
-          intermediate_data[key]["actual"]["storage"] = value
+          intermediate_data[key]["actual"]["storage"] = value.nil? ? nil : value.to_f
         end
       end
       result["Consumption"].map(&method(:hash_to_key_value)).each do | key,value |
+        Rails.logger.debug "Consumption: #{key}: Value #{value}"
         if validate_value(value)
           intermediate_data[key] ||= empty_data_point_object key
           intermediate_data[key]["procumer_id"] = result["ProsumerId"]
-          intermediate_data[key]["actual"]["consumption"] = value
+          intermediate_data[key]["actual"]["consumption"] = value.nil? ? nil : value.to_f
+          Rails.logger.debug "Consumption2: #{key}: Value #{intermediate_data[key]["actual"]["consumption"]}"
         end
       end
       result["ForecastConsumption"].map(&method(:hash_to_key_value)).each do | key,value |
@@ -253,15 +265,17 @@ module FetchAsynch
                       when 3600
                         (DateTime.parse(key) - 24.hours).beginning_of_hour
                       when 86400
-                        (DateTime.parse(key) - 24.hours).utc.beginning_of_day.new_offset Time.zone.formatted_offset
+                        DateTime.parse(key).utc_offset == 7200 ? # Reject wrong timezones
+                            (DateTime.parse(key) - 24.hours).beginning_of_day + Time.zone.parse(key).utc_offset.seconds :
+                            nil
                     end
-#         puts "#{key}: #{DateTime.parse(key) - 24.hours} --- #{timestamp}"
+        #  Rails.logger.debug "ForecastConsumption: #{key}: #{DateTime.parse(key) - 24.hours} --- #{timestamp}"
 
         if timestamp && validate_value(value)
           intermediate_data[timestamp] ||= empty_data_point_object timestamp
           intermediate_data[timestamp]["procumer_id"] = result["ProsumerId"]
           intermediate_data[timestamp]["forecast"]["consumption"] ||= 0
-          intermediate_data[timestamp]["forecast"]["consumption"] += value
+          intermediate_data[timestamp]["forecast"]["consumption"] += value.to_f unless value.nil?
           intermediate_data[timestamp]["forecast"]["timestamp"] = timestamp + 24.hours
         end
       end if result["ForecastConsumption"].length > 0
@@ -273,14 +287,16 @@ module FetchAsynch
                       when 3600
                         (DateTime.parse(key) - 24.hours).beginning_of_hour
                       when 86400
-                        (DateTime.parse(key) - 24.hours).utc.beginning_of_day.new_offset Time.zone.formatted_offset
-                    end
+                        DateTime.parse(key).utc_offset == 7200 ? # Reject wrong timezones
+                            (DateTime.parse(key) - 24.hours).beginning_of_day + Time.zone.parse(key).utc_offset.seconds :
+                            nil                    end
+        # Rails.logger.debug "ForecastProduction: #{key}: #{DateTime.parse(key) - 24.hours} --- #{timestamp}"
 
         if timestamp && validate_value(value)
           intermediate_data[timestamp] ||= empty_data_point_object timestamp
           intermediate_data[timestamp]["procumer_id"] = result["ProsumerId"]
           intermediate_data[timestamp]["forecast"]["production"] ||= 0
-          intermediate_data[timestamp]["forecast"]["production"] += value
+          intermediate_data[timestamp]["forecast"]["production"] += value.to_f unless value.nil?
           intermediate_data[timestamp]["forecast"]["timestamp"] = timestamp + 24.hours
         end
 
@@ -388,12 +404,17 @@ module FetchAsynch
         k['prosumer_name'] = procs[d['procumer_id'].to_s].name
         k['forecast']['timestamp'] =
             d['forecast']['timestamp'].to_datetime.to_i
-        k['actual']['prosumption'] = (d['actual']['consumption'].to_f || 0) - (d['actual']['production'].to_f || 0)
-        k['forecast']['prosumption'] = (d['forecast']['consumption'].to_f || 0) - (d['forecast']['production'].to_f || 0)
+        k['actual']['prosumption'] = prosumption(d['actual']['consumption'], d['actual']['production'])
+        k['forecast']['prosumption'] = prosumption(d['forecast']['consumption'], d['forecast']['production'])
         return k
       else
         return nil
       end
+    end
+
+    def prosumption(consumption, production)
+      return nil if consumption.nil? && production.nil?
+      consumption.to_f - production.to_f
     end
 
     def valid_time_stamp(str)

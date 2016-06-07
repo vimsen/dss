@@ -1,14 +1,15 @@
 module ProsumptionData
   def load_prosumption_data
-    if Prosumer.count < 37
+    if @prosumers.nil? || @prosumers.count < 37
+      pr_ids = []
       Rails.logger.debug "Importing prosumers"
       dbconn = ActiveRecord::Base.connection_pool.checkout
       Upsert.batch(dbconn, :prosumers) do |upsert|
         CSV.foreach "test/fixtures/prosumers.sql", col_sep: "\t" do |row|
           upsert.row({
-                         edms_id: row[6]
+                         id: row[0].to_i
                      }, {
-                         id: row[0].to_i,
+                         edms_id: row[0].to_i + 100000,
                          name: row[1],
                          location: row[2].to_f,
                          created_at: row[3].to_datetime,
@@ -19,15 +20,14 @@ module ProsumptionData
                          location_x: row[9].to_f,
                          location_y: row[10].to_f
                      })
-
+          pr_ids.push row[0].to_i
         end
       end
+      @prosumers = Prosumer.where(id: pr_ids)
       ActiveRecord::Base.connection_pool.checkin(dbconn)
-      Rails.logger.debug "We have #{Prosumer.count} prosumers"
-
     end
 
-    if DataPoint.count < 100
+    if DataPoint.where(prosumer: @prosumers).count < 100
       Rails.logger.debug "Importing datapoints"
       dbconn = ActiveRecord::Base.connection_pool.checkout
       raw  = dbconn.raw_connection
@@ -57,7 +57,7 @@ module ProsumptionData
 
     max = (@startdate .. @trainend).count * 24
     Rails.logger.debug "max = #{max}"
-    @prosumers = Prosumer.where(edms_id: 1..37).reject do |p|
+    @prosumers = @prosumers.reject do |p|
 #       Rails.logger.debug p.data_points.where(interval: 2, timestamp: startdate .. enddate).count
       p.data_points
           .where(interval: 2, timestamp: @startdate .. @trainend)

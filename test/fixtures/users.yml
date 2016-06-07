@@ -5,11 +5,10 @@
 # below each fixture, per the syntax in the comments below
 #
 one: 
-  email: ***REMOVED***
-  authentication_token: KPT_m79rDgxUrTsjTcz5
+  email: admin@test.com
+  authentication_token: abcdefghijkl
   prosumers: [ "one", "two" ]
-  roles: [ "admin", "test" ]
-  
+
 #
 two: 
-  email: ***REMOVED***
+  email: test2@test.com

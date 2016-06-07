@@ -17,6 +17,12 @@
       </div>
       <div class="panel-body">
         <dl class="dl-horizontal">
+          <dt>Issuer:</dt>
+          <dd><%= @demand_response.issuer %></dd>
+
+          <dt>Feeder id:</dt>
+          <dd><%= @demand_response.feeder_id %></dd>
+
           <dt>Plan id:</dt>
           <dd><%= @demand_response.plan_id %></dd>
 
@@ -26,8 +32,12 @@
           <dt>End time:</dt>
           <dd><%= @demand_response.stoptime %></dd>
 
-          <dt>Interval</dt>
+          <dt>Interval:</dt>
           <dd><%= @demand_response.interval.duration -%> sec.</dd>
+
+          <dt>Prosumers:</dt>
+          <dd><%= render(partial: "prosumers/prosumername", spacer_template: "common/comma_spacer", collection: @demand_response.dr_planneds.select(:prosumer_id).group(:prosumer_id).map{|drp| drp.prosumer}, as: :prosumer) || "No Prosumers" %></dd>
+
         </dl>
       </div>
     </div>

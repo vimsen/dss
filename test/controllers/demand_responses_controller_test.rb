@@ -5,6 +5,7 @@ class DemandResponsesControllerTest < ActionController::TestCaseWithProsumptionD
   setup do
     sign_in User.first
     @demand_response = demand_responses(:one)
+
   end
 
   test "should get index" do
@@ -51,6 +52,7 @@ class DemandResponsesControllerTest < ActionController::TestCaseWithProsumptionD
   end
 
   test "index with token authentication via query params" do
+    users(:one)
     sign_out User.first
     get :index, { user_email: users(:one).email, user_token: users(:one).authentication_token, format: :json }
     # puts @request.parameters
@@ -68,8 +70,9 @@ class DemandResponsesControllerTest < ActionController::TestCaseWithProsumptionD
     assert_response :success
   end
 
-  test "should submit DR evant through the API" do
+  test "should submit DR event through the API" do
     sign_out User.first
+    users(:one).add_role :admin
 
     starttime = DateTime.now + 1.hour
 
@@ -85,9 +88,11 @@ class DemandResponsesControllerTest < ActionController::TestCaseWithProsumptionD
 
     json = ""
     assert_difference('DemandResponse.count') do
+      # puts({demand_response: newDRsignal, user_email: users(:one).email, user_token: users(:one).authentication_token, format: :json}.to_json)
       post :create, demand_response: newDRsignal, user_email: users(:one).email, user_token: users(:one).authentication_token, format: :json
+      # puts @response.body
       json = JSON.parse @response.body
-      puts @response.body
+      # puts @response.body
     end
     assert_response 201
 

@@ -96,10 +96,10 @@ SimpleNavigation::Configuration.run do |navigation|
     primary.item :menu_bids, 'Bids', bids_path
     primary.item :menu_sla, 'Monitor SLA progress', sla_monitor_path
 
-    primary.item :menu_meters, 'Meters', '#' do |sub_nav|
-      HierMenu::HierMenu.new('meters_hier', Proc.new { |p| meter_url(p) }, :mac, 4).fill_node sub_nav, Meter.all.order(id: :asc)
-      sub_nav.dom_class = 'nav nav-second-level collapse'
-    end
+   # primary.item :menu_meters, 'Meters', '#' do |sub_nav|
+   #   HierMenu::HierMenu.new('meters_hier', Proc.new { |p| meter_url(p) }, :mac, 4).fill_node sub_nav, Meter.all.order(id: :asc)
+   #   sub_nav.dom_class = 'nav nav-second-level collapse'
+   # end
     primary.item :menu_algorithms, 'Algorithms', "#" do |sub_nav|
       sub_nav.item :menu_clustering, 'Clustering', "/clusterings/select"
       sub_nav.item :menu_dunamic_adaptation, 'Dynamic Adaptation', "/clusterings/new_from_existing"
@@ -112,9 +112,18 @@ SimpleNavigation::Configuration.run do |navigation|
       sub_nav.dom_class = 'nav nav-second-level collapse'
     end
     primary.item :menu_data_points, 'Data points', data_points_path, :icon => ['fa fa-bar-chart-o fa-fw']
-    primary.item :menu_day_aheads, 'Day-ahead forecasts', day_aheads_path, :icon => ['fa fa-bar-chart-o fa-fw']
+#     primary.item :menu_day_aheads, 'Day-ahead forecasts', day_aheads_path, :icon => ['fa fa-bar-chart-o fa-fw']
     primary.item :menu_market_prices, 'Market Prices', market_prices_path, :icon => ['fa fa-bar-chart-o fa-fw']
-    primary.item :menu_cloud_platform, 'Cloud Platform', '/cloud_platform', :icon => ['fa fa-cog fa-fw']
+    primary.item :menu_configurations, 'Configurations', '/configurations', :icon => ['fa fa-tasks fa-fw']
+    primary.item :menu_cloud_platform, 'Cloud Platform', "#" do |sub_nav| 
+      sub_nav.item :menu_instances, 'Instances', '/cloud_platform', :icon => ['fa fa-cog fa-fw']
+      sub_nav.item :menu_cloud_resources, 'Resources', '/cloud_platform/resources', :icon => ['fa fa-tachometer fa-fw']
+      sub_nav.item :menu_engines, 'Machines', '/cloud_platform/machines', :icon => ['fa fa-server fa-fw']
+      sub_nav.item :menu_tasks, 'Tasks', '/cloud_platform/tasks', :icon => ['fa fa-list fa-fw']
+      sub_nav.dom_class = 'nav nav-second-level collapse'
+
+    end
+    #primary.item :menu_cloud_platform, 'Cloud Platform', '/cloud_platform', :icon => ['fa fa-cog fa-fw']
     primary.item :menu_users, 'Users', users_path, :icon => ['fa fa-user fa-fw']
 
   #    primary.item :key_1, 'name', url, options
