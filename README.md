@@ -1,30 +1,36 @@
-VIMSEN Dashboard
+VIMSEN DSS Dashboard
 ==============
 
-The web interface of the VMGA system
+The web interface of the DSS component VMGA system
 --------------
 
-The VIMSEN project ...
+The VIMSEN project (http://www.ict-vimsen.eu) aims at optimizing the operation of the smart grid, by enabling small-scale produres
+and consumers (i.e. prosumers) to participate in the energy market, through aggregation into virtual
+micro-grids.
+
+One of the major VIMSEN project’s objectives is to provide “Information
+management and decision making technologies for the dynamic VMG creation in a way to
+optimize the participants’ benefits and macro-grid perspectives”. The DSS platform is responsible
+for orchestrating and efficiently managing the RES of multiple energy prosumers called as
+VIMSEN Prosumers (VPs). It is also responsible for enabling the decentralized electricity
+market supported by VIMSEN project. Furthermore, it provides the necessary information
+tools and service engineering methodologies (based on the Web service technology) to
+choose the micro-grids and the distributed energy sources within the VMG framework, to
+handle the respective pricing policies and finally to activate the dynamic clustering
+framework in order to update and evolve VMG associations according to the current energy
+information, forecasting and demands. Finally, novel algorithms regarding the VMG groups’
+formation/dynamic adaptation and VMG profiles’ management are designed, developed and
+will be integrated in the DSS platform/toolkit. These algorithms take advantage of an
+innovative hybrid cloud computing processing infrastructure (HCCI), which allows heavyprocessing
+tasks/jobs to be executed in less time and thus real-time decision making
+procedures to be realized, which is very important for the successful operation of the whole
+VIMSEN system. DSS and HCCI reside at the Virtual Microgrid Aggregator’s (VMGA) side,
+which acts as an intermediate business actor between: a) the market and energy system
+operators (e.g. market operator, DSO, TSO, supplier, utility company) residing at the higher
+level of VIMSEN architecture, and b) VIMSEN Prosumers (VPs) residing at the lower level of
+VIMSEN architecture.
 
 
-What is implemented so far:
----------------------------
-
-- Interface for managing the energy prosumers, available at http://vimsen.herokuapp.com/prosumers
-- Interface for managing the measurements, available at http://vimsen.herokuapp.com/measurements
-- Live plot for the energy prosumers, that includes real time prosumption data. This 
-interface is available at http://vimsen.herokuapp.com/prosumers/ID, where ID is the ID of the prosumer
-- Live JSON feed for each prosumer, available at http://vimsen.herokuapp.com/stream/1/realtime
-- Interface for adding new prosumption data, through the link http://vimsen.herokuapp.com/stream/ID/addevent, where ID is the ID of the procumer.
-
-Things to be implemented
--------------------------
-
-- Prosumer cluster management
-- Cluster aggregate feed and UI
-- Alerts
-- Short/Medium term forecasting
-- Make a responsive menu
 
 How it works
 ------------
