@@ -36,9 +36,9 @@ class Prosumer < ActiveRecord::Base
       gaps = find_gaps(dps, startdate, enddate, Interval.find(interval).duration)
     end
     
-    if gaps
-      FetchAsynch::DownloadAndPublish.new([self], interval, startdate, enddate, channel)
-    end 
+    # if gaps    # Download anyway, we may have an extra datapoint due to forecasts
+    FetchAsynch::DownloadAndPublish.new([self], interval, startdate, enddate, channel)
+    # end
     
     return result      
   end
