@@ -186,7 +186,7 @@ GEM
     seed_dump (3.2.4)
       activerecord (>= 4)
       activesupport (>= 4)
-    selenium-webdriver (2.53.0)
+    selenium-webdriver (2.53.3)
       childprocess (~> 0.5)
       rubyzip (~> 1.0)
       websocket (~> 1.0)
@@ -281,3 +281,6 @@ DEPENDENCIES
   upsert
   whenever
   will_paginate-bootstrap
+
+BUNDLED WITH
+   1.10.6
