@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160606130840) do
+ActiveRecord::Schema.define(version: 20160623121647) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -94,6 +94,7 @@ ActiveRecord::Schema.define(version: 20160606130840) do
     t.datetime "updated_at"
   end
 
+  add_index "data_points", ["prosumer_id"], name: "index_data_points_on_prosumer_id", using: :btree
   add_index "data_points", ["timestamp", "prosumer_id", "interval_id"], name: "index_data_points_on_timestamp_and_prosumer_id_and_interval_id", unique: true, using: :btree
 
   create_table "day_ahead_energy_demands", force: :cascade do |t|
@@ -371,6 +372,13 @@ ActiveRecord::Schema.define(version: 20160606130840) do
   add_index "sla_items", ["bid_id"], name: "index_sla_items_on_bid_id", using: :btree
   add_index "sla_items", ["interval_id"], name: "index_sla_items_on_interval_id", using: :btree
   add_index "sla_items", ["timestamp", "interval_id", "bid_id"], name: "index_sla_items_on_timestamp_and_interval_id_and_bid_id", unique: true, using: :btree
+
+  create_table "targets", force: :cascade do |t|
+    t.float    "volume"
+    t.datetime "timestamp"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "temp_clusters", force: :cascade do |t|
     t.string   "name"
