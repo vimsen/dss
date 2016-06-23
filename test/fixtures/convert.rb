@@ -6,7 +6,7 @@ require 'active_support/all'
 
 csv1 = CSV.open("pv_lv_hedno.csv", headers: true)
 
-time = DateTime.parse("2015-01-01T00:00:00+02:00")
+time = DateTime.parse("2015-01-01T00:15:00+02:00")
 
 csv1.each do |row|
 # time = Time.parse(row[0]).to_datetime.in_time_zone("UTC").to_s
