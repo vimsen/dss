@@ -6,7 +6,7 @@ require 'active_support/all'
 
 prosumers = {}
 
-id = 2000
+id = 4000
 
 csv_in = CSV.open("aiolika_MV.csv", col_sep: "\t", headers: false)
 CSV.open("aiolika_MV.sql", "wb", col_sep: "\t") do |csv_out|
