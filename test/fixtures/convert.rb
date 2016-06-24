@@ -14,7 +14,7 @@ CSV.open("pv_lv_hedno.sql", "wb", col_sep: "\t") do |csv_out|
   # time = Time.parse(row[0]).to_datetime.in_time_zone("UTC").to_s
   # time -= time.utc_offset
     row.each_with_index do |value, column|
-      id = column+1000
+      id = column+3000
       csv_out << [id, 1, time, value[1]] if column > 0
       # puts "#{id}\t1\t#{time}\t#{value[1]}" if column > 0
       prosumers[id] = 'Υ/Σ Λητής, Θεσσαλονίκη'
