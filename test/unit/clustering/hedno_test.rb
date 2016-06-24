@@ -19,12 +19,12 @@ class HednoTest < ActiveSupport::TestCaseWithHednoData
   end
 
   test "prosumers imported" do
-    assert_equal 140, @prosumers.count, "We should have 140 prosumers"
+    assert_equal 190, @prosumers.count, "We should have 140 prosumers"
   end
 
   test "count datapoints" do
     # puts JSON.pretty_generate @prosumers.map {|p| [p.id, p.data_points.count]}
-    assert (DataPoint.where(prosumer: @prosumers).count.between?(140*(24*4*365 - 1), 140*24*4*365)), "We should have a full datapoint set"
+    assert (DataPoint.where(prosumer: @prosumers).count.between?(190*(24*4*365 - 1), 190*24*4*365)), "We should have a full datapoint set"
   end
 
   test "Run spectral clustering on hedno dataset" do

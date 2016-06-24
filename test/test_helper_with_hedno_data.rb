@@ -4,7 +4,7 @@ module HednoData
 
     # if DataPoint.where(prosumer_id: 1001..2050).count == 0
 
-    if Prosumer.where(id: 3001..5050).count == 0
+    if Prosumer.where(id: 3001..6050).count == 0
 
 =begin
       Prosumer.create(1001.upto(1040).map do |i|
@@ -35,6 +35,9 @@ module HednoData
         File.open("test/fixtures/prosumers_emporikoi_MV.sql", 'r').each do |line|
           raw.put_copy_data line
         end
+        File.open("test/fixtures/prosumers_biomhxanikoi.sql", 'r').each do |line|
+          raw.put_copy_data line
+        end
       end
 
 
@@ -55,13 +58,16 @@ module HednoData
         File.open("test/fixtures/emporikoi_MV.sql", 'r').each do |line|
           raw.put_copy_data line
         end
+        File.open("test/fixtures/biomhxanikoi.sql", 'r').each do |line|
+          raw.put_copy_data line
+        end
       end
 
       ActiveRecord::Base.connection_pool.checkin(dbconn)
       Rails.logger.debug "We have #{DataPoint.count} data points"
 
     end
-    @prosumers = Prosumer.where(id: 3001..5050)
+    @prosumers = Prosumer.where(id: 3001..6050)
     @startdate = '2015/1/1'.to_datetime
     @enddate = '2015/12/31'.to_datetime
     Rails.logger.debug "data imported, #{@prosumers.count} prosumers with valid training data"
