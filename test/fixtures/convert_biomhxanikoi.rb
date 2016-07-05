@@ -11,15 +11,23 @@ time = DateTime.parse("2015-01-01T00:00:00+02:00")
 prosumers = {}
 CSV.open("biomhxanikoi.sql", "wb", col_sep: "\t") do |csv_out|
   csv1.each_with_index do |row, linenum|
+    has_non_zero = false
+    new_rows = []
     row.each_with_index do |value, column|
       id = column + 6000
       if linenum == 0
         prosumers[id] = value[1] if column > 0
       else
-        csv_out << [id, 1, time, value[1].sub!(',', '.').to_f] if column > 0
+        new_rows << [id, 1, time, value[1].sub(',', '.').to_f] if column > 0
+        has_non_zero = true if value[1].sub(',', '.').to_f > 0 && column > 0
       end
     end
-    time += 15.minutes
+    if linenum > 0
+      if has_non_zero
+        new_rows.each {|r| csv_out << r}
+        time += 15.minutes
+      end
+    end
   end
 end
 
