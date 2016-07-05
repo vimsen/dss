@@ -19,7 +19,7 @@ class HednoTest < ActiveSupport::TestCaseWithHednoData
   end
 
   test "prosumers imported" do
-    assert_equal 190, @prosumers.count, "We should have 140 prosumers"
+    assert_equal 190, @prosumers.count, "We should have 190 prosumers"
   end
 
   test "count datapoints" do
