@@ -4,7 +4,7 @@ module HednoData
 
     # if DataPoint.where(prosumer_id: 1001..2050).count == 0
 
-    if Prosumer.where(id: 3001..6050).count == 0
+    if Prosumer.where(id: 3001..12050).count == 0
 
 =begin
       Prosumer.create(1001.upto(1040).map do |i|
@@ -38,6 +38,21 @@ module HednoData
         File.open("test/fixtures/prosumers_biomhxanikoi.sql", 'r').each do |line|
           raw.put_copy_data line
         end
+        File.open("test/fixtures/prosumers_biomhxanikoi_MV.sql", 'r').each do |line|
+          raw.put_copy_data line
+        end
+        File.open("test/fixtures/prosumers_epaggelmatikoi.sql", 'r').each do |line|
+          raw.put_copy_data line
+        end
+        File.open("test/fixtures/prosumers_fwtismos_odwn_plateiwn.sql", 'r').each do |line|
+          raw.put_copy_data line
+        end
+        File.open("test/fixtures/prosumers_oikiakoi.sql", 'r').each do |line|
+          raw.put_copy_data line
+        end
+        File.open("test/fixtures/prosumers_photovoltaika_MV.sql", 'r').each do |line|
+          raw.put_copy_data line
+        end
       end
 
 
@@ -45,29 +60,53 @@ module HednoData
 
       raw.copy_data "COPY data_points (prosumer_id, interval_id, "\
                   "timestamp, production) FROM stdin;" do
+        Rails.logger.debug "#{DateTime.now}: Loading pv_lv_hedno.sql"
         File.open("test/fixtures/pv_lv_hedno.sql", 'r').each do |line|
           raw.put_copy_data line
         end
+        Rails.logger.debug "#{DateTime.now}: Loading aiolika_MV.sql"
         File.open("test/fixtures/aiolika_MV.sql", 'r').each do |line|
+          raw.put_copy_data line
+        end
+        Rails.logger.debug "#{DateTime.now}: Loading photovoltaika_MV.sql"
+        File.open("test/fixtures/photovoltaika_MV.sql", 'r').each do |line|
           raw.put_copy_data line
         end
       end
 
       raw.copy_data "COPY data_points (prosumer_id, interval_id, "\
                   "timestamp, consumption) FROM stdin;" do
+        Rails.logger.debug "#{DateTime.now}: Loading emporikoi_MV.sql"
         File.open("test/fixtures/emporikoi_MV.sql", 'r').each do |line|
           raw.put_copy_data line
         end
+        Rails.logger.debug "#{DateTime.now}: Loading biomhxanikoi.sql"
         File.open("test/fixtures/biomhxanikoi.sql", 'r').each do |line|
           raw.put_copy_data line
         end
+        Rails.logger.debug "#{DateTime.now}: Loading biomhxanikoi_MV.sql"
+        File.open("test/fixtures/biomhxanikoi_MV.sql", 'r').each do |line|
+          raw.put_copy_data line
+        end
+        Rails.logger.debug "#{DateTime.now}: Loading epaggelmatikoi.sql"
+        File.open("test/fixtures/epaggelmatikoi.sql", 'r').each do |line|
+          raw.put_copy_data line
+        end
+        Rails.logger.debug "#{DateTime.now}: Loading fwtismos_odwn_plateiwn.sql"
+        File.open("test/fixtures/fwtismos_odwn_plateiwn.sql", 'r').each do |line|
+          raw.put_copy_data line
+        end
+        Rails.logger.debug "#{DateTime.now}: Loading oikiakoi.sql"
+        File.open("test/fixtures/oikiakoi.sql", 'r').each do |line|
+          raw.put_copy_data line
+        end
       end
-
+      Rails.logger.debug "#{DateTime.now}: Done Loading data"
       ActiveRecord::Base.connection_pool.checkin(dbconn)
       Rails.logger.debug "We have #{DataPoint.count} data points"
 
     end
-    @prosumers = Prosumer.where(id: 3001..6050)
+    @prosumers = Prosumer.where(id: 3001..12050)
     @startdate = '2015/1/1'.to_datetime
     @enddate = '2015/12/31'.to_datetime
     Rails.logger.debug "data imported, #{@prosumers.count} prosumers with valid training data"
