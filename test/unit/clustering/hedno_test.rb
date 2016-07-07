@@ -82,4 +82,31 @@ class HednoTest < ActiveSupport::TestCaseWithHednoData
                                               endDate: @enddate)
                                          .calcCosts[:dissagrgated]
   end
+
+  test "Dump db to CSV" do
+    dbconn = ActiveRecord::Base.connection_pool.checkout
+    conn  = dbconn.raw_connection
+    File.open("data_points/hedno_prosumption_data.csv", "wb") do |f|
+      conn.copy_data "COPY (SELECT id,
+                         prosumer_id,
+                         interval_id,
+                         to_char(timezone('zulu', to_timestamp(date_part('epoch', timestamp))),'YYYY-MM-DD\"T\"hh24:MI:SS\"Z\"') as timestamp,
+                         production,
+                         consumption
+                       FROM data_points WHERE
+                         prosumer_id BETWEEN 3001 AND 12050
+                      ) TO STDOUT csv header;" do
+        while row=conn.get_copy_data
+          f.puts row
+        end
+      end
+=begin
+      csv << DataPoint.attribute_names
+      DataPoint.where(prosumer: @prosumers).each do |data_point|
+        csv << data_point.attributes.values
+      end
+=end
+    end
+    ActiveRecord::Base.connection_pool.checkin(dbconn)
+  end
 end
