@@ -6,7 +6,7 @@ require 'active_support/all'
 
 csv1 = CSV.open("fwtismos_odwn_plateiwn.csv", col_sep: ";", headers: true, encoding: "ISO8859-7")
 
-time = DateTime.parse("2015-01-01T00:00:00+02:00")
+time = DateTime.parse("2015-01-01T00:15:00+02:00")
 
 prosumers = {}
 CSV.open("fwtismos_odwn_plateiwn.sql", "wb", col_sep: "\t") do |csv_out|
