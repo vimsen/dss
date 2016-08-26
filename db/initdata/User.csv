@@ -1,3 +1,3 @@
 id,email,encrypted_password,reset_password_token,reset_password_sent_at,remember_created_at,sign_in_count,current_sign_in_at,last_sign_in_at,current_sign_in_ip,last_sign_in_ip,created_at,updated_at,authentication_token
-2,admin@test.com,$2a$10$2x/0APPBb646BHoTt/UPu.f6JrZDn3TVF92qR4JkVqOS.rZu7iALi,,,,26,2016-08-25 13:29:54 +0300,2016-08-22 18:50:01 +0300,127.0.0.1,127.0.0.1,2016-04-12 12:14:53 +0300,2016-08-25 13:29:54 +0300,36rUUf-pxxUhdbqkPXJP
-1,test@test.com,$2a$10$iY/xdtJegM0xUvRAtJYAreSlKGQjQE0hlX.vPZvjfAnxyft7UAJTm,,,,4,2016-04-13 09:57:36 +0300,2016-04-12 18:02:18 +0300,127.0.0.1,127.0.0.1,2016-04-11 11:04:01 +0300,2016-04-13 09:57:36 +0300,6fgrt2imAkSfDRicxtw4
+2,test@test.com,$2a$10$NpuufBlNUBDE7EDYxLk27eCLixQErTg8i3QWeImPRy6pEysAOnVqy,,,,56,2016-08-10 12:54:07 +0300,2016-07-21 20:41:46 +0300,62.103.78.117,78.149.111.80,2015-10-07 15:24:35 +0300,2016-08-10 12:54:07 +0300,VnG6q9Ns3WVPi56wAMkH
+1,admin@test.com,$2a$10$wfbLvYNazThQebkTj5punuodn6ydSwuHY1xhvjIsOK0dK.tLaFzAO,,,,364,2016-08-25 11:31:50 +0300,2016-08-24 11:10:03 +0300,147.102.16.39,147.102.16.39,2015-10-07 15:24:35 +0300,2016-08-25 11:31:50 +0300,f6ReWJoitA1iJyFcT6-K
