@@ -7,9 +7,9 @@ puts JSON.pretty_generate table_names
 # table_names = ["Prosumer", "User", "User::HABTM_Prosumers"]
 
 ActiveRecord::Base.connection.disable_referential_integrity do
-  Parallel.each(table_names, in_threads: 30) do |tbl_name|
+  # Parallel.each(table_names, in_threads: 30) do |tbl_name|
 
-  # table_names.each do |tbl_name|
+  table_names.each do |tbl_name|
     puts "#{tbl_name}.create"
 
     dbconn = ActiveRecord::Base.connection_pool.checkout
