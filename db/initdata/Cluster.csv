@@ -1,8 +1,8 @@
 id,name,description,created_at,updated_at
-92,CL: School,Prosumers with School building type.,2015-08-26 09:37:17,2015-08-26 09:37:17
-93,CL: Domestic,Prosumers with Domestic building type.,2015-08-26 09:37:17,2015-08-26 09:37:17
-94,CL: SME,Prosumers with SME building type.,2015-08-26 09:37:17,2015-08-26 09:37:17
-95,CL: Industry,Prosumers with Industry building type.,2015-08-26 09:37:17,2015-08-26 09:37:17
-96,CL: Factory,"",2015-10-07 10:49:12,2015-10-07 10:49:12
-97,CL: VIMSEN (Greece),The VIMSEN prosumers located in Greece,2015-10-07 10:49:12,2015-10-07 10:49:12
-98,CL: VIMSEN (Sedini),The VIMSEN prosumers located in Sedini,2015-10-07 10:49:12,2015-10-07 10:49:12
+92,CL: School,Prosumers with School building type.,2015-08-26 09:37:17 +0300,2015-08-26 12:37:17 +0300
+93,CL: Domestic,Prosumers with Domestic building type.,2015-08-26 09:37:17 +0300,2015-08-26 12:37:17 +0300
+94,CL: SME,Prosumers with SME building type.,2015-08-26 09:37:17 +0300,2015-08-26 12:37:17 +0300
+95,CL: Industry,Prosumers with Industry building type.,2015-08-26 09:37:17 +0300,2015-08-26 12:37:17 +0300
+96,CL: Factory,"",2015-10-07 10:49:12 +0300,2015-10-07 13:49:12 +0300
+97,CL: VIMSEN (Greece),The VIMSEN prosumers located in Greece,2015-10-07 10:49:12 +0300,2015-10-07 13:49:12 +0300
+98,CL: VIMSEN (Sedini),The VIMSEN prosumers located in Sedini,2015-10-07 10:49:12 +0300,2015-10-07 13:49:12 +0300
