@@ -20,7 +20,7 @@ ActiveRecord::Base.connection.disable_referential_integrity do
 
     begin
       raw.copy_data "COPY #{tbl_name.constantize.table_name} (#{head}) FROM stdin DELIMITER ',' CSV;" do
-        csv.each_with_index { |row, i| raw.put_copy_data(row) if i > 0}
+        csv.each_with_index { |row, i| raw.put_copy_data(row) }
       end
     rescue Exception => e
       puts "Error during processing: #{$!}"
