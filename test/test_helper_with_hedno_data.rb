@@ -25,7 +25,7 @@ module HednoData
       dbconn = ActiveRecord::Base.connection_pool.checkout
       raw  = dbconn.raw_connection
 
-      raw.copy_data "COPY prosumers (id, edms_id, name, location) FROM stdin;" do
+      raw.copy_data "COPY prosumers (id, edms_id, name, location, cluster_id) FROM stdin;" do
         File.open("test/fixtures/prosumers_pv_lv_hedno.sql", 'r').each do |line|
           raw.put_copy_data line
         end
