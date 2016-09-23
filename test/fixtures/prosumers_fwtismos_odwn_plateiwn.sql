@@ -1,50 +1,50 @@
-9001	9001	HEDNO_fwtismos_odwn_plateiwn_9001	Δράμας
-9002	9002	HEDNO_fwtismos_odwn_plateiwn_9002	Ανατ. Θεσ/κης
-9003	9003	HEDNO_fwtismos_odwn_plateiwn_9003	Κηφισιάς
-9004	9004	HEDNO_fwtismos_odwn_plateiwn_9004	Λ.Πύργου
-9005	9005	HEDNO_fwtismos_odwn_plateiwn_9005	Ωρωπού
-9006	9006	HEDNO_fwtismos_odwn_plateiwn_9006	Ξυλοκάστρου
-9007	9007	HEDNO_fwtismos_odwn_plateiwn_9007	Κορωπίου
-9008	9008	HEDNO_fwtismos_odwn_plateiwn_9008	Κηφισιάς
-9009	9009	HEDNO_fwtismos_odwn_plateiwn_9009	Γλυφάδας
-9010	9010	HEDNO_fwtismos_odwn_plateiwn_9010	Καλλιθέας
-9011	9011	HEDNO_fwtismos_odwn_plateiwn_9011	Χαλανδρίου
-9012	9012	HEDNO_fwtismos_odwn_plateiwn_9012	Ανατ. Θεσ/κης
-9013	9013	HEDNO_fwtismos_odwn_plateiwn_9013	Κορωπίου
-9014	9014	HEDNO_fwtismos_odwn_plateiwn_9014	Κηφισιάς
-9015	9015	HEDNO_fwtismos_odwn_plateiwn_9015	Αθηνών
-9016	9016	HEDNO_fwtismos_odwn_plateiwn_9016	Κορωπίου
-9017	9017	HEDNO_fwtismos_odwn_plateiwn_9017	Κηφισιάς
-9018	9018	HEDNO_fwtismos_odwn_plateiwn_9018	Κηφισιάς
-9019	9019	HEDNO_fwtismos_odwn_plateiwn_9019	Θηβών
-9020	9020	HEDNO_fwtismos_odwn_plateiwn_9020	Γλυφάδας
-9021	9021	HEDNO_fwtismos_odwn_plateiwn_9021	Γλυφάδας
-9022	9022	HEDNO_fwtismos_odwn_plateiwn_9022	Κηφισιάς
-9023	9023	HEDNO_fwtismos_odwn_plateiwn_9023	Κηφισιάς
-9024	9024	HEDNO_fwtismos_odwn_plateiwn_9024	Κηφισιάς
-9025	9025	HEDNO_fwtismos_odwn_plateiwn_9025	Κηφισιάς
-9026	9026	HEDNO_fwtismos_odwn_plateiwn_9026	Κομοτηνής
-9027	9027	HEDNO_fwtismos_odwn_plateiwn_9027	Πελ.Αχαρνών
-9028	9028	HEDNO_fwtismos_odwn_plateiwn_9028	Κηφισιάς
-9029	9029	HEDNO_fwtismos_odwn_plateiwn_9029	Αθηνών
-9030	9030	HEDNO_fwtismos_odwn_plateiwn_9030	Κηφισιάς
-9031	9031	HEDNO_fwtismos_odwn_plateiwn_9031	Γλυφάδας
-9032	9032	HEDNO_fwtismos_odwn_plateiwn_9032	Δράμας
-9033	9033	HEDNO_fwtismos_odwn_plateiwn_9033	Γλυφάδας
-9034	9034	HEDNO_fwtismos_odwn_plateiwn_9034	Γλυφάδας
-9035	9035	HEDNO_fwtismos_odwn_plateiwn_9035	Κηφισιάς
-9036	9036	HEDNO_fwtismos_odwn_plateiwn_9036	Χαλανδρίου
-9037	9037	HEDNO_fwtismos_odwn_plateiwn_9037	Αγ.Δημητρίου
-9038	9038	HEDNO_fwtismos_odwn_plateiwn_9038	Κηφισιάς
-9039	9039	HEDNO_fwtismos_odwn_plateiwn_9039	Κηφισιάς
-9040	9040	HEDNO_fwtismos_odwn_plateiwn_9040	Χαλανδρίου
-9041	9041	HEDNO_fwtismos_odwn_plateiwn_9041	Σπάρτης
-9042	9042	HEDNO_fwtismos_odwn_plateiwn_9042	Ναυπλίου
-9043	9043	HEDNO_fwtismos_odwn_plateiwn_9043	Αθηνών
-9044	9044	HEDNO_fwtismos_odwn_plateiwn_9044	Χίου
-9045	9045	HEDNO_fwtismos_odwn_plateiwn_9045	Αθηνών
-9046	9046	HEDNO_fwtismos_odwn_plateiwn_9046	Αταλάντης
-9047	9047	HEDNO_fwtismos_odwn_plateiwn_9047	Γλυφάδας
-9048	9048	HEDNO_fwtismos_odwn_plateiwn_9048	Γλυφάδας
-9049	9049	HEDNO_fwtismos_odwn_plateiwn_9049	Αγρινίου
-9050	9050	HEDNO_fwtismos_odwn_plateiwn_9050	Χαλανδρίου
+9001	9001	HEDNO_fwtismos_odwn_plateiwn_9001	Δράμας	104
+9002	9002	HEDNO_fwtismos_odwn_plateiwn_9002	Ανατ. Θεσ/κης	104
+9003	9003	HEDNO_fwtismos_odwn_plateiwn_9003	Κηφισιάς	104
+9004	9004	HEDNO_fwtismos_odwn_plateiwn_9004	Λ.Πύργου	104
+9005	9005	HEDNO_fwtismos_odwn_plateiwn_9005	Ωρωπού	104
+9006	9006	HEDNO_fwtismos_odwn_plateiwn_9006	Ξυλοκάστρου	104
+9007	9007	HEDNO_fwtismos_odwn_plateiwn_9007	Κορωπίου	104
+9008	9008	HEDNO_fwtismos_odwn_plateiwn_9008	Κηφισιάς	104
+9009	9009	HEDNO_fwtismos_odwn_plateiwn_9009	Γλυφάδας	104
+9010	9010	HEDNO_fwtismos_odwn_plateiwn_9010	Καλλιθέας	104
+9011	9011	HEDNO_fwtismos_odwn_plateiwn_9011	Χαλανδρίου	104
+9012	9012	HEDNO_fwtismos_odwn_plateiwn_9012	Ανατ. Θεσ/κης	104
+9013	9013	HEDNO_fwtismos_odwn_plateiwn_9013	Κορωπίου	104
+9014	9014	HEDNO_fwtismos_odwn_plateiwn_9014	Κηφισιάς	104
+9015	9015	HEDNO_fwtismos_odwn_plateiwn_9015	Αθηνών	104
+9016	9016	HEDNO_fwtismos_odwn_plateiwn_9016	Κορωπίου	104
+9017	9017	HEDNO_fwtismos_odwn_plateiwn_9017	Κηφισιάς	104
+9018	9018	HEDNO_fwtismos_odwn_plateiwn_9018	Κηφισιάς	104
+9019	9019	HEDNO_fwtismos_odwn_plateiwn_9019	Θηβών	104
+9020	9020	HEDNO_fwtismos_odwn_plateiwn_9020	Γλυφάδας	104
+9021	9021	HEDNO_fwtismos_odwn_plateiwn_9021	Γλυφάδας	104
+9022	9022	HEDNO_fwtismos_odwn_plateiwn_9022	Κηφισιάς	104
+9023	9023	HEDNO_fwtismos_odwn_plateiwn_9023	Κηφισιάς	104
+9024	9024	HEDNO_fwtismos_odwn_plateiwn_9024	Κηφισιάς	104
+9025	9025	HEDNO_fwtismos_odwn_plateiwn_9025	Κηφισιάς	104
+9026	9026	HEDNO_fwtismos_odwn_plateiwn_9026	Κομοτηνής	104
+9027	9027	HEDNO_fwtismos_odwn_plateiwn_9027	Πελ.Αχαρνών	104
+9028	9028	HEDNO_fwtismos_odwn_plateiwn_9028	Κηφισιάς	104
+9029	9029	HEDNO_fwtismos_odwn_plateiwn_9029	Αθηνών	104
+9030	9030	HEDNO_fwtismos_odwn_plateiwn_9030	Κηφισιάς	104
+9031	9031	HEDNO_fwtismos_odwn_plateiwn_9031	Γλυφάδας	104
+9032	9032	HEDNO_fwtismos_odwn_plateiwn_9032	Δράμας	104
+9033	9033	HEDNO_fwtismos_odwn_plateiwn_9033	Γλυφάδας	104
+9034	9034	HEDNO_fwtismos_odwn_plateiwn_9034	Γλυφάδας	104
+9035	9035	HEDNO_fwtismos_odwn_plateiwn_9035	Κηφισιάς	104
+9036	9036	HEDNO_fwtismos_odwn_plateiwn_9036	Χαλανδρίου	104
+9037	9037	HEDNO_fwtismos_odwn_plateiwn_9037	Αγ.Δημητρίου	104
+9038	9038	HEDNO_fwtismos_odwn_plateiwn_9038	Κηφισιάς	104
+9039	9039	HEDNO_fwtismos_odwn_plateiwn_9039	Κηφισιάς	104
+9040	9040	HEDNO_fwtismos_odwn_plateiwn_9040	Χαλανδρίου	104
+9041	9041	HEDNO_fwtismos_odwn_plateiwn_9041	Σπάρτης	104
+9042	9042	HEDNO_fwtismos_odwn_plateiwn_9042	Ναυπλίου	104
+9043	9043	HEDNO_fwtismos_odwn_plateiwn_9043	Αθηνών	104
+9044	9044	HEDNO_fwtismos_odwn_plateiwn_9044	Χίου	104
+9045	9045	HEDNO_fwtismos_odwn_plateiwn_9045	Αθηνών	104
+9046	9046	HEDNO_fwtismos_odwn_plateiwn_9046	Αταλάντης	104
+9047	9047	HEDNO_fwtismos_odwn_plateiwn_9047	Γλυφάδας	104
+9048	9048	HEDNO_fwtismos_odwn_plateiwn_9048	Γλυφάδας	104
+9049	9049	HEDNO_fwtismos_odwn_plateiwn_9049	Αγρινίου	104
+9050	9050	HEDNO_fwtismos_odwn_plateiwn_9050	Χαλανδρίου	104
