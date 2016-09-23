@@ -100,13 +100,18 @@ class HednoTest < ActiveSupport::TestCaseWithHednoData
           f.puts row
         end
       end
-=begin
-      csv << DataPoint.attribute_names
-      DataPoint.where(prosumer: @prosumers).each do |data_point|
-        csv << data_point.attributes.values
-      end
-=end
     end
+
+
+    CSV.open("data_points/hedno_prosumers.csv", "wb") do |csv|
+      csv << Prosumer.attribute_names
+      Prosumer.order(id: :asc).each do |row|
+        csv << row.attributes.values
+      end
+    end
+
+
     ActiveRecord::Base.connection_pool.checkin(dbconn)
   end
+
 end
