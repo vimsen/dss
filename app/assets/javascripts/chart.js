@@ -128,7 +128,7 @@ var plotHelper = (function() {
 
     console.log("old value: " + res[label][d.timestamp] + "  new value: ");
     console.log(d);
-    if (d.actual[type]) {
+    if (d.actual[type] != null) {
         res[label][d.timestamp] = [d.timestamp * 1000, d.actual[type]];
     }
 
