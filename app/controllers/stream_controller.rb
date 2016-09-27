@@ -44,6 +44,10 @@ class StreamController < ApplicationController
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
     channel = params[:channel]
 
+    session[:startdate] = startdate
+    session[:enddate] = enddate
+    session[:interval] = interval
+
     ActiveRecord::Base.clear_active_connections!
     bunny_channel = $bunny.create_channel
     x = bunny_channel.fanout(channel)
@@ -112,6 +116,11 @@ class StreamController < ApplicationController
     enddate = (params[:enddate].nil?) ? (DateTime.now) : params[:enddate].to_datetime
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
     channel = params[:channel]
+
+    session[:startdate] = startdate
+    session[:enddate] = enddate
+    session[:interval] = interval
+
     ActiveRecord::Base.clear_active_connections!
     bunny_channel = $bunny.create_channel
     x = bunny_channel.fanout(channel)
