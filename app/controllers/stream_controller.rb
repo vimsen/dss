@@ -39,7 +39,7 @@ class StreamController < ApplicationController
     sse = Streamer::SSE.new(response.stream)
     
     cluster = Cluster.find(params[:id])
-    startdate = ((params[:startdate].nil?) ? (DateTime.now - 7.days) : params[:startdate].to_datetime) - 1.day
+    startdate = ((params[:startdate].nil?) ? (DateTime.now - 7.days) : params[:startdate].to_datetime)
     enddate = (params[:enddate].nil?) ? (DateTime.now) : params[:enddate].to_datetime
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
     channel = params[:channel]
@@ -80,13 +80,13 @@ class StreamController < ApplicationController
       end
     end
 
-    idata = cluster.request_cached(interval, startdate, enddate, channel)
+    idata = cluster.request_cached(interval, startdate - 1.day, enddate, channel)
     idata.each do |d|
       sse.write(d.to_json, event: 'datapoint')
     end
     ActiveRecord::Base.clear_active_connections!
     sse.write(Market::Calculator.new(prosumers: cluster.prosumers,
-                                     startDate: startdate,
+                                     startDate: startdate - 1.day,
                                      endDate: enddate).calcCosts.to_json,
               event: 'market')
 
@@ -112,7 +112,7 @@ class StreamController < ApplicationController
     sse = Streamer::SSE.new(response.stream)
     
     prosumer = Prosumer.find(params[:id])
-    startdate = ((params[:startdate].nil?) ? (DateTime.now - 7.days) : params[:startdate].to_datetime) - 1.day
+    startdate = ((params[:startdate].nil?) ? (DateTime.now - 7.days) : params[:startdate].to_datetime)
     enddate = (params[:enddate].nil?) ? (DateTime.now) : params[:enddate].to_datetime
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
     channel = params[:channel]
@@ -151,14 +151,14 @@ class StreamController < ApplicationController
       end
     end
 
-    idata = prosumer.request_cached(interval, startdate, enddate, channel)
+    idata = prosumer.request_cached(interval, startdate - 1.day, enddate, channel)
 
     idata.each do |d|
       sse.write(d.to_json, event: 'datapoint')
     end
     ActiveRecord::Base.clear_active_connections!
     sse.write(Market::Calculator.new(prosumers: [prosumer],
-                                     startDate: startdate,
+                                     startDate: startdate - 1.day,
                                      endDate: enddate).calcCosts.to_json,
               event: 'market')
  

@@ -29,6 +29,7 @@
         <strong>Forecast?</strong>
         <input id="forecast" type="checkbox">
         <button id="subDates"> Set </button>
+        <button id="resetDates"> Reset filter </button>
       </div>
       <br/>
       <div class="row">
@@ -133,6 +134,17 @@
             
             plotHelper.drawChart(url, {}, $('#type').val(), $('#forecast').is(':checked'));
       });
+      $('#resetDates').click(function () {
+
+        $('#startDate').val("<%= (DateTime.now - 7.days).strftime("%Y/%m/%d %H:%M") -%>");
+        $('#endDate').val("<%= DateTime.now.strftime("%Y/%m/%d %H:%M") -%>");
+        $('#interval_interval_id').val(3);
+
+        $('#subDates').click();
+      });
+
+
+
       /*$('#realtime').change(function () {
           if (this.checked) {
             $('#endDate').prop( "disabled", true );
