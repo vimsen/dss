@@ -1,7 +1,8 @@
 <%= javascript_include_tag "chart" %>
 
-<% startDate = (DateTime.now - 7.days)
-   endDate = DateTime.now
+<% startDate = session[:startdate] || (DateTime.now - 7.days)
+   endDate = session[:enddate] || DateTime.now
+   interval = session[:interval] || Interval.find(3)
  %>
 
 <div class="panel panel-default">
@@ -12,10 +13,10 @@
 
     <div>
       <div id="controls">
-        <input id="startDate" type="text" value="<%= startDate %>"/>
-        <input id="endDate" type="text" value="<%= endDate %>"/>
-        <strong>Real-time updates?</strong>
-        <input id="realtime" type="checkbox" checked>
+        <input id="startDate" type="text" value="<%= startDate.to_datetime.strftime("%Y/%m/%d %H:%M") %>"/>
+        <input id="endDate" type="text" value="<%= endDate.to_datetime.strftime("%Y/%m/%d %H:%M") %>"/>
+        <!--strong>Real-time updates?</strong>
+        <input id="realtime" type="checkbox" checked-->
         <select id="type">
           <option value="prosumption" selected="selected">Prosumption</option>
           <option value="production">Production</option>
@@ -24,7 +25,7 @@
         </select>
         <%= collection_select(:interval, :interval_id,
                               Interval.all.order("duration asc"), :id, :name,
-                              {include_blank: false, :selected => "3"}) %>
+                              {include_blank: false, :selected => interval}) %>
         <strong>Forecast?</strong>
         <input id="forecast" type="checkbox">
         <button id="subDates"> Set </button>
@@ -92,10 +93,10 @@
 
 <script>
 
-    var idata = <%= provider.request_cached(3, startDate, endDate, @channel).to_json.html_safe %>;
+    var idata = <%= provider.request_cached(interval, startDate, endDate, @channel).to_json.html_safe %>;
     $(function(){
         plotHelper.drawChart(
-                "<%= "#{stream}?channel=#{@channel}" %>",
+                "<%="#{stream}?channel=#{@channel}&startdate=#{startDate}&enddate=#{endDate}&interval=#{interval}"%>",
                 plotHelper.readData(
                       idata,
                       $('#type').val(),
@@ -104,7 +105,7 @@
                 $('#forecast').is(':checked'));
         $('#startDate').datetimepicker();
         $('#endDate').datetimepicker();
-        $('#endDate').prop('disabled', true);
+        // $('#endDate').prop('disabled', true);
                
         $('#subDates').click(function () {
          
@@ -132,13 +133,13 @@
             
             plotHelper.drawChart(url, {}, $('#type').val(), $('#forecast').is(':checked'));
       });
-      $('#realtime').change(function () {
+      /*$('#realtime').change(function () {
           if (this.checked) {
             $('#endDate').prop( "disabled", true );
           } else {
             $('#endDate').prop( "disabled", false );
           }
-      });
+      });*/
     });
 </script>
 
