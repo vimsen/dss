@@ -1,11 +1,11 @@
 id,user_id,name,algorithm_id,params,created_at,updated_at
-6,1,genetic_k_5,1,"{""kappa"":""5"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":200,""generations"":100}",2016-04-15 13:17:35 +0300,2016-04-15 13:17:35 +0300
-7,1,genetic_k_10,1,"{""kappa"":""10"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":200,""generations"":100}",2016-04-15 13:18:11 +0300,2016-04-15 13:18:11 +0300
-8,1,genetic_k_15,1,"{""kappa"":""15"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":200,""generations"":100}",2016-04-19 11:19:23 +0300,2016-04-19 11:19:23 +0300
-9,1,genetic_k_20,1,"{""kappa"":""20"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":200,""generations"":100}",2016-04-19 11:20:07 +0300,2016-04-19 11:20:07 +0300
-14,1,genetic_k_25,1,"{""kappa"":""25"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":200,""generations"":100}",2016-05-16 11:55:16 +0300,2016-05-16 11:55:16 +0300
-15,1,genetic_k_30,1,"{""kappa"":""30"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":200,""generations"":100}",2016-05-16 11:56:09 +0300,2016-05-16 11:56:09 +0300
-16,1,high_k_10,1,"{""kappa"":""10"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":400,""generations"":200}",2016-05-16 12:24:25 +0300,2016-05-16 12:24:25 +0300
-17,1,medium_k_10,1,"{""kappa"":""10"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":300,""generations"":250}",2016-05-16 12:39:44 +0300,2016-05-16 12:39:44 +0300
-19,1,normal_k_20,1,"{""kappa"":""20"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":250,""generations"":180}",2016-05-16 12:55:20 +0300,2016-05-16 12:55:20 +0300
-18,1,normal_k_5,1,"{""kappa"":""5"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":250,""generations"":180}",2016-04-15 03:00:00 +0300,2016-04-15 03:00:00 +0300
+6,1,genetic_k_5,1,"{""kappa"":""5"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":200,""generations"":100}",2016-04-15 16:17:35 +0300,2016-04-15 16:17:35 +0300
+7,1,genetic_k_10,1,"{""kappa"":""10"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":200,""generations"":100}",2016-04-15 16:18:11 +0300,2016-04-15 16:18:11 +0300
+8,1,genetic_k_15,1,"{""kappa"":""15"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":200,""generations"":100}",2016-04-19 14:19:23 +0300,2016-04-19 14:19:23 +0300
+9,1,genetic_k_20,1,"{""kappa"":""20"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":200,""generations"":100}",2016-04-19 14:20:07 +0300,2016-04-19 14:20:07 +0300
+14,1,genetic_k_25,1,"{""kappa"":""25"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":200,""generations"":100}",2016-05-16 14:55:16 +0300,2016-05-16 14:55:16 +0300
+15,1,genetic_k_30,1,"{""kappa"":""30"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":200,""generations"":100}",2016-05-16 14:56:09 +0300,2016-05-16 14:56:09 +0300
+16,1,high_k_10,1,"{""kappa"":""10"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":400,""generations"":200}",2016-05-16 15:24:25 +0300,2016-05-16 15:24:25 +0300
+17,1,medium_k_10,1,"{""kappa"":""10"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":300,""generations"":250}",2016-05-16 15:39:44 +0300,2016-05-16 15:39:44 +0300
+19,1,normal_k_20,1,"{""kappa"":""20"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":250,""generations"":180}",2016-05-16 15:55:20 +0300,2016-05-16 15:55:20 +0300
+18,1,normal_k_5,1,"{""kappa"":""5"",""penalty_violation"":0.3,""penalty_satisfaction"":0.2,""population_size"":250,""generations"":180}",2016-04-15 06:00:00 +0300,2016-04-15 06:00:00 +0300
