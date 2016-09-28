@@ -122,11 +122,49 @@ class HednoTest < ActiveSupport::TestCaseWithHednoData
     max_consumption = DataPoint.where(prosumer: @prosumers, interval: 1).group(:prosumer).maximum(:consumption)
     max_production = DataPoint.where(prosumer: @prosumers, interval: 1).group(:prosumer).maximum(:production)
 
+    avg_total_consumption_vect = DataPoint.where(prosumer: @prosumers, interval: 1).group(:prosumer_id).group("extract(year from timestamp)").group("extract(month from timestamp)").sum(:consumption)
+    avg_total_production_vect = DataPoint.where(prosumer: @prosumers, interval: 1).group(:prosumer_id).group("extract(year from timestamp)").group("extract(month from timestamp)").sum(:production)
+    avg_max_consumption_vect = DataPoint.where(prosumer: @prosumers, interval: 1).group(:prosumer_id).group("extract(year from timestamp)").group("extract(month from timestamp)").maximum(:consumption)
+    avg_max_production_vect = DataPoint.where(prosumer: @prosumers, interval: 1).group(:prosumer_id).group("extract(year from timestamp)").group("extract(month from timestamp)").maximum(:production)
+
+    avg_total_consumption = @prosumers.map do |p|
+      [ p,
+        1.upto(12).sum do |m|
+          avg_total_consumption_vect[[p.id,2015.to_f,m.to_f]] / 12.0
+        end
+      ]
+    end.to_h
+
+    avg_total_production = @prosumers.map do |p|
+      [ p,
+        1.upto(12).sum do |m|
+          avg_total_production_vect[[p.id,2015.to_f,m.to_f]] / 12.0
+        end
+      ]
+    end.to_h
+
+    avg_max_consumption = @prosumers.map do |p|
+      [ p,
+        1.upto(12).sum do |m|
+          (avg_max_consumption_vect[[p.id,2015.to_f,m.to_f]] || 0) / 12.0
+        end
+      ]
+    end.to_h
+
+    avg_max_production = @prosumers.map do |p|
+      [ p,
+        1.upto(12).sum do |m|
+          (avg_max_production_vect[[p.id,2015.to_f,m.to_f]] || 0) / 12.0
+        end
+      ]
+    end.to_h
+
     CSV.open( 'data_points/hedno_statistics.csv', 'w' ) do |csv|
-      csv << ["prosumer_id", "prosumer_name", "location", "total_consumption", "total_production", "max_consumption", "max_production" ]
+      csv << ["prosumer_id", "prosumer_name", "location", "total_consumption", "total_production", "max_consumption", "max_production", "avg_total_consumption", "avg_total_production", "avg_max_consumption", "avg_max_production" ]
 
       @prosumers.each do |p|
-        csv << [p.id, p.name, p.location, total_consumption[p], total_production[p], max_consumption[p], max_production[p]]
+        csv << [p.id, p.name, p.location, total_consumption[p], total_production[p], max_consumption[p], max_production[p],
+                avg_total_consumption[p], avg_total_production[p], avg_max_consumption[p], avg_max_production[p]]
       end
     end
 
