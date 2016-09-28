@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  resources :prosumer_categories
   get 'configurations/index'
 
   get 'sla/monitor'
