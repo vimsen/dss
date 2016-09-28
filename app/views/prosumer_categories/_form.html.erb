@@ -1,0 +1,29 @@
+<%= form_for(@prosumer_category) do |f| %>
+  <% if @prosumer_category.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@prosumer_category.errors.count, "error") %> prohibited this prosumer_category from being saved:</h2>
+
+      <ul>
+      <% @prosumer_category.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %><br>
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label :description %><br>
+    <%= f.text_area :description %>
+  </div>
+  <div class="field">
+    <%= f.label :real_time %><br>
+    <%= f.check_box :real_time %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
