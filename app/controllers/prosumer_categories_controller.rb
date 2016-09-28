@@ -1,6 +1,8 @@
 class ProsumerCategoriesController < ApplicationController
   before_action :set_prosumer_category, only: [:show, :edit, :update, :destroy]
 
+  load_and_authorize_resource
+
   # GET /prosumer_categories
   # GET /prosumer_categories.json
   def index
