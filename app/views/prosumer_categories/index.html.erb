@@ -1,0 +1,31 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Prosumer Categories</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Real time</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @prosumer_categories.each do |prosumer_category| %>
+      <tr>
+        <td><%= prosumer_category.name %></td>
+        <td><%= prosumer_category.description %></td>
+        <td><%= prosumer_category.real_time %></td>
+        <td><%= link_to 'Show', prosumer_category %></td>
+        <td><%= link_to 'Edit', edit_prosumer_category_path(prosumer_category) %></td>
+        <td><%= link_to 'Destroy', prosumer_category, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Prosumer category', new_prosumer_category_path %>

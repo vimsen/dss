@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @prosumer_category.name %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @prosumer_category.description %>
+</p>
+
+<p>
+  <strong>Real time:</strong>
+  <%= @prosumer_category.real_time %>
+</p>
+
+<%= link_to 'Edit', edit_prosumer_category_path(@prosumer_category) %> |
+<%= link_to 'Back', prosumer_categories_path %>
