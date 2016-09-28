@@ -84,6 +84,8 @@ class HednoTest < ActiveSupport::TestCaseWithHednoData
   end
 
   test "Dump db to CSV" do
+    skip "Not a real test. This only needs to be run once."
+
     dbconn = ActiveRecord::Base.connection_pool.checkout
     conn  = dbconn.raw_connection
     File.open("data_points/hedno_prosumption_data.csv", "wb") do |f|
@@ -112,6 +114,22 @@ class HednoTest < ActiveSupport::TestCaseWithHednoData
 
 
     ActiveRecord::Base.connection_pool.checkin(dbconn)
+  end
+
+  test "statistics" do
+    total_consumption = DataPoint.where(prosumer: @prosumers, interval: 1).group(:prosumer).sum(:consumption)
+    total_production = DataPoint.where(prosumer: @prosumers, interval: 1).group(:prosumer).sum(:production)
+    max_consumption = DataPoint.where(prosumer: @prosumers, interval: 1).group(:prosumer).maximum(:consumption)
+    max_production = DataPoint.where(prosumer: @prosumers, interval: 1).group(:prosumer).maximum(:production)
+
+    CSV.open( 'data_points/hedno_statistics.csv', 'w' ) do |csv|
+      csv << ["prosumer_id", "prosumer_name", "location", "total_consumption", "total_production", "max_consumption", "max_production" ]
+
+      @prosumers.each do |p|
+        csv << [p.id, p.name, p.location, total_consumption[p], total_production[p], max_consumption[p], max_production[p]]
+      end
+    end
+
   end
 
 end
