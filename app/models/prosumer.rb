@@ -28,6 +28,7 @@ class Prosumer < ActiveRecord::Base
   include FindGaps
 
   scope :real_time, -> { joins(:prosumer_category).where("prosumer_categories.real_time": true) }
+  scope :category, ->(cat) { where(prosumer_category: cat) if cat.present? }
   
   def request_cached(interval, startdate, enddate, channel)
 

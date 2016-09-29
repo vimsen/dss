@@ -14,7 +14,7 @@
       <div class="panel-body">
         <%= render partial: "charts/map", 
           locals: {
-            prosumers: Prosumer.with_locations,
+            prosumers: @prosumers,
             clustering: nil
           }
         %>
@@ -73,7 +73,7 @@
           <%= will_paginate @prosumers, renderer: BootstrapPagination::Rails %>
         </div>
         <!-- /.table-responsive -->
-        <%= link_to 'New Prosumer', new_prosumer_path, class: 'btn btn-default btn-xs' %>
+        <%= link_to 'New Prosumer', new_prosumer_path(category: params[:category]), class: 'btn btn-default btn-xs' %>
       </div>
       <!-- /.panel-body -->
     </div>

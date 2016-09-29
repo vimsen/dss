@@ -3,7 +3,8 @@
     <h3 class="page-header"><small>Prosumer:</small> <%= @prosumer.name -%>   
       <small> 
         | <%= link_to 'Edit', edit_prosumer_path(@prosumer) ,class: 'btn btn-info btn-xs' %> 
-        | <%= link_to 'All prosumers', prosumers_path ,class: 'btn btn-warning btn-xs'%>
+        | <%= link_to 'All prosumers', prosumers_path ,class: 'btn btn-warning btn-xs' %>
+        | <%= link_to @prosumer.prosumer_category.name, prosumers_path(category: @prosumer.prosumer_category) ,class: 'btn btn-success btn-xs' if @prosumer.prosumer_category %>
       </small>
     </h3>
   </div>
@@ -20,6 +21,9 @@
         <dl class="dl-horizontal">
           <dt>Name:</dt>
           <dd><%= @prosumer.name -%></dd>
+
+          <dt>Category:</dt>
+          <dd><%= @prosumer.prosumer_category.name -%></dd>
 
           <dt>Feeder Id:</dt>
           <dd><%= @prosumer.feeder_id -%></dd>

@@ -4,6 +4,7 @@
       <small> 
         <%= link_to 'Show', @prosumer,class:'btn btn-success btn-xs' %> 
         | <%= link_to 'All prosumers', prosumers_path,class:'btn btn-warning btn-xs' %>
+        | <%= link_to @prosumer.prosumer_category.name, prosumers_path(category: @prosumer.prosumer_category) ,class: 'btn btn-info btn-xs' if @prosumer.prosumer_category %>
       </small>
     </h3>
   </div>
