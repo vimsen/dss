@@ -67,7 +67,7 @@ module ClusteringModule
 
   private
 
-  def self.run_energy_type params
+  def self.run_energy_type(params)
     result = {}
     cl = TempCluster.new name: 'No ren.',
                      description: 'No info about renewable energy.'
@@ -92,35 +92,36 @@ module ClusteringModule
     result.values
   end
 
-  def self.run_connection_type
+  def self.run_connection_type(params)
+    cat = ProsumerCategory.find params["category"]
     result = []
     cl = TempCluster.new name: 'No con. info.',
                      description: 'No connection info.'
-    cl.prosumers << Prosumer.where(connection_type: nil)
+    cl.prosumers << Prosumer.where(connection_type: nil, prosumer_category: params["category"])
     result.push(cl)
 
     ConnectionType.all.each do |bt|
       cl = TempCluster.new name: "CL: #{bt.name}",
                        description: "Prosumers with #{bt.name} connection."
 
-      cl.prosumers << Prosumer.where(connection_type: bt)
+      cl.prosumers << Prosumer.where(connection_type: bt, prosumer_category: params["category"])
       result.push(cl)
     end
     result
   end
 
-  def self.run_building_type
+  def self.run_building_type(params)
     result = []
     cl = TempCluster.new name: 'No buil. info',
                      description: 'No building type info.'
 
-    cl.prosumers << Prosumer.where(building_type: nil)
+    cl.prosumers << Prosumer.where(building_type: nil, prosumer_category: params["category"])
     result.push(cl)
 
     BuildingType.all.each do |bt|
       cl = TempCluster.new name: "CL: #{bt.name}",
                        description: "Prosumers with #{bt.name} building type."
-      cl.prosumers << Prosumer.where(building_type: bt)
+      cl.prosumers << Prosumer.where(building_type: bt, prosumer_category: params["category"])
 
       result.push(cl)
     end
@@ -176,8 +177,10 @@ module ClusteringModule
     end)[:cluster]
   end
 
-  def self.run_location(kappa)
-    result = Prosumer.with_locations.sample(kappa).map.with_index do |p, i|
+  def self.run_location(params)
+    cat = ProsumerCategory.find(params["category"].first.to_i)
+    puts "Category is: #{params["category"]}, ------- #{cat}"
+    result = Prosumer.with_locations.category(cat).sample(params["kappa"].to_i).map.with_index do |p, i|
       cl = TempCluster.new name: "Loc: #{i}",
                        description: "Location based cluster #{i}."
       cl.prosumers.push p
@@ -188,14 +191,14 @@ module ClusteringModule
     loop do
       old_centroids = Array.new(centroids)
       result.each { |cl| cl.prosumers.clear }
-      Prosumer.with_locations.each do |p|
+      Prosumer.with_locations.category(cat).each do |p|
         find_closest(p, centroids).prosumers.push p
       end
       centroids = result.map { |cl| get_centroid(cl) }
       break if centroids <=> old_centroids
     end
 
-    without_location = Prosumer.all - Prosumer.with_locations
+    without_location = Prosumer.category(cat) - Prosumer.with_locations.category(cat)
 
     if without_location.count > 0
       cl = TempCluster.new name: 'No loc.',
@@ -207,7 +210,7 @@ module ClusteringModule
   end
 
   def self.run_dr(kappa)
-    result = Prosumer.with_positive_dr.sample(kappa).map.with_index do |p, i|
+    result = Prosumer.with_positive_dr.sample(params["kappa"]).map.with_index do |p, i|
        [ p.id ]
     end
 
