@@ -29,7 +29,8 @@ class Prosumer < ActiveRecord::Base
 
   scope :real_time, -> { joins(:prosumer_category).where("prosumer_categories.real_time": true) }
   scope :category, ->(cat) { where(prosumer_category: cat) if cat.present? }
-  
+  scope :with_locations, -> { where("location_x IS NOT NULL and location_y IS NOT NULL") }
+
   def request_cached(interval, startdate, enddate, channel)
 
     gaps = true
@@ -47,10 +48,6 @@ class Prosumer < ActiveRecord::Base
     return result      
   end
   
-  def self.with_locations
-    Prosumer.where("location_x IS NOT NULL and location_y IS NOT NULL") 
-  end
-
   def has_location
     ! (location_x.nil? || location_y.nil?)
   end
