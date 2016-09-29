@@ -9,15 +9,15 @@ module ClusteringModule
     {
         energy_type: {
             string: 'By renewable type',
-            proc: ->(k) { run_energy_type }
+            proc: ->(k) { run_energy_type k }
         },
         building_type: {
             string: 'By building type',
-            proc: ->(k) { run_building_type }
+            proc: ->(k) { run_building_type k }
         },
         connection_type: {
             string: 'By connection type',
-            proc: ->(k) { run_connection_type }
+            proc: ->(k) { run_connection_type k }
         },
         location: {
             string: 'By location',
@@ -59,15 +59,15 @@ module ClusteringModule
     }
   end
 
-  def self.run_algorithm(algo, param)
-    result = self.algorithms.with_indifferent_access[algo][:proc].call(param.to_i)
+  def self.run_algorithm(params)
+    result = self.algorithms.with_indifferent_access[params["algorithm"]][:proc].call(params)
 
     result.select { |cl| cl.prosumers.size > 0 }
   end
 
   private
 
-  def self.run_energy_type
+  def self.run_energy_type params
     result = {}
     cl = TempCluster.new name: 'No ren.',
                      description: 'No info about renewable energy.'
@@ -79,7 +79,7 @@ module ClusteringModule
       result[et.id] = cl
     end
 
-    Prosumer.all.each do |p|
+    Prosumer.category(ProsumerCategory.find params["category"]).each do |p|
       etp = p.energy_type_prosumers.order('power DESC').first
       if etp.nil?
         result[:none].prosumers.push(p)
