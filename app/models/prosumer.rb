@@ -26,6 +26,8 @@ class Prosumer < ActiveRecord::Base
   validates :edms_id, uniqueness: true
   
   include FindGaps
+
+  scope :real_time, -> { joins(:prosumer_category).where("prosumer_categories.real_time": true) }
   
   def request_cached(interval, startdate, enddate, channel)
 
