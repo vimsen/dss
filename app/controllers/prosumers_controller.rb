@@ -9,8 +9,8 @@ class ProsumersController < ApplicationController
   # GET /prosumers
   # GET /prosumers.json
   def index
-    @prosumers = Prosumer.includes(:cluster, :building_type, :connection_type).
-        order(sort_column + ' ' + sort_direction).paginate(page: params[:page], per_page: 50)
+    @prosumers = Prosumer.includes(:cluster, :building_type, :connection_type).category(params[:category]).
+        order(sort_column + ' ' + sort_direction).paginate(page: params[:page], per_page: (params[:per_page] || 50))
   end
 
   # GET /prosumers/1
@@ -21,7 +21,7 @@ class ProsumersController < ApplicationController
 
   # GET /prosumers/new
   def new
-    @prosumer = Prosumer.new
+    @prosumer = Prosumer.new(prosumer_category_id: params[:category])
   end
 
   # GET /prosumers/1/edit
@@ -114,7 +114,8 @@ class ProsumersController < ApplicationController
   # Never trust parameters from the scary internet, only allow the white list
   # through.
   def prosumer_params
-    params.require(:prosumer).permit(:name, :feeder_id, :location, :cluster_id,
+    params.require(:prosumer).permit(:name, :prosumer_category_id,
+                                     :feeder_id, :location, :cluster_id,
                                      :building_type_id, :connection_type_id,
                                      :edms_id, :location_x,
                                      :location_y,
