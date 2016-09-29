@@ -3,6 +3,7 @@ require 'test_helper'
 class ProsumerCategoriesControllerTest < ActionController::TestCase
   setup do
     @prosumer_category = prosumer_categories(:one)
+    sign_in User.first
   end
 
   test "should get index" do
