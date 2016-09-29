@@ -23,7 +23,7 @@
           <dd><%= @prosumer.name -%></dd>
 
           <dt>Category:</dt>
-          <dd><%= @prosumer.prosumer_category.name -%></dd>
+          <dd><%= @prosumer.prosumer_category.name if @prosumer.prosumer_category-%></dd>
 
           <dt>Feeder Id:</dt>
           <dd><%= @prosumer.feeder_id -%></dd>
