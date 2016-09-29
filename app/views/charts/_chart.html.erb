@@ -13,8 +13,8 @@
 
     <div>
       <div id="controls">
-        <input id="startDate" type="text" value="<%= startDate.to_datetime.strftime("%Y/%m/%d %H:%M") %>"/>
-        <input id="endDate" type="text" value="<%= endDate.to_datetime.strftime("%Y/%m/%d %H:%M") %>"/>
+        <input id="startDate" type="text" value="<%= startDate.to_datetime.strftime("%Y/%m/%d %H:00") %>"/>
+        <input id="endDate" type="text" value="<%= endDate.to_datetime.strftime("%Y/%m/%d %H:00") %>"/>
         <!--strong>Real-time updates?</strong>
         <input id="realtime" type="checkbox" checked-->
         <select id="type">
@@ -136,8 +136,8 @@
       });
       $('#resetDates').click(function () {
 
-        $('#startDate').val("<%= (DateTime.now - 7.days).strftime("%Y/%m/%d %H:%M") -%>");
-        $('#endDate').val("<%= DateTime.now.strftime("%Y/%m/%d %H:%M") -%>");
+        $('#startDate').val("<%= (DateTime.now - 7.days).strftime("%Y/%m/%d %H:00") -%>");
+        $('#endDate').val("<%= DateTime.now.strftime("%Y/%m/%d %H:00") -%>");
         $('#interval_interval_id').val(3);
 
         $('#subDates').click();
