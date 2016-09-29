@@ -5,6 +5,8 @@
 .connectedSortable {
   background-color: lightgray; 
   min-height: 40px;
+  max-height: 200px;
+  overflow: auto;
 }
 
 .connectedSortable > li {
