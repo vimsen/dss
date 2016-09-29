@@ -65,12 +65,18 @@ SimpleNavigation::Configuration.run do |navigation|
 
     primary.item :menu_home, 'Home', '/', :icon => ['fa fa-home fa-fw'] # class: 'fa fa-home fa-fw'
     primary.item :menu_prosumers, 'Prosumers', prosumers_path, :icon => ['fa fa-plug fa-fw'], :split => false do |sub_nav|
-      sub_nav.item :menu_prosumers_sub, "Prosumer list", prosumers_path
-      sub_nav.item :menu_prosumer_new, "New Prosumer", new_prosumer_path
-      HierMenu::HierMenu.new("prosumers_hier", 
-                             Proc.new { |p| prosumer_url(p) }
-                            ).fill_node sub_nav, Prosumer.all.order(name: :asc) 
-      sub_nav.dom_class = 'nav nav-second-level collapse'
+      ProsumerCategory.order(id: :asc).each do |pc|
+        sub_nav.item "menu_prosumers_#{pc.name}", pc.name, prosumers_path(category: pc), :split => false  do |sub_sub_nav|
+          sub_sub_nav.item :menu_prosumers_sub, "Prosumer list", prosumers_path(category: pc)
+          sub_sub_nav.item :menu_prosumer_new, "New Prosumer", new_prosumer_path(category: pc)
+
+          HierMenu::HierMenu.new("prosumers_hier_#{pc.name}",
+                                 Proc.new { |p| prosumer_url(p) }
+          ).fill_node sub_sub_nav, pc.prosumers.order(name: :asc)
+          sub_sub_nav.dom_class = 'nav nav-third-level collapse'
+        end
+        sub_nav.dom_class = 'nav nav-second-level collapse'
+      end
     end
     primary.item :menu_clusters, 'Clusters', clusters_path, :icon => ['fa fa-sitemap fa-fw'], :split => false do |sub_nav|
     # primary.item :menu_clusters, 'Clusters' do |sub_nav|
