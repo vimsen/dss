@@ -51,7 +51,7 @@
       <div class="panel-body">
         <%= render partial: "charts/map", 
           locals: {
-            prosumers: Prosumer.with_locations,
+            prosumers: @clustering.temp_clusters.map(&:prosumers).flatten,
             clustering: @clustering,
             height: "230px"
           }
