@@ -109,8 +109,8 @@ class ClusteringsController < ApplicationController
     session[:algo_params] = JSON.generate params
 
     @clustering = Clustering.new(name: "Auto #{params[:algorithm]}",
-                                 description: "Automatic cluster generated with #{params[:algorithm]} algorithm.");
-    @clustering.temp_clusters = ClusteringModule.run_algorithm params[:algorithm], params[:kappa]
+                                 description: "Automatic cluster generated with #{params[:algorithm]} algorithm.")
+    @clustering.temp_clusters = ClusteringModule.run_algorithm params
   end
 
   def apply
