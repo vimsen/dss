@@ -2,7 +2,7 @@
 
 <% startDate = session[:startdate] || (DateTime.now - 7.days)
    endDate = session[:enddate] || DateTime.now
-   interval = session[:interval] || Interval.find(3)
+   interval = session[:interval] || 3 # Daily
  %>
 
 <div class="panel panel-default">
