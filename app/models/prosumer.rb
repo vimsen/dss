@@ -30,6 +30,8 @@ class Prosumer < ActiveRecord::Base
   scope :real_time, -> { joins(:prosumer_category).where("prosumer_categories.real_time": true) }
   scope :category, ->(cat) { where(prosumer_category: cat) if cat.present? }
   scope :with_locations, -> { where("location_x IS NOT NULL and location_y IS NOT NULL") }
+  scope :with_positive_dr, ->(time_range) { select { |p| p.max_dr(time_range) && p.max_dr(time_range) > 0 } }
+  scope :with_dr, ->(time_range) { select { |p| p.max_dr(time_range) } }
 
   def request_cached(interval, startdate, enddate, channel)
 
@@ -52,16 +54,8 @@ class Prosumer < ActiveRecord::Base
     ! (location_x.nil? || location_y.nil?)
   end
 
-  def self.with_positive_dr
-    Prosumer.select { |p| p.max_dr && p.max_dr > 0 }
-  end
-
-  def self.with_dr
-    Prosumer.select { |p| p.max_dr }
-  end
-
-  def max_dr
-    self.data_points.empty? ? nil : self.data_points.maximum(:dr)
+  def max_dr(time_range)
+    self.data_points.where(timestamp: time_range).empty? ? nil : self.data_points.where(timestamp: time_range).maximum(:dr)
   end
   
 end
