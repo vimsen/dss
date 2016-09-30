@@ -209,14 +209,16 @@ module ClusteringModule
     result
   end
 
-  def self.run_dr(kappa)
-    result = Prosumer.with_positive_dr.sample(params["kappa"]).map.with_index do |p, i|
+  def self.run_dr(params)
+    cat = ProsumerCategory.find(params["category"].first.to_i)
+    range = params["startDate"] .. params["endDate"]
+    result = Prosumer.category(cat).with_positive_dr(range).sample(params["kappa"].to_i).map.with_index do |p, i|
        [ p.id ]
     end
 
-    dr_vector = Hash[Prosumer.all.map {|p| [p.id, p.max_dr]}]
+    dr_vector = Hash[Prosumer.category(cat).map {|p| [p.id, p.max_dr(range)]}]
 
-    dr_prosumers = Prosumer.with_dr
+    dr_prosumers = Prosumer.category(cat).with_dr(range)
 
     centroids = result.map { |cl| get_centroid_dr(cl, dr_vector) }
     loop do
@@ -232,7 +234,7 @@ module ClusteringModule
       break if centroids <=> old_centroids
     end
 
-    without_dr = Prosumer.all - dr_prosumers
+    without_dr = Prosumer.category(cat) - dr_prosumers
 
     if without_dr.count > 0
       cl = []
