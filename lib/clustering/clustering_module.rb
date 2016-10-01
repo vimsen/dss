@@ -29,7 +29,12 @@ module ClusteringModule
         },
         genetic: {
             string: 'Using genetic algorithms',
-            proc: ->(k) { ClusteringModule::GeneticErrorClustering.new.run k }
+            proc: ->(params) {
+              ClusteringModule::GeneticErrorClustering.new(
+                  prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
+                  startDate: params["startDate"],
+                  endDate: params["endDate"]
+              ).run params["kappa"].to_i }
         },
         genetic_smart: {
             string: 'Genetic algorithm with smart reproduction',
