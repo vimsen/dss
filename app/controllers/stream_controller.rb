@@ -117,6 +117,8 @@ class StreamController < ApplicationController
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
     channel = params[:channel]
 
+    puts "Data for #{startdate} .. #{enddate}"
+
     session[:startdate] = startdate
     session[:enddate] = enddate
     session[:interval] = interval
