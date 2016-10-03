@@ -97,6 +97,7 @@ class ClusteringsController < ApplicationController
   def select
     puts "session is: #{session[:algo_params]}"
     @params = JSON.parse session[:algo_params] || "{}"
+    @params["category"] ||= ProsumerCategory.first.id
     @params["algorithm"] ||= algorithms.keys[0]
     @params["kappa"] ||= 5
     @params["startDate"] ||= (DateTime.now - 7.days)

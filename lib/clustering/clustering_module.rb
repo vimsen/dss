@@ -34,33 +34,60 @@ module ClusteringModule
                   prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
                   startDate: params["startDate"],
                   endDate: params["endDate"]
-              ).run params["kappa"].to_i }
+              ).run params["kappa"].to_i
+            }
         },
         genetic_smart: {
             string: 'Genetic algorithm with smart reproduction',
-            proc: ->(k) {
+            proc: ->(params) {
               ClusteringModule::GeneticErrorClustering.new(
+                  prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
+                  startDate: params["startDate"],
+                  endDate: params["endDate"],
                   algorithm: Ai4r::GeneticAlgorithm::StaticChromosomeWithSmartCrossover
-              ).run k
+              ).run params["kappa"].to_i
             }
         },
         positive_error_spectral_clustering: {
             string: 'Positive Error Spectral Clustering',
-            proc: ->(k) { ClusteringModule::PositiveErrorSpectralClustering.new.run k }
+            proc: ->(params) {
+              ClusteringModule::PositiveErrorSpectralClustering.new(
+                  prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
+                  startDate: params["startDate"],
+                  endDate: params["endDate"]
+              ).run params["kappa"].to_i
+            }
         },
         negative_error_spectral_clustering: {
             string: 'Negative Error Spectral Clustering',
-            proc: ->(k) { ClusteringModule::NegativeErrorSpectralClustering.new.run k }
+            proc: ->(params) {
+              ClusteringModule::NegativeErrorSpectralClustering.new(
+                  prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
+                  startDate: params["startDate"],
+                  endDate: params["endDate"]
+              ).run params["kappa"].to_i
+            }
         },
         positive_consumption_spectral_clustering: {
             string: 'Positive Consumption Spectral Clustering',
-            proc: ->(k) { ClusteringModule::PositiveConsumptionSpectralClustering.new.run k }
+            proc: ->(params) {
+              ClusteringModule::PositiveConsumptionSpectralClustering.new(
+                  prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
+                  startDate: params["startDate"],
+                  endDate: params["endDate"]
+              ).run params["kappa"].to_i
+            }
         },
         negative_consumption_spectral_clustering: {
             string: 'Negative Consumption Spectral Clustering',
-            proc: ->(k) { ClusteringModule::NegativeConsumptionSpectralClustering.new.run k }
+            proc: ->(params) {
+              ClusteringModule::NegativeConsumptionSpectralClustering.new(
+                  prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
+                  startDate: params["startDate"],
+                  endDate: params["endDate"]
+              ).run params["kappa"].to_i
+            }
         }
-
     }
   end
 
