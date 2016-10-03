@@ -24,6 +24,21 @@
           <input type="text" name="target" value="50" id="targetvalue"/>
         </form>
 
+        <form action="#" id="startdateform">
+          <label>Start date</label>
+          <input type="text" name="startdate" value="<%= @startDate.strftime("%Y/%m/%d %H:00") -%>" id="startdatevalue"/>
+        </form>
+
+        <form action="#" id="enddateform">
+          <label>Start date</label>
+          <input type="text" name="enddate" value="<%= @endDate.strftime("%Y/%m/%d %H:00") -%>" id="enddatevalue"/>
+        </form>
+
+        <%= collection_select(:interval, :interval_id,
+                              Interval.all.order("duration asc"), :id, :name,
+                              {include_blank: false, :selected => @interval}) %>
+
+
         <div id="placeholder" style="width:600px;height:300px"></div>
 
         <hr/>
@@ -54,6 +69,8 @@
 
 <script>
   $(function () {
+
+    $("#startdatevalue, #enddatevalue").datetimepicker();
 
 
     var data = [ { data: <%= @timestamps.map{|ts| [ts.to_i * 1000, 50]}.to_json -%>,
