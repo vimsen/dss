@@ -67,9 +67,11 @@ module FetchAsynch
 
 
               # for forecasts:
-              ((startdate - 1.day)...enddate).each do | d |
-                jobs.push params: params.merge(prosumers: pr_id, pointer: 2, startdate: d, enddate: d + 1.hour), api: :new
-              end
+
+            # Deleted until forecasts are fixed, no point requesting stugff we don't get
+            #   ((startdate - 1.day)...enddate).each do | d |
+            #     jobs.push params: params.merge(prosumers: pr_id, pointer: 2, startdate: d, enddate: d + 1.hour), api: :new
+            #   end
             end
 
           end
