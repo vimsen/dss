@@ -1,8 +1,8 @@
 <%= javascript_include_tag "chart" %>
 
-<% startDate = session[:startdate].to_datetime || (DateTime.now - 7.days)
-   endDate = session[:enddate].to_datetime || DateTime.now
-   interval = session[:interval].to_i || 3 # Daily
+<% startDate = (session[:startdate] || (DateTime.now - 7.days)).to_datetime
+   endDate = (session[:enddate]|| DateTime.now).to_datetime
+   interval = (session[:interval] || 3).to_i # Daily
  %>
 
 <div class="panel panel-default">
