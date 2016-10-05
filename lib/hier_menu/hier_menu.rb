@@ -58,7 +58,7 @@ module HierMenu
     end
 
     def to_word(number)
-      %w(zero first second third fourth fifth sixth)[number]
+      %w(zero first second third fourth fifth sixth seventh eighth)[number]
     end
 
     def slice_size(num_items)

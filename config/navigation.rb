@@ -72,7 +72,7 @@ SimpleNavigation::Configuration.run do |navigation|
 
           HierMenu::HierMenu.new("prosumers_hier_#{pc.name}",
                                  Proc.new { |p| prosumer_url(p) }
-          ).fill_node sub_sub_nav, pc.prosumers.order(name: :asc)
+          ).fill_node sub_sub_nav, pc.prosumers.order(name: :asc), 4
           sub_sub_nav.dom_class = 'nav nav-third-level collapse'
         end
         sub_nav.dom_class = 'nav nav-second-level collapse'
