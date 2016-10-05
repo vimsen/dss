@@ -9,7 +9,7 @@ module FetchAsynch
   # This class downloads prosumption data from the EDMS, and then inserts them
   # in the DB, and publishes the results to the appropriate rabbitMQ channel.
   class DownloadAndPublish
-    def initialize(prosumers, interval, startdate, enddate, channel, async = false)
+    def initialize(prosumers, interval, startdate, enddate, channel, async = false, forecasts = true)
       @prosumers = prosumers
       @startdate = startdate
       @enddate = enddate
@@ -69,9 +69,11 @@ module FetchAsynch
               # for forecasts:
 
             # Deleted until forecasts are fixed, no point requesting stugff we don't get
-            #   ((startdate - 1.day)...enddate).each do | d |
-            #     jobs.push params: params.merge(prosumers: pr_id, pointer: 2, startdate: d, enddate: d + 1.hour), api: :new
-            #   end
+              if forecasts
+                 ((startdate - 1.day)...enddate).each do | d |
+                   jobs.push params: params.merge(prosumers: pr_id, pointer: 2, startdate: d, enddate: d + 1.hour), api: :new
+                 end
+              end
             end
 
           end
