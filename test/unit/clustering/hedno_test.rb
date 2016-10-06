@@ -117,6 +117,9 @@ class HednoTest < ActiveSupport::TestCaseWithHednoData
   end
 
   test "statistics" do
+
+    skip "don't overwrite output files"
+
     total_consumption = DataPoint.where(prosumer: @prosumers, interval: 1).group(:prosumer).sum(:consumption)
     total_production = DataPoint.where(prosumer: @prosumers, interval: 1).group(:prosumer).sum(:production)
     max_consumption = DataPoint.where(prosumer: @prosumers, interval: 1).group(:prosumer).maximum(:consumption)
