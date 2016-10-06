@@ -197,7 +197,7 @@ module FetchAsynch
       key, value = hash.first
       [
           DateTime.parse(key).to_s,
-          value.scan(/\d+[,.]?\d+/).first.gsub(/,/, ".").to_f
+          value.scan(/\d+[,.]?\d*/).first.gsub(/,/, ".").to_f
       ]
     end
 
