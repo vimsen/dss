@@ -30,9 +30,9 @@ class CheckBidStatusJob < ActiveJob::Base
     end
 
     if ENV["download"] != "false"
-      FetchAsynch::DownloadAndPublish.new(Prosumer.all, 1, DateTime.now - 1.day, DateTime.now + 48.hours, nil, true)
-      FetchAsynch::DownloadAndPublish.new(Prosumer.all, 2, DateTime.now - 1.day, DateTime.now + 48.hours, nil, true)
-      FetchAsynch::DownloadAndPublish.new(Prosumer.all, 3, DateTime.now - 1.day, DateTime.now + 48.hours, nil, true)
+      FetchAsynch::DownloadAndPublish.new(Prosumer.real_time, 1, DateTime.now - 1.day, DateTime.now + 48.hours, nil, true)
+      FetchAsynch::DownloadAndPublish.new(Prosumer.real_time, 2, DateTime.now - 1.day, DateTime.now + 48.hours, nil, true)
+      FetchAsynch::DownloadAndPublish.new(Prosumer.real_time, 3, DateTime.now - 1.day, DateTime.now + 48.hours, nil, true)
     end
 
   end

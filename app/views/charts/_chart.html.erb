@@ -1,7 +1,8 @@
 <%= javascript_include_tag "chart" %>
 
-<% startDate = (DateTime.now - 7.days)
-   endDate = DateTime.now
+<% startDate = (session[:startdate] || (DateTime.now - 7.days)).to_datetime
+   endDate = (session[:enddate]|| DateTime.now).to_datetime
+   interval = (session[:interval] || 3).to_i # Daily
  %>
 
 <div class="panel panel-default">
@@ -12,10 +13,10 @@
 
     <div>
       <div id="controls">
-        <input id="startDate" type="text" value="<%= startDate %>"/>
-        <input id="endDate" type="text" value="<%= endDate %>"/>
-        <strong>Real-time updates?</strong>
-        <input id="realtime" type="checkbox" checked>
+        <input id="startDate" type="text" value="<%= startDate.to_datetime.strftime("%Y/%m/%d %H:00") %>"/>
+        <input id="endDate" type="text" value="<%= endDate.to_datetime.strftime("%Y/%m/%d %H:00") %>"/>
+        <!--strong>Real-time updates?</strong>
+        <input id="realtime" type="checkbox" checked-->
         <select id="type">
           <option value="prosumption" selected="selected">Prosumption</option>
           <option value="production">Production</option>
@@ -24,10 +25,11 @@
         </select>
         <%= collection_select(:interval, :interval_id,
                               Interval.all.order("duration asc"), :id, :name,
-                              {include_blank: false, :selected => "3"}) %>
+                              {include_blank: false, :selected => interval}) %>
         <strong>Forecast?</strong>
         <input id="forecast" type="checkbox">
         <button id="subDates"> Set </button>
+        <button id="resetDates"> Reset filter </button>
       </div>
       <br/>
       <div class="row">
@@ -92,10 +94,13 @@
 
 <script>
 
-    var idata = <%= provider.request_cached(3, startDate, endDate, @channel).to_json.html_safe %>;
+    var idata = <%= provider.request_cached(interval, startDate, endDate, @channel).to_json.html_safe %>;
     $(function(){
+
+        console.log("Trying to download stream: <%= stream -%>");
+
         plotHelper.drawChart(
-                "<%= "#{stream}?channel=#{@channel}" %>",
+                "<%="#{stream}?channel=#{@channel}&startdate=#{startDate}&enddate=#{endDate}&interval=#{interval}"%>",
                 plotHelper.readData(
                       idata,
                       $('#type').val(),
@@ -104,7 +109,7 @@
                 $('#forecast').is(':checked'));
         $('#startDate').datetimepicker();
         $('#endDate').datetimepicker();
-        $('#endDate').prop('disabled', true);
+        // $('#endDate').prop('disabled', true);
                
         $('#subDates').click(function () {
          
@@ -132,13 +137,24 @@
             
             plotHelper.drawChart(url, {}, $('#type').val(), $('#forecast').is(':checked'));
       });
-      $('#realtime').change(function () {
+      $('#resetDates').click(function () {
+
+        $('#startDate').val("<%= (DateTime.now - 7.days).strftime("%Y/%m/%d %H:00") -%>");
+        $('#endDate').val("<%= DateTime.now.strftime("%Y/%m/%d %H:00") -%>");
+        $('#interval_interval_id').val(3);
+
+        $('#subDates').click();
+      });
+
+
+
+      /*$('#realtime').change(function () {
           if (this.checked) {
             $('#endDate').prop( "disabled", true );
           } else {
             $('#endDate').prop( "disabled", false );
           }
-      });
+      });*/
     });
 </script>
 

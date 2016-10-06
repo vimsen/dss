@@ -9,7 +9,7 @@ module FetchAsynch
   # This class downloads prosumption data from the EDMS, and then inserts them
   # in the DB, and publishes the results to the appropriate rabbitMQ channel.
   class DownloadAndPublish
-    def initialize(prosumers, interval, startdate, enddate, channel, async = false)
+    def initialize(prosumers, interval, startdate, enddate, channel, async = false, forecasts = true)
       @prosumers = prosumers
       @startdate = startdate
       @enddate = enddate
@@ -67,8 +67,12 @@ module FetchAsynch
 
 
               # for forecasts:
-              ((startdate - 1.day)...enddate).each do | d |
-                jobs.push params: params.merge(prosumers: pr_id, pointer: 2, startdate: d, enddate: d + 1.hour), api: :new
+
+            # Deleted until forecasts are fixed, no point requesting stugff we don't get
+              if forecasts
+                 ((startdate - 1.day)...enddate).each do | d |
+                   jobs.push params: params.merge(prosumers: pr_id, pointer: 2, startdate: d, enddate: d + 1.hour), api: :new
+                 end
               end
             end
 
@@ -193,7 +197,7 @@ module FetchAsynch
       key, value = hash.first
       [
           DateTime.parse(key).to_s,
-          value.scan(/\d+[,.]?\d?/).first.gsub(/,/, ".").to_f
+          value.scan(/-?\d+[,.]?\d*/).first.gsub(/,/, ".").to_f
       ]
     end
 
@@ -253,12 +257,12 @@ module FetchAsynch
         end
       end
       result["Consumption"].map(&method(:hash_to_key_value)).each do | key,value |
-        Rails.logger.debug "Consumption: #{key}: Value #{value}"
+        # Rails.logger.debug "Consumption: #{key}: Value #{value}"
         if validate_value(value)
           intermediate_data[key] ||= empty_data_point_object key
           intermediate_data[key]["procumer_id"] = result["ProsumerId"]
           intermediate_data[key]["actual"]["consumption"] = value.nil? ? nil : value.to_f
-          Rails.logger.debug "Consumption2: #{key}: Value #{intermediate_data[key]["actual"]["consumption"]}"
+          # Rails.logger.debug "Consumption2: #{key}: Value #{intermediate_data[key]["actual"]["consumption"]}"
         end
       end
       result["ForecastConsumption"].map(&method(:hash_to_key_value)).each do | key,value |

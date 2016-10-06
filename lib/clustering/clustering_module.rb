@@ -9,15 +9,15 @@ module ClusteringModule
     {
         energy_type: {
             string: 'By renewable type',
-            proc: ->(k) { run_energy_type }
+            proc: ->(k) { run_energy_type k }
         },
         building_type: {
             string: 'By building type',
-            proc: ->(k) { run_building_type }
+            proc: ->(k) { run_building_type k }
         },
         connection_type: {
             string: 'By connection type',
-            proc: ->(k) { run_connection_type }
+            proc: ->(k) { run_connection_type k }
         },
         location: {
             string: 'By location',
@@ -29,45 +29,77 @@ module ClusteringModule
         },
         genetic: {
             string: 'Using genetic algorithms',
-            proc: ->(k) { ClusteringModule::GeneticErrorClustering.new.run k }
+            proc: ->(params) {
+              ClusteringModule::GeneticErrorClustering.new(
+                  prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
+                  startDate: params["startDate"],
+                  endDate: params["endDate"]
+              ).run params["kappa"].to_i
+            }
         },
         genetic_smart: {
             string: 'Genetic algorithm with smart reproduction',
-            proc: ->(k) {
+            proc: ->(params) {
               ClusteringModule::GeneticErrorClustering.new(
+                  prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
+                  startDate: params["startDate"],
+                  endDate: params["endDate"],
                   algorithm: Ai4r::GeneticAlgorithm::StaticChromosomeWithSmartCrossover
-              ).run k
+              ).run params["kappa"].to_i
             }
         },
         positive_error_spectral_clustering: {
             string: 'Positive Error Spectral Clustering',
-            proc: ->(k) { ClusteringModule::PositiveErrorSpectralClustering.new.run k }
+            proc: ->(params) {
+              ClusteringModule::PositiveErrorSpectralClustering.new(
+                  prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
+                  startDate: params["startDate"],
+                  endDate: params["endDate"]
+              ).run params["kappa"].to_i
+            }
         },
         negative_error_spectral_clustering: {
             string: 'Negative Error Spectral Clustering',
-            proc: ->(k) { ClusteringModule::NegativeErrorSpectralClustering.new.run k }
+            proc: ->(params) {
+              ClusteringModule::NegativeErrorSpectralClustering.new(
+                  prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
+                  startDate: params["startDate"],
+                  endDate: params["endDate"]
+              ).run params["kappa"].to_i
+            }
         },
         positive_consumption_spectral_clustering: {
             string: 'Positive Consumption Spectral Clustering',
-            proc: ->(k) { ClusteringModule::PositiveConsumptionSpectralClustering.new.run k }
+            proc: ->(params) {
+              ClusteringModule::PositiveConsumptionSpectralClustering.new(
+                  prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
+                  startDate: params["startDate"],
+                  endDate: params["endDate"]
+              ).run params["kappa"].to_i
+            }
         },
         negative_consumption_spectral_clustering: {
             string: 'Negative Consumption Spectral Clustering',
-            proc: ->(k) { ClusteringModule::NegativeConsumptionSpectralClustering.new.run k }
+            proc: ->(params) {
+              ClusteringModule::NegativeConsumptionSpectralClustering.new(
+                  prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
+                  startDate: params["startDate"],
+                  endDate: params["endDate"]
+              ).run params["kappa"].to_i
+            }
         }
-
     }
   end
 
-  def self.run_algorithm(algo, param)
-    result = self.algorithms.with_indifferent_access[algo][:proc].call(param.to_i)
+  def self.run_algorithm(params)
+    result = self.algorithms.with_indifferent_access[params["algorithm"]][:proc].call(params)
 
     result.select { |cl| cl.prosumers.size > 0 }
   end
 
   private
 
-  def self.run_energy_type
+  def self.run_energy_type(params)
     result = {}
     cl = TempCluster.new name: 'No ren.',
                      description: 'No info about renewable energy.'
@@ -79,7 +111,7 @@ module ClusteringModule
       result[et.id] = cl
     end
 
-    Prosumer.all.each do |p|
+    Prosumer.category(ProsumerCategory.find params["category"]).each do |p|
       etp = p.energy_type_prosumers.order('power DESC').first
       if etp.nil?
         result[:none].prosumers.push(p)
@@ -92,35 +124,36 @@ module ClusteringModule
     result.values
   end
 
-  def self.run_connection_type
+  def self.run_connection_type(params)
+    cat = ProsumerCategory.find params["category"]
     result = []
     cl = TempCluster.new name: 'No con. info.',
                      description: 'No connection info.'
-    cl.prosumers << Prosumer.where(connection_type: nil)
+    cl.prosumers << Prosumer.where(connection_type: nil, prosumer_category: params["category"])
     result.push(cl)
 
     ConnectionType.all.each do |bt|
       cl = TempCluster.new name: "CL: #{bt.name}",
                        description: "Prosumers with #{bt.name} connection."
 
-      cl.prosumers << Prosumer.where(connection_type: bt)
+      cl.prosumers << Prosumer.where(connection_type: bt, prosumer_category: params["category"])
       result.push(cl)
     end
     result
   end
 
-  def self.run_building_type
+  def self.run_building_type(params)
     result = []
     cl = TempCluster.new name: 'No buil. info',
                      description: 'No building type info.'
 
-    cl.prosumers << Prosumer.where(building_type: nil)
+    cl.prosumers << Prosumer.where(building_type: nil, prosumer_category: params["category"])
     result.push(cl)
 
     BuildingType.all.each do |bt|
       cl = TempCluster.new name: "CL: #{bt.name}",
                        description: "Prosumers with #{bt.name} building type."
-      cl.prosumers << Prosumer.where(building_type: bt)
+      cl.prosumers << Prosumer.where(building_type: bt, prosumer_category: params["category"])
 
       result.push(cl)
     end
@@ -176,8 +209,10 @@ module ClusteringModule
     end)[:cluster]
   end
 
-  def self.run_location(kappa)
-    result = Prosumer.with_locations.sample(kappa).map.with_index do |p, i|
+  def self.run_location(params)
+    cat = ProsumerCategory.find(params["category"].first.to_i)
+    puts "Category is: #{params["category"]}, ------- #{cat}"
+    result = Prosumer.with_locations.category(cat).sample(params["kappa"].to_i).map.with_index do |p, i|
       cl = TempCluster.new name: "Loc: #{i}",
                        description: "Location based cluster #{i}."
       cl.prosumers.push p
@@ -188,14 +223,14 @@ module ClusteringModule
     loop do
       old_centroids = Array.new(centroids)
       result.each { |cl| cl.prosumers.clear }
-      Prosumer.with_locations.each do |p|
+      Prosumer.with_locations.category(cat).each do |p|
         find_closest(p, centroids).prosumers.push p
       end
       centroids = result.map { |cl| get_centroid(cl) }
       break if centroids <=> old_centroids
     end
 
-    without_location = Prosumer.all - Prosumer.with_locations
+    without_location = Prosumer.category(cat) - Prosumer.with_locations.category(cat)
 
     if without_location.count > 0
       cl = TempCluster.new name: 'No loc.',
@@ -206,14 +241,16 @@ module ClusteringModule
     result
   end
 
-  def self.run_dr(kappa)
-    result = Prosumer.with_positive_dr.sample(kappa).map.with_index do |p, i|
+  def self.run_dr(params)
+    cat = ProsumerCategory.find(params["category"].first.to_i)
+    range = params["startDate"] .. params["endDate"]
+    result = Prosumer.category(cat).with_positive_dr(range).sample(params["kappa"].to_i).map.with_index do |p, i|
        [ p.id ]
     end
 
-    dr_vector = Hash[Prosumer.all.map {|p| [p.id, p.max_dr]}]
+    dr_vector = Hash[Prosumer.category(cat).map {|p| [p.id, p.max_dr(range)]}]
 
-    dr_prosumers = Prosumer.with_dr
+    dr_prosumers = Prosumer.category(cat).with_dr(range)
 
     centroids = result.map { |cl| get_centroid_dr(cl, dr_vector) }
     loop do
@@ -229,7 +266,7 @@ module ClusteringModule
       break if centroids <=> old_centroids
     end
 
-    without_dr = Prosumer.all - dr_prosumers
+    without_dr = Prosumer.category(cat) - dr_prosumers
 
     if without_dr.count > 0
       cl = []

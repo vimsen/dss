@@ -126,9 +126,9 @@ var plotHelper = (function() {
       res[label] = {};
     }
 
-    console.log("old value: " + res[label][d.timestamp] + "  new value: ");
-    console.log(d);
-    if (d.actual[type]) {
+    // console.log("old value: " + res[label][d.timestamp] + "  new value: ");
+    // console.log(d);
+    if (d.actual[type] != null) {
         res[label][d.timestamp] = [d.timestamp * 1000, d.actual[type]];
     }
 
@@ -177,7 +177,7 @@ var plotHelper = (function() {
       if (typeof source != "undefined" && source != null) {
         console.log(source);
         if (source.OPEN) {
-          source.close();
+            source.close();
           console.log("Closed source");
         }
       }
