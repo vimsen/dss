@@ -18,7 +18,8 @@ module ProsumptionData
                          building_type_id: row[7].to_i,
                          connection_type_id: row[8].to_i,
                          location_x: row[9].to_f,
-                         location_y: row[10].to_f
+                         location_y: row[10].to_f,
+                         prosumer_category_id: prosumer_categories(:one).id
                      })
           pr_ids.push row[0].to_i
         end
