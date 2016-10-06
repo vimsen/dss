@@ -95,18 +95,15 @@ class ClusteringsController < ApplicationController
   end
 
   def select
-    puts "session is: #{session[:algo_params]}"
+    # puts "session is: #{session[:algo_params]}"
     @params = JSON.parse session[:algo_params] || "{}"
-    @params["category"] ||= ProsumerCategory.first.id
-    @params["algorithm"] ||= algorithms.keys[0]
-    @params["kappa"] ||= 5
-    @params["startDate"] ||= (DateTime.now - 7.days)
-    @params["endDate"] ||= DateTime.now
+    init_algo_params!(@params)
   end
 
   def confirm
 
-    puts "Received params: #{params}"
+    # puts "Received params: #{params}"
+    init_algo_params!(params)
     session[:algo_params] = JSON.generate params
 
     @clustering = Clustering.new(name: "Auto #{params[:algorithm]}",
@@ -161,5 +158,13 @@ class ClusteringsController < ApplicationController
       end
     end
     return result
+  end
+
+  def init_algo_params!(params)
+    params["category"] ||= [ ProsumerCategory.first.id ]
+    params["algorithm"] ||= algorithms.keys[0]
+    params["kappa"] ||= 5
+    params["startDate"] ||= (DateTime.now - 7.days)
+    params["endDate"] ||= DateTime.now
   end
 end
