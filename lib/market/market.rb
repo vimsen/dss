@@ -33,7 +33,7 @@ module Market
                 }, {
                     label: "ideal",
                     data: real.map do |f|
-                      Rails.logger.debug "prosumption: #{f.prosumption}"
+                      # Rails.logger.debug "prosumption: #{f.prosumption}"
                       aggr_costs[:ideal] += f.prosumption * real_price(f.timestamp) unless f.prosumption.nil?
                       [f.timestamp.to_i * 1000, f.prosumption * real_price(f.timestamp)] unless f.prosumption.nil?
                     end
@@ -44,7 +44,7 @@ module Market
                     label: "cluster",
                     data: real.map do |f|
                       aggr_costs[:real] += real_cost(f, forecast_cache, {f.timestamp.to_i => real_price(f.timestamp)})
-                      [f.timestamp.to_i * 1000, real_cost(f, forecast_cache, price_cache)]
+                      [f.timestamp.to_i * 1000, real_cost(f, forecast_cache, {f.timestamp.to_i => real_price(f.timestamp)})]
                     end
                 }
             ],
@@ -81,8 +81,8 @@ module Market
         ideal_cost[dp.prosumer_id] += dp.prosumption * real_price(dp.timestamp) unless dp.prosumption.nil?
         total_costs[:ideal] += dp.prosumption * real_price(dp.timestamp) unless dp.prosumption.nil?
         real_cost[dp.prosumer_id] ||= 0
-        real_cost[dp.prosumer_id] += real_cost(dp, forecast_cache[dp.prosumer_id], price_cache)
-        total_costs[:real] += real_cost(dp, forecast_cache[dp.prosumer_id], price_cache)
+        real_cost[dp.prosumer_id] += real_cost(dp, forecast_cache[dp.prosumer_id], {dp.timestamp.to_i => real_price(dp.timestamp)})
+        total_costs[:real] += real_cost(dp, forecast_cache[dp.prosumer_id], {dp.timestamp.to_i => real_price(dp.timestamp)})
       end
 
       @prosumers.map do |p|
@@ -175,6 +175,8 @@ module Market
       forecasts ||= {}
       forecasts[f.timestamp.to_i] ||= 0
       prices[f.timestamp.to_i] ||= 0
+     #  puts "testing: #{f.prosumption}, #{prices[f.timestamp.to_i]}, #{forecasts[f.timestamp.to_i]}, #{f.prosumption * prices[f.timestamp.to_i] +
+     #      (forecasts[f.timestamp.to_i] - f.prosumption) * @penalty_satisfaction * real_price(f.timestamp)}"
       return 0 if f.prosumption.nil?
       f.prosumption > forecasts[f.timestamp.to_i] ?
             forecasts[f.timestamp.to_i] * prices[f.timestamp.to_i] +
