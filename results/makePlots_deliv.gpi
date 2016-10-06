@@ -3,7 +3,8 @@
 if (!exists ("ext")) ext='eps'
 if (ext eq 'eps') {
   print "first: ".ext
-    set term postscript eps enhanced color size 3.5,2.62 linewidth 3
+# set term postscript eps enhanced color size 3.5,2.62 linewidth 3
+ set term postscript eps enhanced color size 3.5433,2.677 linewidth 1.5 font 'Helvetica,10pt'
 } else { if (ext eq 'emf') {
   print "second: ".ext
     set terminal emf linewidth 3 size 640,480

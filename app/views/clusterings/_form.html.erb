@@ -131,7 +131,7 @@
 <script>
   $(function () {
 
-    var energy_consumption = <%= JSON.pretty_generate(Prosumer.all.map { |p| {id: p.id, dr: p.max_dr, dps: p.data_points.where(interval: 3, timestamp: (Time.now - 7.days)..Time.now)
+    var energy_consumption = <%= JSON.pretty_generate(Prosumer.all.map { |p| {id: p.id, dr: p.max_dr(params["startDate"]..params["endDate"]), dps: p.data_points.where(interval: 3, timestamp: params["startDate"]..params["endDate"])
                                                                                                                         .select("timestamp, prosumer_id, COALESCE(consumption,0) - COALESCE(production,0) as prosumption")
                                                                                                                         .map { |dp| {time: dp.timestamp.to_i, value: dp.prosumption} } } }).html_safe -%>;
 
@@ -154,7 +154,7 @@
         }
       });
 
-      return result
+      return result;
     };
 
     var format = function (arr, i_arr) {

@@ -10,7 +10,8 @@ class Prosumer < ActiveRecord::Base
   belongs_to :cluster
   belongs_to :building_type
   belongs_to :connection_type
-  
+  belongs_to :prosumer_category
+
   resourcify
 
   has_and_belongs_to_many :users
@@ -25,7 +26,13 @@ class Prosumer < ActiveRecord::Base
   validates :edms_id, uniqueness: true
   
   include FindGaps
-  
+
+  scope :real_time, -> { joins(:prosumer_category).where("prosumer_categories.real_time": true) }
+  scope :category, ->(cat) { where(prosumer_category: cat) if cat.present? }
+  scope :with_locations, -> { where("location_x IS NOT NULL and location_y IS NOT NULL") }
+  scope :with_positive_dr, ->(time_range) { select { |p| p.max_dr(time_range) && p.max_dr(time_range) > 0 } }
+  scope :with_dr, ->(time_range) { select { |p| p.max_dr(time_range) } }
+
   def request_cached(interval, startdate, enddate, channel)
 
     gaps = true
@@ -37,26 +44,18 @@ class Prosumer < ActiveRecord::Base
     end
     
     # if gaps    # Download anyway, we may have an extra datapoint due to forecasts
-    FetchAsynch::DownloadAndPublish.new([self], interval, startdate, enddate, channel)
+    FetchAsynch::DownloadAndPublish.new([self], interval, startdate, enddate, channel, false, false)
     # end
     
     return result      
   end
   
-  def self.with_locations
-    Prosumer.where("location_x IS NOT NULL and location_y IS NOT NULL") 
+  def has_location
+    ! (location_x.nil? || location_y.nil?)
   end
 
-  def self.with_positive_dr
-    Prosumer.select { |p| p.max_dr && p.max_dr > 0 }
-  end
-
-  def self.with_dr
-    Prosumer.select { |p| p.max_dr }
-  end
-
-  def max_dr
-    self.data_points.empty? ? nil : self.data_points.maximum(:dr)
+  def max_dr(time_range)
+    self.data_points.where(timestamp: time_range).empty? ? nil : self.data_points.where(timestamp: time_range).maximum(:dr)
   end
   
 end

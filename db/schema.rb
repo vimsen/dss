@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160606130840) do
+ActiveRecord::Schema.define(version: 20160928141940) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -94,6 +94,7 @@ ActiveRecord::Schema.define(version: 20160606130840) do
     t.datetime "updated_at"
   end
 
+  add_index "data_points", ["prosumer_id"], name: "index_data_points_on_prosumer_id", using: :btree
   add_index "data_points", ["timestamp", "prosumer_id", "interval_id"], name: "index_data_points_on_timestamp_and_prosumer_id_and_interval_id", unique: true, using: :btree
 
   create_table "day_ahead_energy_demands", force: :cascade do |t|
@@ -315,6 +316,14 @@ ActiveRecord::Schema.define(version: 20160606130840) do
 
   add_index "meters", ["prosumer_id"], name: "index_meters_on_prosumer_id", using: :btree
 
+  create_table "prosumer_categories", force: :cascade do |t|
+    t.string   "name"
+    t.text     "description"
+    t.boolean  "real_time"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
   create_table "prosumers", force: :cascade do |t|
     t.string   "name"
     t.string   "location"
@@ -327,11 +336,13 @@ ActiveRecord::Schema.define(version: 20160606130840) do
     t.float    "location_x"
     t.float    "location_y"
     t.integer  "feeder_id"
+    t.integer  "prosumer_category_id"
   end
 
   add_index "prosumers", ["building_type_id"], name: "index_prosumers_on_building_type_id", using: :btree
   add_index "prosumers", ["connection_type_id"], name: "index_prosumers_on_connection_type_id", using: :btree
   add_index "prosumers", ["edms_id"], name: "index_prosumers_on_edms_id", unique: true, using: :btree
+  add_index "prosumers", ["prosumer_category_id"], name: "index_prosumers_on_prosumer_category_id", using: :btree
 
   create_table "prosumers_temp_clusters", force: :cascade do |t|
     t.integer "prosumer_id"
@@ -371,6 +382,13 @@ ActiveRecord::Schema.define(version: 20160606130840) do
   add_index "sla_items", ["bid_id"], name: "index_sla_items_on_bid_id", using: :btree
   add_index "sla_items", ["interval_id"], name: "index_sla_items_on_interval_id", using: :btree
   add_index "sla_items", ["timestamp", "interval_id", "bid_id"], name: "index_sla_items_on_timestamp_and_interval_id_and_bid_id", unique: true, using: :btree
+
+  create_table "targets", force: :cascade do |t|
+    t.float    "volume"
+    t.datetime "timestamp"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "temp_clusters", force: :cascade do |t|
     t.string   "name"
@@ -416,6 +434,7 @@ ActiveRecord::Schema.define(version: 20160606130840) do
   add_foreign_key "dr_planneds", "demand_responses"
   add_foreign_key "dr_planneds", "prosumers"
   add_foreign_key "dr_targets", "demand_responses"
+  add_foreign_key "prosumers", "prosumer_categories"
   add_foreign_key "sla_items", "bids"
   add_foreign_key "sla_items", "intervals"
 end

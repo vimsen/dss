@@ -11,7 +11,7 @@ class BidDayAheadJob < ActiveJob::Base
     Rails.logger.debug "Downloading data:"
 
     if ENV["download"] != "false"
-      FetchAsynch::DownloadAndPublish.new(Prosumer.all, 2, DateTime.now - 2.days, DateTime.now + 48.hours, nil, true)
+      FetchAsynch::DownloadAndPublish.new(Prosumer.real_time, 2, DateTime.now - 2.days, DateTime.now + 48.hours, nil, true)
     end
 
 
@@ -40,7 +40,7 @@ class BidDayAheadJob < ActiveJob::Base
         market_id: day_ahead_market["id"],
         date: Date.tomorrow.to_s,
         bid_items_attributes: day_ahead_market["blocks"].map do |b|
-          volume = DataPoint.where(interval_id: 2, f_timestamp: Date.tomorrow.beginning_of_day + b["starting"].seconds + 1.hour)
+          volume = DataPoint.where(prosumer: Prosumer.real_time, interval_id: 2, f_timestamp: Date.tomorrow.beginning_of_day + b["starting"].seconds + 1.hour)
                        .select('sum(COALESCE(f_consumption,0) - COALESCE(f_production,0)) as f_prosumption')
                        .group(:f_timestamp).map{|dp| dp.f_prosumption}.first || 0
           {

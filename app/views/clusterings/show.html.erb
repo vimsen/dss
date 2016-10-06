@@ -51,7 +51,7 @@
       <div class="panel-body">
         <%= render partial: "charts/map", 
           locals: {
-            prosumers: Prosumer.with_locations,
+            prosumers: @clustering.temp_clusters.map(&:prosumers).flatten,
             clustering: @clustering,
             height: "230px"
           }
@@ -140,6 +140,10 @@
                                .group(:ts)
                                .select("f_timestamp::date  as ts, sum(COALESCE(f_consumption,0) - COALESCE(f_production,0)) as s")
                                .map{|p| [p.ts.to_datetime.to_i * 1000, p.s] }
+                },{
+                    label: "",
+                    data: [[@startDate.to_i * 1000,0]],
+                    points: { show: false }
                 }]
             }
         end).html_safe -%>;

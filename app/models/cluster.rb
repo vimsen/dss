@@ -53,7 +53,7 @@ class Cluster < ActiveRecord::Base
     end
 
     if (missing_data)
-      FetchAsynch::DownloadAndPublish.new(prosumerlist, interval, startdate, enddate, channel)
+      FetchAsynch::DownloadAndPublish.new(prosumerlist, interval, startdate, enddate, channel, false, false)
     end   
    
     return result      

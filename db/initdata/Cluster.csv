@@ -1,8 +1,17 @@
 id,name,description,created_at,updated_at
-92,CL: School,Prosumers with School building type.,2015-08-26 09:37:17,2015-08-26 09:37:17
-93,CL: Domestic,Prosumers with Domestic building type.,2015-08-26 09:37:17,2015-08-26 09:37:17
-94,CL: SME,Prosumers with SME building type.,2015-08-26 09:37:17,2015-08-26 09:37:17
-95,CL: Industry,Prosumers with Industry building type.,2015-08-26 09:37:17,2015-08-26 09:37:17
-96,CL: Factory,"",2015-10-07 10:49:12,2015-10-07 10:49:12
-97,CL: VIMSEN (Greece),The VIMSEN prosumers located in Greece,2015-10-07 10:49:12,2015-10-07 10:49:12
-98,CL: VIMSEN (Sedini),The VIMSEN prosumers located in Sedini,2015-10-07 10:49:12,2015-10-07 10:49:12
+92,CL: School,Prosumers with School building type.,2015-08-26 15:37:17 +0300,2015-08-26 15:37:17 +0300
+93,CL: Domestic,Prosumers with Domestic building type.,2015-08-26 15:37:17 +0300,2015-08-26 15:37:17 +0300
+94,CL: SME,Prosumers with SME building type.,2015-08-26 15:37:17 +0300,2015-08-26 15:37:17 +0300
+95,CL: Industry,Prosumers with Industry building type.,2015-08-26 15:37:17 +0300,2015-08-26 15:37:17 +0300
+96,CL: Factory,"",2015-10-07 16:49:12 +0300,2015-10-07 16:49:12 +0300
+97,CL: VIMSEN (Greece),The VIMSEN prosumers located in Greece,2015-10-07 16:49:12 +0300,2015-10-07 16:49:12 +0300
+98,CL: VIMSEN (Sedini),The VIMSEN prosumers located in Sedini,2015-10-07 16:49:12 +0300,2015-10-07 16:49:12 +0300
+99,CL: HEDNO_windfarms_MV," HEDNO prosumers used for scalability tests, wind farms",2015-10-07 16:49:12 +0300,2015-10-07 16:49:12 +0300
+100,CL: HEDNO_industrial_MV," HEDNO prosumers used for scalability tests, industrial MV",2015-10-07 16:49:12 +0300,2015-10-07 16:49:12 +0300
+101,CL: HEDNO_industrial_LV," HEDNO prosumers used for scalability tests, industrail LV",2015-10-07 16:49:12 +0300,2015-10-07 16:49:12 +0300
+102,CL: HEDNO_commercial_MV," HEDNO prosumers used for scalability tests, commercial_MV",2015-10-07 16:49:12 +0300,2015-10-07 16:49:12 +0300
+103,CL: HEDNO_proffessional_LV," HEDNO prosumers used for scalability tests, wind proffesional_LV",2015-10-07 16:49:12 +0300,2015-10-07 16:49:12 +0300
+104,CL: HEDNO_steetlights_LV," HEDNO prosumers used for scalability tests, street lights LV",2015-10-07 16:49:12 +0300,2015-10-07 16:49:12 +0300
+105,CL: HEDNO_residential_LV," HEDNO prosumers used for scalability tests, residential LV",2015-10-07 16:49:12 +0300,2015-10-07 16:49:12 +0300
+106,CL: HEDNO_solar_MV," HEDNO prosumers used for scalability tests, solar MV",2015-10-07 16:49:12 +0300,2015-10-07 16:49:12 +0300
+107,CL: HEDNO_solar_LV," HEDNO prosumers used for scalability tests, solar LV",2015-10-07 16:49:12 +0300,2015-10-07 16:49:12 +0300
