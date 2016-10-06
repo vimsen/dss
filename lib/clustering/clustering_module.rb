@@ -211,7 +211,7 @@ module ClusteringModule
 
   def self.run_location(params)
     cat = ProsumerCategory.find(params["category"].first.to_i)
-    puts "Category is: #{params["category"]}, ------- #{cat}"
+    # puts "Category is: #{params["category"]}, ------- #{cat}"
     result = Prosumer.with_locations.category(cat).sample(params["kappa"].to_i).map.with_index do |p, i|
       cl = TempCluster.new name: "Loc: #{i}",
                        description: "Location based cluster #{i}."
