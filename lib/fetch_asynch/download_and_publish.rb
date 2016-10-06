@@ -197,7 +197,7 @@ module FetchAsynch
       key, value = hash.first
       [
           DateTime.parse(key).to_s,
-          value.scan(/\d+[,.]?\d*/).first.gsub(/,/, ".").to_f
+          value.scan(/-?\d+[,.]?\d*/).first.gsub(/,/, ".").to_f
       ]
     end
 
@@ -257,12 +257,12 @@ module FetchAsynch
         end
       end
       result["Consumption"].map(&method(:hash_to_key_value)).each do | key,value |
-        Rails.logger.debug "Consumption: #{key}: Value #{value}"
+        # Rails.logger.debug "Consumption: #{key}: Value #{value}"
         if validate_value(value)
           intermediate_data[key] ||= empty_data_point_object key
           intermediate_data[key]["procumer_id"] = result["ProsumerId"]
           intermediate_data[key]["actual"]["consumption"] = value.nil? ? nil : value.to_f
-          Rails.logger.debug "Consumption2: #{key}: Value #{intermediate_data[key]["actual"]["consumption"]}"
+          # Rails.logger.debug "Consumption2: #{key}: Value #{intermediate_data[key]["actual"]["consumption"]}"
         end
       end
       result["ForecastConsumption"].map(&method(:hash_to_key_value)).each do | key,value |
