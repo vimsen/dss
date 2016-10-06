@@ -33,7 +33,7 @@ module Market
                 }, {
                     label: "ideal",
                     data: real.map do |f|
-                      Rails.logger.debug "prosumption: #{f.prosumption}"
+                      # Rails.logger.debug "prosumption: #{f.prosumption}"
                       aggr_costs[:ideal] += f.prosumption * real_price(f.timestamp) unless f.prosumption.nil?
                       [f.timestamp.to_i * 1000, f.prosumption * real_price(f.timestamp)] unless f.prosumption.nil?
                     end
@@ -175,8 +175,8 @@ module Market
       forecasts ||= {}
       forecasts[f.timestamp.to_i] ||= 0
       prices[f.timestamp.to_i] ||= 0
-      puts "testing: #{f.prosumption}, #{prices[f.timestamp.to_i]}, #{forecasts[f.timestamp.to_i]}, #{f.prosumption * prices[f.timestamp.to_i] +
-          (forecasts[f.timestamp.to_i] - f.prosumption) * @penalty_satisfaction * real_price(f.timestamp)}"
+     #  puts "testing: #{f.prosumption}, #{prices[f.timestamp.to_i]}, #{forecasts[f.timestamp.to_i]}, #{f.prosumption * prices[f.timestamp.to_i] +
+     #      (forecasts[f.timestamp.to_i] - f.prosumption) * @penalty_satisfaction * real_price(f.timestamp)}"
       return 0 if f.prosumption.nil?
       f.prosumption > forecasts[f.timestamp.to_i] ?
             forecasts[f.timestamp.to_i] * prices[f.timestamp.to_i] +
