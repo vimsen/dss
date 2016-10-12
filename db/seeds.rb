@@ -19,6 +19,7 @@ ActiveRecord::Base.connection.disable_referential_integrity do
     head = csv.first
 
     begin
+      tbl_name.constantize.delete_all
       raw.copy_data "COPY #{tbl_name.constantize.table_name} (#{head}) FROM stdin DELIMITER ',' CSV;" do
         csv.each_with_index { |row, i| raw.put_copy_data(row) }
       end

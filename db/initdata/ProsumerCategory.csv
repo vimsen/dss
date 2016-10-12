@@ -1,4 +1,5 @@
 id,name,description,real_time,created_at,updated_at
-2,INTELEN prosumers,The prosumers that are available from INTELEN's portfolio.,true,2016-09-28 15:03:47 +0300,2016-09-28 15:03:47 +0300
-3,HEDNO prosumers,The prosumers that are available from HEDNO's portfolio.,false,2016-09-28 15:04:33 +0300,2016-09-28 15:04:33 +0300
-1,VIMSEN prosumers,These are the prosumers that were installed for the purpose of the VIMSEN project,true,2016-09-28 14:57:32 +0300,2016-09-28 17:24:11 +0300
+1,VIMSEN prosumers,These are the prosumers that were installed for the purpose of the VIMSEN project,true,2016-09-28 20:57:32 +0300,2016-09-28 23:24:11 +0300
+2,INTELEN prosumers,The prosumers that are available from INTELEN's portfolio.,true,2016-09-28 21:03:47 +0300,2016-09-28 21:03:47 +0300
+3,HEDNO prosumers,The prosumers that are available from HEDNO's portfolio.,false,2016-09-28 21:04:33 +0300,2016-09-28 21:04:33 +0300
+4,VALIDATION prosumers,These are the prosumers that are going to be used for validation testing,false,2016-10-12 16:16:28 +0300,2016-10-12 16:16:28 +0300
