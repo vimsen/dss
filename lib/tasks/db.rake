@@ -11,8 +11,8 @@ namespace :db do
     end.each do |t|
       CSV.open("db/initdata/#{t}.csv", "wb") do |csv|
         csv << t.attribute_names
-        t.all.each do |row|
-          csv << row.attributes.values
+        t.all.order(t.attribute_names.include?("id") ? 'id ASC' : '').each do |row|
+        csv << row.attributes.values
         end
       end
     end
