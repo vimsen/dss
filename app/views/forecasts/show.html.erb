@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Prosumer:</strong>
+  <%= @forecast.prosumer %>
+</p>
+
+<p>
+  <strong>Interval:</strong>
+  <%= @forecast.interval %>
+</p>
+
+<p>
+  <strong>Timestamp:</strong>
+  <%= @forecast.timestamp %>
+</p>
+
+<p>
+  <strong>Forecast time:</strong>
+  <%= @forecast.forecast_time %>
+</p>
+
+<p>
+  <strong>Production:</strong>
+  <%= @forecast.production %>
+</p>
+
+<p>
+  <strong>Consumption:</strong>
+  <%= @forecast.consumption %>
+</p>
+
+<p>
+  <strong>Storage:</strong>
+  <%= @forecast.storage %>
+</p>
+
+<%= link_to 'Edit', edit_forecast_path(@forecast) %> |
+<%= link_to 'Back', forecasts_path %>
