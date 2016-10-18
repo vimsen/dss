@@ -7,7 +7,7 @@ namespace :db do
     Rails.application.eager_load!
 
     ActiveRecord::Base.descendants.reject do |t| 
-      [DataPoint, Instance, Prosumer::HABTM_TempClusters].include? t
+      [User, DataPoint, Instance, Prosumer::HABTM_TempClusters].include? t
     end.each do |t|
       CSV.open("db/initdata/#{t}.csv", "wb") do |csv|
         csv << t.attribute_names
