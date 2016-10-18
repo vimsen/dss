@@ -1,1 +1,5 @@
 id,name,description,clustering_id,created_at,updated_at
+1,Validation: Industry,Prosumers with Industry building type.,1,2016-10-18 12:00:57 UTC,2016-10-18 12:00:57 UTC
+2,Validation:  Residential,Prosumers with Residential building type.,1,2016-10-18 12:00:57 UTC,2016-10-18 12:00:57 UTC
+3,Validation: Combo buildings,Prosumers with Combo buildings building type.,1,2016-10-18 12:00:57 UTC,2016-10-18 12:00:57 UTC
+4,Validation: Solar/Wind Parks,Prosumers with Solar/Wind Parks building type.,1,2016-10-18 12:00:57 UTC,2016-10-18 12:00:57 UTC
