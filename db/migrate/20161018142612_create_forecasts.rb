@@ -11,6 +11,6 @@ class CreateForecasts < ActiveRecord::Migration
 
       t.timestamps null: false
     end
-    add_index :forecasts, [:timestamp, :prosumer_id, :interval_id, :forecast_time], :unique => true
+    add_index :forecasts, [:timestamp, :prosumer_id, :interval_id, :forecast_time], unique: true, name: "forecastsuniqueindex"
   end
 end

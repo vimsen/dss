@@ -44,7 +44,7 @@ class Prosumer < ActiveRecord::Base
     end
     
     # if gaps    # Download anyway, we may have an extra datapoint due to forecasts
-    FetchAsynch::DownloadAndPublish.new([self], interval, startdate, enddate, channel, false, false)
+    FetchAsynch::DownloadAndPublish.new([self], interval, startdate, enddate, channel, false, (enddate.to_f - startdate.to_f) / 86400 < 14)
     # end
     
     return result      

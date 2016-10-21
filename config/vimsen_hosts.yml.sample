@@ -4,6 +4,7 @@ development:
   <<: *default
   edms_host: https://the.edms.host/and/path
   gdrms_host: https://the.gdrms.host/and/path
+  fms_host: https://the.fms.host/and/path
   market_operator:
     host: https://the.marketoperator.host/and/path
     user: user@domain.com
@@ -14,6 +15,7 @@ test:
   <<: *default
   edms_host: https://the.edms.host/and/path
   gdrms_host: https://the.gdrms.host/and/path
+  fms_host: https://the.fms.host/and/path
   market_operator:
     host: https://the.marketoperator.host/and/path
     user: user@domain.com
@@ -23,6 +25,7 @@ production:
   <<: *default
   edms_host: https://the.edms.host/and/path
   gdrms_host: https://the.gdrms.host/and/path
+  fms_host: https://the.fms.host/and/path
   market_operator:
     host: https://the.marketoperator.host/and/path
     user: user@domain.com

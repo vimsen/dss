@@ -22,9 +22,6 @@ module FetchAsynch
       thread = Thread.new do
         begin
           ActiveRecord::Base.forbid_implicit_checkout_for_thread!
-
-          i = 0
-
           x = nil
           begin
             bunny_channel = $bunny.create_channel if channel
@@ -76,20 +73,32 @@ module FetchAsynch
               end
             end
 
+            # Try to download everything from FMS
+            if forecasts
+              prosumers.map {|p| p.edms_id}.each do |pr_id|
+                ((startdate - 1.day)...enddate).each do | d |
+                  d_start = d.beginning_of_day
+                  d_end = d.end_of_day
+                  d_forc = d_start - 12.hours
+                  jobs.push params: params.merge(prosumers: pr_id, startdate: d_start, enddate: d_end, forecasttime: d_forc), api: :fms
+                  puts "==================================  Added FMS job  ============================================="
+                end
+              end
+            end
           end
 
 
           # Rails.logger.debug JSON.pretty_generate jobs
 
-          u = YAML.load_file('config/vimsen_hosts.yml')[Rails.env]['edms_host']
-          rest_resource = RestClient::Resource.new u #, verify_ssl: OpenSSL::SSL::VERIFY_NONE
+          u = YAML.load_file('config/vimsen_hosts.yml')[Rails.env]
+          edms_rest_resource = RestClient::Resource.new u['edms_host'] #, verify_ssl: OpenSSL::SSL::VERIFY_NONE
+          fms_rest_resource = RestClient::Resource.new u['fms_host'], verify_ssl: OpenSSL::SSL::VERIFY_NONE
 
           Parallel.each(jobs, in_threads: 3) do |job|
-            case job[:api]
-              when :new
-
-                begin
-                  raw = rest_resource['getdataVGW'].get params: job[:params], :content_type => :json, :accept => :json
+            begin
+              case job[:api]
+                when :new
+                  raw = edms_rest_resource['getdataVGW'].get params: job[:params], :content_type => :json, :accept => :json
                   # Rails.logger.debug "RAW: #{raw}"
                   result = JSON.parse raw
                   # Rails.logger.debug "Result: #{result}"
@@ -100,27 +109,30 @@ module FetchAsynch
                     Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}."
                   end
                   datareceived(result_conv, x)
-                rescue Exception => e
-                  Rails.logger.debug "EXCEPTION: #{e.inspect}"
-                  puts "EXCEPTION: #{e.inspect}"
-                  Rails.logger.debug "MESSAGE: #{e.message}"
-                  puts "MESSAGE: #{e.message}"
-                  Rails.logger.debug e.backtrace.join("\n")
-                  puts e.backtrace.join("\n")
-                end
 
+                when :fms
+                  raw = fms_rest_resource['fmsapt'].get params: job[:params], :content_type => :json, :accept => :json
+                  result = JSON.parse raw
+                  datareceived_fms(result, x)
 
-              when :old
-                raw = rest_resource['getdata'].get params: job[:params], :content_type => :json, :accept => :json
-                result = JSON.parse(raw)
+                when :old
+                  raw = edms_rest_resource['getdata'].get params: job[:params], :content_type => :json, :accept => :json
+                  result = JSON.parse(raw)
                 # Rails.logger.debug "Result: #{result}"
 
-                ActiveRecord::Base.connection_pool.with_connection do
-                  x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}.", event: "output"}.to_json) if x
-                  Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}."
-                end
-                datareceived(result, x)
-
+                  ActiveRecord::Base.connection_pool.with_connection do
+                    x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}.", event: "output"}.to_json) if x
+                    Rails.logger.debug "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}."
+                    end
+                  datareceived(result, x)
+              end
+            rescue Exception => e
+              Rails.logger.debug "EXCEPTION: #{e.inspect}"
+              puts "EXCEPTION: #{e.inspect}"
+              Rails.logger.debug "MESSAGE: #{e.message}"
+              puts "MESSAGE: #{e.message}"
+              Rails.logger.debug e.backtrace.join("\n")
+              puts e.backtrace.join("\n")
             end
           end
 
@@ -159,6 +171,11 @@ module FetchAsynch
     end
 
     private
+
+    def datareceived_fms(data, x)
+      Rails.logger.debug data
+    end
+
 
     def is_integer?(num)
       !!(num =~ /\A[-+]?[0-9]+\z/)

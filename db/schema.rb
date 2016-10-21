@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160928141940) do
+ActiveRecord::Schema.define(version: 20161018142612) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -219,6 +219,22 @@ ActiveRecord::Schema.define(version: 20160928141940) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "forecasts", force: :cascade do |t|
+    t.integer  "prosumer_id"
+    t.integer  "interval_id"
+    t.datetime "timestamp"
+    t.datetime "forecast_time"
+    t.float    "production"
+    t.float    "consumption"
+    t.float    "storage"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "forecasts", ["interval_id"], name: "index_forecasts_on_interval_id", using: :btree
+  add_index "forecasts", ["prosumer_id"], name: "index_forecasts_on_prosumer_id", using: :btree
+  add_index "forecasts", ["timestamp", "prosumer_id", "interval_id", "forecast_time"], name: "forecastsuniqueindex", unique: true, using: :btree
 
   create_table "green_certificates", force: :cascade do |t|
     t.datetime "date"
@@ -434,6 +450,8 @@ ActiveRecord::Schema.define(version: 20160928141940) do
   add_foreign_key "dr_planneds", "demand_responses"
   add_foreign_key "dr_planneds", "prosumers"
   add_foreign_key "dr_targets", "demand_responses"
+  add_foreign_key "forecasts", "intervals"
+  add_foreign_key "forecasts", "prosumers"
   add_foreign_key "prosumers", "prosumer_categories"
   add_foreign_key "sla_items", "bids"
   add_foreign_key "sla_items", "intervals"
