@@ -81,7 +81,6 @@ module FetchAsynch
                   d_end = d.end_of_day
                   d_forc = d_start - 12.hours
                   jobs.push params: params.merge(prosumers: pr_id, startdate: d_start, enddate: d_end, forecasttime: d_forc), api: :fms
-                  puts "==================================  Added FMS job  ============================================="
                 end
               end
             end
@@ -111,9 +110,10 @@ module FetchAsynch
                   datareceived(result_conv, x)
 
                 when :fms
-                  raw = fms_rest_resource['fmsapt'].get params: job[:params], :content_type => :json, :accept => :json
-                  result = JSON.parse raw
-                  datareceived_fms(result, x)
+                  puts "=-=================== FSM: #{job[:params]} =-=================== "
+                  # raw = fms_rest_resource['fmsapt'].get params: job[:params], :content_type => :json, :accept => :json
+                  # result = JSON.parse raw
+                  # datareceived_fms(result, x)
 
                 when :old
                   raw = edms_rest_resource['getdata'].get params: job[:params], :content_type => :json, :accept => :json
@@ -253,35 +253,41 @@ module FetchAsynch
       end
     end
 
+    def parse_vals(result, intermediate_data, edms_key)
+      return if result[edms_key].nil?
+      result[edms_key].map(&method(:hash_to_key_value)).each do | key,value |
+        if validate_value(value)
+          intermediate_data[key] ||= empty_data_point_object key
+          intermediate_data[key]["procumer_id"] = result["ProsumerId"]
+          res  = value.nil? ? nil : value.to_f
+          case edms_key
+            when "Production"
+              intermediate_data[key]["actual"]["production"] = res
+            when "Storage"
+              intermediate_data[key]["actual"]["storage"] = res
+            when "Consumption"
+              intermediate_data[key]["actual"]["consumption"] = res
+            when "Flexibility"
+              intermediate_data[key]["dr"] = res
+            when "Reliability"
+              intermediate_data[key]["reliability"] = res
+          end
+        end
+      end
+    end
+
+
+
     def convert_new_to_old_api_v2(data)
 
       intermediate_data = {}
       result = data.first
       # Rails.logger.debug JSON.pretty_generate result
-      result["Production"].map(&method(:hash_to_key_value)).each do | key,value |
-        # Rails.logger.debug "Production: #{key}: #{DateTime.parse(key) - 24.hours}"
-        if validate_value(value)
-          intermediate_data[key] ||= empty_data_point_object key
-          intermediate_data[key]["procumer_id"] = result["ProsumerId"]
-          intermediate_data[key]["actual"]["production"] = value.nil? ? nil : value.to_f
-        end
+
+      %w[Production Storage Consumption Flexibility Reliability].each do |key|
+        parse_vals result, intermediate_data, key
       end
-      result["Storage"].map(&method(:hash_to_key_value)).each do | key,value |
-        if validate_value(value)
-          intermediate_data[key] ||= empty_data_point_object key
-          intermediate_data[key]["procumer_id"] = result["ProsumerId"]
-          intermediate_data[key]["actual"]["storage"] = value.nil? ? nil : value.to_f
-        end
-      end
-      result["Consumption"].map(&method(:hash_to_key_value)).each do | key,value |
-        # Rails.logger.debug "Consumption: #{key}: Value #{value}"
-        if validate_value(value)
-          intermediate_data[key] ||= empty_data_point_object key
-          intermediate_data[key]["procumer_id"] = result["ProsumerId"]
-          intermediate_data[key]["actual"]["consumption"] = value.nil? ? nil : value.to_f
-          # Rails.logger.debug "Consumption2: #{key}: Value #{intermediate_data[key]["actual"]["consumption"]}"
-        end
-      end
+
       result["ForecastConsumption"].map(&method(:hash_to_key_value)).each do | key,value |
         timestamp = case @interval.duration
                       when 900
