@@ -86,7 +86,8 @@ class HomeController < ApplicationController
                            .order(production: :desc)
                            .where(interval: 3)
                            .where("production IS NOT NULL")
-                           .where("timestamp >= ?",Time.zone.now - 1.day).limit(5)
+                           .where(timestamp: Time.zone.now - 1.day .. Time.zone.now)
+                           .limit(5)
         data = []
         names= []
         i=0
@@ -111,7 +112,7 @@ class HomeController < ApplicationController
                            .order(consumption: :desc)
                            .where(interval: 3)
                            .where("consumption IS NOT NULL")
-                           .where("timestamp >= ?",Time.zone.now - 1.day)
+                           .where(timestamp: Time.zone.now - 1.day .. Time.zone.now)
                            .limit(5)
         data = []
         names= []
