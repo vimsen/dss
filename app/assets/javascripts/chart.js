@@ -128,8 +128,10 @@ var plotHelper = (function() {
 
     // console.log("old value: " + res[label][d.timestamp] + "  new value: ");
     // console.log(d);
-    if (d.actual[type] != null) {
-        res[label][d.timestamp] = [d.timestamp * 1000, d.actual[type]];
+
+    var value = d.actual[type] || d[type]
+    if (value != null) {
+        res[label][d.timestamp] = [d.timestamp * 1000, value];
     }
 
     if (forecast) {

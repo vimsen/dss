@@ -319,7 +319,8 @@ module FetchAsynch
                       when 86400
                         DateTime.parse(key).utc_offset == 7200 ? # Reject wrong timezones
                             (DateTime.parse(key) - 24.hours).beginning_of_day + Time.zone.parse(key).utc_offset.seconds :
-                            nil                    end
+                            nil
+                    end
         # Rails.logger.debug "ForecastProduction: #{key}: #{DateTime.parse(key) - 24.hours} --- #{timestamp}"
 
         if timestamp && validate_value(value)

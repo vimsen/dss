@@ -22,6 +22,8 @@
           <option value="production">Production</option>
           <option value="consumption">Consumption</option>
           <option value="storage">Storage</option>
+          <option value="dr">Demand Response</option>
+          <option value="reliability">Reliability</option>
         </select>
         <%= collection_select(:interval, :interval_id,
                               Interval.all.order("duration asc"), :id, :name,
