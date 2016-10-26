@@ -127,9 +127,9 @@ var plotHelper = (function() {
     }
 
     // console.log("old value: " + res[label][d.timestamp] + "  new value: ");
-    // console.log(d);
 
-    var value = d.actual[type] || d[type]
+    var value = d.actual[type] != null ? d.actual[type] : d[type];
+    //console.log("Value is: "+ value);
     if (value != null) {
         res[label][d.timestamp] = [d.timestamp * 1000, value];
     }
@@ -139,7 +139,7 @@ var plotHelper = (function() {
       if (res[label] == null) {
         res[label] = {};
       }
-      if (d.forecast[type]) {
+      if (d.forecast[type] !== null) {
         res[label][d.timestamp] = [d.forecast.timestamp * 1000, d.forecast[type]];
       }
     }
