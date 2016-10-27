@@ -101,7 +101,7 @@ module FetchAsynch
                   # Rails.logger.debug "RAW: #{raw}"
                   result = JSON.parse raw
                   # Rails.logger.debug "Result: #{result}"
-                  result_conv = convert_new_to_old_api_v2 result
+                  result_conv = convert_new_to_old_api_v2 result, job[:params][:prosumers]
                   #  Rails.logger.debug "Result_conv: #{result_conv}"
                   ActiveRecord::Base.connection_pool.with_connection do
                     x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}.", event: "output"}.to_json) if x
@@ -213,7 +213,8 @@ module FetchAsynch
     def hash_to_key_value(hash)
       key, value = hash.first
       [
-          DateTime.parse(key).to_s,
+          # DateTime.parse(key).to_s,
+          key,
           value.scan(/-?\d+[,.]?\d*/).first.gsub(/,/, ".").to_f
       ]
     end
@@ -239,6 +240,18 @@ module FetchAsynch
       }
     end
 
+    def validate_timestamp(timestamp)
+
+      case @interval.duration
+        when 900
+          timestamp.to_datetime.to_i % 900 == 0
+        when 3600
+          timestamp.to_datetime.to_i % 3600 == 0
+        when 86400
+          (DateTime.parse(timestamp).beginning_of_day + Time.zone.parse(timestamp).utc_offset.seconds) == (DateTime.parse(timestamp))
+      end
+    end
+
     def validate_value(value)
 
       return true # Some values are just too large
@@ -256,7 +269,7 @@ module FetchAsynch
     def parse_vals(result, intermediate_data, edms_key)
       return if result[edms_key].nil?
       result[edms_key].map(&method(:hash_to_key_value)).each do | key,value |
-        if validate_value(value)
+        if validate_value(value) && validate_timestamp(key)
           intermediate_data[key] ||= empty_data_point_object key
           intermediate_data[key]["procumer_id"] = result["ProsumerId"]
           res  = value.nil? ? nil : value.to_f
@@ -268,27 +281,49 @@ module FetchAsynch
             when "Consumption"
               intermediate_data[key]["actual"]["consumption"] = res
             when "Flexibility"
-              intermediate_data[key]["dr"] = res
+              intermediate_data[key]["dr"] = res unless @interval.duration == 86400
             when "Reliability"
-              intermediate_data[key]["reliability"] = res
+              intermediate_data[key]["reliability"] = res unless @interval.duration == 86400
           end
         end
       end
     end
 
+    def is_valid_iso8601(timestamp)
+      begin
+        Time.iso8601 timestamp
+        return true
+      rescue ArgumentError => e
+        return false
+      end
+    end
 
 
-    def convert_new_to_old_api_v2(data)
+    def convert_new_to_old_api_v2(data, prosumer)
 
       intermediate_data = {}
       result = data.first
-      # Rails.logger.debug JSON.pretty_generate result
+
+      result["ProsumerId"] = prosumer if result["ProsumerId"].nil? || result["ProsumerId"] == ""
+
+      Rails.logger.debug result
 
       %w[Production Storage Consumption Flexibility Reliability].each do |key|
         parse_vals result, intermediate_data, key
       end
 
       result["ForecastConsumption"].map(&method(:hash_to_key_value)).each do | key,value |
+
+        key=key
+        puts "@@@@@@@@@@@@@@@@@@@ #{key.to_s}"
+        if @interval.duration == 86400 && !is_valid_iso8601(key)
+          puts "@@@@@@@@@@@@@@@@@@@ #{key}"
+          key = key.to_datetime.change(:offset => "+0200").to_s
+          puts "@@@@@@@@@@@@@@@@@@@ #{key}"
+          key = (DateTime.parse(key).beginning_of_day + Time.zone.parse(key).utc_offset.seconds).to_s
+          puts "@@@@@@@@@@@@@@@@@@@ #{key}"
+        end
+
         timestamp = case @interval.duration
                       when 900
                         DateTime.parse(key) - 24.hours
@@ -299,7 +334,7 @@ module FetchAsynch
                             (DateTime.parse(key) - 24.hours).beginning_of_day + Time.zone.parse(key).utc_offset.seconds :
                             nil
                     end
-        #  Rails.logger.debug "ForecastConsumption: #{key}: #{DateTime.parse(key) - 24.hours} --- #{timestamp}"
+        # Rails.logger.debug "ForecastConsumption: #{key}: #{DateTime.parse(key) - 24.hours} --- #{timestamp}"
 
         if timestamp && validate_value(value)
           intermediate_data[timestamp] ||= empty_data_point_object timestamp
@@ -307,10 +342,22 @@ module FetchAsynch
           intermediate_data[timestamp]["forecast"]["consumption"] ||= 0
           intermediate_data[timestamp]["forecast"]["consumption"] += value.to_f unless value.nil?
           intermediate_data[timestamp]["forecast"]["timestamp"] = timestamp + 24.hours
+          # puts "-------------> time: #{timestamp}  inter: #{intermediate_data[timestamp]["forecast"]["consumption"]}"
         end
       end if result["ForecastConsumption"].length > 0
 
       result["ForecastProduction"].map(&method(:hash_to_key_value)).each do | key,value |
+
+        key=key
+        puts "@@@@@@@@@@@@@@@@@@@ #{key.to_s}"
+        if @interval.duration == 86400 && !is_valid_iso8601(key)
+          puts "@@@@@@@@@@@@@@@@@@@ #{key}"
+          key = key.to_datetime.change(:offset => "+0200").to_s
+          puts "@@@@@@@@@@@@@@@@@@@ #{key}"
+          key = (DateTime.parse(key).beginning_of_day + Time.zone.parse(key).utc_offset.seconds).to_s
+          puts "@@@@@@@@@@@@@@@@@@@ #{key}"
+        end
+
         timestamp = case @interval.duration
                       when 900
                         DateTime.parse(key) - 24.hours
@@ -321,7 +368,7 @@ module FetchAsynch
                             (DateTime.parse(key) - 24.hours).beginning_of_day + Time.zone.parse(key).utc_offset.seconds :
                             nil
                     end
-        # Rails.logger.debug "ForecastProduction: #{key}: #{DateTime.parse(key) - 24.hours} --- #{timestamp}"
+        # Rails.logger.debug "ForecastProduction: #{key}: #{DateTime.parse(key) - 24.hours} --- #{timestamp}, #{DateTime.parse(key).utc_offset}"
 
         if timestamp && validate_value(value)
           intermediate_data[timestamp] ||= empty_data_point_object timestamp
@@ -329,11 +376,12 @@ module FetchAsynch
           intermediate_data[timestamp]["forecast"]["production"] ||= 0
           intermediate_data[timestamp]["forecast"]["production"] += value.to_f unless value.nil?
           intermediate_data[timestamp]["forecast"]["timestamp"] = timestamp + 24.hours
+          # puts "-------------> time: #{timestamp}  inter: #{intermediate_data[timestamp]["forecast"]["production"]}"
         end
 
       end if result["ForecastProduction"].length > 0
 
-      # Rails.logger.debug JSON.pretty_generate intermediate_data
+      Rails.logger.debug JSON.pretty_generate intermediate_data
       intermediate_data.values
     end
 
