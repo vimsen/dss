@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161018142612) do
+ActiveRecord::Schema.define(version: 20161108102728) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -150,7 +150,7 @@ ActiveRecord::Schema.define(version: 20161018142612) do
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
     t.integer  "plan_id"
-    t.integer  "feeder_id"
+    t.string   "feeder_id"
     t.string   "issuer"
   end
 
@@ -351,7 +351,7 @@ ActiveRecord::Schema.define(version: 20161018142612) do
     t.integer  "connection_type_id"
     t.float    "location_x"
     t.float    "location_y"
-    t.integer  "feeder_id"
+    t.string   "feeder_id"
     t.integer  "prosumer_category_id"
   end
 
