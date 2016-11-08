@@ -8,12 +8,14 @@ class DemandResponse < ActiveRecord::Base
   accepts_nested_attributes_for :dr_targets, allow_destroy: true
   validates_associated :dr_targets
 
+  belongs_to :prosumer_category
+
   has_many :dr_planneds, dependent: :destroy
   has_many :dr_actuals, dependent: :destroy
 
   after_create do
     agent = FetchAsynch::DemandResponseAgent.new
-    agent.dr_activation self.id, self.feeder_id
+    agent.dr_activation self.id, self.feeder_id, self.prosumer_category
   end
 
   def starttime

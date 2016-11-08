@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161108102728) do
+ActiveRecord::Schema.define(version: 20161108141402) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -147,14 +147,16 @@ ActiveRecord::Schema.define(version: 20161108102728) do
 
   create_table "demand_responses", force: :cascade do |t|
     t.integer  "interval_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
     t.integer  "plan_id"
     t.string   "feeder_id"
     t.string   "issuer"
+    t.integer  "prosumer_category_id"
   end
 
   add_index "demand_responses", ["interval_id"], name: "index_demand_responses_on_interval_id", using: :btree
+  add_index "demand_responses", ["prosumer_category_id"], name: "index_demand_responses_on_prosumer_category_id", using: :btree
 
   create_table "dr_actuals", force: :cascade do |t|
     t.integer  "prosumer_id"
@@ -445,6 +447,7 @@ ActiveRecord::Schema.define(version: 20161108102728) do
 
   add_foreign_key "configurations", "users"
   add_foreign_key "demand_responses", "intervals"
+  add_foreign_key "demand_responses", "prosumer_categories"
   add_foreign_key "dr_actuals", "demand_responses"
   add_foreign_key "dr_actuals", "prosumers"
   add_foreign_key "dr_planneds", "demand_responses"

@@ -8,13 +8,21 @@ module FetchAsynch
 
     end
 
-    def dr_activation(demand_response_id, feeder_id)
+    def select_prosumers(feeder_id, prosumer_category)
+      return prosumer_category.prosumers.pluck(:id).take(5) if feeder_id.nil?
+      case feeder_id.count "_"
+        when 2
+          prosumer_category.prosumers.where(feeder_id: feeder_id).pluck(:id)
+        when 1, 0
+          prosumer_category.prosumers.where("feeder_id ~* ?", "^#{feeder_id}_").pluck(:id)
+      end
+    end
+
+    def dr_activation(demand_response_id, feeder_id, prosumer_category)
       ActiveRecord::Base.connection_pool.with_connection do
         dr_obj = DemandResponse.find(demand_response_id)
 
-        prosumers = feeder_id.nil? ?
-            [26, 27, 29, 30, 31] :
-            Prosumer.where(feeder_id: feeder_id).pluck(:id)
+        prosumers = select_prosumers feeder_id, prosumer_category
 
         request_object = {
             start_time: dr_obj.starttime.to_datetime.to_s,
