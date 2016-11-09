@@ -26,6 +26,9 @@
           <%= collection_select(:interval, :interval_id,
                                 Interval.all.order("duration asc"), :duration, :name,
                                 {include_blank: false, :selected => @interval}) %>
+          <%= collection_select(:prosumer_category, :prosumer_category_id,
+                                ProsumerCategory.all.order("id asc"), :id, :name,
+                                {include_blank: false, :selected => @prosumer_category}) %>
           <input type="submit" value="update graph"/>
         </form>
 
@@ -123,14 +126,20 @@
 
       var start_timestamp = (new Date($("#startdatevalue").val()).getTime());
       var end_timestamp = (new Date($("#enddatevalue").val()).getTime());
-      var duration =  parseInt($("#interval_interval_id").val()) * 1000;
+      var duration = 1000 * parseInt($("#interval_interval_id").val());
 
 
-      data[0].data = [];
-      for (var i = 0; i <= (end_timestamp - start_timestamp)/duration; i++) {
+      data = [ {
+        data: [],
+        label: "Targets",
+        editable: true
+      }];
+      for (var i = 0; i <= (end_timestamp - start_timestamp) / duration; i++) {
         data[0].data[i] = [start_timestamp + i * duration, target];
       }
       plot = $.plot($("#placeholder"), data, options);
+      $("#progress").empty();
+      $("#prosumer_results").empty();
       return false;
     });
 
@@ -143,10 +152,11 @@
       $("#run_algorithm :input").prop("disabled", true);
 
       var params = {
-        startDate: $("#startdatevalue").val(),
-        endDate: $("#enddatevalue").val(),
+        startDate: new Date($("#startdatevalue").val()),
+        endDate: new Date($("#enddatevalue").val()),
         interval: $("#interval_interval_id").val(),
-        targets: JSON.stringify(data[0].data)
+        targets: JSON.stringify(data[0].data),
+        prosumer_category_id: $("#prosumer_category_prosumer_category_id").val()
       }
 
      // alert("/stream/run_algorithm&" + $.param(params));

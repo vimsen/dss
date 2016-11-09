@@ -316,6 +316,7 @@ class StreamController < ApplicationController
         ActiveRecord::Base.connection_pool.with_connection do
           puts "Running algorithm"
           tm = ClusteringModule::TargetMatcher.new(
+              prosumers: Prosumer.where(prosumer_category: params[:prosumer_category_id]),
               startDate: DateTime.parse(params[:startDate]),
               endDate: DateTime.parse(params[:endDate]),
               interval: params[:interval].to_i,
