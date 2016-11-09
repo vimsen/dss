@@ -95,6 +95,7 @@ module FetchAsynch
 
           Parallel.each(jobs, in_threads: 3) do |job|
             begin
+              # sleep 1
               case job[:api]
                 when :new
                   raw = edms_rest_resource['getdataVGW'].get params: job[:params], :content_type => :json, :accept => :json
