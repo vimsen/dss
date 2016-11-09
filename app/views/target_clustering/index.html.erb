@@ -14,30 +14,20 @@
       </div><!-- /.panel-heading -->
       <div class="panel-body">
 
-        <form action="#" id="maxvalueform">
+        <form action="#" id="plot_params">
           <label>Graph scale</label>
           <input type="text" name="max" value="100" id="maxvalue"/>
-        </form>
-
-        <form action="#" id="targetvalueform">
           <label>Target value</label>
           <input type="text" name="target" value="50" id="targetvalue"/>
-        </form>
-
-        <form action="#" id="startdateform">
           <label>Start date</label>
           <input type="text" name="startdate" value="<%= @startDate.strftime("%Y/%m/%d %H:00") -%>" id="startdatevalue"/>
-        </form>
-
-        <form action="#" id="enddateform">
-          <label>Start date</label>
+          <label>End date</label>
           <input type="text" name="enddate" value="<%= @endDate.strftime("%Y/%m/%d %H:00") -%>" id="enddatevalue"/>
+          <%= collection_select(:interval, :interval_id,
+                                Interval.all.order("duration asc"), :duration, :name,
+                                {include_blank: false, :selected => @interval}) %>
+          <input type="submit" value="update graph"/>
         </form>
-
-        <%= collection_select(:interval, :interval_id,
-                              Interval.all.order("duration asc"), :id, :name,
-                              {include_blank: false, :selected => @interval}) %>
-
 
         <div id="placeholder" style="width:600px;height:300px"></div>
 
@@ -126,16 +116,19 @@
         plot = $.plot($("#placeholder"), data, options);
     });
 
-    $("#maxvalueform").submit(function () {
-      options.yaxis.max = $("#maxvalue").val();
-      plot = $.plot($("#placeholder"), data, options);
-      return false;
-    });
 
-    $("#targetvalueform").submit(function () {
+    $("#plot_params").submit(function (){
+      options.yaxis.max = $("#maxvalue").val();
       var target = parseFloat($("#targetvalue").val());
-      for (var i = 0; i < data[0].data.length; i++) {
-        data[0].data[i][1] = target;
+
+      var start_timestamp = (new Date($("#startdatevalue").val()).getTime());
+      var end_timestamp = (new Date($("#enddatevalue").val()).getTime());
+      var duration =  parseInt($("#interval_interval_id").val()) * 1000;
+
+
+      data[0].data = [];
+      for (var i = 0; i <= (end_timestamp - start_timestamp)/duration; i++) {
+        data[0].data[i] = [start_timestamp + i * duration, target];
       }
       plot = $.plot($("#placeholder"), data, options);
       return false;
@@ -150,9 +143,9 @@
       $("#run_algorithm :input").prop("disabled", true);
 
       var params = {
-        startDate: "<%= @startDate -%>",
-        endDate: "<%= @endDate -%>",
-        interval: "<%= @interval -%>",
+        startDate: $("#startdatevalue").val(),
+        endDate: $("#enddatevalue").val(),
+        interval: $("#interval_interval_id").val(),
         targets: JSON.stringify(data[0].data)
       }
 
