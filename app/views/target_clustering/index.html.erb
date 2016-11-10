@@ -17,23 +17,23 @@
         <form action="#" id="plot_params" class="form-inline">
           <div class="form-group form-group-sm">
             <label for="maxvalue">Graph max</label>
-            <input type="text" name="max" value="100" class="form-control input-sm" id="maxvalue">
+            <input type="text" name="max" value="100" class="form-control input-sm" id="maxvalue" size="6">
           </div>
           <div class="form-group form-group-sm">
-            <label for="maxvalue">Graph min</label>
-            <input type="text" name="min" value="-100" class="form-control input-sm" id="minvalue">
+            <label for="minvalue">Graph min</label>
+            <input type="text" name="min" value="-100" class="form-control input-sm" id="minvalue" size="6">
           </div>
           <div class="form-group form-group-sm">
             <label for="targetvalue">Target value</label>
-            <input type="text" name="target" value="50" class="form-control input-sm" id="targetvalue">
+            <input type="text" name="target" value="50" class="form-control input-sm" id="targetvalue" size="6">
           </div>
           <div class="form-group form-group-sm">
             <label for="startdatevalue">Start date</label>
-            <input type="text" name="startdate" value="<%= @startDate.strftime("%Y/%m/%d %H:00") -%>" class="form-control input-sm" id="startdatevalue">
+            <input type="text" name="startdate" value="<%= @startDate.strftime("%Y/%m/%d %H:00") -%>" class="form-control input-sm" id="startdatevalue" size="17">
           </div>
           <div class="form-group form-group-sm">
             <label for="enddatevalue">End date</label>
-            <input type="text" name="enddate" value="<%= @endDate.strftime("%Y/%m/%d %H:00") -%>" class="form-control input-sm" id="enddatevalue">
+            <input type="text" name="enddate" value="<%= @endDate.strftime("%Y/%m/%d %H:00") -%>" class="form-control input-sm" id="enddatevalue" size="17">
           </div>
           <div class="form-group form-group-sm">
             <label for="interval_interval_id">Interval</label>
@@ -124,7 +124,7 @@
       },
       yaxis: {
         tickDecimals: 0,
-        min: 0,
+        min: $("#minvalue").val(),
         max: $("#maxvalue").val()
       },
       legend:{

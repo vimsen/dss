@@ -29,8 +29,7 @@ module FetchAsynch
                                                startDate: dr_obj.starttime,
                                                endDate: dr_obj.stoptime,
                                                interval: dr_obj.interval.duration,
-                                               targets: dr_obj.dr_targets.order(timestamp: :asc).map{|t| -t.volume},
-                                               prosumption_vector:
+                                               targets: dr_obj.dr_targets.order(timestamp: :asc).map{|t| -t.volume}
 
       res = tm.run[:prosumers]
       [ res, eligible_prosumers - res]
