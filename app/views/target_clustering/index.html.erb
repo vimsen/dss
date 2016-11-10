@@ -14,27 +14,48 @@
       </div><!-- /.panel-heading -->
       <div class="panel-body">
 
-        <form action="#" id="plot_params">
-          <label>Graph scale</label>
-          <input type="text" name="max" value="100" id="maxvalue"/>
-          <label>Target value</label>
-          <input type="text" name="target" value="50" id="targetvalue"/>
-          <label>Start date</label>
-          <input type="text" name="startdate" value="<%= @startDate.strftime("%Y/%m/%d %H:00") -%>" id="startdatevalue"/>
-          <label>End date</label>
-          <input type="text" name="enddate" value="<%= @endDate.strftime("%Y/%m/%d %H:00") -%>" id="enddatevalue"/>
-          <%= collection_select(:interval, :interval_id,
-                                Interval.all.order("duration asc"), :duration, :name,
-                                {include_blank: false, :selected => @interval}) %>
-          <%= collection_select(:prosumer_category, :prosumer_category_id,
-                                ProsumerCategory.all.order("id asc"), :id, :name,
-                                {include_blank: false, :selected => @prosumer_category}) %>
-          <input type="submit" value="update graph"/>
+        <form action="#" id="plot_params" class="form-inline">
+          <div class="form-group form-group-sm">
+            <label for="maxvalue">Graph max</label>
+            <input type="text" name="max" value="100" class="form-control input-sm" id="maxvalue">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="maxvalue">Graph min</label>
+            <input type="text" name="min" value="-100" class="form-control input-sm" id="minvalue">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="targetvalue">Target value</label>
+            <input type="text" name="target" value="50" class="form-control input-sm" id="targetvalue">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="startdatevalue">Start date</label>
+            <input type="text" name="startdate" value="<%= @startDate.strftime("%Y/%m/%d %H:00") -%>" class="form-control input-sm" id="startdatevalue">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="enddatevalue">End date</label>
+            <input type="text" name="enddate" value="<%= @endDate.strftime("%Y/%m/%d %H:00") -%>" class="form-control input-sm" id="enddatevalue">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="interval_interval_id">Interval</label>
+            <%= collection_select(:interval, :interval_id,
+                                  Interval.all.order("duration asc"), :duration, :name,
+                                  {include_blank: false, :selected => @interval}, class: :'form-control input-sm') %>
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="prosumer_category_prosumer_category_id">Prosumer category</label>
+            <%= collection_select(:prosumer_category, :prosumer_category_id,
+                                  ProsumerCategory.all.order("id asc"), :id, :name,
+                                  {include_blank: false, :selected => @prosumer_category}, class: :'form-control input-sm') %>
+          </div>
+          <br>
+          <div class="form-group form-group-sm">
+            <input type="submit" value="update graph" class="form-control input-sm">
+          </div>
         </form>
 
         <div id="placeholder" style="width:600px;height:300px"></div>
 
-        <hr/>
+        <hr>
         <div id="prosumer_results"></div>
 
       </div> <!-- /.panel-body -->
@@ -49,8 +70,8 @@
         Run matching algorithm
       </div>
       <div class="panel-body">
-        <form action="#" id="run_algorithm">
-          <input type="submit" value="Run Algorithm"/>
+        <form action="#" id="run_algorithm" class="form-inline">
+          <input type="submit" value="Run Algorithm" class="btn btn-primary">
         </form>
         <div id="progress" class="terminal">
 
@@ -87,7 +108,7 @@
       },
       tooltip: true,
       tooltipOpts: {
-        content: "'%s'<br/>%x<br/>%y.2",
+        content: "'%s'<br>%x<br>%y.2",
         shifts: {
           x: -60,
           y: 25
@@ -95,7 +116,7 @@
       },
       xaxis: {
         mode: "time",
-        timeformat: "%d/%m/%Y<br/>%h:%M:%S",
+        timeformat: "%d/%m/%Y<br>%h:%M:%S",
         timezone: "browser",
         ticks: 2 /*,
          timeformat : "%y/%m/%d-%h:%M:%S",
@@ -122,12 +143,12 @@
 
     $("#plot_params").submit(function (){
       options.yaxis.max = $("#maxvalue").val();
+      options.yaxis.min = $("#minvalue").val();
       var target = parseFloat($("#targetvalue").val());
 
       var start_timestamp = (new Date($("#startdatevalue").val()).getTime());
       var end_timestamp = (new Date($("#enddatevalue").val()).getTime());
       var duration = 1000 * parseInt($("#interval_interval_id").val());
-
 
       data = [ {
         data: [],
@@ -166,13 +187,13 @@
       source.addEventListener('output', function(e) {
         //   console.log("Datapoint received ", e);
         var message = JSON.parse(e.data);
-        $("#progress").append("<BR/>" + message).animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
+        $("#progress").append("<BR>" + message).animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
       });
 
       source.addEventListener('result', function(e) {
         var message = JSON.parse(e.data);
         source.close();
-        $("#progress").append("<BR/>" + message).animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
+        $("#progress").append("<BR>" + message).animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
         $("#run_algorithm :input").prop("disabled", false);
         data[0].editable = true;
         data[1] = {
