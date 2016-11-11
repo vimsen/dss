@@ -25,7 +25,12 @@ class DownloadAndPublishTest < ActiveSupport::TestCase
     prosumer = prosumers(:one)
 
 
-    FetchAsynch::DownloadAndPublish.new( [prosumer], Interval.find_by_duration(3600).id, startdate, enddate, nil, true)
+    FetchAsynch::DownloadAndPublish.new prosumers: [prosumer],
+                                        interval: Interval.find_by_duration(3600).id,
+                                        startdate: startdate,
+                                        enddate: enddate,
+                                        channel: nil,
+                                        async: true
     # puts Prosumer.first.data_points.count
     validate_data_points(prosumer, Interval.find_by_duration(3600).id, startdate, enddate)
 
@@ -37,8 +42,13 @@ class DownloadAndPublishTest < ActiveSupport::TestCase
 
     prosumer = prosumers(:two)
 
+    FetchAsynch::DownloadAndPublish.new prosumers: [prosumer],
+                                        interval: Interval.find_by_duration(3600).id,
+                                        startdate: startdate,
+                                        enddate: enddate,
+                                        channel: nil,
+                                        async: true
 
-    FetchAsynch::DownloadAndPublish.new( [prosumer], Interval.find_by_duration(3600).id, startdate, enddate, nil, true)
     # puts Prosumer.first.data_points.count
     validate_data_points(prosumer, Interval.find_by_duration(3600).id, startdate, enddate)
 

@@ -11,7 +11,12 @@ class BidDayAheadJob < ActiveJob::Base
     Rails.logger.debug "Downloading data:"
 
     if ENV["download"] != "false"
-      FetchAsynch::DownloadAndPublish.new(Prosumer.real_time, 2, DateTime.now - 2.days, DateTime.now + 48.hours, nil, true)
+      FetchAsynch::DownloadAndPublish.new prosumers: Prosumer.real_time,
+                                          interval: 2,
+                                          startdate: DateTime.now - 2.days,
+                                          enddate: DateTime.now + 48.hours,
+                                          channel: nil,
+                                          async: true
     end
 
 
@@ -31,9 +36,9 @@ class BidDayAheadJob < ActiveJob::Base
 
     Rails.logger.debug "Downloaded markets"
 
-    day_ahead_market = (markets.find do |m|
+    day_ahead_market = markets.find do |m|
       m["name"] == "Day Ahead"
-    end)
+    end
 
     Rails.logger.debug "found day ahead market"
     newbid = {

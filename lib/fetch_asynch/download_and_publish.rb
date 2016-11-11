@@ -9,7 +9,13 @@ module FetchAsynch
   # This class downloads prosumption data from the EDMS, and then inserts them
   # in the DB, and publishes the results to the appropriate rabbitMQ channel.
   class DownloadAndPublish
-    def initialize(prosumers, interval, startdate, enddate, channel, async = false, forecasts = true)
+    def initialize(prosumers: Prosumer.real_time,
+                   interval: 3,
+                   startdate: DateTime.now - 1.week,
+                   enddate: DateTime.now,
+                   channel: nil,
+                   async: false,
+                   forecasts: true)
       @prosumers = prosumers
       @startdate = startdate
       @enddate = enddate

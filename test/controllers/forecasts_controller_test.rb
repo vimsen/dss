@@ -3,6 +3,7 @@ require 'test_helper'
 class ForecastsControllerTest < ActionController::TestCase
   setup do
     @forecast = forecasts(:one)
+    sign_in User.first
   end
 
   test "should get index" do

@@ -1,6 +1,8 @@
 class ForecastsController < ApplicationController
   before_action :set_forecast, only: [:show, :edit, :update, :destroy]
 
+  load_and_authorize_resource
+
   # GET /forecasts
   # GET /forecasts.json
   def index

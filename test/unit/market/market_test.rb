@@ -10,7 +10,12 @@ class MarketTest < ActiveSupport::TestCaseWithProsAndMarketData
     # @prosumers = [Prosumer.find_by(edms_id: 1)]
     # @prosumers = Prosumer.all
 
-    FetchAsynch::DownloadAndPublish.new( @prosumers, Interval.find_by_duration(3600).id, @startdate, @enddate, nil, true)
+    FetchAsynch::DownloadAndPublish.new prosumers: @prosumers,
+                                        interval: Interval.find_by_duration(3600).id,
+                                        startdate: @startdate,
+                                        enddate: @enddate,
+                                        channel: nil,
+                                        async: true
   end
 
   test "Should calculate market data" do

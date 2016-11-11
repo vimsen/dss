@@ -259,10 +259,17 @@ class StreamController < ApplicationController
 
     remaining = 2
     # FetchAsynch::DownloadAndPublish.new(Prosumer.all, 1, startdate, enddate, channel_name)
-    FetchAsynch::DownloadAndPublish.new(Prosumer.real_time, 2, startdate, enddate, channel_name)
-    FetchAsynch::DownloadAndPublish.new(Prosumer.real_time, 3, startdate, enddate, channel_name)
+    FetchAsynch::DownloadAndPublish.new prosumers: Prosumer.real_time,
+                                        interval: 2,
+                                        startdate: startdate,
+                                        enddate: enddate,
+                                        channel: channel_name
 
-
+    FetchAsynch::DownloadAndPublish.new prosumers: Prosumer.real_time,
+                                        interval: 3,
+                                        startdate: startdate,
+                                        enddate: enddate,
+                                        channel: channel_name
 
     until remaining == 0
       sleep 1;
