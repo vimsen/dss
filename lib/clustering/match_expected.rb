@@ -8,12 +8,13 @@ module ClusteringModule
     attr_accessor :prosumers
 
     def initialize(prosumers: Prosumer.all,
-                   startDate: Time.now - 1.day,
-                   endDate: Time.now,
+                   startDate: DateTime.now - 1.day,
+                   endDate: DateTime.now,
                    interval: 1.hour,
                    targets: 25.times.map {|ts| 0},
                    rb_channel: nil,
-                   prosumption_vector: nil
+                   prosumption_vector: nil,
+                   download: :missing
       )
 
       method(__method__).parameters.each do |type, k|
@@ -96,6 +97,19 @@ module ClusteringModule
     end
 
     def real_prosumption
+
+      if @downlaod
+        FetchAsynch::DownloadAndPublish.new prosumers: @prosumers,
+                                            interval: Interval.find_by(duration: @interval).id,
+                                            startdate: @startDate,
+                                            enddate: @endDate + @interval.seconds,
+                                            channel: @rb_channel,
+                                            async: true,
+                                            forecasts: false,
+                                            only_missing: @download != :all
+
+      end
+
       result = Hash[@prosumers.map {|p| [p.id, timestamps.map{|ts| 0}]}]
 
       timestamps.map do |ts|

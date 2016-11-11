@@ -1,5 +1,4 @@
 require 'clustering/match_expected'
-require 'fetch_asynch/download_and_publish'
 
 module FetchAsynch
   class DemandResponseAgent
@@ -40,16 +39,6 @@ module FetchAsynch
         dr_obj = DemandResponse.find(demand_response_id)
 
         el_prosumers = eligible_prosumers(feeder_id, prosumer_category.prosumers)
-
-=begin
-        FetchAsynch::DownloadAndPublish.new el_prosumers,
-                                            dr_obj.interval.id,
-                                            dr_obj.starttime.to_datetime,
-                                            dr_obj.stoptime.to_datetime,
-                                            nil,
-                                            true,
-                                            false
-=end
 
         prosumers_primary, prosumers_secondary = select_prosumers el_prosumers, dr_obj
 

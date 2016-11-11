@@ -15,7 +15,8 @@ module FetchAsynch
                    enddate: DateTime.now,
                    channel: nil,
                    async: false,
-                   forecasts: true)
+                   forecasts: true,
+                   only_missing: false)
       @prosumers = prosumers
       @startdate = startdate
       @enddate = enddate
@@ -65,6 +66,7 @@ module FetchAsynch
             #    jobs.unshift params: params.merge(prosumers: pr_id, pointer: 2, startdate: thresh.to_s, enddate: enddate.to_s), api: :new
             #  else
                 # for real data:
+
                 jobs.unshift params: params.merge(prosumers: pr_id, pointer: 2), api: :new
             #  end
 
