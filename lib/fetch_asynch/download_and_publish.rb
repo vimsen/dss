@@ -25,27 +25,14 @@ module FetchAsynch
       end
 
 
-      max_points = ((enddate.to_f - startdate.to_f) / Interval.find(interval).duration.seconds).to_i
-      max_forc = (1.day / Interval.find(interval).duration.seconds).to_i
-      real_data_points_in_db = DataPoint
-                                   .joins(:prosumer)
-                                   .where(prosumer: prosumers, timestamp: startdate .. enddate, interval: interval)
-                                   .where('? IS NOT NULL OR ? IS NOT NULL', :production, :consumption)
-                                   .group('prosumers.edms_id')
-                                   .count if only_missing
-      forecast_data_points_in_db = DataPoint
-                                       .joins(:prosumer)
-                                       .where(prosumer: prosumers, timestamp: startdate .. enddate, interval: interval)
-                                       .where('? IS NOT NULL OR ? IS NOT NULL', :f_production, :f_consumption)
-                                       .group('prosumers.edms_id', 'date(timestamp)')
-                                       .count if forecasts && only_missing
-
 
       Rails.logger.debug "Starting new Thread..."
       # Thread.abort_on_exception = true
       thread = Thread.new do
         begin
           ActiveRecord::Base.forbid_implicit_checkout_for_thread!
+
+
           x = nil
           begin
             bunny_channel = $bunny.create_channel if channel
@@ -58,6 +45,21 @@ module FetchAsynch
           jobs = []
 
           ActiveRecord::Base.connection_pool.with_connection do
+            max_points = ((enddate.to_f - startdate.to_f) / Interval.find(interval).duration.seconds).to_i
+            max_forc = (1.day / Interval.find(interval).duration.seconds).to_i
+            real_data_points_in_db = DataPoint
+                                         .joins(:prosumer)
+                                         .where(prosumer: prosumers, timestamp: startdate .. enddate, interval: interval)
+                                         .where('? IS NOT NULL OR ? IS NOT NULL', :production, :consumption)
+                                         .group('prosumers.edms_id')
+                                         .count if only_missing
+            forecast_data_points_in_db = DataPoint
+                                             .joins(:prosumer)
+                                             .where(prosumer: prosumers, timestamp: startdate .. enddate, interval: interval)
+                                             .where('? IS NOT NULL OR ? IS NOT NULL', :f_production, :f_consumption)
+                                             .group('prosumers.edms_id', 'date(timestamp)')
+                                             .count if forecasts && only_missing
+
 
             params = { # prosumers: prosumers.map {|p| p.edms_id}.reject{|id| is_integer? id },
                        startdate: startdate.to_s,
