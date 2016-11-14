@@ -47,6 +47,10 @@
                                   ProsumerCategory.all.order("id asc"), :id, :name,
                                   {include_blank: false, :selected => @prosumer_category}, class: :'form-control input-sm') %>
           </div>
+          <div class="form-group form-groum-sm">
+            <label for="download">Download datapoints</label>
+            <%= select_tag(:download, options_for_select(["missing", "all", "none"]), class: :'form-control input-sm') %>
+          </div>
           <br>
           <div class="form-group form-group-sm">
             <input type="submit" value="update graph" class="form-control input-sm">
@@ -177,7 +181,8 @@
         endDate: new Date($("#enddatevalue").val()),
         interval: $("#interval_interval_id").val(),
         targets: JSON.stringify(data[0].data),
-        prosumer_category_id: $("#prosumer_category_prosumer_category_id").val()
+        prosumer_category_id: $("#prosumer_category_prosumer_category_id").val(),
+        download: $("#download").val()
       }
 
      // alert("/stream/run_algorithm&" + $.param(params));

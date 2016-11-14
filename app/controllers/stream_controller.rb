@@ -328,7 +328,8 @@ class StreamController < ApplicationController
               endDate: DateTime.parse(params[:endDate]),
               interval: params[:interval].to_i,
               targets: JSON.parse(params[:targets]).map{|v| v[1]},
-              rb_channel: channel_name
+              rb_channel: channel_name,
+              download: params[:download] == "none" ? nil : params[:download].to_sym
           )
           puts "Object created"
           results = tm.run

@@ -24,6 +24,23 @@ module FetchAsynch
         @interval = Interval.find(interval)
       end
 
+
+      max_points = ((enddate.to_f - startdate.to_f) / Interval.find(interval).duration.seconds).to_i
+      max_forc = (1.day / Interval.find(interval).duration.seconds).to_i
+      real_data_points_in_db = DataPoint
+                                   .joins(:prosumer)
+                                   .where(prosumer: prosumers, timestamp: startdate .. enddate, interval: interval)
+                                   .where('? IS NOT NULL OR ? IS NOT NULL', :production, :consumption)
+                                   .group('prosumers.edms_id')
+                                   .count if only_missing
+      forecast_data_points_in_db = DataPoint
+                                       .joins(:prosumer)
+                                       .where(prosumer: prosumers, timestamp: startdate .. enddate, interval: interval)
+                                       .where('? IS NOT NULL OR ? IS NOT NULL', :f_production, :f_consumption)
+                                       .group('prosumers.edms_id', 'date(timestamp)')
+                                       .count if forecasts && only_missing
+
+
       Rails.logger.debug "Starting new Thread..."
       # Thread.abort_on_exception = true
       thread = Thread.new do
@@ -50,6 +67,7 @@ module FetchAsynch
             new_api_prosumer_ids = prosumers.map {|p| p.edms_id}.select{|id| newAPI? id }
             old_api_prosumer_ids = prosumers.map {|p| p.edms_id}.reject{|id| newAPI? id }
 
+            old_api_prosumer_ids.select!{|p| real_data_points_in_db[p] < max_points } if only_missing
 
             # Old api jobs
             old_api_prosumer_ids.each_slice(10) do |slice|
@@ -67,8 +85,9 @@ module FetchAsynch
             #  else
                 # for real data:
 
+              if !only_missing || real_data_points_in_db[pr_id].nil? || real_data_points_in_db[pr_id] < max_points
                 jobs.unshift params: params.merge(prosumers: pr_id, pointer: 2), api: :new
-            #  end
+              end
 
 
               # for forecasts:
@@ -76,11 +95,14 @@ module FetchAsynch
             # Deleted until forecasts are fixed, no point requesting stugff we don't get
               if forecasts
                  ((startdate - 1.day)...enddate).each do | d |
-                   jobs.push params: params.merge(prosumers: pr_id, pointer: 2, startdate: d, enddate: d + 1.hour), api: :new
+                   if !only_missing || forecast_data_points_in_db[[pr_id, d.to_date]].nil? || forecast_data_points_in_db[[pr_id, d.to_date]] < max_forc
+                     jobs.push params: params.merge(prosumers: pr_id, pointer: 2, startdate: d, enddate: d + 1.hour), api: :new
+                   end
                  end
               end
             end
 
+=begin
             # Try to download everything from FMS
             if forecasts
               prosumers.map {|p| p.edms_id}.each do |pr_id|
@@ -92,6 +114,8 @@ module FetchAsynch
                 end
               end
             end
+=end
+
           end
 
 

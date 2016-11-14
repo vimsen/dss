@@ -98,7 +98,8 @@ module ClusteringModule
 
     def real_prosumption
 
-      if @downlaod
+      if @download
+        puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ #{@download}"
         FetchAsynch::DownloadAndPublish.new prosumers: @prosumers,
                                             interval: Interval.find_by(duration: @interval).id,
                                             startdate: @startDate,
@@ -106,7 +107,7 @@ module ClusteringModule
                                             channel: @rb_channel,
                                             async: true,
                                             forecasts: false,
-                                            only_missing: @download != :all
+                                            only_missing: @download == :missing
 
       end
 
