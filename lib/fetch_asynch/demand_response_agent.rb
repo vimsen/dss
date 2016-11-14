@@ -23,7 +23,6 @@ module FetchAsynch
 
     def select_prosumers(eligible_prosumers, dr_obj)
       puts "The targets are: #{dr_obj.dr_targets}"
-
       tm = ClusteringModule::TargetMatcher.new prosumers: eligible_prosumers,
                                                startDate: dr_obj.starttime,
                                                endDate: dr_obj.stoptime,
@@ -34,35 +33,46 @@ module FetchAsynch
       [ res, eligible_prosumers - res]
     end
 
-    def dr_activation(demand_response_id, feeder_id, prosumer_category)
-      ActiveRecord::Base.connection_pool.with_connection do
-        dr_obj = DemandResponse.find(demand_response_id)
+    def dr_activation(dr_obj, feeder_id, prosumer_category)
+      Thread.new do
+        begin
+          ActiveRecord::Base.forbid_implicit_checkout_for_thread!
 
-        el_prosumers = eligible_prosumers(feeder_id, prosumer_category.prosumers)
+          ActiveRecord::Base.connection_pool.with_connection do
+            el_prosumers = eligible_prosumers(feeder_id, prosumer_category.prosumers)
 
-        prosumers_primary, prosumers_secondary = select_prosumers el_prosumers, dr_obj
+            prosumers_primary, prosumers_secondary = select_prosumers el_prosumers, dr_obj
 
-        request_object = {
-            start_time: dr_obj.starttime.to_datetime.to_s,
-            interval: dr_obj.interval.duration,
-            unit: "kW",
-            target_reduction: dr_obj.dr_targets.order(timestamp: :asc).map{|t| t.volume},
-            prosumers_primary: prosumers_primary.map(&:id),
-            prosumers_secondary: prosumers_secondary.map(&:id)
-        }
-        Rails.logger.debug "The request object is #{request_object.to_json}"
+            request_object = {
+                start_time: dr_obj.starttime.to_datetime.to_s,
+                interval: dr_obj.interval.duration,
+                unit: "kW",
+                target_reduction: dr_obj.dr_targets.order(timestamp: :asc).map{|t| t.volume},
+                prosumers_primary: prosumers_primary.map(&:id),
+                prosumers_secondary: prosumers_secondary.map(&:id)
+            }
+            Rails.logger.debug "The request object is #{request_object.to_json}"
 
-        result = @rest_resource['add_request'].post(request_object.to_json, :content_type => :json, :accept => :json)
+            result = @rest_resource['add_request'].post(request_object.to_json, :content_type => :json, :accept => :json)
 
-        #result = '{"status":"REGISTERED","plan_id":123456}';
+            #result = '{"status":"REGISTERED","plan_id":123456}';
 
-        json = JSON.parse result
-        if json["status"] == "REGISTERED"
-          dr_obj.plan_id = json["plan_id"]
-          dr_obj.save
-          Rails.logger.debug "SUCEESS: The result is #{result}"
-        else
-          Rails.logger.debug "FAILURE: The result is #{result}"
+            json = JSON.parse result
+            if json["status"] == "REGISTERED"
+              dr_obj.plan_id = json["plan_id"]
+              dr_obj.save
+              Rails.logger.debug "SUCEESS: The result is #{result}"
+            else
+              Rails.logger.debug "FAILURE: The result is #{result}"
+            end
+          end
+        rescue Exception => e
+          Rails.logger.debug "EXCEPTION: #{e.inspect}"
+          puts "EXCEPTION: #{e.inspect}"
+          Rails.logger.debug "MESSAGE: #{e.message}"
+          puts "MESSAGE: #{e.message}"
+          Rails.logger.debug e.backtrace.join("\n")
+          puts e.backtrace.join("\n")
         end
       end
     end

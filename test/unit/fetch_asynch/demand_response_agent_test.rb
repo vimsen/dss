@@ -12,7 +12,7 @@ class DemandResponseAgentTest < ActiveSupport::TestCaseWithProsumptionData
   test "Should post dr_event" do
 
     @agent = FetchAsynch::DemandResponseAgent.new
-    @agent.dr_activation @dr_obj.id, nil, prosumer_categories(:one)
+    @agent.dr_activation @dr_obj, nil, prosumer_categories(:one)
 
     @dr_obj.reload
     assert_not_nil @dr_obj.plan_id, "Plan id should not be nil"
