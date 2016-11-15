@@ -7,7 +7,7 @@ module ApplicationHelper
       : "fa fa-arrow-down"
     : nil
     direction = (column == sort_column && sort_direction == "asc") ? "desc" : "asc"
-    link_to title, {:sort => column, :direction => direction}, {:class => css_class}
+    link_to "<i class='#{css_class}'></i>#{title}".html_safe, {sort: column, direction: direction, category: params[:category]}
   end
 
   def setActiveMenuItem(menuItem)
