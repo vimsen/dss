@@ -13,9 +13,9 @@ class DemandResponse < ActiveRecord::Base
   has_many :dr_planneds, dependent: :destroy
   has_many :dr_actuals, dependent: :destroy
 
-  after_create do
+  after_commit do
     agent = FetchAsynch::DemandResponseAgent.new
-    agent.dr_activation self, self.feeder_id, self.prosumer_category
+    agent.dr_activation self.reload, self.feeder_id, self.prosumer_category
   end
 
   def starttime
