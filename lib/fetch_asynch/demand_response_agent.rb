@@ -22,7 +22,7 @@ module FetchAsynch
     end
 
     def select_prosumers(eligible_prosumers, dr_obj)
-      puts "The targets are: #{dr_obj.dr_targets}"
+      puts "The targets are: #{dr_obj.dr_targets.pluck(:timestamp, :volume)}"
       tm = ClusteringModule::TargetMatcher.new prosumers: eligible_prosumers,
                                                startDate: dr_obj.starttime.to_datetime,
                                                endDate: dr_obj.stoptime.to_datetime,
@@ -40,6 +40,7 @@ module FetchAsynch
 
           ActiveRecord::Base.connection_pool.with_connection do
             el_prosumers = eligible_prosumers(feeder_id, prosumer_category.prosumers)
+            puts "The eligible prosumers are #{el_prosumers}"
 
             prosumers_primary, prosumers_secondary = select_prosumers el_prosumers, dr_obj
 
@@ -48,8 +49,8 @@ module FetchAsynch
                 interval: dr_obj.interval.duration,
                 unit: "kW",
                 target_reduction: dr_obj.dr_targets.order(timestamp: :asc).map{|t| t.volume},
-                prosumers_primary: prosumers_primary.map(&:id),
-                prosumers_secondary: prosumers_secondary.map(&:id)
+                prosumers_primary: prosumers_primary.map(&:edms_id),
+                prosumers_secondary: prosumers_secondary.map(&:edms_id)
             }
             Rails.logger.debug "The request object is #{request_object.to_json}"
 
