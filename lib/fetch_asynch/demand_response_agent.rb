@@ -24,8 +24,8 @@ module FetchAsynch
     def select_prosumers(eligible_prosumers, dr_obj)
       puts "The targets are: #{dr_obj.dr_targets}"
       tm = ClusteringModule::TargetMatcher.new prosumers: eligible_prosumers,
-                                               startDate: dr_obj.starttime,
-                                               endDate: dr_obj.stoptime,
+                                               startDate: dr_obj.starttime.to_datetime,
+                                               endDate: dr_obj.stoptime.to_datetime,
                                                interval: dr_obj.interval.duration,
                                                targets: dr_obj.dr_targets.order(timestamp: :asc).map{|t| -t.volume}
 
