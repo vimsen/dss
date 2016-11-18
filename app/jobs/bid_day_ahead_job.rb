@@ -5,16 +5,16 @@ require 'fetch_asynch/download_and_publish'
 class BidDayAheadJob < ActiveJob::Base
   queue_as :default
 
-  def perform(*args)
+  def perform(prosumers: Prosumer.real_time, interval: 2)
 
     Rails.logger.debug "Arguments:  #{ENV["download"]}"
-    Rails.logger.debug "Downloading data:"
+    Rails.logger.debug "Downloading data for prosumers: #{prosumers}"
 
     if ENV["download"] != "false"
-      FetchAsynch::DownloadAndPublish.new prosumers: Prosumer.real_time,
-                                          interval: 2,
+      FetchAsynch::DownloadAndPublish.new prosumers: prosumers,
+                                          interval: interval,
                                           startdate: DateTime.now - 2.days,
-                                          enddate: DateTime.now + 48.hours,
+                                            enddate: DateTime.now + 48.hours,
                                           channel: nil,
                                           async: true
     end
