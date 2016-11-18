@@ -341,7 +341,7 @@ module FetchAsynch
 
       result["ProsumerId"] = prosumer if result["ProsumerId"].nil? || result["ProsumerId"] == ""
 
-      Rails.logger.debug result
+      # Rails.logger.debug result
 
       %w[Production Storage Consumption Flexibility Reliability].each do |key|
         parse_vals result, intermediate_data, key
@@ -350,13 +350,13 @@ module FetchAsynch
       result["ForecastConsumption"].map(&method(:hash_to_key_value)).each do | key,value |
 
         key=key
-        puts "@@@@@@@@@@@@@@@@@@@ #{key.to_s}"
+        # puts "@@@@@@@@@@@@@@@@@@@ #{key.to_s}"
         if @interval.duration == 86400 && !is_valid_iso8601(key)
-          puts "@@@@@@@@@@@@@@@@@@@ #{key}"
+          # puts "@@@@@@@@@@@@@@@@@@@ #{key}"
           key = key.to_datetime.change(:offset => "+0200").to_s
-          puts "@@@@@@@@@@@@@@@@@@@ #{key}"
+          # puts "@@@@@@@@@@@@@@@@@@@ #{key}"
           key = (DateTime.parse(key).beginning_of_day + Time.zone.parse(key).utc_offset.seconds).to_s
-          puts "@@@@@@@@@@@@@@@@@@@ #{key}"
+          # puts "@@@@@@@@@@@@@@@@@@@ #{key}"
         end
 
         timestamp = case @interval.duration
@@ -384,13 +384,13 @@ module FetchAsynch
       result["ForecastProduction"].map(&method(:hash_to_key_value)).each do | key,value |
 
         key=key
-        puts "@@@@@@@@@@@@@@@@@@@ #{key.to_s}"
+        # puts "@@@@@@@@@@@@@@@@@@@ #{key.to_s}"
         if @interval.duration == 86400 && !is_valid_iso8601(key)
-          puts "@@@@@@@@@@@@@@@@@@@ #{key}"
+          # puts "@@@@@@@@@@@@@@@@@@@ #{key}"
           key = key.to_datetime.change(:offset => "+0200").to_s
-          puts "@@@@@@@@@@@@@@@@@@@ #{key}"
+          # puts "@@@@@@@@@@@@@@@@@@@ #{key}"
           key = (DateTime.parse(key).beginning_of_day + Time.zone.parse(key).utc_offset.seconds).to_s
-          puts "@@@@@@@@@@@@@@@@@@@ #{key}"
+          # puts "@@@@@@@@@@@@@@@@@@@ #{key}"
         end
 
         timestamp = case @interval.duration
@@ -416,13 +416,13 @@ module FetchAsynch
 
       end if result["ForecastProduction"].length > 0
 
-      Rails.logger.debug JSON.pretty_generate intermediate_data
+      # Rails.logger.debug JSON.pretty_generate intermediate_data
       intermediate_data.values
     end
 
     def datareceived(data, x)
 
-      Rails.logger.debug "Finding existing datapoints"
+      # Rails.logger.debug "Finding existing datapoints"
       new_data_points = []
       procs = []
 
