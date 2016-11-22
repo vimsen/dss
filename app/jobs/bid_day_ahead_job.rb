@@ -6,7 +6,8 @@ class BidDayAheadJob < ActiveJob::Base
   queue_as :default
 
   def perform(prosumers: Prosumer.real_time,
-              interval: 2)
+              interval: 2,
+              date: Date.tomorrow)
 
     Rails.logger.debug "Arguments:  #{ENV["download"]}"
     Rails.logger.debug "Downloading data for prosumers: #{prosumers}"
@@ -14,13 +15,14 @@ class BidDayAheadJob < ActiveJob::Base
     if ENV["download"] != "false"
       FetchAsynch::DownloadAndPublish.new prosumers: prosumers,
                                           interval: interval,
-                                          startdate: DateTime.now - 2.days,
-                                            enddate: DateTime.now + 48.hours,
+                                          startdate: (date - 48.days).to_datetime,
+                                          enddate: (date + 48.hours).to_datetime,
                                           channel: nil,
-                                          async: true
+                                          async: true,
+                                          forecasts: true,
+                                          only_missing: true,
+                                          threads: 30
     end
-
-
 
     Rails.logger.debug "Downloaded data"
     config = YAML.load(ERB.new(File.read("#{Rails.root}/config/vimsen_hosts.yml")).result)
@@ -44,9 +46,9 @@ class BidDayAheadJob < ActiveJob::Base
     Rails.logger.debug "found day ahead market"
     newbid = {
         market_id: day_ahead_market["id"],
-        date: Date.tomorrow.to_s,
+        date: date.to_s,
         bid_items_attributes: day_ahead_market["blocks"].map do |b|
-          volume = DataPoint.where(prosumer: Prosumer.real_time, interval_id: 2, f_timestamp: Date.tomorrow.beginning_of_day + b["starting"].seconds + 1.hour)
+          volume = DataPoint.where(prosumer: prosumers, interval_id: interval, f_timestamp: date.beginning_of_day.to_datetime + b["starting"].seconds + 1.hour)
                        .select('sum(COALESCE(f_consumption,0) - COALESCE(f_production,0)) as f_prosumption')
                        .group(:f_timestamp).map{|dp| dp.f_prosumption}.first || 0
           {
@@ -65,7 +67,14 @@ class BidDayAheadJob < ActiveJob::Base
     Rails.logger.debug "created request object"
     Rails.logger.debug "#{day_ahead_market["blocks"]}, #{request_object.to_json}"
 
-    result = rest_resource['bids'].post(request_object.to_json, :content_type => :json, :accept => :json)
+    result =
+        begin
+          rest_resource['bids'].post(request_object.to_json, :content_type => :json, :accept => :json)
+        rescue RestClient::ExceptionWithResponse => e
+          e.response
+        end
+
+
     Rails.logger.debug "The result is #{result}"
 
     json_response = JSON.parse result

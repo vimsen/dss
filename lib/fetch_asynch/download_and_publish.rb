@@ -16,7 +16,8 @@ module FetchAsynch
                    channel: nil,
                    async: false,
                    forecasts: true,
-                   only_missing: false)
+                   only_missing: false,
+                   threads: 10)
       @prosumers = prosumers
       @startdate = startdate
       @enddate = enddate
@@ -127,7 +128,7 @@ module FetchAsynch
           edms_rest_resource = RestClient::Resource.new u['edms_host'] #, verify_ssl: OpenSSL::SSL::VERIFY_NONE
           fms_rest_resource = RestClient::Resource.new u['fms_host'], verify_ssl: OpenSSL::SSL::VERIFY_NONE
 
-          Parallel.each(jobs, in_threads: 3) do |job|
+          Parallel.each(jobs, in_threads: threads) do |job|
             begin
               # sleep 1
               case job[:api]
