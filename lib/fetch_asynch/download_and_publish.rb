@@ -17,7 +17,7 @@ module FetchAsynch
                    async: false,
                    forecasts: true,
                    only_missing: false,
-                   threads: 10)
+                   threads: 1)
       @prosumers = prosumers
       @startdate = startdate
       @enddate = enddate
@@ -105,22 +105,14 @@ module FetchAsynch
               end
             end
 
-=begin
+
             # Try to download everything from FMS
             if forecasts
               prosumers.map {|p| p.edms_id}.each do |pr_id|
-                ((startdate - 1.day)...enddate).each do | d |
-                  d_start = d.beginning_of_day
-                  d_end = d.end_of_day
-                  d_forc = d_start - 12.hours
-                  jobs.push params: params.merge(prosumers: pr_id, startdate: d_start, enddate: d_end, forecasttime: d_forc), api: :fms
-                end
+                jobs.push params: params.merge(prosumers: pr_id, startdate: startdate, enddate: enddate, forecasttime: (startdate -1.day).middle_of_day, forecasttype: "DayAhead", aggregate: true), api: :fms
               end
             end
-=end
-
           end
-
 
           # Rails.logger.debug JSON.pretty_generate jobs
 
@@ -147,9 +139,9 @@ module FetchAsynch
 
                 when :fms
                   puts "=-=================== FSM: #{job[:params]} =-=================== "
-                  # raw = fms_rest_resource['fmsapt'].get params: job[:params], :content_type => :json, :accept => :json
-                  # result = JSON.parse raw
-                  # datareceived_fms(result, x)
+                  raw = fms_rest_resource['fmsapt'].get params: job[:params], :content_type => :json, :accept => :json
+                  result = JSON.parse raw
+                  datareceived_fms(result, x)
 
                 when :old
                   raw = edms_rest_resource['getdata'].get params: job[:params], :content_type => :json, :accept => :json
@@ -210,6 +202,7 @@ module FetchAsynch
 
     def datareceived_fms(data, x)
       Rails.logger.debug data
+
     end
 
 

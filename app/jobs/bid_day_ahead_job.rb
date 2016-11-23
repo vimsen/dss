@@ -7,7 +7,8 @@ class BidDayAheadJob < ActiveJob::Base
 
   def perform(prosumers: Prosumer.real_time,
               interval: 2,
-              date: Date.tomorrow)
+              date: Date.tomorrow,
+              strategy_factor: 1.0)
 
     Rails.logger.debug "Arguments:  #{ENV["download"]}"
     Rails.logger.debug "Downloading data for prosumers: #{prosumers}"
@@ -53,8 +54,8 @@ class BidDayAheadJob < ActiveJob::Base
                        .group(:f_timestamp).map{|dp| dp.f_prosumption}.first || 0
           {
               block_id: b["id"].to_i,
-              volume: volume,
-              price: 50.0
+              volume: strategy_factor * volume,
+              price: (volume > 0 ? 50.0 : 0.05)
           }
         end.reject do |b|
           b[:volume] == 0
