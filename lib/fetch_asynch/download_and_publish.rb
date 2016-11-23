@@ -202,7 +202,47 @@ module FetchAsynch
 
     def datareceived_fms(data, x)
       Rails.logger.debug data
+      ActiveRecord::Base.connection_pool.with_connection do | conn |
+        procs = Hash[@prosumers.map {|p| [p.edms_id, p]}]
 
+        begin
+          upsert_status = Upsert.batch(conn, Forecast.table_name) do |upsert|
+            data["items"].each do | item |
+
+              if procs[item['prosumer_id'].to_s]
+                # puts "Received: #{d}"
+                selector = {
+                    timestamp: DateTime.strptime(item['timestamp'], '%d-%b-%y %H.%M.%S.000000 EUROPE/LONDON'),
+                    prosumer_id: procs[item['prosumer_id'].to_s].id,
+                    interval_id: @interval.id,
+                    forecast_time: nil,
+                    forecast_type: 0
+                }
+
+                setter = {
+                    production: item['f_production'],
+                    consumption: item['f_consumption'],
+                    storage: item['f_storage'],
+                    created_at: DateTime.now,
+                    updated_at: DateTime.now
+                }
+
+                setter.reject!{|k,v| v.nil?}
+
+                upsert.row(selector, setter)
+              end
+            end
+          end
+          x.publish({data:  "Interval #{@interval.name}: UPSERT status: #{upsert_status.count}", event: "output"}.to_json) if x
+          Rails.logger.debug "Interval #{@interval.name}: UPSERT status: #{upsert_status.count}"
+        rescue PG::InvalidTextRepresentation => e
+          x.publish({data:  "Interval #{@interval.name}: BAD DATA FORMAT: #{upsert_status}", event: "output"}.to_json)
+          # x.publish({data:  "BAD DATA FORMAT: #{data}", event: "output"}.to_json)
+          Rails.logger.debug "Interval #{@interval.name}: BAD DATA FORMAT: #{upsert_status}"
+          # Rails.logger.debug "BAD DATA FORMAT: #{data}"
+          raise e
+        end
+      end
     end
 
 

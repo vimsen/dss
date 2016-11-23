@@ -6,6 +6,7 @@ class Prosumer < ActiveRecord::Base
   has_many :data_points, dependent: :delete_all
   has_many :day_aheads, dependent: :destroy
   has_many :meters, dependent: :destroy
+  has_many :forecasts, dependent: :destroy
 
   belongs_to :cluster
   belongs_to :building_type
@@ -39,6 +40,8 @@ class Prosumer < ActiveRecord::Base
     result = []
     ActiveRecord::Base.connection_pool.with_connection do
       dps = self.data_points.where(timestamp: startdate..enddate, interval: interval).order(timestamp: :asc)
+      
+
       result = dps.map { |dp| dp.clientFormat }
       gaps = find_gaps(dps, startdate, enddate, Interval.find(interval).duration)
     end
