@@ -43,10 +43,15 @@ class StreamController < ApplicationController
     enddate = (params[:enddate].nil?) ? (DateTime.now) : params[:enddate].to_datetime
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
     channel = params[:channel]
+    type = (params[:type].nil? ? :prosumption : params[:type])
+    forecast = (params[:forecast].nil? ? :none : params[:forecast])
 
     session[:startdate] = startdate
     session[:enddate] = enddate
     session[:interval] = interval
+    session[:type] = type
+    session[:forecast] = forecast
+
 
     ActiveRecord::Base.clear_active_connections!
     bunny_channel = $bunny.create_channel
@@ -119,12 +124,16 @@ class StreamController < ApplicationController
     enddate = (params[:enddate].nil?) ? (DateTime.now) : params[:enddate].to_datetime
     interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
     channel = params[:channel]
+    type = (params[:type].nil? ? :prosumption : params[:type])
+    forecast = (params[:forecast].nil? ? :none : params[:forecast])
 
     puts "Data for #{startdate} .. #{enddate}"
 
     session[:startdate] = startdate
     session[:enddate] = enddate
     session[:interval] = interval
+    session[:type] = type
+    session[:forecast] = forecast
 
     ActiveRecord::Base.clear_active_connections!
     bunny_channel = $bunny.create_channel

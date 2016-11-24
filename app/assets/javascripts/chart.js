@@ -316,6 +316,21 @@ var plotHelper = (function() {
       });
 
       redraw(data);
+
+      // Rewrite the url:
+
+      paramObj = {
+          startdate: $('#startDate').val(),
+          enddate: $('#endDate').val(),
+          interval: $('#interval_interval_id').val(),
+          type: $('#type').val(),
+          forecast: $('#forecast').val()
+      };
+      if (history.pushState) {
+        var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + $.param(paramObj);
+        window.history.pushState({path:newurl},'',newurl);
+      }
+
     }
   };
 })();

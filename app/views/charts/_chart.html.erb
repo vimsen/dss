@@ -1,8 +1,10 @@
 <%= javascript_include_tag "chart" %>
 
-<% startDate = (session[:startdate] || (DateTime.now - 7.days)).to_datetime
-   endDate = (session[:enddate]|| DateTime.now).to_datetime
-   interval = (session[:interval] || 3).to_i # Daily
+<% startDate = (params[:startdate] || session[:startdate] || (DateTime.now - 7.days)).to_datetime
+   endDate = (params[:enddate] ||session[:enddate]|| DateTime.now).to_datetime
+   interval = (params[:interval] || session[:interval] || 3).to_i # Daily
+   type = (params[:type] || session[:type] || "prosumption")
+   forecast = (params[:forecast] || session[:forecast] || "none")
  %>
 
 <div class="panel panel-default">
@@ -17,23 +19,31 @@
         <input id="endDate" type="text" value="<%= endDate.to_datetime.strftime("%Y/%m/%d %H:00") %>"/>
         <!--strong>Real-time updates?</strong>
         <input id="realtime" type="checkbox" checked-->
-        <select id="type">
+
+        <%= select_tag "type",
+                       options_for_select(
+                           [["Prosumption", :prosumption],["Production", :production],["Consumption", :consumption],["Storage", :storage],["Demand Response", :dr],["Reliability", :reliability]],
+                           selected: type) %>
+
+        <!--select id="type">
           <option value="prosumption" selected="selected">Prosumption</option>
           <option value="production">Production</option>
           <option value="consumption">Consumption</option>
           <option value="storage">Storage</option>
           <option value="dr">Demand Response</option>
           <option value="reliability">Reliability</option>
-        </select>
+        </select-->
         <%= collection_select(:interval, :interval_id,
                               Interval.all.order("duration asc"), :id, :name,
                               {include_blank: false, :selected => interval}) %>
 
-        <select id="forecast">
+        <%= select_tag "forecast",
+                       options_for_select([["No forecast", :none],["EDMS forecast", :EDMS],["FMS Dayahead forecast", :"FMS-D"]], selected: forecast) %>
+        <!--select id="forecast">
           <option value="none" selected="selected">No forecast</option>
           <option value="EDMS">EDMS forecast</option>
           <option value="FMS-D">FMS Dayahead forecast</option>
-        </select>
+        </select -->
         <button id="subDates"> Set </button>
         <button id="resetDates"> Reset filter </button>
       </div>
@@ -106,7 +116,7 @@
         console.log("Trying to download stream: <%= stream -%>");
 
         plotHelper.drawChart(
-                "<%="#{stream}?channel=#{@channel}&startdate=#{startDate}&enddate=#{endDate}&interval=#{interval}"%>",
+                "<%="#{stream}?channel=#{@channel}&startdate=#{startDate}&enddate=#{endDate}&interval=#{interval}&type=#{type}&forecast=#{forecast}"%>",
                 plotHelper.readData(
                       idata,
                       $('#type').val(),
@@ -121,7 +131,9 @@
          
             var s = $('#startDate').val();
             var e = $('#endDate').prop("disabled") ? '' : $('#endDate').val();
-            var interval= $('#interval_interval_id').val()
+            var interval= $('#interval_interval_id').val();
+            var type = $('#type').val();
+            var forecast = $('#forecast').val();
             
               
             var paramObj = {};
@@ -135,13 +147,20 @@
             if (interval) {
               paramObj.interval = interval;
             }
+            if (type) {
+              paramObj.type = type;
+            }
+            if (forecast) {
+              paramObj.forecast = forecast;
+            }
 
             paramObj.channel = '<%= @channel.html_safe %>';
              
             var url = "<%= stream %>?" + $.param(paramObj);
             console.log("Conncting to stream: ", url);
-            
+
             plotHelper.drawChart(url, {}, $('#type').val(), $('#forecast').val());
+
       });
       $('#resetDates').click(function () {
 
