@@ -50,23 +50,41 @@ class Cluster < ActiveRecord::Base
 
 
       prosumerlist = self.prosumers
-    end
 
-    if (missing_data)
-      FetchAsynch::DownloadAndPublish.new prosumers: prosumerlist,
-                                          interval: interval,
-                                          startdate: startdate,
-                                          enddate: enddate,
-                                          channel: channel,
-                                          async: false,
-                                          forecasts: false
-    end   
-   
-    return result      
+      # if (missing_data)
+        FetchAsynch::DownloadAndPublish.new prosumers: prosumerlist,
+                                            interval: interval,
+                                            startdate: startdate,
+                                            enddate: enddate,
+                                            channel: channel,
+                                            async: false,
+                                            forecasts: (enddate.to_f - startdate.to_f) / 86400 < 14,
+                                            only_missing: true
+      # end
+
+      return {
+          data_points: result,
+          fms: self.prosumers
+                   .map{|p| p.new_forecast(interval, startdate, enddate)}
+                   .reduce(:merge).merge(self.new_forecast(interval, startdate, enddate))
+      }
+    end
   end
   
   def get_icon_index
     Cluster.all.index(self)
+  end
+
+  def new_forecast(interval, startdate, enddate)
+    fms = Forecast.day_ahead.where(prosumer: self.prosumers, timestamp: startdate..enddate, interval: interval)
+        .group(:timestamp).select('timestamp, sum(production) as s_production, sum(consumption) as s_consumption, sum(storage) as s_storage')
+        .order(timestamp: :asc)
+    {
+        "Aggregate prosumption forecast": fms.map{|t| [t.timestamp.to_i , [t.timestamp.to_i * 1000, t.s_consumption - t.s_production]] }.to_h,
+        "Aggregate production forecast": fms.map{|t| [t.timestamp.to_i , [t.timestamp.to_i * 1000, t.s_production]] }.to_h,
+        "Aggregate consumption forecast": fms.map{|t| [t.timestamp.to_i, [t.timestamp.to_i * 1000, t.s_consumption]] }.to_h,
+        "Aggregate storage forecast": fms.map{|t| [t.timestamp.to_i , [t.timestamp.to_i * 1000, t.s_storage]] }.to_h
+    }
   end
 
 end

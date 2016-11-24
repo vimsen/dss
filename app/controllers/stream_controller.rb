@@ -81,9 +81,12 @@ class StreamController < ApplicationController
     end
 
     idata = cluster.request_cached(interval, startdate - 1.day, enddate, channel)
-    idata.each do |d|
+    idata[:data_points].each do |d|
       sse.write(d.to_json, event: 'datapoint')
     end
+
+    sse.write(idata[:fms].to_json, event: 'fms_data')
+
     ActiveRecord::Base.clear_active_connections!
     sse.write(Market::Calculator.new(prosumers: cluster.prosumers,
                                      startDate: startdate - 1.day,
