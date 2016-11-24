@@ -28,8 +28,12 @@
         <%= collection_select(:interval, :interval_id,
                               Interval.all.order("duration asc"), :id, :name,
                               {include_blank: false, :selected => interval}) %>
-        <strong>Forecast?</strong>
-        <input id="forecast" type="checkbox">
+
+        <select id="forecast">
+          <option value="none" selected="selected">No forecast</option>
+          <option value="EDMS">EDMS forecast</option>
+          <option value="FMS-D">FMS Dayahead forecast</option>
+        </select>
         <button id="subDates"> Set </button>
         <button id="resetDates"> Reset filter </button>
       </div>
@@ -106,9 +110,9 @@
                 plotHelper.readData(
                       idata,
                       $('#type').val(),
-                      $('#forecast').is(':checked')),
+                      $('#forecast').val()),
                 $('#type').val(),
-                $('#forecast').is(':checked'));
+                $('#forecast').val());
         $('#startDate').datetimepicker();
         $('#endDate').datetimepicker();
         // $('#endDate').prop('disabled', true);
@@ -137,7 +141,7 @@
             var url = "<%= stream %>?" + $.param(paramObj);
             console.log("Conncting to stream: ", url);
             
-            plotHelper.drawChart(url, {}, $('#type').val(), $('#forecast').is(':checked'));
+            plotHelper.drawChart(url, {}, $('#type').val(), $('#forecast').val());
       });
       $('#resetDates').click(function () {
 

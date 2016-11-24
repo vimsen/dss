@@ -134,7 +134,7 @@ var plotHelper = (function() {
         res[label][d.timestamp] = [d.timestamp * 1000, value];
     }
 
-    if (forecast) {
+    if (forecast == "EDMS") {
       var label = d.prosumer_name + ": " + type + ", forecast";
       if (res[label] == null) {
         res[label] = {};
@@ -160,11 +160,13 @@ var plotHelper = (function() {
       result = readSingle(value, type, forecast, result);
     });
 
-    $.each(idata["fms"], function(index, value) {
-        if (index.includes(type.toLowerCase())) {
-            result[index] = value;
-        }
-    });
+    if (forecast == "FMS-D") {
+        $.each(idata["fms"], function(index, value) {
+            if (index.includes(type.toLowerCase())) {
+                result[index] = value;
+            }
+        });
+    }
 
     return result;
   };
@@ -212,19 +214,15 @@ var plotHelper = (function() {
       });
 
       source.addEventListener('fms_data', function(e){
-          var message = JSON.parse(e.data);
-     //     console.log("Received fms dat");
-     //     console.log(message);
-          $.each(message, function(index, value) {
-      //        console.log("index: " + index +", value: " + value + ", type: " + type);
-      //        console.log(value);
-              if (index.includes(type.toLowerCase())) {
-                  data[index] = value;
-              }
-          });
-          console.log("Data is ", data);
-          changed = true;
-          replot(data);
+          if (forecast == "FMS-D") {
+              var message = JSON.parse(e.data);
+              $.each(message, function(index, value) {
+                  if (index.includes(type.toLowerCase())) {
+                      data[index] = value;
+                  }
+              });
+              replot(data);
+          }
       });
 
         source.addEventListener('messages.demand_response_data', function(e) {
