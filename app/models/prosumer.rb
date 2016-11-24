@@ -40,9 +40,10 @@ class Prosumer < ActiveRecord::Base
     result = []
     ActiveRecord::Base.connection_pool.with_connection do
       dps = self.data_points.where(timestamp: startdate..enddate, interval: interval).order(timestamp: :asc)
-      
-
-      result = dps.map { |dp| dp.clientFormat }
+      result = {
+          data_points: dps.map { |dp| dp.clientFormat },
+          fms: new_forecast(interval, startdate, enddate)
+      }
       gaps = find_gaps(dps, startdate, enddate, Interval.find(interval).duration)
     end
     
@@ -58,7 +59,17 @@ class Prosumer < ActiveRecord::Base
     
     return result      
   end
-  
+
+  def new_forecast(interval, startdate, enddate)
+    fms = self.forecasts.day_ahead.where(timestamp: startdate..enddate, interval: interval).order(timestamp: :asc)
+    {
+        "#{name} prosumption forecast": fms.map{|t| [t.timestamp.to_i , [t.timestamp.to_i * 1000, t.consumption - t.production]] }.to_h,
+        "#{name} production forecast": fms.map{|t| [t.timestamp.to_i , [t.timestamp.to_i * 1000, t.production]] }.to_h,
+        "#{name} consumption forecast": fms.map{|t| [t.timestamp.to_i, [t.timestamp.to_i * 1000, t.consumption]] }.to_h,
+        "#{name} storage forecast": fms.map{|t| [t.timestamp.to_i , [t.timestamp.to_i * 1000, t.storage]] }.to_h
+    }
+  end
+
   def has_location
     ! (location_x.nil? || location_y.nil?)
   end

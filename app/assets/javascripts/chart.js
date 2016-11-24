@@ -147,6 +147,8 @@ var plotHelper = (function() {
     return res;
   };
 
+  var read
+
   var readData = function(idata, type, forecast) {
     var result = {};
 
@@ -154,9 +156,16 @@ var plotHelper = (function() {
       return result;
     }
 
-    $.each(idata, function(index, value) {
+    $.each(idata["data_points"], function(index, value) {
       result = readSingle(value, type, forecast, result);
     });
+
+    $.each(idata["fms"], function(index, value) {
+        if (index.includes(type.toLowerCase())) {
+            result[index] = value;
+        }
+    });
+
     return result;
   };
 
@@ -200,6 +209,22 @@ var plotHelper = (function() {
         data = readSingle(message, type, forecast, data);
         changed = true;
         window.setTimeout(redraw, 100, data);
+      });
+
+      source.addEventListener('fms_data', function(e){
+          var message = JSON.parse(e.data);
+     //     console.log("Received fms dat");
+     //     console.log(message);
+          $.each(message, function(index, value) {
+      //        console.log("index: " + index +", value: " + value + ", type: " + type);
+      //        console.log(value);
+              if (index.includes(type.toLowerCase())) {
+                  data[index] = value;
+              }
+          });
+          console.log("Data is ", data);
+          changed = true;
+          replot(data);
       });
 
         source.addEventListener('messages.demand_response_data', function(e) {

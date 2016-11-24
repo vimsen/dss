@@ -212,7 +212,7 @@ module FetchAsynch
               if procs[item['prosumer_id'].to_s]
                 # puts "Received: #{d}"
                 selector = {
-                    timestamp: DateTime.strptime(item['timestamp'], '%d-%b-%y %H.%M.%S.000000 EUROPE/LONDON'),
+                    timestamp: DateTime.strptime(item['timestamp'], '%d-%b-%y %H.%M.%S.000000 EUROPE/LONDON') - 3.hours,
                     prosumer_id: procs[item['prosumer_id'].to_s].id,
                     interval_id: @interval.id,
                     forecast_time: nil,
@@ -242,6 +242,27 @@ module FetchAsynch
           # Rails.logger.debug "BAD DATA FORMAT: #{data}"
           raise e
         end
+
+        begin
+          data = {}
+
+          @prosumers.each do |pr|
+            pr.reload
+            pr.forecasts.reload
+            data.merge!(pr.new_forecast(@interval, @startdate, @enddate))
+          end
+          Rails.logger.debug "Sending FMS data: #{data}"
+          x.publish(
+              {
+                  data: data,
+                  event: 'fms_data'
+              }.to_json
+          ) unless x.nil?
+        rescue Bunny::Exception # Don't block if channel can't be fanned out
+          Rails.logger.debug "Can't publish to channel #{channel}"
+        ensure
+        end
+
       end
     end
 

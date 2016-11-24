@@ -29,7 +29,8 @@ class DemandResponse < ActiveRecord::Base
   end
 
   def dr_properties
-    ActiveRecord::Base.connection_pool.with_connection do{
+    ActiveRecord::Base.connection_pool.with_connection do
+      {
           targets: Hash[self.dr_targets.map {|t| [t.timestamp.to_i * 1000, [t.timestamp.to_i * 1000, t.volume]] }],
           planned: Hash[self.dr_planneds.group(:timestamp).order(timestamp: :asc).sum(:volume).map {|k,v| [k.to_i * 1000, [k.to_i * 1000, v]]}],
           actual: Hash[self.dr_actuals.group(:timestamp).order(timestamp: :asc).sum(:volume).map {|k,v| [k.to_i * 1000, [k.to_i * 1000, v]]}]
