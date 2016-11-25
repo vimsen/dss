@@ -201,7 +201,7 @@ module FetchAsynch
     private
 
     def datareceived_fms(data, x)
-      Rails.logger.debug data
+      # Rails.logger.debug data
       ActiveRecord::Base.connection_pool.with_connection do | conn |
         procs = Hash[@prosumers.map {|p| [p.edms_id, p]}]
 
@@ -253,7 +253,7 @@ module FetchAsynch
             pr.forecasts.reload
             data.merge!(pr.new_forecast(@interval, @startdate, @enddate))
           end
-          Rails.logger.debug "Sending FMS data: #{data}"
+          # Rails.logger.debug "Sending FMS data: #{data}"
           x.publish(
               {
                   data: data,

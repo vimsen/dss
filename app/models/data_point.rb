@@ -6,7 +6,7 @@ class DataPoint < ActiveRecord::Base
       :timestamp => self.timestamp.to_i,
       :prosumer_id => self.prosumer_id,
       :prosumer_name => self.prosumer_id < 0 ? "" : self.prosumer.name,
-      :interval => self.interval.duration,
+      # :interval => self.interval.duration,
       :actual => {
         :prosumption => (self.consumption || 0) - (self.production || 0),
         :production => self.production,

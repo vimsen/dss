@@ -14,39 +14,41 @@
   <div class="panel-body">
 
     <div>
-      <div id="controls">
-        <input id="startDate" type="text" value="<%= startDate.to_datetime.strftime("%Y/%m/%d %H:00") %>"/>
-        <input id="endDate" type="text" value="<%= endDate.to_datetime.strftime("%Y/%m/%d %H:00") %>"/>
-        <!--strong>Real-time updates?</strong>
-        <input id="realtime" type="checkbox" checked-->
-
-        <%= select_tag "type",
-                       options_for_select(
-                           [["Prosumption", :prosumption],["Production", :production],["Consumption", :consumption],["Storage", :storage],["Demand Response", :dr],["Reliability", :reliability]],
-                           selected: type) %>
-
-        <!--select id="type">
-          <option value="prosumption" selected="selected">Prosumption</option>
-          <option value="production">Production</option>
-          <option value="consumption">Consumption</option>
-          <option value="storage">Storage</option>
-          <option value="dr">Demand Response</option>
-          <option value="reliability">Reliability</option>
-        </select-->
-        <%= collection_select(:interval, :interval_id,
-                              Interval.all.order("duration asc"), :id, :name,
-                              {include_blank: false, :selected => interval}) %>
-
-        <%= select_tag "forecast",
-                       options_for_select([["No forecast", :none],["EDMS forecast", :EDMS],["FMS Dayahead forecast", :"FMS-D"]], selected: forecast) %>
-        <!--select id="forecast">
-          <option value="none" selected="selected">No forecast</option>
-          <option value="EDMS">EDMS forecast</option>
-          <option value="FMS-D">FMS Dayahead forecast</option>
-        </select -->
-        <button id="subDates"> Set </button>
-        <button id="resetDates"> Reset filter </button>
-      </div>
+      <%= form_tag('#', id: "plot_params", remote: true, class: "form-inline") do %>
+          <div class="form-group form-group-sm">
+            <%= label_tag :startDate, "Start datetime:" %>
+            <%= text_field_tag :startDate, startDate.to_datetime.strftime("%Y/%m/%d %H:00"), id: :startDate, class: 'form-control input-sm' %>
+          </div>
+          <div class="form-group form-group-sm">
+            <%= label_tag :endDate, "End datetime:" %>
+            <%= text_field_tag :endDate, endDate.to_datetime.strftime("%Y/%m/%d %H:00"), id: :endDate, class: 'form-control input-sm' %>
+          </div>
+          <%= select_tag "type",
+                         options_for_select(
+                             [["Prosumption", :prosumption],
+                              ["Production", :production],
+                              ["Consumption", :consumption],
+                              ["Storage", :storage],
+                              ["Demand Response", :dr],
+                              ["Reliability", :reliability]],
+                             selected: type),
+                         class: 'form-control input-sm' %>
+          <%= collection_select(:interval, :interval_id,
+                                Interval.all.order("duration asc"),
+                                :id,
+                                :name,
+                                {include_blank: false, :selected => interval},
+                                class: 'form-control input-sm') %>
+          <%= select_tag "forecast",
+                         options_for_select(
+                             [["No forecast", :none],
+                              ["EDMS forecast", :EDMS],
+                              ["FMS Dayahead forecast", :"FMS-D"]],
+                             selected: forecast),
+                         class: 'form-control input-sm' %>
+          <input type="submit" value="Set" class="form-control input-sm btn btn-primary btn-sm">
+          <button id="resetDates" class="form-control input-sm btn btn-info btn-sm"> Reset filter </button>
+      <% end %>
       <br/>
       <div class="row">
         <div class="col-md-2 col-md-push-10">
@@ -127,7 +129,7 @@
         $('#endDate').datetimepicker();
         // $('#endDate').prop('disabled', true);
                
-        $('#subDates').click(function () {
+        $('#plot_params').submit(function () {
          
             var s = $('#startDate').val();
             var e = $('#endDate').prop("disabled") ? '' : $('#endDate').val();
@@ -167,6 +169,8 @@
         $('#startDate').val("<%= (DateTime.now - 7.days).strftime("%Y/%m/%d %H:00") -%>");
         $('#endDate').val("<%= DateTime.now.strftime("%Y/%m/%d %H:00") -%>");
         $('#interval_interval_id').val(3);
+        $('#type').val("prosumption");
+        $('#forecast').val("none");
 
         $('#subDates').click();
       });

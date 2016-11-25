@@ -44,7 +44,7 @@ class Prosumer < ActiveRecord::Base
           data_points: dps.map { |dp| dp.clientFormat },
           fms: new_forecast(interval, startdate, enddate)
       }
-      gaps = find_gaps(dps, startdate, enddate, Interval.find(interval).duration)
+      # gaps = find_gaps(dps, startdate, enddate, Interval.find(interval).duration)
     end
     
     # if gaps    # Download anyway, we may have an extra datapoint due to forecasts
