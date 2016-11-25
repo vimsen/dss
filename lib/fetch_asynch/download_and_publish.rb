@@ -209,10 +209,12 @@ module FetchAsynch
           upsert_status = Upsert.batch(conn, Forecast.table_name) do |upsert|
             data["items"].each do | item |
 
-              if procs[item['prosumer_id'].to_s]
+              ts = item['timestamp'].sub(/:0.$/,'00').to_datetime - 3.hours
+
+              if procs[item['prosumer_id'].to_s] && validate_timestamp(ts)
                 # puts "Received: #{d}"
                 selector = {
-                    timestamp: DateTime.strptime(item['timestamp'], '%d-%b-%y %H.%M.%S.000000 EUROPE/LONDON') - 3.hours,
+                    timestamp: ts,
                     prosumer_id: procs[item['prosumer_id'].to_s].id,
                     interval_id: @interval.id,
                     forecast_time: nil,
