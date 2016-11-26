@@ -12,6 +12,16 @@ module Market
         Rails.logger.debug("value: #{v}")
       end
     end
+ 
+
+    def calcCosts2
+      DataPoint.joins("LEFT JOIN forecasts ON forecasts.timestamp = data_points.timestamp AND data_points.prosumer_id = forecasts.prosumer_id AND data_points.interval_id = forecasts.interval_id")
+               .joins("INNER JOIN day_ahead_energy_prices as da ON data_points.timestamp::date = da.date AND to_char(data_points.timestamp, ' HH24') = to_char(da.dayhour, '00')")
+               .group(:timestamp)
+               .select(:timestamp, 'sum(price * (coalesce(data_points.consumption,0) - coalesce(data_points.production,0))) as ideal_cost', 'sum(price * (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0))) as forecast_cost')
+               .order('forecast_cost ASC')
+               .map{|t| [t.timestamp, t.ideal_cost, t.forecast_cost]}
+    end
 
     def calcCosts
       forecast_cache = {}
