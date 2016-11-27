@@ -2,7 +2,7 @@ module Market
 
   class Calculator
 
-    def initialize(prosumers: nil, startDate: nil, endDate: nil,
+    def initialize(prosumers: Prosumer.all, startDate: Date.yesterday.to_datetime, endDate: Date.today.to_datetime,
                    penalty_violation: 0.3, penalty_satisfaction: 0.2)
       method(__method__).parameters.each do |type, k|
         next unless type == :key
@@ -15,12 +15,39 @@ module Market
  
 
     def calcCosts2
-      DataPoint.joins("LEFT JOIN forecasts ON forecasts.timestamp = data_points.timestamp AND data_points.prosumer_id = forecasts.prosumer_id AND data_points.interval_id = forecasts.interval_id")
-               .joins("INNER JOIN day_ahead_energy_prices as da ON data_points.timestamp::date = da.date AND to_char(data_points.timestamp, ' HH24') = to_char(da.dayhour, '00')")
-               .group(:timestamp)
-               .select(:timestamp, 'sum(price * (coalesce(data_points.consumption,0) - coalesce(data_points.production,0))) as ideal_cost', 'sum(price * (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0))) as forecast_cost')
-               .order('forecast_cost ASC')
-               .map{|t| [t.timestamp, t.ideal_cost, t.forecast_cost]}
+      query_joins = DataPoint.joins("LEFT JOIN forecasts ON forecasts.timestamp = data_points.timestamp AND data_points.prosumer_id = forecasts.prosumer_id AND data_points.interval_id = forecasts.interval_id")
+               .joins("INNER JOIN day_ahead_energy_prices as da ON data_points.timestamp::date = da.date  + interval '365 days' AND to_char(data_points.timestamp, ' HH24') = to_char(da.dayhour, '00')")
+               .where(timestamp: @startDate .. @endDate, interval: 2, prosumer: @prosumers,  'da.region_id': 1)
+
+      Float(@penalty_violation)
+      Float(@penalty_satisfaction)
+      query_plot = query_joins.group(:timestamp)
+                       .order(timestamp: :asc)
+                       .select(:timestamp,
+                               'sum(price * 0.001 * (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0))) as forecast_cost',
+                               'sum(price * 0.001 * (coalesce(data_points.consumption,0) - coalesce(data_points.production,0))) as ideal_cost',
+                               "sum(price * 0.001 * (
+                                      (coalesce(data_points.consumption,0) - coalesce(data_points.production,0))
+                                       + CASE ((coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) > (coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))
+                                                WHEN TRUE THEN
+                                                    #{@penalty_satisfaction} * ((coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) - (coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))
+                                                ELSE
+                                                    #{@penalty_satisfaction} * ((coalesce(data_points.consumption,0) - coalesce(data_points.production,0)) - (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)))
+                                         END)) as individual"
+                       )
+      {
+          plot: [{
+                     label: "forecast",
+                     data: query_plot.map{|d| [d.timestamp.to_i * 1000, d.forecast_cost]}
+                 }, {
+                     label: "ideal",
+                     data: query_plot.map{|d| [d.timestamp.to_i * 1000, d.ideal_cost]}
+                 }, {
+                     label: "individual",
+                     data: query_plot.map{|d| [d.timestamp.to_i * 1000, d.individual]}
+                 }]
+      }
+
     end
 
     def calcCosts
