@@ -138,7 +138,7 @@ module FetchAsynch
                   datareceived(result_conv, x)
 
                 when :fms
-                  puts "=-=================== FSM: #{job[:params]} =-=================== "
+                  # puts "=-=================== FSM: #{job[:params]} =-=================== "
                   raw = fms_rest_resource['fmsapt'].get params: job[:params], :content_type => :json, :accept => :json
                   result = JSON.parse raw
                   datareceived_fms(result, x)

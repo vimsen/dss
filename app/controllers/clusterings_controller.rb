@@ -25,7 +25,7 @@ class ClusteringsController < ApplicationController
                     [tc.id, Hash[Market::Calculator.new(prosumers: tc.prosumers,
                                                         startDate: @startDate,
                                                         endDate: @endDate)
-                                     .calcCosts[:dissagrgated]
+                                     .calcCosts[:disaggregated]
                                      .select { |d| d[:id] < 0 }
                                      .map { |d| [d[:id], d.dup.update(penalty: d[:real] - d[:ideal])] }]]
 

@@ -80,7 +80,7 @@ class HednoTest < ActiveSupport::TestCaseWithHednoData
     Rails.logger.debug Market::Calculator.new(prosumers: cl.temp_clusters.first.prosumers,
                                               startDate: @startdate,
                                               endDate: @enddate)
-                                         .calcCosts[:dissagrgated]
+                                         .calcCosts[:disaggregated]
   end
 
   test "Dump db to CSV" do

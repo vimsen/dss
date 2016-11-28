@@ -20,7 +20,7 @@ class GeneticClusteringTest < ActiveSupport::TestCaseWithProsAndMarketData
     puts Market::Calculator.new(prosumers: clg.temp_clusters.first.prosumers,
                                 startDate: @startdate,
                                 endDate: @enddate)
-             .calcCosts[:dissagrgated]
+             .calcCosts[:disaggregated]
 
 
 =begin

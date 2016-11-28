@@ -27,14 +27,7 @@ module Market
                                                 #{@penalty_satisfaction} * ((coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) - (coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))
                                              ELSE
                                                 #{@penalty_violation} * ((coalesce(data_points.consumption,0) - coalesce(data_points.production,0)) - (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)))
-                                             END)) as real_individual",
-                   "sum(price * 0.001 * (coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))
-                              + CASE (sum(coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) > sum(coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))
-                                  WHEN TRUE THEN
-                                    #{@penalty_satisfaction} * sum(price * 0.001 *((coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) - (coalesce(data_points.consumption,0) - coalesce(data_points.production,0))))
-                                  ELSE
-                                    #{@penalty_violation} * sum(price * 0.001 * ((coalesce(data_points.consumption,0) - coalesce(data_points.production,0)) - (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0))))
-                                  END as cluster"
+                                             END)) as real_individual"
                )
 
       Float(@penalty_violation)
@@ -44,6 +37,13 @@ module Market
                        .order(timestamp: :asc)
                        .select(
                            :timestamp,
+                           "sum(price * 0.001 * (coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))
+                              + CASE (sum(coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) > sum(coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))
+                                  WHEN TRUE THEN
+                                    #{@penalty_satisfaction} * sum(price * 0.001 *((coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) - (coalesce(data_points.consumption,0) - coalesce(data_points.production,0))))
+                                  ELSE
+                                    #{@penalty_violation} * sum(price * 0.001 * ((coalesce(data_points.consumption,0) - coalesce(data_points.production,0)) - (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0))))
+                                  END as cluster"
                        )
       query_dissagregated = query_joins
                                 .group(:prosumer_id)
@@ -71,7 +71,7 @@ module Market
                      label: "cluster",
                      data: query_plot.map{|d| [d.timestamp.to_i * 1000, d.cluster]}
                  }],
-          dissagregated: query_dissagregated.map do |d|
+          disaggregated: query_dissagregated.map do |d|
             {
                 id: d.prosumer_id,
                 name: d.name,
@@ -81,16 +81,16 @@ module Market
             }
           end + [{
                      id: -1,
-                     name: "sum",
+                     name: :sum,
                      forecast: query_total.forecast,
                      ideal: query_total.ideal,
                      real: query_total.real_individual
                  },{
                      id: -2,
-                     name: "aggr",
+                     name: "aggr.",
                      forecast: query_total.forecast,
                      ideal: query_total.ideal,
-                     real: query_total.cluster
+                     real: query_plot.map{|d| d.cluster}.sum
                  }]
       }
 
@@ -131,7 +131,7 @@ module Market
                     end
                 }
             ],
-            dissagrgated: calcDiss + [aggr_costs]
+            disaggregated: calcDiss + [aggr_costs]
         }
       end
     end

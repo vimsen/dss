@@ -292,8 +292,8 @@ var plotHelper = (function() {
 
           $("#costs_div").html('<hr/><table id="costs_table" class="table table-responsive"><thead><th>Name</th><th data-dynatable-column="forecast">Forecasted Cost (&euro;)</th><th data-dynatable-column="ideal">Cost without penalties (&euro;)</th><th data-dynatable-column="real">Cost with penalties (&euro;)</th></thead><tbody></tbody></table>');
 
-          var sum = $.grep(message.dissagrgated, function(a) {return a.id == -1})[0];
-          var aggr = $.grep(message.dissagrgated, function(a) {return a.id == -2})[0];
+          var sum = $.grep(message.disaggregated, function(a) {return a.id == -1})[0];
+          var aggr = $.grep(message.disaggregated, function(a) {return a.id == -2})[0];
           var impr = ((sum.real -aggr.real)/sum.real*100).toFixed(2);
 
           var pen_sum = sum.real - sum.ideal;
@@ -304,7 +304,7 @@ var plotHelper = (function() {
           $("#perc_div").html('<hr/><strong>Cost reduction: </strong> ' + impr + '%<br/><strong>Penalty reduction: </strong> ' + pen_impr + '%');
           var costs_dynatable = $('#costs_table').dynatable({
               dataset: {
-                  records: message.dissagrgated,
+                  records: message.disaggregated,
                   sorts: {real: -1},
                   perPageDefault: 10
               }

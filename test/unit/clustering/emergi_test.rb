@@ -24,7 +24,7 @@ class EmergiTest < ActiveSupport::TestCaseWithProsAndMarketData
             Market::Calculator.new(prosumers: tc.prosumers,
                                    startDate: @trainend + i.weeks,
                                    endDate: @trainend + (i+1).weeks)
-                .calcCosts[:dissagrgated].each do |v|
+                .calcCosts[:disaggregated].each do |v|
               penalty_before = v[:real] - v[:ideal] if v[:name] == :sum
               penalty_after = v[:real] - v[:ideal] if v[:name] == "aggr."
             end
