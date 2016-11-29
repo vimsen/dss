@@ -99,7 +99,6 @@ module ClusteringModule
     def real_prosumption
 
       if @download
-        puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ #{@download}"
         FetchAsynch::DownloadAndPublish.new prosumers: @prosumers,
                                             interval: Interval.find_by(duration: @interval).id,
                                             startdate: @startDate,

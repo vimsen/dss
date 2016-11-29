@@ -29,15 +29,23 @@ class ClusteringIntegrationTest < ActionDispatch::IntegrationTestWithProsAndMark
   test "run spectral algorithm" do
 
     Capybara.register_driver :selenium_15_min do |app|
-      profile = Selenium::WebDriver::Firefox::Profile.new
+      # profile = Selenium::WebDriver::Firefox::Profile.new
       client = Selenium::WebDriver::Remote::Http::Default.new
       client.timeout = 60 * 15 # instead of the default 60
+=begin
       Capybara::Selenium::Driver.new(app, browser: :firefox,
                                      profile: profile,
                                      http_client: client)
+=end
+      Capybara::Selenium::Driver.new(app, browser: :firefox, http_client: client)
+
+
     end
 
     Capybara.current_driver = :selenium_15_min
+
+#     Capybara.current_driver = :selenium
+
 
     Delorean.time_travel_to(@trainend) do
       # 2.upto(2)
@@ -59,7 +67,10 @@ class ClusteringIntegrationTest < ActionDispatch::IntegrationTestWithProsAndMark
         assert(current_path == clusterings_select_path, "Should be on select page")
 
         select ClusteringModule::algorithms.values[i][:string], :from => "algorithm"
-        click_button 'Select'
+        click_button 'Select', wait: 90
+        find_button 'Confirm', wait: 90
+
+
         assert(current_path == clusterings_confirm_path, "Should be on confirm page for algorithn '#{ClusteringModule::algorithms.values[i][:string]}'")
 
 
@@ -68,18 +79,36 @@ class ClusteringIntegrationTest < ActionDispatch::IntegrationTestWithProsAndMark
         assert_includes([0,1], no_cluster.count, "Single list for unclustered prosumers")
 
         get_pros_count = ->(d) { d.all(:xpath, 'li[@id[starts-with(.,"prosumer_")]]').count }
-        
-        assert_equal 0, no_cluster.sum(&get_pros_count), "No unclustered prosumers"
+
+        # puts "#{(Prosumer.all - prosumer_categories(:one).prosumers).map(&:name)}"
+
+        assert_equal (Prosumer.all - prosumer_categories(:one).prosumers).count, no_cluster.sum(&get_pros_count), "No unclustered prosumers"
         #         Rails.logger.debug page.all(:xpath, 'div[@id[starts-with(.,"prosumer_list_")]]').count
         assert_equal Prosumer.all.count,
                      page.all(:xpath, '//ul[@id[starts-with(.,"prosumer_list_")]]')
                          .sum(&get_pros_count),
                      "All prosumers should be in a cluster"
         assert_difference('Clustering.count') do
-          click_button 'Confirm'
+          click_button 'Confirm', wait: 90
+          # sleep(inspection_time=10)
+          # find('alert alert-success')
+#           find(:xpath, "//a[text()='Apply']/@href")
+          # puts "html: #{page.body}"
+          # puts "Trying to find the link!"
+          begin
+            find("a", text: "Apply", wait: 90)
+          rescue Selenium::WebDriver::Error::StaleElementReferenceError
+            # puts "StaleElementReferenceError!!!!"
+            sleep 1
+            retry
+          end
+          # puts "Found the link!"
+          # find('.btn-primary')
+          # find_button 'Apply'
+          # find_link('a', text: 'Apply', exact: true)
         end
         assert_match(/^\/clusterings\/\d+/, current_path, "Should be on clustering view page")
-
+        # sleep(inspection_time=10)
         total_penalties_before = page.first(:xpath, '//dt[text()="Total sum (€):"]/following::dd[1]').text.split.last.to_f
         total_penalties_after = page.first(:xpath, '//dt[text()="Total aggr. sum (€):"]/following::dd[1]').text.split.last.to_f
         total_penalty_reduction = page.first(:xpath, '//dt[text()="Improvement:"]/following::dd[1]').text.split.last.to_f
@@ -102,6 +131,7 @@ class ClusteringIntegrationTest < ActionDispatch::IntegrationTestWithProsAndMark
 
         assert_operator penalties_before.min, :>=, 0, "All penalties should be positive or zero"
         assert_operator penalties_after.min, :>=, 0, "All penalties should be positive or zero"
+        sleep(inspection_time=30) if penalty_reduction.min < 0
         assert_operator penalty_reduction.min, :>=, 0, "No cluster should be worse than before"
 
 

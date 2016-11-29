@@ -75,6 +75,7 @@ group :development, :test do
   gem 'capybara' # For integration testing
   gem 'database_cleaner' # ditto
   gem 'selenium-webdriver' # For capybara
+  gem 'simplecov', require: false
 end
 
 gem 'darwinning' # For genetic algorithms

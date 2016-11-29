@@ -66,7 +66,7 @@ class Cluster < ActiveRecord::Base
           data_points: result,
           fms: self.prosumers
                    .map{|p| p.new_forecast(interval, startdate, enddate)}
-                   .reduce(:merge).merge(self.new_forecast(interval, startdate, enddate))
+                   .reduce(:merge)&.merge(self.new_forecast(interval, startdate, enddate))
       }
     end
   end

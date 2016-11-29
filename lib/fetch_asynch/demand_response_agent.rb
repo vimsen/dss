@@ -22,7 +22,7 @@ module FetchAsynch
     end
 
     def select_prosumers(eligible_prosumers, dr_obj)
-      puts "The targets are: #{dr_obj.dr_targets.pluck(:timestamp, :volume)}"
+      Rails.logger.debug "The targets are: #{dr_obj.dr_targets.pluck(:timestamp, :volume)}"
       tm = ClusteringModule::TargetMatcher.new prosumers: eligible_prosumers,
                                                startDate: dr_obj.starttime.to_datetime,
                                                endDate: dr_obj.stoptime.to_datetime,
@@ -40,7 +40,7 @@ module FetchAsynch
 
           ActiveRecord::Base.connection_pool.with_connection do
             el_prosumers = eligible_prosumers(feeder_id, prosumer_category.prosumers)
-            puts "The eligible prosumers are #{el_prosumers}"
+            Rails.logger.debug "The eligible prosumers are #{el_prosumers}"
 
             prosumers_primary, prosumers_secondary = select_prosumers el_prosumers, dr_obj
 
@@ -48,7 +48,7 @@ module FetchAsynch
                 start_time: dr_obj.starttime.to_datetime.to_s,
                 interval: dr_obj.interval.duration,
                 unit: "kW",
-                target_reduction: dr_obj.dr_targets.order(timestamp: :asc).map{|t| t.volume},
+                target_values: dr_obj.dr_targets.order(timestamp: :asc).map{|t| t.volume},
                 prosumers_primary: prosumers_primary.map(&:edms_id),
                 prosumers_secondary: prosumers_secondary.map(&:edms_id)
             }
@@ -107,48 +107,38 @@ module FetchAsynch
       #}.to_json
       #sleep(3)
       Rails.logger.debug "RESULT:  #{result}"
-      Rails.logger.debug "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaaa, #{plan_id}"
+      Rails.logger.debug "The plan id is: #{plan_id}"
       json = JSON.parse result
-      Rails.logger.debug json
+      # Rails.logger.debug json
       ActiveRecord::Base.connection_pool.with_connection do |conn|
-        i = 0
         dr_obj = DemandResponse.find(demand_response_id)
-        Upsert.batch(conn, DrPlanned.table_name) do |upsert|
-          dr_obj.dr_targets.order(timestamp: :asc).each do |dr_target|
-            json["planned_dr"].each do |k,v|
-              upsert.row({
-                             prosumer_id: Prosumer.find(k).id,
-                             timestamp: dr_target.timestamp,
-                             demand_response_id: demand_response_id
-                         },{
-                             volume: v[i],
-                             created_at: DateTime.now,
-                             updated_at: DateTime.now
-                         })
+
+        prosumers_ids = Prosumer.pluck(:edms_id, :id).to_h
+        dr_obj.dr_targets.order(timestamp: :asc).each_with_index do |dr_target, i|
+          json["planned_dr"].each do |k,v|
+            Rails.logger.debug "k = #{k}, v= #{v[i]}"
+            DrPlanned.find_or_create_by({
+                                            prosumer_id: prosumers_ids[k],
+                                            timestamp: dr_target.timestamp,
+                                            demand_response_id: demand_response_id
+                                        }) do |dr_planned|
+              dr_planned.volume = v[i]
             end
-            i += 1
           end
         end
+        Rails.logger.debug "AAAAAAAAAAAAAAAAAA: #{json["actual_dr"]}"
+        dr_obj.dr_targets.order(timestamp: :asc).each_with_index do |dr_target, i|
+          json["actual_dr"].each do |k,v|
+            Rails.logger.debug "k = #{k}, v= #{v[i]}"
 
-        i = 0
-        Upsert.batch(conn, DrActual.table_name) do |upsert|
-          Rails.logger.debug "AAAAAAAAAAAAAAAAAA: #{json["actual_dr"]}"
-          dr_obj.dr_targets.order(timestamp: :asc).each do |dr_target|
-            json["actual_dr"].each do |k,v|
-              Rails.logger.debug "#{k},#{v}"
-              unless v[i].nil?
-                upsert.row({
-                               prosumer_id: Prosumer.find(k).id,
-                               timestamp: dr_target.timestamp,
-                               demand_response_id: demand_response_id,
-                           },{
-                               volume: v[i],
-                               created_at: DateTime.now,
-                               updated_at: DateTime.now
-                           })
-              end
+            DrActual.find_or_create_by({
+                                            prosumer_id: prosumers_ids[k],
+                                            timestamp: dr_target.timestamp,
+                                            demand_response_id: demand_response_id
+                                        }) do |dr_actual|
+              dr_actual.volume = v[i]
             end
-            i += 1
+
           end
         end
       end

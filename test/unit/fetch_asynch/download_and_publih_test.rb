@@ -57,7 +57,7 @@ class DownloadAndPublishTest < ActiveSupport::TestCase
 
   private
   def validate_data_points(prosumer, interval_id, startdate, enddate)
-      assert_equal 24, prosumer.data_points.where(interval_id: interval_id, timestamp: startdate...enddate).count, "We should receive 24 data points"
+      assert_equal 24, prosumer.data_points.where(interval_id: interval_id, timestamp: startdate..enddate).count, "We should receive 24 data points"
   end
 
 end
