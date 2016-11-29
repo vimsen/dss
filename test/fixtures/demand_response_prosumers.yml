@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  demand_response_id: 
+  prosumer_id: 
+  type: 1
+
+two:
+  demand_response_id: 
+  prosumer_id: 
+  type: 1

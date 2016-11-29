@@ -35,9 +35,11 @@
           <dt>Interval:</dt>
           <dd><%= @demand_response.interval.duration -%> sec.</dd>
 
-          <dt>Prosumers:</dt>
-          <dd><%= render(partial: "prosumers/prosumername", spacer_template: "common/comma_spacer", collection: @demand_response.dr_planneds.select(:prosumer_id).group(:prosumer_id).map{|drp| drp.prosumer}, as: :prosumer) || "No Prosumers" %></dd>
+          <dt>Primary Prosumers:</dt>
+          <dd><%= render(partial: "prosumers/prosumername", spacer_template: "common/comma_spacer", collection: @demand_response.demand_response_prosumers.primary.include.map(&:prosumer), as: :prosumer) || "No Prosumers" %></dd>
 
+          <dt>Secondary Prosumers:</dt>
+          <dd><%= render(partial: "prosumers/prosumername", spacer_template: "common/comma_spacer", collection: @demand_response.demand_response_prosumers.secondary.map(&:prosumer), as: :prosumer) || "No Prosumers" %></dd>
         </dl>
       </div>
     </div>

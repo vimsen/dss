@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161123143811) do
+ActiveRecord::Schema.define(version: 20161129143102) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -144,6 +144,17 @@ ActiveRecord::Schema.define(version: 20161123143811) do
   end
 
   add_index "day_aheads", ["prosumer_id"], name: "index_day_aheads_on_prosumer_id", using: :btree
+
+  create_table "demand_response_prosumers", force: :cascade do |t|
+    t.integer  "demand_response_id"
+    t.integer  "prosumer_id"
+    t.integer  "drp_type"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  add_index "demand_response_prosumers", ["demand_response_id"], name: "index_demand_response_prosumers_on_demand_response_id", using: :btree
+  add_index "demand_response_prosumers", ["prosumer_id"], name: "index_demand_response_prosumers_on_prosumer_id", using: :btree
 
   create_table "demand_responses", force: :cascade do |t|
     t.integer  "interval_id"
@@ -447,6 +458,8 @@ ActiveRecord::Schema.define(version: 20161123143811) do
   add_index "users_roles", ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id", using: :btree
 
   add_foreign_key "configurations", "users"
+  add_foreign_key "demand_response_prosumers", "demand_responses"
+  add_foreign_key "demand_response_prosumers", "prosumers"
   add_foreign_key "demand_responses", "intervals"
   add_foreign_key "demand_responses", "prosumer_categories"
   add_foreign_key "dr_actuals", "demand_responses"

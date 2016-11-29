@@ -44,6 +44,10 @@ module FetchAsynch
 
             prosumers_primary, prosumers_secondary = select_prosumers el_prosumers, dr_obj
 
+            DemandResponseProsumer.create prosumers_primary.map {|p| {demand_response: dr_obj, prosumer: p, drp_type: :primary}}
+            DemandResponseProsumer.create! prosumers_secondary.map {|p| {demand_response: dr_obj, prosumer: p, drp_type: :secondary}}
+
+
             request_object = {
                 start_time: dr_obj.starttime.to_datetime.to_s,
                 interval: dr_obj.interval.duration,
