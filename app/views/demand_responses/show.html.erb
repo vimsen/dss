@@ -36,7 +36,7 @@
           <dd><%= @demand_response.interval.duration -%> sec.</dd>
 
           <dt>Primary Prosumers:</dt>
-          <dd><%= render(partial: "prosumers/prosumername", spacer_template: "common/comma_spacer", collection: @demand_response.demand_response_prosumers.primary.include.map(&:prosumer), as: :prosumer) || "No Prosumers" %></dd>
+          <dd><%= render(partial: "prosumers/prosumername", spacer_template: "common/comma_spacer", collection: @demand_response.demand_response_prosumers.primary.map(&:prosumer), as: :prosumer) || "No Prosumers" %></dd>
 
           <dt>Secondary Prosumers:</dt>
           <dd><%= render(partial: "prosumers/prosumername", spacer_template: "common/comma_spacer", collection: @demand_response.demand_response_prosumers.secondary.map(&:prosumer), as: :prosumer) || "No Prosumers" %></dd>
