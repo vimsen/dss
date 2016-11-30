@@ -61,6 +61,13 @@ module FetchAsynch
                                              .group('prosumers.edms_id', 'date(timestamp)')
                                              .count if forecasts && only_missing
 
+            fms_forecasts_in_db = Forecast
+                                      .joins(:prosumer)
+                                      .where(prosumer: prosumers, timestamp: startdate .. enddate, interval: interval)
+                                      .where('? IS NOT NULL OR ? IS NOT NULL', :production, :consumption)
+                                      .group('prosumers.edms_id')
+                                      .count if forecasts && only_missing
+
 
             params = { # prosumers: prosumers.map {|p| p.edms_id}.reject{|id| is_integer? id },
                        startdate: startdate.to_s,
@@ -108,8 +115,10 @@ module FetchAsynch
 
             # Try to download everything from FMS
             if forecasts
-              prosumers.map {|p| p.edms_id}.each do |pr_id|
-                jobs.push params: params.merge(prosumers: pr_id, startdate: startdate, enddate: enddate, forecasttime: (startdate -1.day).middle_of_day, forecasttype: "DayAhead", aggregate: true), api: :fms
+              prosumers.select{|p| p.prosumer_category_id == 4}.map {|p| p.edms_id}.each do |pr_id|
+                if !only_missing || fms_forecasts_in_db[pr_id].nil? || fms_forecasts_in_db[pr_id] < max_points
+                  jobs.push params: params.merge(prosumers: pr_id, startdate: startdate, enddate: enddate, forecasttime: (startdate -1.day).middle_of_day, forecasttype: "DayAhead", aggregate: true), api: :fms
+                end
               end
             end
           end
