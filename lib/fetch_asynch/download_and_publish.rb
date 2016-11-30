@@ -77,7 +77,7 @@ module FetchAsynch
             new_api_prosumer_ids = prosumers.map {|p| p.edms_id}.select{|id| newAPI? id }
             old_api_prosumer_ids = prosumers.map {|p| p.edms_id}.reject{|id| newAPI? id }
 
-            old_api_prosumer_ids.select!{|p| real_data_points_in_db[p] < max_points } if only_missing
+            old_api_prosumer_ids.select!{|p| real_data_points_in_db[p].nil? || real_data_points_in_db[p] < max_points } if only_missing
 
             # Old api jobs
             old_api_prosumer_ids.each_slice(10) do |slice|
