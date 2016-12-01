@@ -3,9 +3,9 @@
 one:
   demand_response_id: 
   prosumer_id: 
-  type: 1
+  drp_type: 1
 
 two:
   demand_response_id: 
   prosumer_id: 
-  type: 1
+  drp_type: 1

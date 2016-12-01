@@ -25,3 +25,5 @@ config/database.yml
 config/rabbitmq.yml
 config/vimsen_hosts.yml
 config/cloud_engine.yml
+
+coverage
