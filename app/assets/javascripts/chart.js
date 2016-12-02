@@ -58,7 +58,7 @@ var plotHelper = (function() {
              tickSize : [12, "hour"]*/
           },
           yaxis : {
-            tickDecimals: 2,
+            tickDecimals: 3,
             axisLabel: unit
           },
           legend:{
@@ -290,7 +290,7 @@ var plotHelper = (function() {
                    tickSize : [12, "hour"]*/
               },
               yaxis : {
-                  tickDecimals: 2,
+                  tickDecimals: 3,
                   axisLabel: '&euro;'
               },
               legend:{
