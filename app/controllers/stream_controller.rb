@@ -95,7 +95,7 @@ class StreamController < ApplicationController
     ActiveRecord::Base.clear_active_connections!
     sse.write(Market::Calculator.new(prosumers: cluster.prosumers,
                                      startDate: startdate - 1.day,
-                                     endDate: enddate).calcCosts.to_json,
+                                     endDate: enddate).calcCosts2.to_json,
               event: 'market')
 
     ActiveRecord::Base.clear_active_connections!
@@ -176,7 +176,7 @@ class StreamController < ApplicationController
     ActiveRecord::Base.clear_active_connections!
     sse.write(Market::Calculator.new(prosumers: [prosumer],
                                      startDate: startdate - 1.day,
-                                     endDate: enddate).calcCosts.to_json,
+                                     endDate: enddate).calcCosts2.to_json,
               event: 'market')
  
     ActiveRecord::Base.clear_active_connections!

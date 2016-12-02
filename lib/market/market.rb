@@ -15,85 +15,86 @@ module Market
  
 
     def calcCosts2
-      query_joins = DataPoint.joins("LEFT JOIN forecasts ON forecasts.timestamp = data_points.timestamp AND data_points.prosumer_id = forecasts.prosumer_id AND data_points.interval_id = forecasts.interval_id")
-               .joins("LEFT JOIN day_ahead_energy_prices as da ON (data_points.timestamp - interval '1 hour')::date = da.date  + interval '365 days' AND to_char(data_points.timestamp, ' HH24') = to_char(da.dayhour % 24, '00')")
-               .where(timestamp: @startDate .. @endDate, interval: 2, prosumer: @prosumers,  'da.region_id': 1)
-               .select(
-                   'sum(price * 0.001 * (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0))) as forecast',
-                   'sum(price * 0.001 * (coalesce(data_points.consumption,0) - coalesce(data_points.production,0))) as ideal',
-                   "sum(price * 0.001 * ((coalesce(data_points.consumption,0) - coalesce(data_points.production,0))
-                                         + CASE ((coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) > (coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))
-                                             WHEN TRUE THEN
-                                                #{@penalty_satisfaction} * ((coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) - (coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))
-                                             ELSE
-                                                #{@penalty_violation} * ((coalesce(data_points.consumption,0) - coalesce(data_points.production,0)) - (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)))
-                                             END)) as real_individual"
-               )
+      ActiveRecord::Base.connection_pool.with_connection do
+        query_joins = DataPoint.joins("LEFT JOIN forecasts ON forecasts.timestamp = data_points.timestamp AND data_points.prosumer_id = forecasts.prosumer_id AND data_points.interval_id = forecasts.interval_id")
+                 .joins("LEFT JOIN day_ahead_energy_prices as da ON (data_points.timestamp - interval '1 hour')::date = da.date  + interval '365 days' AND to_char(data_points.timestamp, ' HH24') = to_char(da.dayhour % 24, '00')")
+                 .where(timestamp: @startDate .. @endDate, interval: 2, prosumer: @prosumers,  'da.region_id': 1)
+                 .select(
+                     'sum(price * 0.001 * (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0))) as forecast',
+                     'sum(price * 0.001 * (coalesce(data_points.consumption,0) - coalesce(data_points.production,0))) as ideal',
+                     "sum(price * 0.001 * ((coalesce(data_points.consumption,0) - coalesce(data_points.production,0))
+                                           + CASE ((coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) > (coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))
+                                               WHEN TRUE THEN
+                                                  #{@penalty_satisfaction} * ((coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) - (coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))
+                                               ELSE
+                                                  #{@penalty_violation} * ((coalesce(data_points.consumption,0) - coalesce(data_points.production,0)) - (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)))
+                                               END)) as real_individual"
+                 )
 
-      Float(@penalty_violation)
-      Float(@penalty_satisfaction)
-      query_plot = query_joins
-                       .group(:timestamp)
-                       .order(timestamp: :asc)
-                       .select(
-                           :timestamp,
-                           "sum(price * 0.001 * (coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))
-                              + CASE (sum(coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) > sum(coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))
-                                  WHEN TRUE THEN
-                                    #{@penalty_satisfaction} * sum(price * 0.001 *((coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) - (coalesce(data_points.consumption,0) - coalesce(data_points.production,0))))
-                                  ELSE
-                                    #{@penalty_violation} * sum(price * 0.001 * ((coalesce(data_points.consumption,0) - coalesce(data_points.production,0)) - (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0))))
-                                  END as cluster"
-                       )
-      query_dissagregated = query_joins
-                                .group(:prosumer_id)
-                                .joins('LEFT JOIN prosumers ON data_points.prosumer_id = prosumers.id')
-                                .order(prosumer_id: :asc)
-                                .select(
-                                    :prosumer_id,
-                                    'max(prosumers.name) as name'
-                                )
-      query_total = query_joins
-                        .order('forecast ASC')
-                        .first
+        Float(@penalty_violation)
+        Float(@penalty_satisfaction)
+        query_plot = query_joins
+                         .group(:timestamp)
+                         .order(timestamp: :asc)
+                         .select(
+                             :timestamp,
+                             "sum(price * 0.001 * (coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))
+                                + CASE (sum(coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) > sum(coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))
+                                    WHEN TRUE THEN
+                                      #{@penalty_satisfaction} * sum(price * 0.001 *((coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) - (coalesce(data_points.consumption,0) - coalesce(data_points.production,0))))
+                                    ELSE
+                                      #{@penalty_violation} * sum(price * 0.001 * ((coalesce(data_points.consumption,0) - coalesce(data_points.production,0)) - (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0))))
+                                    END as cluster"
+                         )
+        query_dissagregated = query_joins
+                                  .group(:prosumer_id)
+                                  .joins('LEFT JOIN prosumers ON data_points.prosumer_id = prosumers.id')
+                                  .order(prosumer_id: :asc)
+                                  .select(
+                                      :prosumer_id,
+                                      'max(prosumers.name) as name'
+                                  )
+        query_total = query_joins
+                          .order('forecast ASC')
+                          .first
 
-      {
-          plot: [{
-                     label: "forecast",
-                     data: query_plot.map{|d| [d.timestamp.to_i * 1000, d.forecast]}
-                 }, {
-                     label: "ideal",
-                     data: query_plot.map{|d| [d.timestamp.to_i * 1000, d.ideal]}
-                 }, {
-                     label: "individual",
-                     data: query_plot.map{|d| [d.timestamp.to_i * 1000, d.real_individual]}
-                 }, {
-                     label: "cluster",
-                     data: query_plot.map{|d| [d.timestamp.to_i * 1000, d.cluster]}
-                 }],
-          disaggregated: query_dissagregated.map do |d|
-            {
-                id: d.prosumer_id,
-                name: d.name,
-                forecast: d.forecast,
-                ideal: d.ideal,
-                real: d.real_individual,
-            }
-          end + [{
-                     id: -1,
-                     name: :sum,
-                     forecast: query_total.forecast,
-                     ideal: query_total.ideal,
-                     real: query_total.real_individual
-                 },{
-                     id: -2,
-                     name: "aggr.",
-                     forecast: query_total.forecast,
-                     ideal: query_total.ideal,
-                     real: query_plot.map{|d| d.cluster}.sum
-                 }]
-      }
-
+        {
+            plot: [{
+                       label: "forecast",
+                       data: query_plot.map{|d| [d.timestamp.to_i * 1000, d.forecast]}
+                   }, {
+                       label: "ideal",
+                       data: query_plot.map{|d| [d.timestamp.to_i * 1000, d.ideal]}
+                   }, {
+                       label: "individual",
+                       data: query_plot.map{|d| [d.timestamp.to_i * 1000, d.real_individual]}
+                   }, {
+                       label: "cluster",
+                       data: query_plot.map{|d| [d.timestamp.to_i * 1000, d.cluster]}
+                   }],
+            disaggregated: query_dissagregated.map do |d|
+              {
+                  id: d.prosumer_id,
+                  name: d.name,
+                  forecast: d.forecast,
+                  ideal: d.ideal,
+                  real: d.real_individual,
+              }
+            end + [{
+                       id: -1,
+                       name: :sum,
+                       forecast: query_total.forecast || 0,
+                       ideal: query_total.ideal || 0,
+                       real: query_total.real_individual || 0
+                   },{
+                       id: -2,
+                       name: "aggr.",
+                       forecast: query_total.forecast || 0,
+                       ideal: query_total.ideal || 0,
+                       real: query_plot.map{|d| d.cluster}.sum || 0
+                   }]
+        }
+      end
     end
 
     def calcCosts

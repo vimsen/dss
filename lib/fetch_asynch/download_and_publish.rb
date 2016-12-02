@@ -23,6 +23,7 @@ module FetchAsynch
       @enddate = enddate
       ActiveRecord::Base.connection_pool.with_connection do
         @interval = Interval.find(interval)
+        @prosumer_reverse_hash = @prosumers.map{|p| [p.edms_id, {id: p.id, name: p.name}]}.to_h
       end
 
 
@@ -179,7 +180,7 @@ module FetchAsynch
               Rails.logger.debug "Trying to publish market data"
               x.publish({data: Market::Calculator.new(prosumers: @prosumers,
                                                       startDate: @startdate,
-                                                      endDate: @enddate).calcCosts,
+                                                      endDate: @enddate).calcCosts2,
                          event: 'market'}.to_json) if x
               Rails.logger.debug "publshed market data"
               ActiveRecord::Base.connection_pool.with_connection do
@@ -212,19 +213,17 @@ module FetchAsynch
     def datareceived_fms(data, x)
       # Rails.logger.debug data
       ActiveRecord::Base.connection_pool.with_connection do | conn |
-        procs = Hash[@prosumers.map {|p| [p.edms_id, p]}]
-
         begin
           upsert_status = Upsert.batch(conn, Forecast.table_name) do |upsert|
             data["items"].each do | item |
 
               ts = item['timestamp'].sub(/:0.$/,'00').to_datetime - 3.hours
 
-              if procs[item['prosumer_id'].to_s] && validate_timestamp(ts)
+              if @prosumer_reverse_hash[item['prosumer_id'].to_s] && validate_timestamp(ts)
                 # puts "Received: #{d}"
                 selector = {
                     timestamp: ts,
-                    prosumer_id: procs[item['prosumer_id'].to_s].id,
+                    prosumer_id: @prosumer_reverse_hash[item['prosumer_id'].to_s][:id],
                     interval_id: @interval.id,
                     forecast_time: nil,
                     forecast_type: 0
@@ -490,22 +489,18 @@ module FetchAsynch
 
       # Rails.logger.debug "Finding existing datapoints"
       new_data_points = []
-      procs = []
-
       Upsert.logger = Logger.new("/dev/null")
 
       ActiveRecord::Base.connection_pool.with_connection do | conn |
-        procs = Hash[@prosumers.map {|p| [p.edms_id, p]}]
-
         begin
           upsert_status = Upsert.batch(conn, DataPoint.table_name) do |upsert|
             data.each do | d |
 
-              if procs[d['procumer_id'].to_s]
+              if @prosumer_reverse_hash[d['procumer_id'].to_s]
                 # puts "Received: #{d}"
                 selector = {
                     timestamp: d['timestamp'].to_datetime,
-                    prosumer_id: procs[d['procumer_id'].to_s].id,
+                    prosumer_id: @prosumer_reverse_hash[d['procumer_id'].to_s][:id],
                     interval_id: @interval.id
                 }
 
@@ -548,7 +543,7 @@ module FetchAsynch
 
       begin
         message = new_data_points.map do |d|
-          prepare(d, procs)
+          prepare(d)
         end.compact
         x.publish({data: message, event: 'datapoints'}.to_json) unless x.nil?
       rescue Bunny::Exception # Don't block if channel can't be fanned out
@@ -557,31 +552,14 @@ module FetchAsynch
       end
     end
 
-    def db_prepare(d, procs)
-     DataPoint.new(
-        timestamp: d['timestamp'].to_datetime,
-        prosumer: procs[d['procumer_id'].to_s],
-        interval: @interval,
-        production: d['actual']['production'],
-        consumption: d['actual']['consumption'],
-        storage: d['actual']['storage'],
-        f_timestamp: d['forecast']['timestamp'].to_datetime,
-        f_production: d['forecast']['production'],
-        f_consumption: d['forecast']['consumption'],
-        f_storage: d['forecast']['storage'],
-        dr: d['dr'],
-        reliability: d['reliability']
-     )
-    end
+    def prepare(d)
 
-    def prepare(d, procs)
-
-      if procs[d['procumer_id'].to_s]
+      if @prosumer_reverse_hash[d['procumer_id'].to_s]
         k = d.deep_dup
 
         k['timestamp'] = d['timestamp'].to_datetime.to_i
-        k['prosumer_id'] = procs[d['procumer_id'].to_s].id
-        k['prosumer_name'] = procs[d['procumer_id'].to_s].name
+        k['prosumer_id'] = @prosumer_reverse_hash[d['procumer_id'].to_s][:id]
+        k['prosumer_name'] = @prosumer_reverse_hash[d['procumer_id'].to_s][:name]
         k['forecast']['timestamp'] =
             d['forecast']['timestamp'].to_datetime.to_i
         k['actual']['prosumption'] = prosumption(d['actual']['consumption'], d['actual']['production'])
