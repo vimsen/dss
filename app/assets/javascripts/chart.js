@@ -80,7 +80,7 @@ var plotHelper = (function() {
   };
 
   var fill_violation_table = function(d) {
-    console.log(d);
+    // console.log(d);
 
     if (d["Aggregate: consumption, forecast"]) {
       var tableData = [];
@@ -248,8 +248,16 @@ var plotHelper = (function() {
 
         source.addEventListener('market', function(e) {
           var message = JSON.parse(e.data);
-          console.log("Received market data: ", message)
-          $.plot($("#cost_placeholder"), message.plot, {
+          // console.log("Received market data: ", message);
+
+          var plot = message.plot;
+          if ($('h3.page-header').html().startsWith('<small>Prosumer:</small>')) {
+              plot = plot.filter(function(el) {
+                  return el.label !== "cluster";
+              });
+          }
+
+          $.plot($("#cost_placeholder"), plot, {
               series: {
                   lines: {
                       show: true
