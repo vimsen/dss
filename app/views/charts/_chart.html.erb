@@ -162,7 +162,7 @@
             console.log("Conncting to stream: ", url);
 
             plotHelper.drawChart(url, {}, $('#type').val(), $('#forecast').val());
-
+            return false;
       });
       $('#resetDates').click(function () {
 

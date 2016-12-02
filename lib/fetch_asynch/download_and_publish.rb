@@ -97,7 +97,7 @@ module FetchAsynch
                 # for real data:
 
               if !only_missing || real_data_points_in_db[pr_id].nil? || real_data_points_in_db[pr_id] < max_points
-                jobs.unshift params: params.merge(prosumers: pr_id, pointer: 2), api: :new
+                jobs.unshift params: params.merge(prosumers: pr_id, pointer: 2), api: :new, forc: false
               end
 
 
@@ -107,7 +107,7 @@ module FetchAsynch
               if forecasts
                  ((startdate - 1.day)...enddate).each do | d |
                    if !only_missing || forecast_data_points_in_db[[pr_id, d.to_date]].nil? || forecast_data_points_in_db[[pr_id, d.to_date]] < max_forc
-                     jobs.push params: params.merge(prosumers: pr_id, pointer: 2, startdate: d, enddate: d + 1.hour), api: :new
+                     jobs.push params: params.merge(prosumers: pr_id, pointer: 2, startdate: d, enddate: d + 1.hour), api: :new, forc: true
                    end
                  end
               end
@@ -139,7 +139,7 @@ module FetchAsynch
                   # Rails.logger.debug "RAW: #{raw}"
                   result = JSON.parse raw
                   # Rails.logger.debug "Result: #{result}"
-                  result_conv = convert_new_to_old_api_v2 result, job[:params][:prosumers]
+                  result_conv = convert_new_to_old_api_v2 result, job[:params][:prosumers], job[:forc]
                   #  Rails.logger.debug "Result_conv: #{result_conv}"
                   ActiveRecord::Base.connection_pool.with_connection do
                     x.publish({data:  "Interval #{@interval.name}: Processing results for prosumers: #{job[:params][:prosumers]}.", event: "output"}.to_json) if x
@@ -399,7 +399,7 @@ module FetchAsynch
     end
 
 
-    def convert_new_to_old_api_v2(data, prosumer)
+    def convert_new_to_old_api_v2(data, prosumer, forc)
 
       intermediate_data = {}
       result = data.first
@@ -410,7 +410,7 @@ module FetchAsynch
 
       %w[Production Storage Consumption Flexibility Reliability].each do |key|
         parse_vals result, intermediate_data, key
-      end
+      end unless forc # Dont add datapoints when forecasts are asked
 
       result["ForecastConsumption"].map(&method(:hash_to_key_value)).each do | key,value |
 
