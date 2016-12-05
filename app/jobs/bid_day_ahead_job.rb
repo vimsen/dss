@@ -16,13 +16,13 @@ class BidDayAheadJob < ActiveJob::Base
     if ENV["download"] != "false"
       FetchAsynch::DownloadAndPublish.new prosumers: prosumers,
                                           interval: interval,
-                                          startdate: (date - 48.days).to_datetime,
+                                          startdate: (date - 48.hours).to_datetime,
                                           enddate: (date + 48.hours).to_datetime,
                                           channel: nil,
                                           async: true,
                                           forecasts: true,
                                           only_missing: true,
-                                          threads: 30
+                                          threads: 3
     end
 
     Rails.logger.debug "Downloaded data"
@@ -49,9 +49,19 @@ class BidDayAheadJob < ActiveJob::Base
         market_id: day_ahead_market["id"],
         date: date.to_s,
         bid_items_attributes: day_ahead_market["blocks"].map do |b|
+=begin
           volume = DataPoint.where(prosumer: prosumers, interval_id: interval, f_timestamp: date.beginning_of_day.to_datetime + b["starting"].seconds + 1.hour)
                        .select('sum(COALESCE(f_consumption,0) - COALESCE(f_production,0)) as f_prosumption')
                        .group(:f_timestamp).map{|dp| dp.f_prosumption}.first || 0
+=end
+
+          volume = Forecast.day_ahead.where(prosumer: prosumers,
+                                            interval_id: interval,
+                                            timestamp: date.beginning_of_day.to_datetime +
+                                                b["starting"].seconds +
+                                                1.hour)
+                       .select('sum(COALESCE(consumption,0) - COALESCE(production,0)) as prosumption')
+                       .group(:timestamp).map(&:prosumption).first
           {
               block_id: b["id"].to_i,
               volume: strategy_factor * volume,

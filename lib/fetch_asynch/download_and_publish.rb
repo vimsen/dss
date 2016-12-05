@@ -26,7 +26,7 @@ module FetchAsynch
         @prosumer_reverse_hash = @prosumers.map{|p| [p.edms_id, {id: p.id, name: p.name}]}.to_h
       end
 
-
+      Upsert.logger = Logger.new("/dev/null")
 
       Rails.logger.debug "Starting new Thread..."
       # Thread.abort_on_exception = true
@@ -47,6 +47,7 @@ module FetchAsynch
           jobs = []
 
           ActiveRecord::Base.connection_pool.with_connection do
+            Rails.logger.debug "startdate: #{startdate}, enddate: #{enddate}"
             max_points = ((enddate.to_f - startdate.to_f) / Interval.find(interval).duration.seconds).to_i
             max_forc = (1.day / Interval.find(interval).duration.seconds).to_i
             real_data_points_in_db = DataPoint
@@ -62,13 +63,16 @@ module FetchAsynch
                                              .group('prosumers.edms_id', 'date(timestamp)')
                                              .count if forecasts && only_missing
 
+
+            Rails.logger.debug "----------------------------------------------------------- #{forecasts}, #{only_missing}"
             fms_forecasts_in_db = Forecast
                                       .joins(:prosumer)
-                                      .where(prosumer: prosumers, timestamp: startdate .. enddate, interval: interval)
+                                      .where(prosumer: prosumers, timestamp: startdate .. enddate, interval: interval, forecast_type: 0)
                                       .where('? IS NOT NULL OR ? IS NOT NULL', :production, :consumption)
                                       .group('prosumers.edms_id')
                                       .count if forecasts && only_missing
 
+            Rails.logger.debug "fms forecasts: #{fms_forecasts_in_db}"
 
             params = { # prosumers: prosumers.map {|p| p.edms_id}.reject{|id| is_integer? id },
                        startdate: startdate.to_s,
@@ -117,8 +121,10 @@ module FetchAsynch
             # Try to download everything from FMS
             if forecasts
               prosumers.select{|p| p.prosumer_category_id == 4}.map {|p| p.edms_id}.each do |pr_id|
+                Rails.logger.debug "#{pr_id}:  points: #{fms_forecasts_in_db[pr_id] rescue 0}, we want: #{max_points} "
+
                 if !only_missing || fms_forecasts_in_db[pr_id].nil? || fms_forecasts_in_db[pr_id] < max_points
-                  jobs.push params: params.merge(prosumers: pr_id, startdate: startdate, enddate: enddate, forecasttime: (startdate -1.day).middle_of_day, forecasttype: "DayAhead", aggregate: true), api: :fms
+                  jobs.unshift params: params.merge(prosumers: pr_id, startdate: startdate, enddate: enddate, forecasttime: (startdate -1.day).middle_of_day, forecasttype: "DayAhead", aggregate: true), api: :fms
                 end
               end
             end
@@ -129,6 +135,8 @@ module FetchAsynch
           u = YAML.load_file('config/vimsen_hosts.yml')[Rails.env]
           edms_rest_resource = RestClient::Resource.new u['edms_host'] #, verify_ssl: OpenSSL::SSL::VERIFY_NONE
           fms_rest_resource = RestClient::Resource.new u['fms_host'], verify_ssl: OpenSSL::SSL::VERIFY_NONE
+
+          # Rails.logger.debug "The jobs queue is #{JSON.pretty_generate jobs}"
 
           Parallel.each(jobs, in_threads: threads) do |job|
             begin
@@ -212,6 +220,9 @@ module FetchAsynch
 
     def datareceived_fms(data, x)
       # Rails.logger.debug data
+
+      received_prosumers = {}
+
       ActiveRecord::Base.connection_pool.with_connection do | conn |
         begin
           upsert_status = Upsert.batch(conn, Forecast.table_name) do |upsert|
@@ -221,6 +232,7 @@ module FetchAsynch
 
               if @prosumer_reverse_hash[item['prosumer_id'].to_s] && validate_timestamp(ts)
                 # puts "Received: #{d}"
+                received_prosumers[@prosumer_reverse_hash[item['prosumer_id'].to_s][:id]] = 1
                 selector = {
                     timestamp: ts,
                     prosumer_id: @prosumer_reverse_hash[item['prosumer_id'].to_s][:id],
@@ -256,9 +268,10 @@ module FetchAsynch
         begin
           data = {}
 
-          @prosumers.each do |pr|
+          received_prosumers.map{|k,v| Prosumer.find(k)}.each do |pr|
+
             pr.reload
-            pr.forecasts.reload
+            # pr.forecasts.reload
             data.merge!(pr.new_forecast(@interval, @startdate, @enddate))
           end
           # Rails.logger.debug "Sending FMS data: #{data}"
@@ -489,8 +502,6 @@ module FetchAsynch
 
       # Rails.logger.debug "Finding existing datapoints"
       new_data_points = []
-      Upsert.logger = Logger.new("/dev/null")
-
       ActiveRecord::Base.connection_pool.with_connection do | conn |
         begin
           upsert_status = Upsert.batch(conn, DataPoint.table_name) do |upsert|
