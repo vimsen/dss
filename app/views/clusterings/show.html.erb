@@ -31,7 +31,7 @@
           <dd><%= @sum_aggr.round(2) -%> - Penalties: <%= @pen_aggr.round(2) -%> </dd>
 
           <dt>Improvement:</dt>
-          <dd><%= ((@sum_sum - @sum_aggr) / @sum_sum * 100).round(2) if @sum_sum != 0-%>%
+          <dd><%= ((@sum_sum - @sum_aggr) / @sum_sum.abs * 100).round(2) if @sum_sum != 0-%>%
             - Penalties: <%= ((@pen_sum - @pen_aggr) / @pen_sum * 100).round(2) if @pen_sum != 0-%>%</dd>
 
           <dt>Clusters:</dt>
@@ -94,7 +94,7 @@
                   <th>Perc.</th>
                   <td></td><td></td>
                   <td class="text-right"><%= ( ( @stats[tc.id][-1][:real] - @stats[tc.id][-2][:real] ) /
-                          @stats[tc.id][-1][:real] * 100).round(2) if @stats[tc.id][-1][:real] != 0
+                          @stats[tc.id][-1][:real].abs * 100).round(2) if @stats[tc.id][-1][:real] != 0
                       -%>%</td>
                   <td class="text-right"><%= ( ( @stats[tc.id][-1][:penalty] - @stats[tc.id][-2][:penalty] ) /
                           @stats[tc.id][-1][:penalty] * 100).round(2) if @stats[tc.id][-1][:penalty] != 0
@@ -125,20 +125,20 @@
                 vals: [{
                     label: :prosumption,
                     data: DataPoint.where(prosumer: tc.prosumers,
-                                      interval: 3,
+                                      interval: 2,
                                       timestamp: @startDate..@endDate)
                                .order("ts ASC")
                                .group(:ts)
-                               .select("timestamp::date  as ts, sum(COALESCE(consumption,0) - COALESCE(production,0)) as s")
+                               .select("timestamp as ts, sum(COALESCE(consumption,0) - COALESCE(production,0)) as s")
                                .map{|p| [p.ts.to_datetime.to_i * 1000, p.s] }
                 },{
                     label: :forecast,
-                    data: DataPoint.where(prosumer: tc.prosumers,
-                                      interval: 3,
-                                      f_timestamp: @startDate..@endDate)
+                    data: Forecast.day_ahead.where(prosumer: tc.prosumers,
+                                      interval: 2,
+                                      timestamp: @startDate..@endDate)
                                .order("ts ASC")
                                .group(:ts)
-                               .select("f_timestamp::date  as ts, sum(COALESCE(f_consumption,0) - COALESCE(f_production,0)) as s")
+                               .select("timestamp as ts, sum(COALESCE(consumption,0) - COALESCE(production,0)) as s")
                                .map{|p| [p.ts.to_datetime.to_i * 1000, p.s] }
                 },{
                     label: "",
@@ -156,7 +156,7 @@
             show: true
           },
           points: {
-            show: true
+            show: false
           }
         },
         grid: {
