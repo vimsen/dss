@@ -12,18 +12,25 @@ class SlaController < ApplicationController
     },{
         label: "Real Prosumption",
         data: DataPoint.select("timestamp, SUM(COALESCE(consumption,0) - COALESCE(production,0)) AS pros")
-                  .where(interval: 2, timestamp: @date.beginning_of_day .. @date.end_of_day)
+                  .where(interval: 2, timestamp: @date.beginning_of_day .. @date.end_of_day, prosumer: Prosumer.category(4)) # prosumer_id: [20001..20033, 20089..20124] )   #
                   .group(:timestamp)
                   .order(timestamp: :asc)
                   .map{|dp| [dp.timestamp.to_i * 1000, dp.pros]}
     },{
         label: "Forecast Prosumpton",
+        data: Forecast.day_ahead
+                  .select("timestamp, SUM(COALESCE(consumption,0) - COALESCE(production,0)) AS f_pros")
+                  .where(interval: 2, timestamp: @date.beginning_of_day .. @date.end_of_day, prosumer: Prosumer.category(4)) # prosumer_id: [20001..20033, 20089..20124] )   # : Prosumer.category(4))
+                  .group(:timestamp)
+                  .order(timestamp: :asc)
+                  .map{|dp| [dp.timestamp.to_i * 1000, dp.f_pros]}
+=begin
         data: DataPoint.select("f_timestamp, SUM(COALESCE(f_consumption,0) - COALESCE(f_production,0)) AS f_pros")
                   .where(interval: 2, f_timestamp: @date.beginning_of_day .. @date.end_of_day)
                   .group(:f_timestamp)
                   .order(f_timestamp: :asc)
                   .map{|dp| [dp.f_timestamp.to_i * 1000, dp.f_pros]}
+=end
     }]
-
   end
 end
