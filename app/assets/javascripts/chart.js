@@ -69,18 +69,20 @@ var plotHelper = (function() {
 
       $("#legend .legendLabel")
           .each(function(i){
-              var csvContent = "data:text/csv;charset=utf-8,";
-              dataset[i].data.forEach(function(infoArray, index){
-                  var dataString = infoArray.join(",");
-                  csvContent += dataString + "\n";
-              });
-              var encodedUri = encodeURI(csvContent);
-              $(this).append('<br>').append($('<a>',{
-                  class: 'btn btn-info btn-xs',
-                  text: 'Download',
-                  href: encodedUri,
-                  download: dataset[i].label + ".csv"
-              }));
+              if (dataset[i] && dataset[i].data && dataset[i].data.length > 0) {
+                  var csvContent = "data:text/csv;charset=utf-8,";
+                  dataset[i].data.forEach(function(infoArray, index){
+                      var dataString = infoArray.join(",");
+                      csvContent += dataString + "\n";
+                  });
+                  var encodedUri = encodeURI(csvContent);
+                  $(this).append('<br>').append($('<a>',{
+                      class: 'btn btn-info btn-xs',
+                      text: 'Download',
+                      href: encodedUri,
+                      download: dataset[i].label + ".csv"
+                  }));
+              }
           });
 
       if ( $( "#vio_div" ).length ) {
