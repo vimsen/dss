@@ -62,6 +62,29 @@
 </div>
 
 <div class="row">
+  <div class="col-lg-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Date range
+      </div>
+      <div class="panel-body">
+        <%= form_tag('#', id: "plot_params", remote: false, class: "form-inline", method: :get) do %>
+            <div class="form-group form-group-sm">
+              <%= label_tag :startDate, "Start datetime:" %>
+              <%= text_field_tag :startDate, @startDate.to_datetime.strftime("%Y/%m/%d %H:00"), id: :startDate, class: 'form-control input-sm datetime' %>
+            </div>
+            <div class="form-group form-group-sm">
+              <%= label_tag :endDate, "End datetime:" %>
+              <%= text_field_tag :endDate, @endDate.to_datetime.strftime("%Y/%m/%d %H:00"), id: :endDate, class: 'form-control input-sm datetime' %>
+            </div>
+            <input type="submit" value="Set" class="form-control input-sm btn btn-primary btn-xs">
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
   <% @clustering.temp_clusters.order(name: :asc).each do |tc| %>
     <div class="col-lg-3 col-md-4 col-sm-6 cols-xs-12">
       <div class="panel panel-default">
@@ -118,6 +141,7 @@
 
 <script>
   $(function () {
+    $(".datetime").datetimepicker();
     var idata = <%=
         JSON.pretty_generate(@clustering.temp_clusters.map do |tc|
             {

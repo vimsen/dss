@@ -19,10 +19,9 @@ class ClusteringsController < ApplicationController
 
   def show
 
-    @params = JSON.parse session[:algo_params] || "{}"
-    init_algo_params!(@params)
-    @startDate = @params["startDate"].to_datetime
-    @endDate = @params["endDate"].to_datetime
+    session_obj = JSON.parse session[:algo_params] || "{}"
+    @startDate = (params["startDate"] || session_obj["startDate"]).to_datetime || DateTime.now - 7.days
+    @endDate = (params["endDate"] || session_obj["endDate"]).to_datetime || DateTime.now
 
     @stats = Hash[@clustering.temp_clusters.map do |tc|
                     [tc.id, Hash[Market::Calculator.new(prosumers: tc.prosumers,
@@ -162,6 +161,8 @@ class ClusteringsController < ApplicationController
     end
     return result
   end
+
+
 
   def init_algo_params!(params)
     params["category"] ||= [ ProsumerCategory.first.id ]
