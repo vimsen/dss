@@ -17,7 +17,7 @@ module FetchAsynch
                    async: false,
                    forecasts: true,
                    only_missing: false,
-                   threads: 1)
+                   threads: 5)
       @prosumers = prosumers
       @startdate = startdate
       @enddate = enddate
@@ -119,7 +119,7 @@ module FetchAsynch
 
 
             # Try to download everything from FMS
-            if forecasts
+            if forecasts && [1,2].include?(interval)
               prosumers.select{|p| p.prosumer_category_id == 4}.map {|p| p.edms_id}.each do |pr_id|
                 Rails.logger.debug "#{pr_id}:  points: #{fms_forecasts_in_db[pr_id] rescue 0}, we want: #{max_points} "
 
