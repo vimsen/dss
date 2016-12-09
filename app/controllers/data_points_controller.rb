@@ -7,6 +7,14 @@ class DataPointsController < ApplicationController
 
   def index
     # @data_points = DataPoint.all
+
+    @params = JSON.parse session[:algo_params] || "{}"
+
+    @params["category"] ||= [ ProsumerCategory.first.id ]
+    @params["startDate"] ||= (DateTime.now - 7.days)
+    @params["endDate"] ||= DateTime.now
+    @params["category"] ||= [ ProsumerCategory.first.id ]
+
     @data_points = DataPoint.includes(:prosumer, :interval).order(
       sort_column + ' ' + sort_direction).paginate(page: params[:page])
     respond_with(@data_points)

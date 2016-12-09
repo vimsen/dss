@@ -7,9 +7,28 @@
         Load recent data points
       </div>
       <div class="panel-body">
-        <form action="#" id="download_data">
+        <%= form_tag('?', id: "download_data", class: "form-inline") do %>
+            <div class="form-group form-group-sm">
+              <%= label_tag :startDate, "Start datetime:" %>
+              <%= text_field_tag :startDate, @params["startDate"].to_datetime.strftime("%Y/%m/%d %H:00"), id: :startDate, class: 'form-control input-sm datetime' %>
+            </div>
+            <div class="form-group form-group-sm">
+              <%= label_tag :endDate, "End datetime:" %>
+              <%= text_field_tag :endDate, @params["endDate"].to_datetime.strftime("%Y/%m/%d %H:00"), id: :endDate, class: 'form-control input-sm datetime' %>
+            </div>
+            <div class="form-group form-group-sm">
+              <%= label_tag :category_, "Prosumer category", class: "control-label" %>
+              <%= collection_select(:category, nil, ProsumerCategory.all, :id, :name, {:selected => @params["category"]}, {class: "form-control input-sm'"}) %>
+            </div>
+
+            <input type="submit" value="Download data points" class="form-control input-sm btn btn-primary btn-xs">
+        <% end %>
+
+
+
+<!--        <form action="#" id="download_data">
           <input type="submit" value="Download recent data points"/>
-        </form>
+        </form>-->
         <div id="progress" class="terminal">
 
         </div>
@@ -79,28 +98,41 @@
 <br>
 
 <script>
-  $("#download_data").submit(function () {
-    $("#progress").empty();
-    $("#download_data :input").prop("disabled", true);
-    var source = new EventSource("/stream/download_data");
 
-    source.addEventListener('output', function(e) {
-      console.log("output received: ", e);
-      var message = JSON.parse(e.data);
-      $("#progress").append("<BR/>" + message).animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
+    $(function() {
+        $(".datetime").datetimepicker();
+
+        $("#download_data").submit(function (e) {
+            $("#progress").empty();
+            $("#download_data :input").prop("disabled", true);
+
+            var paramObj = {
+                startDate: $("#startDate").val(),
+                endDate: $("#endDate").val(),
+                prosumer_category_id: $("#category_").val()
+            };
+
+
+            var source = new EventSource("/stream/download_data?" + $.param(paramObj));
+
+            source.addEventListener('output', function (e) {
+                console.log("output received: ", e);
+                var message = JSON.parse(e.data);
+                $("#progress").append("<BR/>" + message).animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
+            });
+
+            source.addEventListener('result', function (e) {
+                console.log("result received: ", e);
+                var message = JSON.parse(e.data);
+                source.close();
+                $("#progress").append("<BR/>" + message).animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
+                $("#run_algorithm :input").prop("disabled", false);
+                $("#progress").append("<BR/>DataPoints downloaded. Refresh page to view them.").animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
+            });
+
+            return false;
+        });
     });
-
-    source.addEventListener('result', function(e) {
-      console.log("result received: ", e);
-      var message = JSON.parse(e.data);
-      source.close();
-      $("#progress").append("<BR/>" + message).animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
-      $("#run_algorithm :input").prop("disabled", false);
-      $("#progress").append("<BR/>DataPoints downloaded. Refresh page to view them.").animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
-    });
-
-    return false;
-  });
 
 </script>
 

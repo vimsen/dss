@@ -269,22 +269,34 @@ class StreamController < ApplicationController
       end
     end
 
-    startdate = DateTime.now - 2.weeks
-    enddate = DateTime.now
 
-    remaining = 2
-    # FetchAsynch::DownloadAndPublish.new(Prosumer.all, 1, startdate, enddate, channel_name)
-    FetchAsynch::DownloadAndPublish.new prosumers: Prosumer.real_time,
+    remaining = 3
+    session[:algo_params] = JSON.generate params
+    prosumers = Prosumer.category(params[:prosumer_category_id].to_i) || Prosumer.real_time
+    startdate = params[:startDate].to_datetime || DateTime.now - 2.weeks
+    enddate = params[:endDate].to_datetime || DateTime.now
+
+
+    FetchAsynch::DownloadAndPublish.new prosumers: prosumers,
+                                        interval: 1,
+                                        startdate: startdate,
+                                        enddate: enddate,
+                                        channel: channel_name,
+                                        only_missing: true
+
+    FetchAsynch::DownloadAndPublish.new prosumers: prosumers,
                                         interval: 2,
                                         startdate: startdate,
                                         enddate: enddate,
-                                        channel: channel_name
+                                        channel: channel_name,
+                                        only_missing: true
 
-    FetchAsynch::DownloadAndPublish.new prosumers: Prosumer.real_time,
+    FetchAsynch::DownloadAndPublish.new prosumers: prosumers,
                                         interval: 3,
                                         startdate: startdate,
                                         enddate: enddate,
-                                        channel: channel_name
+                                        channel: channel_name,
+                                        only_missing: true
 
     until remaining == 0
       sleep 1;
