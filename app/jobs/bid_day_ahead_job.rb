@@ -59,7 +59,7 @@ class BidDayAheadJob < ActiveJob::Base
                                             interval_id: interval,
                                             timestamp: date.beginning_of_day.to_datetime +
                                                 b["starting"].seconds +
-                                                1.hour)
+                                                2.hour)
                        .select('sum(COALESCE(consumption,0) - COALESCE(production,0)) as prosumption')
                        .group(:timestamp).map(&:prosumption).first
           {
