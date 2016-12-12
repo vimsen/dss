@@ -33,7 +33,8 @@ module ClusteringModule
               ClusteringModule::GeneticErrorClustering.new(
                   prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
                   startDate: params["startDate"],
-                  endDate: params["endDate"]
+                  endDate: params["endDate"],
+                  forecast_type: (params["category"].first.to_i == 4 ? :fms : :edms)
               ).run params["kappa"].to_i
             }
         },
@@ -44,7 +45,8 @@ module ClusteringModule
                   prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
                   startDate: params["startDate"],
                   endDate: params["endDate"],
-                  algorithm: Ai4r::GeneticAlgorithm::StaticChromosomeWithSmartCrossover
+                  algorithm: Ai4r::GeneticAlgorithm::StaticChromosomeWithSmartCrossover,
+                  forecast: params["category"].first.to_i == 4 ? :fms : :edms
               ).run params["kappa"].to_i
             }
         },
@@ -54,7 +56,8 @@ module ClusteringModule
               ClusteringModule::PositiveErrorSpectralClustering.new(
                   prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
                   startDate: params["startDate"],
-                  endDate: params["endDate"]
+                  endDate: params["endDate"],
+                  forecast: params["category"].first.to_i == 4 ? :fms : :edms
               ).run params["kappa"].to_i
             }
         },
@@ -64,7 +67,8 @@ module ClusteringModule
               ClusteringModule::NegativeErrorSpectralClustering.new(
                   prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
                   startDate: params["startDate"],
-                  endDate: params["endDate"]
+                  endDate: params["endDate"],
+                  forecast: params["category"].first.to_i == 4 ? :fms : :edms
               ).run params["kappa"].to_i
             }
         },

@@ -9,6 +9,7 @@ module ClusteringModule
 
     attr_accessor :last_run_stats
     
+=begin
     def initialize(prosumers: Prosumer.all,
                    startDate: Time.now - 1.week,
                    endDate: Time.now,
@@ -41,6 +42,7 @@ module ClusteringModule
                        [k, (v || 0) - (forecasts[k] || 0)]
                      end]
     end
+=end
 
   
     def prepare_input_dataset(instance_id , kappa = 5)
