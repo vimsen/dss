@@ -24,6 +24,13 @@ class SlaController < ApplicationController
                   .group(:timestamp)
                   .order(timestamp: :asc)
                   .map{|dp| [dp.timestamp.to_i * 1000, dp.f_pros]}
+    },{
+        label: "",
+        data: [[@date.noon.to_datetime.to_i * 1000, 0]],
+        points: {
+            show: false
+        }
+
 =begin
         data: DataPoint.select("f_timestamp, SUM(COALESCE(f_consumption,0) - COALESCE(f_production,0)) AS f_pros")
                   .where(interval: 2, f_timestamp: @date.beginning_of_day .. @date.end_of_day)
