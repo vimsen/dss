@@ -13,7 +13,7 @@ class DemandResponse < ActiveRecord::Base
   has_many :dr_planneds, dependent: :destroy
   has_many :dr_actuals, dependent: :destroy
 
-  has_many :demand_response_prosumers
+  has_many :demand_response_prosumers, dependent: :destroy
   has_many :prosumers, through: :demand_response_prosumers
 
   after_create do
