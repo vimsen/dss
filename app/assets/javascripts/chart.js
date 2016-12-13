@@ -153,7 +153,7 @@ var plotHelper = (function() {
         res[label][d.timestamp] = [d.timestamp * 1000, value];
     }
 
-    if (forecast == "EDMS") {
+    if (forecast == "edms") {
       var label = d.prosumer_name + ": " + type + ", forecast";
       if (res[label] == null) {
         res[label] = {};

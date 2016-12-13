@@ -8,7 +8,8 @@ class BidDayAheadJob < ActiveJob::Base
   def perform(prosumers: Prosumer.real_time,
               interval: 2,
               date: Date.tomorrow,
-              strategy_factor: 1.0)
+              strategy_factor: 1.0,
+              forecasts: "edms")
 
     Rails.logger.debug "Arguments:  #{ENV["download"]}"
     Rails.logger.debug "Downloading data for prosumers: #{prosumers}"
@@ -20,7 +21,7 @@ class BidDayAheadJob < ActiveJob::Base
                                           enddate: (date + 48.hours).to_datetime,
                                           channel: nil,
                                           async: true,
-                                          forecasts: true,
+                                          forecasts: forecasts,
                                           only_missing: true,
                                           threads: 3
     end

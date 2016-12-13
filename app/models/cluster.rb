@@ -8,7 +8,7 @@ class Cluster < ActiveRecord::Base
     return Prosumer.where("cluster_id IS ? OR cluster_id != ?", nil, self.id)
   end
   
-  def request_cached(interval, startdate, enddate, channel)
+  def request_cached(interval, startdate, enddate, channel, forecasts: "edms")
     result = []
     aggregate = {}
     count = {}
@@ -58,7 +58,7 @@ class Cluster < ActiveRecord::Base
                                             enddate: enddate,
                                             channel: channel,
                                             async: false,
-                                            forecasts: (enddate.to_f - startdate.to_f) / 86400 < 14,
+                                            forecasts: forecasts,
                                             only_missing: true
       # end
 

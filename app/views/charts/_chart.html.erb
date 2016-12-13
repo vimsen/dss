@@ -41,8 +41,8 @@
                                 class: 'form-control input-sm') %>
           <%= select_tag "forecast",
                          options_for_select(
-                             [["No forecast", :none],
-                              ["EDMS forecast", :EDMS],
+                             [["No forecast", "none"],
+                              ["EDMS forecast", "edms"],
                               ["FMS Dayahead forecast", :"FMS-D"]],
                              selected: forecast),
                          class: 'form-control input-sm' %>
@@ -112,7 +112,7 @@
 
 <script>
 
-    var idata = <%= provider.request_cached(interval, startDate, endDate, @channel).to_json.html_safe %>;
+    var idata = <%= provider.request_cached(interval, startDate, endDate, @channel, forecasts: forecast).to_json.html_safe %>;
     $(function(){
 
         console.log("Trying to download stream: <%= stream -%>");

@@ -15,7 +15,7 @@ module FetchAsynch
                    enddate: DateTime.now,
                    channel: nil,
                    async: false,
-                   forecasts: true,
+                   forecasts: "none",
                    only_missing: false,
                    threads: 5)
       @prosumers = prosumers
@@ -61,7 +61,7 @@ module FetchAsynch
                                              .where(prosumer: prosumers, timestamp: startdate .. enddate, interval: interval)
                                              .where('? IS NOT NULL OR ? IS NOT NULL', :f_production, :f_consumption)
                                              .group('prosumers.edms_id', 'date(timestamp)')
-                                             .count if forecasts && only_missing
+                                             .count if forecasts == "edms" && only_missing
 
 
             Rails.logger.debug "----------------------------------------------------------- #{forecasts}, #{only_missing}"
@@ -70,7 +70,7 @@ module FetchAsynch
                                       .where(prosumer: prosumers, timestamp: startdate .. enddate, interval: interval, forecast_type: 0)
                                       .where('? IS NOT NULL OR ? IS NOT NULL', :production, :consumption)
                                       .group('prosumers.edms_id')
-                                      .count if forecasts && only_missing
+                                      .count if forecasts == "FMS-D" && only_missing
 
             Rails.logger.debug "fms forecasts: #{fms_forecasts_in_db}"
 
@@ -108,7 +108,7 @@ module FetchAsynch
               # for forecasts:
 
             # Deleted until forecasts are fixed, no point requesting stugff we don't get
-              if forecasts
+              if forecasts == "edms"
                  ((startdate - 1.day)...enddate).each do | d |
                    if !only_missing || forecast_data_points_in_db[[pr_id, d.to_date]].nil? || forecast_data_points_in_db[[pr_id, d.to_date]] < max_forc
                      jobs.push params: params.merge(prosumers: pr_id, pointer: 2, startdate: d, enddate: d + 1.hour), api: :new, forc: true
@@ -119,13 +119,24 @@ module FetchAsynch
 
 
             # Try to download everything from FMS
-            if forecasts && [1,2].include?(interval)
+            puts "==================forecast:  #{forecasts}, interval: #{interval}, #{forecasts == "FMS-D"}, #{[1,2].include?(interval)}"
+            Rails.logger.debug "points: #{fms_forecasts_in_db rescue 0}, we want: #{max_points} "
+
+            if forecasts == "FMS-D" && [1,2].include?(interval)
+              puts "I'm in !!! #{prosumers}"
               prosumers.select{|p| p.prosumer_category_id == 4}.map {|p| p.edms_id}.each do |pr_id|
                 Rails.logger.debug "#{pr_id}:  points: #{fms_forecasts_in_db[pr_id] rescue 0}, we want: #{max_points} "
 
+
                 if !only_missing || fms_forecasts_in_db[pr_id].nil? || fms_forecasts_in_db[pr_id] < max_points
-                  # jobs.unshift params: params.merge(prosumers: pr_id, startdate: startdate, enddate: enddate, forecasttime: (startdate -1.day).middle_of_day, forecasttype: "DayAhead", aggregate: true), api: :fms
-                  jobs.unshift params: params.merge(prosumers: pr_id, startdate: startdate, enddate: enddate, forecasttime: startdate.beginning_of_day + 9.hours, forecasttype: "IntraDay", aggregate: true), api: :fms
+
+                  int_end = startdate
+                  begin
+                    int_start = int_end
+                    int_end = [int_start + (499 * @interval.duration).seconds, enddate].min
+                    jobs.unshift params: params.merge(prosumers: pr_id, startdate: int_start, enddate: int_end, forecasttime: (startdate -1.day).middle_of_day, forecasttype: "DayAhead", aggregate: true), api: :fms
+                    # jobs.unshift params: params.merge(prosumers: pr_id, startdate: startdate, enddate: enddate, forecasttime: startdate.beginning_of_day + 9.hours, forecasttype: "IntraDay", aggregate: true), api: :fms
+                  end while int_end < enddate
                 end
               end
             end

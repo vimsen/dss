@@ -35,7 +35,8 @@ class CheckBidStatusJob < ActiveJob::Base
           startdate: DateTime.now - 1.day,
           enddate: DateTime.now + 48.hours,
           channel: nil,
-          async: true
+          async: true,
+          forecast: "edms"
       }
       [1,2,3].each do |i|
         FetchAsynch::DownloadAndPublish.new options.merge interval: i

@@ -15,7 +15,8 @@ class MarketTest < ActiveSupport::TestCaseWithProsAndMarketData
                                         startdate: @startdate,
                                         enddate: @enddate,
                                         channel: nil,
-                                        async: true
+                                        async: true,
+                                        forecast: "edms"
   end
 
   test "Should calculate market data" do

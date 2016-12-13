@@ -41,7 +41,7 @@ class StreamController < ApplicationController
     cluster = Cluster.find(params[:id])
     startdate = ((params[:startdate].nil?) ? (DateTime.now - 7.days) : params[:startdate].to_datetime)
     enddate = (params[:enddate].nil?) ? (DateTime.now) : params[:enddate].to_datetime
-    interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
+    interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval].to_i
     channel = params[:channel]
     type = (params[:type].nil? ? :prosumption : params[:type])
     forecast = (params[:forecast].nil? ? :none : params[:forecast])
@@ -85,7 +85,7 @@ class StreamController < ApplicationController
       end
     end
 
-    idata = cluster.request_cached(interval, startdate - 1.day, enddate, channel)
+    idata = cluster.request_cached(interval, startdate - 1.day, enddate, channel, forecasts: forecast)
     idata[:data_points].each do |d|
       sse.write(d.to_json, event: 'datapoint')
     end
@@ -122,7 +122,7 @@ class StreamController < ApplicationController
     prosumer = Prosumer.find(params[:id])
     startdate = ((params[:startdate].nil?) ? (DateTime.now - 7.days) : params[:startdate].to_datetime)
     enddate = (params[:enddate].nil?) ? (DateTime.now) : params[:enddate].to_datetime
-    interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
+    interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval].to_i
     channel = params[:channel]
     type = (params[:type].nil? ? :prosumption : params[:type])
     forecast = (params[:forecast].nil? ? :none : params[:forecast])
@@ -165,7 +165,7 @@ class StreamController < ApplicationController
       end
     end
 
-    idata = prosumer.request_cached(interval, startdate - 1.day, enddate, channel)
+    idata = prosumer.request_cached(interval, startdate - 1.day, enddate, channel, forecasts: forecast)
 
     idata[:data_points].each do |d|
       sse.write(d.to_json, event: 'datapoint')
@@ -282,21 +282,24 @@ class StreamController < ApplicationController
                                         startdate: startdate,
                                         enddate: enddate,
                                         channel: channel_name,
-                                        only_missing: true
+                                        only_missing: true,
+                                        forecasts: "FMS-D"
 
     FetchAsynch::DownloadAndPublish.new prosumers: prosumers,
                                         interval: 2,
                                         startdate: startdate,
                                         enddate: enddate,
                                         channel: channel_name,
-                                        only_missing: true
+                                        only_missing: true,
+                                        forecasts: "FMS-D"
 
     FetchAsynch::DownloadAndPublish.new prosumers: prosumers,
                                         interval: 3,
                                         startdate: startdate,
                                         enddate: enddate,
                                         channel: channel_name,
-                                        only_missing: true
+                                        only_missing: true,
+                                        forecasts: "FMS-D"
 
     until remaining == 0
       sleep 1;

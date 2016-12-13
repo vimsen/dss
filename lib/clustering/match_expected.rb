@@ -105,7 +105,7 @@ module ClusteringModule
                                             enddate: @endDate + @interval.seconds,
                                             channel: @rb_channel,
                                             async: true,
-                                            forecasts: true,
+                                            forecasts: "none",
                                             only_missing: @download == :missing
 
       end

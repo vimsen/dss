@@ -34,7 +34,7 @@ class Prosumer < ActiveRecord::Base
   scope :with_positive_dr, ->(time_range) { select { |p| p.max_dr(time_range) && p.max_dr(time_range) > 0 } }
   scope :with_dr, ->(time_range) { select { |p| p.max_dr(time_range) } }
 
-  def request_cached(interval, startdate, enddate, channel)
+  def request_cached(interval, startdate, enddate, channel, forecasts: "edms")
 
     gaps = true
     result = []
@@ -54,7 +54,7 @@ class Prosumer < ActiveRecord::Base
                                         enddate: enddate,
                                         channel: channel,
                                         async: false,
-                                        forecasts: (enddate.to_f - startdate.to_f) / 86400 < 14
+                                        forecasts: forecasts
     # end
     
     return result      
