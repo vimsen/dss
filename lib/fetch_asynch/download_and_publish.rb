@@ -93,6 +93,7 @@ module FetchAsynch
                 # for real data:
 
               if !only_missing || real_data_points_in_db[pr_id].nil? || real_data_points_in_db[pr_id] < max_points
+                Rails.logger.debug "#{pr_id}:  points: #{real_data_points_in_db[pr_id] rescue 0}, we want: #{max_points} "
                 jobs.unshift params: params.merge(prosumers: pr_id, pointer: 2), api: :new, forc: false
               end
 
