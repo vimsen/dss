@@ -293,6 +293,7 @@ class StreamController < ApplicationController
                                         only_missing: true,
                                         forecasts: "FMS-D"
 
+=begin
     FetchAsynch::DownloadAndPublish.new prosumers: prosumers,
                                         interval: 3,
                                         startdate: startdate,
@@ -300,6 +301,7 @@ class StreamController < ApplicationController
                                         channel: channel_name,
                                         only_missing: true,
                                         forecasts: "FMS-D"
+=end
 
     until remaining == 0
       sleep 1;
