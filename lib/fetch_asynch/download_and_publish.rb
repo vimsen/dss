@@ -236,14 +236,19 @@ module FetchAsynch
       # Rails.logger.debug data
 
       received_prosumers = {}
+      min_ts = @enddate
+      max_ts = @startdate
 
-      ActiveRecord::Base.connection_pool.with_connection do | conn |
+
+          ActiveRecord::Base.connection_pool.with_connection do | conn |
         begin
           upsert_status = Upsert.batch(conn, Forecast.table_name) do |upsert|
             data["items"].each do | item |
 
               ts = item['timestamp'].sub(/:0.$/,'00').to_datetime - ([20001..20033, 20089..20124].any? {|r| r.cover? @prosumer_reverse_hash[item['prosumer_id'].to_s][:id]} ? 3.hours : 1.hour)
 
+              min_ts = [ts, min_ts].min
+              max_ts = [ts, max_ts].max
 
               if @prosumer_reverse_hash[item['prosumer_id'].to_s] && validate_timestamp(ts)
                 # puts "Received: #{d}"
@@ -270,8 +275,8 @@ module FetchAsynch
               end
             end
           end
-          x.publish({data:  "Interval #{@interval.name}: UPSERT status: #{upsert_status.count}", event: "output"}.to_json) if x
-          Rails.logger.debug "Interval #{@interval.name}: UPSERT status: #{upsert_status.count}"
+          x.publish({data:  "Interval #{@interval.name}: UPSERT status: #{upsert_status.count}, prosumers: #{received_prosumers.keys}, time: #{min_ts} .. #{max_ts}", event: "output"}.to_json) if x
+          Rails.logger.debug "Interval #{@interval.name}: UPSERT status: #{upsert_status.count}, prosumers: #{received_prosumers.keys}, time: #{min_ts} .. #{max_ts}"
         rescue PG::InvalidTextRepresentation => e
           x.publish({data:  "Interval #{@interval.name}: BAD DATA FORMAT: #{upsert_status}", event: "output"}.to_json)
           # x.publish({data:  "BAD DATA FORMAT: #{data}", event: "output"}.to_json)
@@ -287,7 +292,7 @@ module FetchAsynch
 
             pr.reload
             # pr.forecasts.reload
-            data.merge!(pr.new_forecast(@interval, @startdate, @enddate))
+            data.merge!(pr.new_forecast(@interval, min_ts, max_ts))
           end
           # Rails.logger.debug "Sending FMS data: #{data}"
           x.publish(
