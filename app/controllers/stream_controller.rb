@@ -270,7 +270,7 @@ class StreamController < ApplicationController
     end
 
 
-    remaining = 3
+    remaining = 2
     session[:algo_params] = JSON.generate params
     prosumers = Prosumer.category(params[:prosumer_category_id].to_i) || Prosumer.real_time
     startdate = params[:startDate].to_datetime || DateTime.now - 2.weeks
