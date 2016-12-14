@@ -134,7 +134,7 @@ module FetchAsynch
 
                   Rails.logger.debug "#{pr_id}:  points: #{fms_forecasts_in_db[pr_id] rescue 0}, we want: #{max_points} "
 
-                  if !only_missing || fms_forecasts_in_db[pr_id] < max_points
+                  if !only_missing || (fms_forecasts_in_db[pr_id] || 0) < max_points
                     jobs.unshift params: params.merge(prosumers: pr_id, startdate: int_start, enddate: int_end, forecasttime: (startdate -1.day).middle_of_day, forecasttype: "DayAhead", aggregate: true), api: :fms
                   end
 
