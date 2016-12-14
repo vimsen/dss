@@ -65,14 +65,6 @@ module FetchAsynch
 
 
             Rails.logger.debug "----------------------------------------------------------- #{forecasts}, #{only_missing}"
-            fms_forecasts_in_db = Forecast
-                                      .joins(:prosumer)
-                                      .where(prosumer: prosumers, timestamp: startdate .. enddate, interval: interval, forecast_type: 0)
-                                      .where('? IS NOT NULL OR ? IS NOT NULL', :production, :consumption)
-                                      .group('prosumers.edms_id')
-                                      .count if forecasts == "FMS-D" && only_missing
-
-            Rails.logger.debug "fms forecasts: #{fms_forecasts_in_db}"
 
             params = { # prosumers: prosumers.map {|p| p.edms_id}.reject{|id| is_integer? id },
                        startdate: startdate.to_s,
@@ -119,25 +111,34 @@ module FetchAsynch
 
 
             # Try to download everything from FMS
-            puts "==================forecast:  #{forecasts}, interval: #{interval}, #{forecasts == "FMS-D"}, #{[1,2].include?(interval)}"
-            Rails.logger.debug "points: #{fms_forecasts_in_db rescue 0}, we want: #{max_points} "
+            # puts "==================forecast:  #{forecasts}, interval: #{interval}, #{forecasts == "FMS-D"}, #{[1,2].include?(interval)}"
+#             Rails.logger.debug "points: #{fms_forecasts_in_db rescue 0}, we want: #{max_points} "
 
             if forecasts == "FMS-D" && [1,2].include?(interval)
               puts "I'm in !!! #{prosumers}"
               prosumers.select{|p| p.prosumer_category_id == 4}.map {|p| p.edms_id}.each do |pr_id|
-                Rails.logger.debug "#{pr_id}:  points: #{fms_forecasts_in_db[pr_id] rescue 0}, we want: #{max_points} "
 
+                int_end = startdate
+                begin
+                  int_start = int_end
+                  int_end = [int_start + (499 * @interval.duration).seconds, enddate].min
 
-                if !only_missing || fms_forecasts_in_db[pr_id].nil? || fms_forecasts_in_db[pr_id] < max_points
+                  fms_forecasts_in_db = Forecast
+                                            .joins(:prosumer)
+                                            .where(timestamp: int_start .. int_end, interval: interval, forecast_type: 0)
+                                            .where('? IS NOT NULL OR ? IS NOT NULL', :production, :consumption)
+                                            .where('prosumers.edms_id = ?', pr_id)
+                                            .count if only_missing
 
-                  int_end = startdate
-                  begin
-                    int_start = int_end
-                    int_end = [int_start + (499 * @interval.duration).seconds, enddate].min
+                  max_points = ((int_end.to_f - int_start .to_f) / Interval.find(interval).duration.seconds).to_i
+                  Rails.logger.debug "#{pr_id}:  points: #{fms_forecasts_in_db rescue 0}, we want: #{max_points} "
+
+                  if !only_missing || fms_forecasts_in_db < max_points
                     jobs.unshift params: params.merge(prosumers: pr_id, startdate: int_start, enddate: int_end, forecasttime: (startdate -1.day).middle_of_day, forecasttype: "DayAhead", aggregate: true), api: :fms
-                    # jobs.unshift params: params.merge(prosumers: pr_id, startdate: startdate, enddate: enddate, forecasttime: startdate.beginning_of_day + 9.hours, forecasttype: "IntraDay", aggregate: true), api: :fms
-                  end while int_end < enddate
-                end
+                  end
+
+                  # jobs.unshift params: params.merge(prosumers: pr_id, startdate: startdate, enddate: enddate, forecasttime: startdate.beginning_of_day + 9.hours, forecasttype: "IntraDay", aggregate: true), api: :fms
+                end while int_end < enddate
               end
             end
           end
