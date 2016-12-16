@@ -62,12 +62,12 @@ class Prosumer < ActiveRecord::Base
 
   def new_forecast(interval, startdate, enddate)
     fms = self.forecasts.day_ahead.where(timestamp: startdate..enddate, interval: interval).order(timestamp: :asc)
-    {
+    fms.count > 0 ? {
         "#{name} prosumption forecast": fms.map{|t| [t.timestamp.to_i , [t.timestamp.to_i * 1000, t.consumption - t.production]] }.to_h,
         "#{name} production forecast": fms.map{|t| [t.timestamp.to_i , [t.timestamp.to_i * 1000, t.production]] }.to_h,
         "#{name} consumption forecast": fms.map{|t| [t.timestamp.to_i, [t.timestamp.to_i * 1000, t.consumption]] }.to_h,
         "#{name} storage forecast": fms.map{|t| [t.timestamp.to_i , [t.timestamp.to_i * 1000, t.storage]] }.to_h
-    }
+    } : {}
   end
 
   def has_location
