@@ -83,10 +83,12 @@ class HomeController < ApplicationController
   #  @top5prosumers=DataPoint.joins(:prosumer).order(consumption: :desc).where(timestamp: currentTime.strftime("%Y-%m-%d")).limit(5)
         @top5prosumers=DataPoint
                            .joins(:prosumer)
-                           .order(production: :desc)
-                           .where(interval: 3)
+                           .order('sum(production) DESC')
+                           .where(interval: 2)
                            .where("production IS NOT NULL")
                            .where(timestamp: Time.zone.now - 1.day .. Time.zone.now)
+                           .group('prosumers.id')
+                           .select('sum(production) as s_production, prosumers.name as name')
                            .limit(5)
         data = []
         names= []
@@ -94,8 +96,8 @@ class HomeController < ApplicationController
         @top5prosumers.each do |production|
            #data.push([production.prosumer.name, production.consumption])
            i=i+1
-           data.push([i, production.production])
-           names.push([i,production.prosumer.name])
+           data.push([i, production.s_production])
+           names.push([i, production.name])
         end
       
           chartData.push({"data"=>data,"label"=>"Total Energy Production"},{"names"=>names,"label"=>"Producers Names"})
@@ -109,10 +111,12 @@ class HomeController < ApplicationController
      
         @top5consumers=DataPoint
                            .joins(:prosumer)
-                           .order(consumption: :desc)
-                           .where(interval: 3)
+                           .order('sum(consumption) DESC')
+                           .where(interval: 2)
                            .where("consumption IS NOT NULL")
                            .where(timestamp: Time.zone.now - 1.day .. Time.zone.now)
+                           .group('prosumers.id')
+                           .select('sum(consumption) as s_consumption, prosumers.name as name')
                            .limit(5)
         data = []
         names= []
@@ -120,8 +124,8 @@ class HomeController < ApplicationController
         @top5consumers.each do |consumption|
            #data.push([production.prosumer.name, production.consumption])
            i=i+1
-           data.push([i, consumption.consumption])
-           names.push([i,consumption.prosumer.name])
+           data.push([i, consumption.s_consumption])
+           names.push([i,consumption.name])
         end
       
           chartData.push({"data"=>data,"label"=>"Total Energy Consumption"},{"names"=>names,"label"=>"Consumers Names"})
