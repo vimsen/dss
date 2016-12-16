@@ -246,7 +246,7 @@ module FetchAsynch
           upsert_status = Upsert.batch(conn, Forecast.table_name) do |upsert|
             data["items"].each do | item |
 
-              ts = item['timestamp'].sub(/:0.$/,'00').to_datetime - ([20001..20033, 20089..20124].any? {|r| r.cover? @prosumer_reverse_hash[item['prosumer_id'].to_s][:id]} ? 3.hours : 1.hour)
+              ts = item['timestamp'].sub(/:0.$/,'00').to_datetime - ([20001..20033, 20089..20124].any? {|r| r.cover? @prosumer_reverse_hash[item['prosumer_id'].to_s][:id]} ? 3.hours : (@interval.id == 2? 1.hour: 0.hour))
 
               min_ts = [ts, min_ts].min
               max_ts = [ts, max_ts].max
