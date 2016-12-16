@@ -115,6 +115,7 @@
     var idata = <%= provider.request_cached(interval, startDate, endDate, @channel, forecasts: forecast).to_json.html_safe %>;
     $(function(){
 
+        var count = 1;
         console.log("Trying to download stream: <%= stream -%>");
 
         plotHelper.drawChart(
@@ -156,7 +157,7 @@
               paramObj.forecast = forecast;
             }
 
-            paramObj.channel = '<%= @channel.html_safe %>';
+            paramObj.channel = '<%= @channel.html_safe %>' + count++;
              
             var url = "<%= stream %>?" + $.param(paramObj);
             console.log("Conncting to stream: ", url);
