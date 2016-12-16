@@ -35,7 +35,7 @@ class BidDayAheadJob < ActiveJob::Base
     token = config[Rails.env]["market_operator"]["token"]
     base_uri = config[Rails.env]["market_operator"]["host"]
 
-    rest_resource = RestClient::Resource.new(base_uri)
+    rest_resource = RestClient::Resource.new(base_uri) # , verify_ssl: OpenSSL::SSL::VERIFY_NONE)
 
     markets = JSON.parse rest_resource['markets'].get params: {user_email: user, user_token: token, format: :json}
 
@@ -50,13 +50,11 @@ class BidDayAheadJob < ActiveJob::Base
         market_id: day_ahead_market["id"],
         date: date.to_s,
         bid_items_attributes: day_ahead_market["blocks"].map do |b|
-=begin
-          volume = DataPoint.where(prosumer: prosumers, interval_id: interval, f_timestamp: date.beginning_of_day.to_datetime + b["starting"].seconds + 1.hour)
+          volume = forecasts == "edms" ? 
+              DataPoint.where(prosumer: prosumers, interval_id: interval, f_timestamp: date.beginning_of_day.to_datetime + b["starting"].seconds + 1.hour)
                        .select('sum(COALESCE(f_consumption,0) - COALESCE(f_production,0)) as f_prosumption')
-                       .group(:f_timestamp).map{|dp| dp.f_prosumption}.first || 0
-=end
-
-          volume = Forecast.day_ahead.where(prosumer: prosumers,
+                       .group(:f_timestamp).map{|dp| dp.f_prosumption}.first || 0 : 
+              Forecast.day_ahead.where(prosumer: prosumers,
                                             interval_id: interval,
                                             timestamp: date.beginning_of_day.to_datetime +
                                                 b["starting"].seconds +
@@ -65,7 +63,7 @@ class BidDayAheadJob < ActiveJob::Base
                        .group(:timestamp).map(&:prosumption).first
           {
               block_id: b["id"].to_i,
-              volume: strategy_factor * volume,
+              volume: strategy_factor * (volume||0),
               price: (volume > 0 ? 50.0 : 0.05)
           }
         end.reject do |b|

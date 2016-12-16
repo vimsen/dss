@@ -21,9 +21,18 @@
 
 nohup.out
 
+# Ignore files with passwords
 config/database.yml
 config/rabbitmq.yml
 config/vimsen_hosts.yml
 config/cloud_engine.yml
 
 coverage
+
+# Ignore puma temp files
+shared/
+
+# Ignore storage files
+storage/
+
+.rbenv-vars

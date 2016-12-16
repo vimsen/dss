@@ -23,7 +23,7 @@ env :PATH, ENV['PATH']
 
 set :output, File.join(Whenever.path, "log", "cron.log")
 
-every 10.minutes do
+every 30.minutes do
   runner "CheckBidStatusJob.perform_now"
 end
 
