@@ -76,10 +76,12 @@ class Cluster < ActiveRecord::Base
   end
 
   def new_forecast(interval, startdate, enddate)
-    fms = Forecast.day_ahead.where(prosumer: self.prosumers, timestamp: startdate..enddate, interval: interval)
-        .group(:timestamp).select('timestamp, sum(production) as s_production, sum(consumption) as s_consumption, sum(storage) as s_storage')
-        .order(timestamp: :asc)
-    fms.count > 0 ? {
+    fms_nos = Forecast.day_ahead.where(prosumer: self.prosumers, timestamp: startdate..enddate, interval: interval)
+
+    fms = fms_nos.select('timestamp, sum(production) as s_production, sum(consumption) as s_consumption, sum(storage) as s_storage')
+              .group(:timestamp)
+              .order(timestamp: :asc)
+    fms_nos.count > 0 ? {
         "Aggregate prosumption forecast": fms.map{|t| [t.timestamp.to_i , [t.timestamp.to_i * 1000, t.s_consumption - t.s_production]] }.to_h,
         "Aggregate production forecast": fms.map{|t| [t.timestamp.to_i , [t.timestamp.to_i * 1000, t.s_production]] }.to_h,
         "Aggregate consumption forecast": fms.map{|t| [t.timestamp.to_i, [t.timestamp.to_i * 1000, t.s_consumption]] }.to_h,
