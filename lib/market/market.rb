@@ -14,7 +14,9 @@ module Market
     end
  
 
-    def calcCosts2
+    def calcCosts2(dr: false)
+      return simulated_dr if dr
+
       ActiveRecord::Base.connection_pool.with_connection do
         query_joins = DataPoint.joins("LEFT JOIN forecasts ON forecasts.timestamp = data_points.timestamp AND data_points.prosumer_id = forecasts.prosumer_id AND data_points.interval_id = forecasts.interval_id")
                  .joins("LEFT JOIN day_ahead_energy_prices as da ON (data_points.timestamp - interval '1 hour')::date = da.date  + interval '365 days' AND to_char(data_points.timestamp, ' HH24') = to_char(da.dayhour % 24, '00')")
@@ -110,7 +112,7 @@ module Market
                                                WHEN TRUE THEN
                                                   #{@penalty_satisfaction} * ((coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) - (coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))
                                                ELSE
-                                                  #{@penalty_violation} * GREATEST((((100.0 -coalesce(data_points.dr,0))/100.0 * coalesce(data_points.consumption,0) - coalesce(data_points.production,0)) - (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0))),0)
+                                                  #{@penalty_violation} * GREATEST((((1.0 - coalesce(data_points.dr,0)) * coalesce(data_points.consumption,0) - coalesce(data_points.production,0)) - (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0))),0)
                                                END)) as real_individual"
                           )
 
@@ -127,7 +129,7 @@ module Market
                                     WHEN TRUE THEN
                                       #{@penalty_satisfaction} * sum(price * 0.001 *((coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) - (coalesce(data_points.consumption,0) - coalesce(data_points.production,0))))
                                     ELSE
-                                      #{@penalty_violation} * GREATEST(sum(price * 0.001 * (( (100.0-coalesce(data_points.dr,0))/100.0*coalesce(data_points.consumption,0) - coalesce(data_points.production,0)) - (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)))),0)
+                                      #{@penalty_violation} * GREATEST(sum(price * 0.001 * (( (1.0-coalesce(data_points.dr,0))*coalesce(data_points.consumption,0) - coalesce(data_points.production,0)) - (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)))),0)
                                     END as cluster"
                          )
         query_dissagregated = query_joins
