@@ -22,12 +22,82 @@ module FetchAsynch
     end
 
     def select_prosumers(eligible_prosumers, dr_obj)
+      case dr_obj.event_type
+        when "target_match"
+          target_matching(eligible_prosumers, dr_obj)
+        when "urgent_cut"
+          urgent_cut(eligible_prosumers, dr_obj)
+        when "planned_cut"
+          planned_cut(eligible_prosumers, dr_obj)
+        else
+          raise "Wrong event type, received #{dr_obj.event_type}"
+      end
+
+    end
+
+    def planned_cut(eligible_prosumers, dr_obj)
+      res = []
+      dr_stats = DataPoint.where(prosumer: eligible_prosumers,
+                                 interval: dr_obj.interval,
+                                 timestamp: dr_obj.starttime .. dr_obj.stoptime)
+                     .where('dr is not null')
+                     .group(:prosumer_id)
+                     .order('average_dr desc')
+                     .select('prosumer_id, avg(dr) as average_dr, avg(consumption) as average_consumption')
+
+      total_reduction = 0
+      target_reduction = dr_obj.dr_targets.map(&:volume).sum
+
+      dr_stats.each do |d|
+        break if total_reduction >= target_reduction
+        res << Prosumer.find(d.prosumer_id)
+        total_reduction += (d.average_dr||0) * (d.average_consumption||0)
+      end
+      [ res, eligible_prosumers - res]
+    end
+
+    def urgent_cut(eligible_prosumers, dr_obj)
+      res = []
+      dr_stats = DataPoint.where(prosumer: eligible_prosumers,
+                                 interval: dr_obj.interval,
+                                 timestamp: dr_obj.starttime .. dr_obj.stoptime)
+                     .where('reliability is not null')
+                     .group(:prosumer_id)
+                     .order('average_reliability desc')
+                     .select('prosumer_id, avg(dr) as average_dr, avg(reliability) as average_reliability, avg(consumption) as average_consumption')
+
+      total_reduction = 0
+      target_reduction = dr_obj.dr_targets.map(&:volume).sum
+
+      dr_stats.each do |d|
+        break if total_reduction >= target_reduction
+        res << Prosumer.find(d.prosumer_id)
+        total_reduction += (d.average_dr||0) * (d.average_consumption||0)
+      end
+      [ res, eligible_prosumers - res]
+    end
+
+
+    def target_matching(eligible_prosumers, dr_obj)
       Rails.logger.debug "The targets are: #{dr_obj.dr_targets.pluck(:timestamp, :volume)}"
       tm = ClusteringModule::TargetMatcher.new prosumers: eligible_prosumers,
                                                startDate: dr_obj.starttime.to_datetime,
                                                endDate: dr_obj.stoptime.to_datetime,
                                                interval: dr_obj.interval.duration,
                                                targets: dr_obj.dr_targets.order(timestamp: :asc).map{|t| -t.volume}
+
+      res = tm.run[:prosumers]
+      [ res, eligible_prosumers - res]
+    end
+
+    def target_matching_availability(eligible_prosumers, dr_obj)
+      Rails.logger.debug "The targets are: #{dr_obj.dr_targets.pluck(:timestamp, :volume)}"
+      tm = ClusteringModule::TargetMatcher.new prosumers: eligible_prosumers,
+                                               startDate: dr_obj.starttime.to_datetime,
+                                               endDate: dr_obj.stoptime.to_datetime,
+                                               interval: dr_obj.interval.duration,
+                                               targets: dr_obj.dr_targets.order(timestamp: :asc).map{|t| -t.volume},
+                                               prosumption_vector: nil
 
       res = tm.run[:prosumers]
       [ res, eligible_prosumers - res]

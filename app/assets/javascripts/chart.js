@@ -247,7 +247,7 @@ var plotHelper = (function() {
         source.addEventListener('messages.demand_response_data', function(e) {
             var message = JSON.parse(e.data);
             console.log("Dr received ", message);
-            replot(message)
+            replot(message);
 
             if ($("#GDMRS_message").length) {
                 $("#GDMRS_message").remove();
