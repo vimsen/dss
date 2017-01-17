@@ -123,7 +123,8 @@ module FetchAsynch
                 unit: "kW",
                 target_values: dr_obj.dr_targets.order(timestamp: :asc).map{|t| t.volume},
                 prosumers_primary: prosumers_primary.map(&:edms_id),
-                prosumers_secondary: prosumers_secondary.map(&:edms_id)
+                prosumers_secondary: prosumers_secondary.map(&:edms_id),
+                type: "demand reduction"
             }
             Rails.logger.debug "The request object is #{request_object.to_json}"
 
