@@ -18,7 +18,10 @@ class DemandResponse < ActiveRecord::Base
 
   enum event_type: [:target_match, :urgent_cut, :planned_cut ]
 
-  after_create do
+
+  after_commit :run_after_create, :on => :create
+
+  def run_after_create
     agent = FetchAsynch::DemandResponseAgent.new
     agent.dr_activation self.reload, self.feeder_id, self.prosumer_category
   end
