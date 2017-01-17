@@ -112,7 +112,7 @@ module FetchAsynch
             el_prosumers = eligible_prosumers(feeder_id, prosumer_category.prosumers)
             Rails.logger.debug "The eligible prosumers are #{el_prosumers}"
 
-            prosumers_primary, prosumers_secondary = select_prosumers el_prosumers, dr_obj
+            prosumers_primary, prosumers_secondary = select_prosumers el_prosumers, dr_obj.reload
 
             DemandResponseProsumer.create prosumers_primary.map {|p| {demand_response: dr_obj, prosumer: p, drp_type: :primary}}
             DemandResponseProsumer.create! prosumers_secondary.map {|p| {demand_response: dr_obj, prosumer: p, drp_type: :secondary}}
