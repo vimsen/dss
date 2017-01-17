@@ -117,6 +117,7 @@ module FetchAsynch
             DemandResponseProsumer.create prosumers_primary.map {|p| {demand_response: dr_obj, prosumer: p, drp_type: :primary}}
             DemandResponseProsumer.create! prosumers_secondary.map {|p| {demand_response: dr_obj, prosumer: p, drp_type: :secondary}}
 
+            dr_obj.reload
 
             request_object = {
                 start_time: dr_obj.starttime.to_datetime.to_s,
