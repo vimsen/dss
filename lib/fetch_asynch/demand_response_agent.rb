@@ -24,7 +24,7 @@ module FetchAsynch
     def select_prosumers(eligible_prosumers, dr_obj)
       case dr_obj.event_type
         when "target_match"
-          target_matching(eligible_prosumers, dr_obj)
+          target_matching_availability(eligible_prosumers, dr_obj)
         when "urgent_cut"
           urgent_cut(eligible_prosumers, dr_obj)
         when "planned_cut"
@@ -74,7 +74,7 @@ module FetchAsynch
         res << Prosumer.find(d.prosumer_id)
         total_reduction += (d.average_dr||0) * (d.average_consumption||0)
       end
-      [ res, eligible_prosumers - res]
+      [ res, eligible_prosumers - res ]
     end
 
 
@@ -87,7 +87,7 @@ module FetchAsynch
                                                targets: dr_obj.dr_targets.order(timestamp: :asc).map{|t| -t.volume}
 
       res = tm.run[:prosumers]
-      [ res, eligible_prosumers - res]
+      [ res, eligible_prosumers - res ]
     end
 
     def target_matching_availability(eligible_prosumers, dr_obj)
@@ -96,8 +96,8 @@ module FetchAsynch
                                                startDate: dr_obj.starttime.to_datetime,
                                                endDate: dr_obj.stoptime.to_datetime,
                                                interval: dr_obj.interval.duration,
-                                               targets: dr_obj.dr_targets.order(timestamp: :asc).map{|t| -t.volume},
-                                               prosumption_vector: nil
+                                               targets: dr_obj.dr_targets.order(timestamp: :asc).map{|t| t.volume},
+                                               prosumption_vector: :flex
 
       res = tm.run[:prosumers]
       [ res, eligible_prosumers - res]
