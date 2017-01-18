@@ -5,10 +5,13 @@ var plotHelper = (function() {
 
   var replot = function(d) {
     var dataset = [];
+    var x_for_zero_point = null;
     if (d != null) {
       $.each(d, function(index, value) {
         var single = [];
         $.each(value, function(ind, val) {
+          // console.log("INDEX: ", ind, val)
+          x_for_zero_point = val[0];
           single.push(val);
         });
         dataset.push({
@@ -16,6 +19,12 @@ var plotHelper = (function() {
           data : single.sort() /*,
            color : "#00FF00"*/
         });
+      });
+
+      dataset.push({
+        label: "",
+        data: [[x_for_zero_point,0]],
+        points: { show: false }
       });
 
       var s = $("#startDate").length ? Date.parse($('#startDate').val()) : null;
