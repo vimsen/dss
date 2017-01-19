@@ -3,3 +3,28 @@ id,name,description,clustering_id,created_at,updated_at
 2,Validation:  Residential,Prosumers with Residential building type.,1,2016-10-18 12:00:57 UTC,2016-10-18 12:00:57 UTC
 3,Validation: Combo buildings,Prosumers with Combo buildings building type.,1,2016-10-18 12:00:57 UTC,2016-10-18 12:00:57 UTC
 4,Validation: Solar/Wind Parks,Prosumers with Solar/Wind Parks building type.,1,2016-10-18 12:00:57 UTC,2016-10-18 12:00:57 UTC
+5,Genetic 0,Genetic clustering 0,2,2016-12-12 15:41:50 UTC,2016-12-12 15:41:50 UTC
+6,Genetic 1,Genetic clustering 1,2,2016-12-12 15:41:50 UTC,2016-12-12 15:41:50 UTC
+7,Genetic 2,Genetic clustering 2,2,2016-12-12 15:41:50 UTC,2016-12-12 15:41:50 UTC
+8,Genetic 3,Genetic clustering 3,2,2016-12-12 15:41:50 UTC,2016-12-12 15:41:50 UTC
+9,Genetic 4,Genetic clustering 4,2,2016-12-12 15:41:51 UTC,2016-12-12 15:41:51 UTC
+10,Genetic 0,Genetic clustering 0,3,2016-12-16 10:34:59 UTC,2016-12-16 10:34:59 UTC
+11,Genetic 1,Genetic clustering 1,3,2016-12-16 10:34:59 UTC,2016-12-16 10:34:59 UTC
+12,Genetic 2,Genetic clustering 2,3,2016-12-16 10:34:59 UTC,2016-12-16 10:34:59 UTC
+13,Genetic 3,Genetic clustering 3,3,2016-12-16 10:34:59 UTC,2016-12-16 10:34:59 UTC
+14,Genetic 4,Genetic clustering 4,3,2016-12-16 10:34:59 UTC,2016-12-16 10:34:59 UTC
+15,Genetic 0,Genetic clustering 0,4,2016-12-21 10:41:52 UTC,2016-12-21 10:41:52 UTC
+16,Genetic 1,Genetic clustering 1,4,2016-12-21 10:41:52 UTC,2016-12-21 10:41:52 UTC
+17,Genetic 2,Genetic clustering 2,4,2016-12-21 10:41:53 UTC,2016-12-21 10:41:53 UTC
+18,Genetic 3,Genetic clustering 3,4,2016-12-21 10:41:53 UTC,2016-12-21 10:41:53 UTC
+19,Genetic 4,Genetic clustering 4,4,2016-12-21 10:41:53 UTC,2016-12-21 10:41:53 UTC
+20,Dr: 0,Demand Response based cluster 0,5,2016-12-22 13:24:59 UTC,2016-12-22 13:24:59 UTC
+21,Dr: 1,Demand Response based cluster 1,5,2016-12-22 13:24:59 UTC,2016-12-22 13:24:59 UTC
+22,Dr: 2,Demand Response based cluster 2,5,2016-12-22 13:24:59 UTC,2016-12-22 13:24:59 UTC
+23,Dr: 3,Demand Response based cluster 3,5,2016-12-22 13:24:59 UTC,2016-12-22 13:24:59 UTC
+24,Dr: 0,Demand Response based cluster 0,6,2017-01-09 08:04:33 UTC,2017-01-09 08:04:33 UTC
+25,Dr: 1,Demand Response based cluster 1,6,2017-01-09 08:04:33 UTC,2017-01-09 08:04:33 UTC
+26,Dr: 2,Demand Response based cluster 2,6,2017-01-09 08:04:33 UTC,2017-01-09 08:04:33 UTC
+27,Dr: 3,Demand Response based cluster 3,6,2017-01-09 08:04:33 UTC,2017-01-09 08:04:33 UTC
+28,Dr: 4,Demand Response based cluster 4,6,2017-01-09 08:04:33 UTC,2017-01-09 08:04:33 UTC
+29,Dr: 5,Demand Response based cluster 5,6,2017-01-09 08:04:33 UTC,2017-01-09 08:04:33 UTC
