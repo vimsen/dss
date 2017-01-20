@@ -59,7 +59,7 @@ id,name,location,created_at,updated_at,cluster_id,edms_id,building_type_id,conne
 59,VIMSEN Prosumer 33: PVGW6,"OTE Logistics Center, Bldg #6, Acharnes",2016-08-26 03:51:29 UTC,2016-10-14 22:48:45 UTC,97,b827eb3d7b4f,4,5,38.0852204,23.738064,,1
 60,VIMSEN Prosumer 34: PVGW5,"OTE Logistics Center, Bldg #5, Acharnes",2016-08-26 03:51:29 UTC,2016-10-14 22:50:48 UTC,97,b827ebb9d9a9,4,5,38.0852204,23.738064,,1
 61,VIMSEN Prosumer 35: IlioupoliVGW,"Leof. Sofokli Venizelou 109, Ilioupoli 163 43, Greece",2016-08-26 03:51:29 UTC,2016-10-14 23:00:10 UTC,97,b827ebe977a8,4,5,37.9328546,23.7582454,,1
-62,VIMSEN Prosumer 36: VGW1@sedini,"",2016-08-26 03:51:29 UTC,2016-10-14 23:04:37 UTC,97,b827eb2s4503,4,4,,,,1
+62,VIMSEN Prosumer 36: VGW1@sedini,"",2016-08-26 03:51:29 UTC,2016-10-14 23:04:37 UTC,97,b827eb2a4503,4,4,,,,1
 63,VIMSEN Prosumer 37: @NTUA,Agios Stefanos (George's House),2016-08-26 03:51:29 UTC,2016-10-14 23:06:48 UTC,97,b827ebb87756,2,4,38.1410294,23.8574625,,1
 64,VIMSEN Prosumer 38: VGW2@sedini,"",2016-08-26 03:51:29 UTC,2016-10-14 23:04:37 UTC,97,b827eb45e063,4,4,,,,1
 65,VIMSEN Prosumer 39: VGW3@sedini,"",2016-08-26 03:51:29 UTC,2016-10-14 23:04:37 UTC,97,b827eb366f10,4,4,,,,1
