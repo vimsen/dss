@@ -2,7 +2,7 @@
 
 <% startDate = (params[:startdate] || session[:startdate] || (DateTime.now - 7.days)).to_datetime
    endDate = (params[:enddate] ||session[:enddate]|| DateTime.now).to_datetime
-   interval = (params[:interval] || session[:interval] || 3).to_i # Daily
+   interval = (params[:interval] || session[:interval] || 2).to_i # Daily
    type = (params[:type] || session[:type] || "prosumption")
    forecast = (params[:forecast] || session[:forecast] || "none")
  %>
@@ -169,7 +169,7 @@
 
         $('#startDate').val("<%= (DateTime.now - 7.days).strftime("%Y/%m/%d %H:00") -%>");
         $('#endDate').val("<%= DateTime.now.strftime("%Y/%m/%d %H:00") -%>");
-        $('#interval_interval_id').val(3);
+        $('#interval_interval_id').val(2);
         $('#type').val("prosumption");
         $('#forecast').val("none");
 
