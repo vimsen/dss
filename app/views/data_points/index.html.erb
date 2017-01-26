@@ -20,7 +20,10 @@
               <%= label_tag :category_, "Prosumer category", class: "control-label" %>
               <%= collection_select(:category, nil, ProsumerCategory.all, :id, :name, {:selected => @params["category"]}, {class: "form-control input-sm'"}) %>
             </div>
-
+            <div class="form-group form-groum-sm">
+              <%= label_tag :forecasts, "Forecast Type", class: "control-label" %>
+              <%= select_tag(:forecasts, options_for_select({"None": "none", "FMS Dayahead forecast": "FMS-D", "EDMS Dayahead Forecast": "edms"}, @params["forecasts"]), class: :'form-control input-sm') %>
+            </div>
             <input type="submit" value="Download data points" class="form-control input-sm btn btn-primary btn-xs">
         <% end %>
 
@@ -110,6 +113,7 @@
                 startDate: $("#startDate").val(),
                 endDate: $("#endDate").val(),
                 prosumer_category_id: $("#category_").val(),
+                forecasts: $("#forecasts").val()
             };
 
 

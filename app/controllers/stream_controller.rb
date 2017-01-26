@@ -275,6 +275,7 @@ class StreamController < ApplicationController
     prosumers = Prosumer.category(params[:prosumer_category_id].to_i) || Prosumer.real_time
     startdate = params[:startDate].to_datetime || DateTime.now - 2.weeks
     enddate = params[:endDate].to_datetime || DateTime.now
+    forecasts = params[:forecasts] || "none"
 
 
     FetchAsynch::DownloadAndPublish.new prosumers: prosumers,
@@ -283,7 +284,7 @@ class StreamController < ApplicationController
                                         enddate: enddate,
                                         channel: channel_name,
                                         only_missing: true,
-                                        forecasts: "FMS-D"
+                                        forecasts: forecasts
 
     FetchAsynch::DownloadAndPublish.new prosumers: prosumers,
                                         interval: 2,
@@ -291,7 +292,7 @@ class StreamController < ApplicationController
                                         enddate: enddate,
                                         channel: channel_name,
                                         only_missing: true,
-                                        forecasts: "FMS-D"
+                                        forecasts: forecasts
 
 =begin
     FetchAsynch::DownloadAndPublish.new prosumers: prosumers,

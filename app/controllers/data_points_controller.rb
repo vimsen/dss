@@ -13,7 +13,7 @@ class DataPointsController < ApplicationController
     @params["category"] ||= [ ProsumerCategory.first.id ]
     @params["startDate"] ||= (DateTime.now - 7.days)
     @params["endDate"] ||= DateTime.now
-    @params["category"] ||= [ ProsumerCategory.first.id ]
+    @params["forecasts"] ||= "FMS-D"
 
     @data_points = DataPoint.includes(:prosumer, :interval).order(
       sort_column + ' ' + sort_direction).paginate(page: params[:page])
