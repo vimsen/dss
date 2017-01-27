@@ -5,7 +5,7 @@ require 'fetch_asynch/download_and_publish'
 class BidDayAheadJob < ActiveJob::Base
   queue_as :default
 
-  def perform(prosumers: Prosumer.real_time,
+  def perform(prosumers: Prosumer.category(1),
               interval: 2,
               date: Date.tomorrow,
               strategy_factor: 1.0,

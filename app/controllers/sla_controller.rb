@@ -70,8 +70,5 @@ class SlaController < ApplicationController
       else
         []
     end
-
   end
-
-
 end
