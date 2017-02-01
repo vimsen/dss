@@ -241,7 +241,7 @@ module FetchAsynch
       max_ts = @startdate
 
 
-          ActiveRecord::Base.connection_pool.with_connection do | conn |
+      ActiveRecord::Base.connection_pool.with_connection do | conn |
         begin
           upsert_status = Upsert.batch(conn, Forecast.table_name) do |upsert|
             data["items"].each do | item |
