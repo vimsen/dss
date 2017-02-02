@@ -1,7 +1,10 @@
 
 function setupMOData(){
 
-   jQuery('#datepicker').datetimepicker({dateFormat: 'yy-mm-dd', format: 'Y-m-d', timepicker: false});
+   jQuery('#datepicker').datetimepicker({dateFormat: 'yy-mm-dd', format: 'Y-m-d', timepicker: false, onChangeDateTime: function(dp,$input){
+        loadMOPricesCharts();
+        jQuery('.xdsoft_datetimepicker').hide();
+    }});
 
    mo_id = $('#mo').val();
 
