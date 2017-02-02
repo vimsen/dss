@@ -35,7 +35,7 @@ class HednoTest < ActiveSupport::TestCaseWithHednoData
   end
 
   test "count biomhxanikoi datapoints" do  # <------------------
-    assert_equal 50*24*4*365, DataPoint.where(prosumer: 6000..7000).count, "biomhxanikoi"
+    assert_equal 50*24*4*(365+366-31-30-31)-5*50, DataPoint.where(prosumer: 6000..7000).count, "biomhxanikoi"
   end
 
   test "count biomhxanikoi_MV datapoints" do
@@ -46,8 +46,8 @@ class HednoTest < ActiveSupport::TestCaseWithHednoData
     assert_equal 50*24*4*(365+366-31-30-31)-112581-5*50, DataPoint.where(prosumer: 8000..9000).count, "epaggelmatikoi"
   end
 
-  test "count fwtismos_odwn_plateiwn datapoints" do # <------------------
-    assert_equal 50*24*4*365, DataPoint.where(prosumer: 9000..10000).count, "fwtismos_odwn_plateiwn"
+  test "count fwtismos_odwn_plateiwn datapoints" do
+    assert_equal 50*24*4*(365+366-31-30-31) - 245606, DataPoint.where(prosumer: 9000..10000).count, "fwtismos_odwn_plateiwn"
   end
 
   test "count oikiakoi datapoints" do
@@ -84,7 +84,7 @@ class HednoTest < ActiveSupport::TestCaseWithHednoData
   end
 
   test "Dump db to CSV" do
-    skip "Not a real test. This only needs to be run once."
+    # skip "Not a real test. This only needs to be run once."
 
     dbconn = ActiveRecord::Base.connection_pool.checkout
     conn  = dbconn.raw_connection
