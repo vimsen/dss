@@ -22,8 +22,8 @@ class HednoTest < ActiveSupport::TestCaseWithHednoData
     assert_equal 440, @prosumers.count, "We should have 440 prosumers"
   end
 
-  test "count pv_lv_hedno datapoints" do # <------------------
-    assert_equal 40*(24*4*365-1), DataPoint.where(prosumer: 3000..4000).count, "pv_lv_hedno"
+  test "count pv_lv_hedno datapoints" do
+    assert_equal 40*(24*4*(365+366-31)), DataPoint.where(prosumer: 3000..4000).count, "pv_lv_hedno"
   end
 
   test "count aiolika_MV datapoints" do

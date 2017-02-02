@@ -27,11 +27,9 @@ CSV.open("aiolika_MV.sql", "wb", col_sep: "\t") do |csv_out|
   end
 end
 
-=begin
 CSV.open("prosumers_aiolika_MV.sql", "wb", col_sep: "\t") do |csv_out|
   prosumers.each do |id, location|
-    csv_out << [id, id + 100000, "wind_#{id}", location]
+    csv_out << [id, id, "HEDNO_wind_#{id}", location, 99]
   end
 end
-=end
 
