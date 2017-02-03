@@ -19,7 +19,7 @@ class HednoTest < ActiveSupport::TestCaseWithHednoData
   end
 
   test "prosumers imported" do
-    assert_equal 440, @prosumers.count, "We should have 440 prosumers"
+    assert_equal 436, @prosumers.count, "We should have 436 prosumers"
   end
 
   test "count pv_lv_hedno datapoints" do
@@ -47,7 +47,7 @@ class HednoTest < ActiveSupport::TestCaseWithHednoData
   end
 
   test "count fwtismos_odwn_plateiwn datapoints" do
-    assert_equal 50*24*4*(365+366-31-30-31) - 245606, DataPoint.where(prosumer: 9000..10000).count, "fwtismos_odwn_plateiwn"
+    assert_equal 46*24*4*(365+366-31-30-31)-5*46, DataPoint.where(prosumer: 9000..10000).count, "fwtismos_odwn_plateiwn"
   end
 
   test "count oikiakoi datapoints" do
@@ -92,7 +92,7 @@ class HednoTest < ActiveSupport::TestCaseWithHednoData
       conn.copy_data "COPY (SELECT id,
                          prosumer_id,
                          interval_id,
-                         to_char(timezone('zulu', to_timestamp(date_part('epoch', timestamp))),'YYYY-MM-DD\"T\"hh24:MI:SS\"Z\"') as timestamp,
+                         to_char(timezone('zulu', to_timestamp(date_part('epoch', timestamp))),'YYYY-MM-DDThh24:MI:SS+02:00') as timestamp,
                          production,
                          consumption
                        FROM data_points WHERE
