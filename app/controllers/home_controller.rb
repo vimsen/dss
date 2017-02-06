@@ -81,14 +81,13 @@ class HomeController < ApplicationController
       top5producersNames=Array.new
      
   #  @top5prosumers=DataPoint.joins(:prosumer).order(consumption: :desc).where(timestamp: currentTime.strftime("%Y-%m-%d")).limit(5)
-        @top5prosumers=DataPoint
+        @top5prosumers=DataPoint.order('sum(production) DESC')
                            .joins(:prosumer)
-                           .order('sum(production) DESC')
                            .where(interval: 2)
                            .where("production IS NOT NULL")
                            .where(timestamp: Time.zone.now - 1.day .. Time.zone.now)
                            .group('prosumers.id')
-                           .select('sum(production) as s_production, prosumers.name as name')
+                           .select('sum(production) as s_production, prosumers.id as id, prosumers.name as name')
                            .limit(5)
         data = []
         names= []
@@ -97,7 +96,7 @@ class HomeController < ApplicationController
            #data.push([production.prosumer.name, production.consumption])
            i=i+1
            data.push([i, production.s_production])
-           names.push([i, production.name])
+           names.push([i, view_context.link_to(production.name, prosumer_path(production.id)).html_safe])
         end
       
           chartData.push({"data"=>data,"label"=>"Total Energy Production"},{"names"=>names,"label"=>"Producers Names"})
@@ -116,7 +115,7 @@ class HomeController < ApplicationController
                            .where("consumption IS NOT NULL")
                            .where(timestamp: Time.zone.now - 1.day .. Time.zone.now)
                            .group('prosumers.id')
-                           .select('sum(consumption) as s_consumption, prosumers.name as name')
+                           .select('sum(consumption) as s_consumption, prosumers.id as id, prosumers.name as name')
                            .limit(5)
         data = []
         names= []
@@ -125,7 +124,7 @@ class HomeController < ApplicationController
            #data.push([production.prosumer.name, production.consumption])
            i=i+1
            data.push([i, consumption.s_consumption])
-           names.push([i,consumption.name])
+           names.push([i, view_context.link_to(consumption.name, prosumer_path(consumption.id)).html_safe])
         end
       
           chartData.push({"data"=>data,"label"=>"Total Energy Consumption"},{"names"=>names,"label"=>"Consumers Names"})
