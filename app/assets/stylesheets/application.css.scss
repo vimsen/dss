@@ -81,6 +81,13 @@
   max-height:200px;
 }
 
-.flot-tick-label{
+.my_bar .flot-x-axis .flot-tick-label{
   word-wrap: break-word;
+  // padding: 10px 30px;
+  /*-ms-transform:rotate(300deg); !* IE 9 *!
+  -moz-transform:rotate(300deg); !* Firefox *!
+  -webkit-transform:rotate(300deg); !* Safari and Chrome *!
+  -o-transform:rotate(300deg); !* Opera *!
+  line-height: 1.0;*/
+  //text-align: right;
 }
