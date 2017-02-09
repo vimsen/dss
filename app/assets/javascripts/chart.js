@@ -377,3 +377,12 @@ var plotHelper = (function() {
     }
   };
 })();
+
+window.onbeforeunload = function(){
+    console.log(source);
+    if (source.OPEN) {
+        source.close();
+        console.log("Closed source");
+    }
+
+};
