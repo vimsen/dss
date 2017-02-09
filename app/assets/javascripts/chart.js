@@ -339,6 +339,7 @@ var plotHelper = (function() {
 
           $("#perc_div").html('<hr/><strong>Cost reduction: </strong> ' + impr + '%<br/><strong>Penalty reduction: </strong> ' + pen_impr + '%');
           var costs_dynatable = $('#costs_table').dynatable({
+              features: { pushState: false},
               dataset: {
                   records: message.disaggregated,
                   sorts: {real: -1},
@@ -364,9 +365,15 @@ var plotHelper = (function() {
       };
       if (history.pushState) {
         var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + $.param(paramObj);
-        window.history.pushState({path:newurl},'',newurl);
+        var oldurl = window.location.href;
+        if (newurl !== oldurl) {
+            if (oldurl.includes("?")) {
+                window.history.pushState({path:newurl},'',newurl);
+            } else {
+                window.history.replaceState({path:newurl},'',newurl);
+            }
+        }
       }
-
     }
   };
 })();

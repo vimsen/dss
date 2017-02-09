@@ -17,7 +17,7 @@ gem 'coffee-rails', '~> 4.0.0'
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
-gem 'turbolinks'
+# gem 'turbolinks'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.0'
 # bundle exec rake doc:rails generates the API under doc/api.
@@ -63,7 +63,7 @@ gem 'will_paginate-bootstrap' # Pagination
 
 gem 'simple-navigation-bootstrap' # For the menu
 
-gem 'gmaps4rails' # For google maps
+# gem 'gmaps4rails' # For google maps
 gem 'underscore-rails' # dito
 
 gem "activerecord-import", ">= 0.2.0" # For loading multiple records to db at once

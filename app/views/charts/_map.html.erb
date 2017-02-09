@@ -2,6 +2,71 @@
   <div id="map" style='width: 100%; height: <%= defined?(height) ? height : "400px" -%>;'></div>
 </div>
 <script>
+
+    function initMap() {
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 3,
+            center: {lat: -28.024, lng: 140.887}
+        });
+
+        var marker_array = <%= prosumers.select{|p| p.has_location}.map{|p| {
+                                    lat: p.location_x,
+                                    lng: p.location_y,
+                                    picture: {
+                                      url: "https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=#{letter(p, clustering)}|#{color(p, clustering)}|000000",
+                                      width: 36,
+                                      height: 36
+                                    },
+                                    infowindow: render(partial: "prosumers/prosumername", :locals => {:prosumer => p}),
+                  } }.to_json.html_safe -%>;
+
+        var markers = marker_array.map(function(item, i) {
+            var infowindow = new google.maps.InfoWindow({
+                content: item.infowindow
+            });
+
+            var new_marker = new google.maps.Marker({
+                position: new google.maps.LatLng(item.lat, item.lng),
+                icon: item.picture.url,
+                map: map
+            });
+            new_marker.addListener('click', function() {
+                infowindow.open(map, new_marker);
+            });
+            return new_marker;
+        });
+
+
+        var bounds = new google.maps.LatLngBounds();
+        markers.forEach(function(item, i){
+            bounds.extend(item.getPosition());
+        });
+        if (markers.length > 1) {
+            map.fitBounds(bounds);
+        } else {
+            map.setCenter(markers[0].getPosition());
+            map.setZoom(9);
+        }
+        // Add a marker clusterer to manage the markers.
+        var markerCluster = new MarkerClusterer(map, markers,
+            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+/*
+
   $(function() {
           
     handler = Gmaps.build('Google');
@@ -12,7 +77,7 @@
       }
     }, function() {
       try {
-        markers = handler.addMarkers( <%= prosumers.select{|p| p.has_location}.map{|p| {
+        var tmp_mark = <%#= prosumers.select{|p| p.has_location}.map{|p| {
                                     lat: p.location_x,
                                     lng: p.location_y,
                                     picture: {
@@ -20,20 +85,31 @@
                                       width: 36,
                                       height: 36
                                     },
-                                    infowindow: render(partial: "prosumers/prosumername", :locals => {:prosumer => p})
-                  } }.to_json.html_safe -%> )
+                                    infowindow: render(partial: "prosumers/prosumername", :locals => {:prosumer => p}),
+                  } }.to_json.html_safe -%>;
+        markers = handler.addMarkers( tmp_mark );
 
         handler.bounds.extendWith(markers);
         handler.fitMapToBounds();
-        <% if prosumers.count == 1 %>
+        <%# if prosumers.count == 1 %>
             handler.getMap().setZoom(9);
-        <% end %>
-
+        <%# end %>
       }
       catch(err) {
         console.log(err.message);
       }
+/!*
+      var markerCluster = new MarkerClusterer(handler.getMap(), tmp_mark,
+            {imagePath: '/assets/images/m'});
+*!/
     });
   });
-
+*/
 </script>
+
+<script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyASTr1Y4OdI6ftYa7-2Tg8eLnBummONONk&callback=initMap">
+</script>
+

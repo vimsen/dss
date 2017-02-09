@@ -113,21 +113,21 @@
 <script>
 
     var idata = <%= provider.request_cached(interval, startDate, endDate, @channel, forecasts: forecast).to_json.html_safe %>;
-    $(function(){
+
+    var chart_func = function(stream_url){
 
         var count = 1;
         console.log("Trying to download stream: <%= stream -%>");
 
         plotHelper.drawChart(
-                "<%="#{stream}?channel=#{@channel}&startdate=#{startDate}&enddate=#{endDate}&interval=#{interval}&type=#{type}&forecast=#{forecast}"%>",
+                stream_url,
                 plotHelper.readData(
                       idata,
                       $('#type').val(),
                       $('#forecast').val()),
                 $('#type').val(),
                 $('#forecast').val());
-        $('#startDate').datetimepicker();
-        $('#endDate').datetimepicker();
+
         // $('#endDate').prop('disabled', true);
                
         $('#plot_params').submit(function () {
@@ -185,6 +185,57 @@
             $('#endDate').prop( "disabled", false );
           }
       });*/
+    };
+
+
+    function GetURLParameter(sParam)
+    {
+        var sPageURL = window.location.search.substring(1);
+        var sURLVariables = sPageURL.split('&');
+        for (var i = 0; i < sURLVariables.length; i++)
+        {
+            var sParameterName = sURLVariables[i].split('=');
+            if (sParameterName[0] == sParam)
+            {
+                return decodeURIComponent((sParameterName[1]+'').replace(/\+/g, '%20'));
+            }
+        }
+    }
+
+    window.onpopstate = function() {
+
+        var sDate = GetURLParameter("startdate");
+        if (sDate) {
+            $('#startDate').val(sDate);
+        }
+        var eDate = GetURLParameter("enddate");
+        if (eDate) {
+            $('#endDate').val(eDate);
+        }
+        var interval = GetURLParameter("interval");
+        if (interval) {
+            $('#interval_interval_id').val(interval);
+        }
+        var type = GetURLParameter("type");
+        if (type) {
+            $('#type').val(type);
+        }
+        var forecast = GetURLParameter("forecast");
+        if (forecast) {
+            $('#forecast').val(forecast);
+        }
+
+        var stream_url = "<%="#{stream}?channel=#{@channel}"-%>&startdate="+sDate+"&enddate="+eDate+"&interval="+interval+"&type="+type+"&forecast="+forecast;
+        chart_func(stream_url);
+    };
+
+    $(function() {
+        $('#startDate').datetimepicker();
+        $('#endDate').datetimepicker();
+
+        var stream_url = "<%="#{stream}?channel=#{@channel}&startdate=#{startDate}&enddate=#{endDate}&interval=#{interval}&type=#{type}&forecast=#{forecast}"%>"
+
+        chart_func(stream_url);
     });
 </script>
 
