@@ -6,8 +6,8 @@
     function initMap() {
 
         var map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 3,
-            center: {lat: -28.024, lng: 140.887}
+            zoom: 9,
+            center: {lat: 37.9667, lng: 23.7167}
         });
 
         var marker_array = <%= prosumers.select{|p| p.has_location}.map{|p| {
@@ -57,54 +57,6 @@
     }
 
 
-
-
-
-
-
-
-
-
-/*
-
-  $(function() {
-          
-    handler = Gmaps.build('Google');
-    handler.buildMap({
-      provider : {},
-      internal : {
-        id : 'map'
-      }
-    }, function() {
-      try {
-        var tmp_mark = <%#= prosumers.select{|p| p.has_location}.map{|p| {
-                                    lat: p.location_x,
-                                    lng: p.location_y,
-                                    picture: {
-                                      url: "https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=#{letter(p, clustering)}|#{color(p, clustering)}|000000",
-                                      width: 36,
-                                      height: 36
-                                    },
-                                    infowindow: render(partial: "prosumers/prosumername", :locals => {:prosumer => p}),
-                  } }.to_json.html_safe -%>;
-        markers = handler.addMarkers( tmp_mark );
-
-        handler.bounds.extendWith(markers);
-        handler.fitMapToBounds();
-        <%# if prosumers.count == 1 %>
-            handler.getMap().setZoom(9);
-        <%# end %>
-      }
-      catch(err) {
-        console.log(err.message);
-      }
-/!*
-      var markerCluster = new MarkerClusterer(handler.getMap(), tmp_mark,
-            {imagePath: '/assets/images/m'});
-*!/
-    });
-  });
-*/
 </script>
 
 <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
