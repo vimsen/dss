@@ -94,7 +94,7 @@ module FetchAsynch
 
               if !only_missing || real_data_points_in_db[pr_id].nil? || real_data_points_in_db[pr_id] < max_points
                 Rails.logger.debug "#{pr_id}:  points: #{real_data_points_in_db[pr_id] rescue 0}, we want: #{max_points} "
-                jobs.unshift params: params.merge(prosumers: pr_id, pointer: 2), api: :new, forc: false
+                jobs.unshift params: params.merge(prosumers: pr_id, pointer: 2, consumptionFlag: dont_divide(pr_id)), api: :new, forc: false
               end
 
 
@@ -615,5 +615,11 @@ module FetchAsynch
       Rails.logger.debug "Received junk input: #{str}"
       return false
     end
+
+
+    def dont_divide(edms_id)
+      ["b827ebb47c1b", "b827eb4c14af", "b827eb19fcf5", "b827ebc26e98", "b827ebe977a8"].include?(edms_id) ? 0 : 1
+    end
+
   end
 end
