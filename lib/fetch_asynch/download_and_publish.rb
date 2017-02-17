@@ -382,8 +382,8 @@ module FetchAsynch
         when 3600
           timestamp.to_datetime.to_i % 3600 == 0
         when 86400
-          (DateTime.parse(timestamp).beginning_of_day + Time.zone.parse(timestamp).utc_offset.seconds) == (DateTime.parse(timestamp))
-          # true
+          # (DateTime.parse(timestamp).beginning_of_day + Time.zone.parse(timestamp).utc_offset.seconds) == (DateTime.parse(timestamp))
+          true
       end
     end
 
