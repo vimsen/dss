@@ -29,7 +29,7 @@ module FetchAsynch
       Upsert.logger = Logger.new("/dev/null")
 
       Rails.logger.debug "Starting new Thread..."
-      # Thread.abort_on_exception = true
+
       thread = Thread.new do
         begin
           ActiveRecord::Base.forbid_implicit_checkout_for_thread!
