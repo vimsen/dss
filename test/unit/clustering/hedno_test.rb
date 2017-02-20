@@ -84,7 +84,7 @@ class HednoTest < ActiveSupport::TestCaseWithHednoData
   end
 
   test "Dump db to CSV" do
-    # skip "Not a real test. This only needs to be run once."
+    skip "Not a real test. This only needs to be run once."
 
     dbconn = ActiveRecord::Base.connection_pool.checkout
     conn  = dbconn.raw_connection
