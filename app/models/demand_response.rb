@@ -16,7 +16,7 @@ class DemandResponse < ActiveRecord::Base
   has_many :demand_response_prosumers, dependent: :destroy
   has_many :prosumers, through: :demand_response_prosumers
 
-  enum event_type: [:target_match, :urgent_cut, :planned_cut ]
+  enum event_type: [:target_match, :urgent_cut, :planned_cut, :static_allocation ]
 
 
   after_commit :run_after_create, :on => :create
