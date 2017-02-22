@@ -28,3 +28,20 @@ id,name,description,clustering_id,created_at,updated_at
 27,Dr: 3,Demand Response based cluster 3,6,2017-01-09 08:04:33 UTC,2017-01-09 08:04:33 UTC
 28,Dr: 4,Demand Response based cluster 4,6,2017-01-09 08:04:33 UTC,2017-01-09 08:04:33 UTC
 29,Dr: 5,Demand Response based cluster 5,6,2017-01-09 08:04:33 UTC,2017-01-09 08:04:33 UTC
+30,Sedini,The sedini circuits,7,2017-02-22 09:59:35 UTC,2017-02-22 09:59:35 UTC
+31,CL: School,Prosumers with School building type.,8,2017-02-22 10:05:16 UTC,2017-02-22 10:05:16 UTC
+32,CL: Domestic,Prosumers with Domestic building type.,8,2017-02-22 10:05:16 UTC,2017-02-22 10:05:16 UTC
+33,CL: SME,Prosumers with SME building type.,8,2017-02-22 10:05:16 UTC,2017-02-22 10:05:16 UTC
+34,CL: Industry,Prosumers with Industry building type.,8,2017-02-22 10:05:16 UTC,2017-02-22 10:05:16 UTC
+35,CL: Factory,"",8,2017-02-22 10:05:16 UTC,2017-02-22 10:05:16 UTC
+36,CL: VIMSEN (Greece),The VIMSEN prosumers located in Greece,8,2017-02-22 10:05:16 UTC,2017-02-22 10:05:16 UTC
+37,CL: VIMSEN (Sedini),The VIMSEN prosumers located in Sedini,8,2017-02-22 10:05:16 UTC,2017-02-22 10:05:16 UTC
+38,CL: HEDNO_windfarms_MV," HEDNO prosumers used for scalability tests, wind farms",8,2017-02-22 10:05:16 UTC,2017-02-22 10:05:16 UTC
+39,CL: HEDNO_industrial_MV," HEDNO prosumers used for scalability tests, industrial MV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
+40,CL: HEDNO_industrial_LV," HEDNO prosumers used for scalability tests, industrail LV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
+41,CL: HEDNO_commercial_MV," HEDNO prosumers used for scalability tests, commercial_MV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
+42,CL: HEDNO_proffessional_LV," HEDNO prosumers used for scalability tests, wind proffesional_LV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
+43,CL: HEDNO_steetlights_LV," HEDNO prosumers used for scalability tests, street lights LV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
+44,CL: HEDNO_residential_LV," HEDNO prosumers used for scalability tests, residential LV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
+45,CL: HEDNO_solar_MV," HEDNO prosumers used for scalability tests, solar MV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
+46,CL: HEDNO_solar_LV," HEDNO prosumers used for scalability tests, solar LV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
