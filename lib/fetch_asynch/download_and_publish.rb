@@ -618,7 +618,7 @@ module FetchAsynch
 
 
     def dont_divide(edms_id)
-      ["b827ebb47c1b", "b827eb4c14af", "b827eb19fcf5", "b827ebc26e98", "b827ebe977a8"].include?(edms_id) ? 0 : 1
+      ["b827eb4c14af", "b827eb19fcf5", "b827ebc26e98", "b827ebe977a8"].include?(edms_id) ? 0 : 1
     end
 
   end
