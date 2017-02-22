@@ -30,7 +30,7 @@ module FetchAsynch
         when "planned_cut"
           planned_cut(eligible_prosumers, dr_obj)
         when "static_allocation"
-          group = Prosumer.where(id: [62,64,65])
+          group = Prosumer.where(id: [62,64,67])
           [ group, Prosumer.where(cluster: 98) - group]
         else
           raise "Wrong event type, received #{dr_obj.event_type}"
