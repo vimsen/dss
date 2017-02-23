@@ -32,6 +32,9 @@ module FetchAsynch
         when "static_allocation"
           group = Prosumer.where(id: [62,64,67])
           [ group, Prosumer.where(cluster: 98) - group]
+        when "greek_pilot_static"
+          group = TempCluster.find_by(clustering: 7, name: :Greece).prosumers
+          [ group, Prosumer.where(cluster: 98) - group]
         else
           raise "Wrong event type, received #{dr_obj.event_type}"
       end
