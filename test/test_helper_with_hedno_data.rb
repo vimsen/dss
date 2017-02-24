@@ -61,6 +61,7 @@ module HednoData
       raw.copy_data "COPY data_points (prosumer_id, interval_id, "\
                   "timestamp, production) FROM stdin;" do
         Rails.logger.debug "#{DateTime.now}: Loading pv_lv_hedno.sql"
+        #### .first(1000).
         File.open("test/fixtures/pv_lv_hedno.sql", 'r').each do |line|
           raw.put_copy_data line
         end
@@ -100,12 +101,15 @@ module HednoData
         File.open("test/fixtures/oikiakoi.sql", 'r').each do |line|
           raw.put_copy_data line
         end
+
       end
       Rails.logger.debug "#{DateTime.now}: Done Loading data"
+
       ActiveRecord::Base.connection_pool.checkin(dbconn)
       Rails.logger.debug "We have #{DataPoint.count} data points"
 
     end
+    aggregate_data
     @prosumers = Prosumer.where(id: 3001..12050)
     @startdate = '2015/1/1'.to_datetime
     @enddate = '2015/12/31'.to_datetime
@@ -113,7 +117,43 @@ module HednoData
     Rails.logger.debug "First prosumer has #{@prosumers.first.data_points.count} datapoints , last one has #{@prosumers.last.data_points.count}"
     Rails.logger.debug "max: #{@prosumers.first.data_points.max}, min: #{@prosumers.last.data_points.min}"
 
+
+
   end
+
+  private
+  def aggregate_data
+
+    dbconn = ActiveRecord::Base.connection_pool.checkout
+
+    puts "executing query_hourly... #{DataPoint.where(interval: 1).count} 15min Data Points"
+    query_hourly = "INSERT INTO data_points(prosumer_id, interval_id, timestamp, production, consumption) " +
+                   "SELECT prosumer_id, " +
+                          "2, " +
+                          "date_trunc('hour', timestamp + INTERVAL '45 minutes') as dh, " +
+                          "sum(production) as p, " +
+                          "sum(consumption) as c " +
+                   "FROM data_points " +
+                   "WHERE interval_id = 1 " +
+                   "GROUP BY dh, prosumer_id " +
+                   "ORDER BY dh ASC, prosumer_id ASC"
+    dbconn.execute  query_hourly
+    puts "executed query_hourly... #{DataPoint.where(interval: 2).count} hourly Data Points."
+    puts "executing query_daily..."
+    query_daily = "INSERT INTO data_points(prosumer_id, interval_id, timestamp, production, consumption) " +
+                  "SELECT prosumer_id, " +
+                         "3, " +
+                         "date_trunc('day', timestamp + INTERVAL '21 hours, 45 minutes') + INTERVAL '2 hours' as dh, " +
+                         "sum(production) as p, " +
+                         "sum(consumption) as c " +
+                  "FROM data_points " +
+                  "WHERE interval_id = 1 " +
+                  "GROUP BY dh, prosumer_id " +
+                  "ORDER BY dh ASC, prosumer_id ASC"
+    dbconn.execute query_daily
+    puts "executed query_daily... #{DataPoint.where(interval: 3).count} daily Data Points."
+  end
+
 end
 
 class ActiveSupport::TestCaseWithHednoData < ActiveSupport::TestCase
