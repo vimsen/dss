@@ -59,8 +59,8 @@ class DemandResponse < ActiveRecord::Base
 
   def need_more_data
     ActiveRecord::Base.connection_pool.with_connection do
-      (self.dr_planneds.group(:timestamp).count.count< self.dr_targets.count ||
-          self.dr_actuals.group(:timestamp).count.count < self.dr_targets.count) && !self.starttime.nil?
+      (self.dr_planneds.where('volume is not null').group(:timestamp).count.count< self.dr_targets.count ||
+          self.dr_actuals.where('volume is not null').group(:timestamp).count.count < self.dr_targets.count) && !self.starttime.nil?
     end
   end
 end
