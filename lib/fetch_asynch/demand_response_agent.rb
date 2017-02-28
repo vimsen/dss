@@ -197,14 +197,13 @@ module FetchAsynch
         dr_obj.dr_targets.order(timestamp: :asc).each_with_index do |dr_target, i|
           json["planned_dr"].each do |k,v|
             Rails.logger.debug "k = #{k}, v= #{v[i]}"
-            DrPlanned.find_or_create_by({
+            dr_planned = DrPlanned.find_or_create_by({
                                             prosumer_id: prosumers_ids[k],
                                             timestamp: dr_target.timestamp,
                                             demand_response_id: demand_response_id
-                                        }) do |dr_planned|
-              dr_planned.volume = v[i]
-              dr_planned.save
-            end
+                                        })
+            dr_planned.volume = v[i]
+            dr_planned.save
           end
         end
         Rails.logger.debug "AAAAAAAAAAAAAAAAAA: #{json["actual_dr"]}"
@@ -212,15 +211,13 @@ module FetchAsynch
           json["actual_dr"].each do |k,v|
             Rails.logger.debug "k = #{k}, v= #{v[i]}"
 
-            DrActual.find_or_create_by({
+            dr_actual = DrActual.find_or_create_by({
                                             prosumer_id: prosumers_ids[k],
                                             timestamp: dr_target.timestamp,
                                             demand_response_id: demand_response_id
-                                        }) do |dr_actual|
-              dr_actual.volume = v[i]
-              dr_actual.save
-            end
-
+                                        })
+            dr_actual.volume = v[i]
+            dr_actual.save
           end
         end
       end
