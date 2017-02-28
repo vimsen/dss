@@ -71,6 +71,7 @@ class HomeController < ApplicationController
         end
         
       chartData.push({"data"=>totalconsumption,"label"=>"Total Consumption"},{"data"=>totalproduction,"label"=>"Total Production"})
+      Rails.logger.debug("Chard data is #{chartData}")
       
       render :json => chartData
     end
@@ -84,6 +85,7 @@ class HomeController < ApplicationController
         @top5prosumers=DataPoint.order('sum(production) DESC')
                            .joins(:prosumer)
                            .where(interval: 2)
+                           .where(prosumer: Prosumer.category(1))
                            .where("production IS NOT NULL")
                            .where(timestamp: Time.zone.now - 1.day .. Time.zone.now)
                            .group('prosumers.id')
@@ -112,6 +114,7 @@ class HomeController < ApplicationController
                            .joins(:prosumer)
                            .order('sum(consumption) DESC')
                            .where(interval: 2)
+                           .where(prosumer: Prosumer.category(1))
                            .where("consumption IS NOT NULL")
                            .where(timestamp: Time.zone.now - 1.day .. Time.zone.now)
                            .group('prosumers.id')
