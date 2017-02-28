@@ -18,7 +18,7 @@ do for [file in list] {
   bname = system("basename '".file."' .csv")
   set out bname.'.eps'
   set xlabel "15 minute time period"
-  set ylabel "Prosumption"
+  set ylabel "Prosumption (kWh)"
   set key bottom left
 #  set yrange [0:20]
   plot file using 1:2 w lp t 'target', \
