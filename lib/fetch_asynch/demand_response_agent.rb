@@ -203,6 +203,7 @@ module FetchAsynch
                                             demand_response_id: demand_response_id
                                         }) do |dr_planned|
               dr_planned.volume = v[i]
+              dr_planned.save
             end
           end
         end
@@ -217,6 +218,7 @@ module FetchAsynch
                                             demand_response_id: demand_response_id
                                         }) do |dr_actual|
               dr_actual.volume = v[i]
+              dr_actual.save
             end
 
           end
