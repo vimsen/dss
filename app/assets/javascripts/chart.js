@@ -7,12 +7,24 @@ var plotHelper = (function() {
     var dataset = [];
     var x_for_zero_point = null;
     if (d != null) {
+
+      var s = $("#startDate").length ? Date.parse($('#startDate').val()) : null;
+      var e = $('#realtime').prop('checked')
+            ? Date.now()
+            : $("#endDate").length
+            ? Date.parse($('#endDate').val())
+            : null;
+
+      // console.log("bounds: ", s, e);
+
       $.each(d, function(index, value) {
         var single = [];
         $.each(value, function(ind, val) {
-          // console.log("INDEX: ", ind, val)
-          x_for_zero_point = val[0];
-          single.push(val);
+          if (val[0] >= s && val[0] <= e) {
+              // console.log("INDEX: ", ind, val);
+              x_for_zero_point = val[0];
+              single.push(val);
+          }
         });
         dataset.push({
           label : (unit == "KW" ? "Consumption" : index),
@@ -26,13 +38,6 @@ var plotHelper = (function() {
         data: [[x_for_zero_point,0]],
         points: { show: false }
       });
-
-      var s = $("#startDate").length ? Date.parse($('#startDate').val()) : null;
-      var e = $('#realtime').prop('checked')
-                  ? Date.now()
-                  : $("#endDate").length   
-                      ? Date.parse($('#endDate').val()) 
-                      : null;
 
       // Reduce number of ticks when width is small, to avoid overlapping
       //var t = $("#placeholder").width() < 450 ? 3 : null;
