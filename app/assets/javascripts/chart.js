@@ -15,12 +15,12 @@ var plotHelper = (function() {
             ? Date.parse($('#endDate').val())
             : null;
 
-      // console.log("bounds: ", s, e);
+
 
       $.each(d, function(index, value) {
         var single = [];
         $.each(value, function(ind, val) {
-          if (val[0] >= s && val[0] <= e) {
+          if ((s== null && e == null) || (val[0] >= s && val[0] <= e)) {
               // console.log("INDEX: ", ind, val);
               x_for_zero_point = val[0];
               single.push(val);
@@ -32,6 +32,8 @@ var plotHelper = (function() {
            color : "#00FF00"*/
         });
       });
+
+      // console.log("bounds: ", s, e);
 
       dataset.push({
         label: "",
