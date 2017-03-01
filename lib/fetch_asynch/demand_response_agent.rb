@@ -30,11 +30,11 @@ module FetchAsynch
         when "planned_cut"
           planned_cut(eligible_prosumers, dr_obj)
         when "static_allocation"
-          group = Prosumer.where(id: [62,64,67])
-          [ group, Prosumer.where(cluster: 98) - group]
+          group = TempCluster.find_by(clustering: 7, name: :Sedini).prosumers
+          [ group, TempCluster.find_by(clustering: 8, name: 'CL: VIMSEN (Sedini)').prosumers - group]
         when "greek_pilot_static"
           group = TempCluster.find_by(clustering: 7, name: :Greece).prosumers
-          [ group, Prosumer.where(cluster: 98) - group]
+          [ group, TempCluster.find_by(clustering: 8, name: 'CL: VIMSEN (Greece)').prosumers - group]
         else
           raise "Wrong event type, received #{dr_obj.event_type}"
       end
