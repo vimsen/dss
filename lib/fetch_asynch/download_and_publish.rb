@@ -377,6 +377,10 @@ module FetchAsynch
     def validate_timestamp(timestamp)
 
       case @interval.duration
+        when 60
+          timestamp.to_datetime.to_i % 60 == 0
+        when 300
+          timestamp.to_datetime.to_i % 300 == 0
         when 900
           timestamp.to_datetime.to_i % 900 == 0
         when 3600

@@ -15,7 +15,7 @@ var plotHelper = (function() {
             ? Date.parse($('#endDate').val())
             : null;
 
-
+      // console.log("data received: ", d);
 
       $.each(d, function(index, value) {
         var single = [];
@@ -241,7 +241,7 @@ var plotHelper = (function() {
       });
 
       source.addEventListener('datapoint', function(e) {
-     //   console.log("Datapoint received ", e);
+        // console.log("Datapoint received ", e);
         var message = JSON.parse(e.data);
         data = readSingle(message, type, forecast, data);
         changed = true;
