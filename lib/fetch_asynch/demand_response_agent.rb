@@ -33,8 +33,13 @@ module FetchAsynch
           group = TempCluster.find_by(clustering: 7, name: :Sedini).prosumers
           [ group, TempCluster.find_by(clustering: 8, name: 'CL: VIMSEN (Sedini)').prosumers - group]
         when "greek_pilot_static"
+=begin
           group = TempCluster.find_by(clustering: 7, name: :Greece).prosumers
           [ group, TempCluster.find_by(clustering: 8, name: 'CL: VIMSEN (Greece)').prosumers - group]
+=end
+          group = Prosumer.where(id: [26,27])
+          [ group, TempCluster.find_by(clustering: 7, name: :Greece).prosumers - group]
+
         else
           raise "Wrong event type, received #{dr_obj.event_type}"
       end
