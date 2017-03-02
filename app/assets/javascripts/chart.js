@@ -364,8 +364,8 @@ var plotHelper = (function() {
       // Rewrite the url:
 
       paramObj = {
-          startdate: $('#startDate').val(),
-          enddate: $('#endDate').val(),
+          startdate: (new Date($('#startDate').val())).toString(),
+          enddate: (new Date($('#endDate').val())).toString(),
           interval: $('#interval_interval_id').val(),
           type: $('#type').val(),
           forecast: $('#forecast').val()

@@ -5,6 +5,10 @@
    interval = (params[:interval] || session[:interval] || 2).to_i # Daily
    type = (params[:type] || session[:type] || "prosumption")
    forecast = (params[:forecast] || session[:forecast] || "none")
+
+
+  puts "@@@@@@@@ session start #{session[:startdate]}, startDate: #{startDate}, endDate: #{endDate} @@@@@@@@@@"
+
  %>
 
 <div class="panel panel-default">
@@ -132,8 +136,8 @@
                
         $('#plot_params').submit(function () {
          
-            var s = $('#startDate').val();
-            var e = $('#endDate').prop("disabled") ? '' : $('#endDate').val();
+            var s = (new Date($('#startDate').val())).toString();
+            var e = $('#endDate').prop("disabled") ? '' : (new Date($('#endDate').val())).toString();
             var interval= $('#interval_interval_id').val();
             var type = $('#type').val();
             var forecast = $('#forecast').val();
@@ -225,7 +229,8 @@
             $('#forecast').val(forecast);
         }
 
-        var stream_url = "<%="#{stream}?channel=#{@channel}"-%>&startdate="+sDate+"&enddate="+eDate+"&interval="+interval+"&type="+type+"&forecast="+forecast;
+        var stream_url = "<%="#{stream}?#{ {channel: @channel}.to_query }".html_safe -%>" + $.param({startdate: sDate, enddate: eDate, interval: interval, type: type, forecast: forecast});
+        console.log("TRying to connect to " + stream_url);
         chart_func(stream_url);
     };
 
@@ -233,8 +238,8 @@
         $('#startDate').datetimepicker();
         $('#endDate').datetimepicker();
 
-        var stream_url = "<%="#{stream}?channel=#{@channel}&startdate=#{startDate}&enddate=#{endDate}&interval=#{interval}&type=#{type}&forecast=#{forecast}"%>"
-
+        var stream_url = "<%="#{stream}?#{ {channel: @channel, startdate: startDate, endDate: endDate, interval: interval, type: type, forecast: forecast}.to_query}".html_safe -%>";
+        console.log("TRying to connect to " + stream_url);
         chart_func(stream_url);
     });
 </script>

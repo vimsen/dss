@@ -85,7 +85,7 @@ class StreamController < ApplicationController
       end
     end
 
-    idata = cluster.request_cached(interval, startdate - 1.day, enddate, channel, forecasts: forecast)
+    idata = cluster.request_cached(interval, startdate - (forecast == "edms" ? 1.day : 0.day), enddate, channel, forecasts: forecast)
     idata[:data_points].each do |d|
       sse.write(d.to_json, event: 'datapoint')
     end
@@ -94,7 +94,7 @@ class StreamController < ApplicationController
 
     ActiveRecord::Base.clear_active_connections!
     sse.write(Market::Calculator.new(prosumers: cluster.prosumers,
-                                     startDate: startdate - 1.day,
+                                     startDate: startdate - (forecast == "edms" ? 1.day : 0.day),
                                      endDate: enddate).calcCosts2.to_json,
               event: 'market')
 
@@ -129,11 +129,13 @@ class StreamController < ApplicationController
 
     puts "Data for #{startdate} .. #{enddate}"
 
-    session[:startdate] = startdate
-    session[:enddate] = enddate
+    session[:startdate] = startdate.to_s
+    session[:enddate] = enddate.to_s
     session[:interval] = interval
     session[:type] = type
     session[:forecast] = forecast
+
+    puts "Data for #{ session[:startdate]} .. #{session[:enddate]}"
 
     ActiveRecord::Base.clear_active_connections!
     bunny_channel = $bunny.create_channel
@@ -165,7 +167,7 @@ class StreamController < ApplicationController
       end
     end
 
-    idata = prosumer.request_cached(interval, startdate - 1.day, enddate, channel, forecasts: forecast)
+    idata = prosumer.request_cached(interval, startdate - (forecast == "edms" ? 1.day : 0.day), enddate, channel, forecasts: forecast)
 
     idata[:data_points].each do |d|
       sse.write(d.to_json, event: 'datapoint')
@@ -175,7 +177,7 @@ class StreamController < ApplicationController
 
     ActiveRecord::Base.clear_active_connections!
     sse.write(Market::Calculator.new(prosumers: [prosumer],
-                                     startDate: startdate - 1.day,
+                                     startDate: startdate - (forecast == "edms" ? 1.day : 0.day),
                                      endDate: enddate).calcCosts2.to_json,
               event: 'market')
  
