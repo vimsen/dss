@@ -45,4 +45,4 @@ id,name,description,clustering_id,created_at,updated_at
 44,CL: HEDNO_residential_LV," HEDNO prosumers used for scalability tests, residential LV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
 45,CL: HEDNO_solar_MV," HEDNO prosumers used for scalability tests, solar MV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
 46,CL: HEDNO_solar_LV," HEDNO prosumers used for scalability tests, solar LV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
-47,Greece,,7,2017-02-22 12:29:02 UTC,2017-02-22 12:29:02 UTC
+47,Greece,"",7,2017-02-22 12:29:02 UTC,2017-02-28 12:31:21 UTC
