@@ -39,6 +39,7 @@ class Prosumer < ActiveRecord::Base
     gaps = true
     result = []
     ActiveRecord::Base.connection_pool.with_connection do
+      return {data_points: [], fms: []} if ((enddate - startdate)  * 24 * 60 * 60).to_f / Interval.find(interval).duration > 1000
       dps = self.data_points.where(timestamp: startdate..enddate, interval: interval).order(timestamp: :asc)
       result = {
           data_points: dps.map { |dp| dp.clientFormat },

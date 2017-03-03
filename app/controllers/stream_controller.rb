@@ -46,6 +46,13 @@ class StreamController < ApplicationController
     type = (params[:type].nil? ? :prosumption : params[:type])
     forecast = (params[:forecast].nil? ? :none : params[:forecast])
 
+    if (cluster.prosumers.count * (enddate - startdate)  * 24 * 60 * 60).to_f / Interval.find(interval).duration > 1000
+
+      #  head 403
+      sse.write({error: "Too many datapoints. Select a smaller range"}.to_json, event: 'error_message')
+      return
+    end
+
     session[:startdate] = startdate
     session[:enddate] = enddate
     session[:interval] = interval
@@ -128,6 +135,13 @@ class StreamController < ApplicationController
     forecast = (params[:forecast].nil? ? :none : params[:forecast])
 
     puts "Data for #{startdate} .. #{enddate}"
+
+    if ((enddate - startdate)  * 24 * 60 * 60).to_f / Interval.find(interval).duration > 1000
+
+      #  head 403
+      sse.write({error: "Too many datapoints. Select a smaller range"}.to_json, event: 'error_message')
+      return
+    end
 
     session[:startdate] = startdate.to_s
     session[:enddate] = enddate.to_s

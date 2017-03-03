@@ -9,6 +9,8 @@ class Cluster < ActiveRecord::Base
   end
   
   def request_cached(interval, startdate, enddate, channel, forecasts: "edms")
+
+
     result = []
     aggregate = {}
     count = {}
@@ -17,6 +19,7 @@ class Cluster < ActiveRecord::Base
     prosumerlist = []
 
     ActiveRecord::Base.connection_pool.with_connection do
+      return {data_points: [], fms: []} if (self.prosumers.count * (enddate - startdate)  * 24 * 60 * 60).to_f / Interval.find(interval).duration > 1000
       self.prosumers.each do |p|
         dps = p.data_points.where(timestamp: startdate..enddate, interval: interval).order(timestamp: :asc)
 

@@ -246,6 +246,22 @@ var plotHelper = (function() {
         data = readSingle(message, type, forecast, data);
         changed = true;
         window.setTimeout(redraw, 100, data);
+        $("#error_message").remove();
+      });
+
+
+      source.addEventListener('error_message', function(e) {
+        // console.log("Datapoint received ", e);
+        var message = JSON.parse(e.data);
+
+        console.log(message);
+
+        $("#error_message").remove();
+//        if (!$("#GDMRS_message").length) {
+            $("#plot_params").prepend( "<p id='error_message' class='alert alert-danger'>" + message["error"] + "</p>" );
+//        }
+
+
       });
 
       source.addEventListener('fms_data', function(e){
