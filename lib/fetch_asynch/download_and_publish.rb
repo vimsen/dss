@@ -293,7 +293,7 @@ module FetchAsynch
 
             pr.reload
             # pr.forecasts.reload
-            data.merge!(pr.new_forecast(@interval, min_ts, max_ts))
+            data.merge!(pr.new_forecast(@interval, @startdate, @enddate))
           end
           # Rails.logger.debug "Sending FMS data: #{data}"
           x.publish(
