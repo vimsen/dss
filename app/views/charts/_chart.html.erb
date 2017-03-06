@@ -238,7 +238,7 @@
         $('#startDate').datetimepicker();
         $('#endDate').datetimepicker();
 
-        var stream_url = "<%="#{stream}?#{ {channel: @channel, startdate: startDate, endDate: endDate, interval: interval, type: type, forecast: forecast}.to_query}".html_safe -%>";
+        var stream_url = "<%="#{stream}?#{ {channel: @channel, startdate: startDate, enddate: endDate, interval: interval, type: type, forecast: forecast}.to_query}".html_safe -%>";
         console.log("TRying to connect to " + stream_url);
         chart_func(stream_url);
     });

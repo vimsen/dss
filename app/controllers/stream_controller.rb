@@ -138,6 +138,8 @@ class StreamController < ApplicationController
 
     if ((enddate - startdate)  * 24 * 60 * 60).to_f / Interval.find(interval).duration > 1000
 
+      p "-------------------------------------------------------------------------------", startdate, enddate, interval
+
       #  head 403
       sse.write({error: "Too many datapoints. Select a smaller range"}.to_json, event: 'error_message')
       return
