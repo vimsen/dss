@@ -420,6 +420,7 @@ module FetchAsynch
             when "Consumption"
               intermediate_data[key]["actual"]["consumption"] = res
             when "Flexibility"
+              res /= 100.0 if result["ProsumerId"] == "HP_0061"
               intermediate_data[key]["dr"] = res unless @interval.duration == 86400
             when "Reliability"
               intermediate_data[key]["reliability"] = res unless @interval.duration == 86400
