@@ -17,7 +17,7 @@ module FetchAsynch
                    async: false,
                    forecasts: "none",
                    only_missing: false,
-                   threads: 5)
+                   threads: 2)
       @prosumers = prosumers
       @startdate = startdate
       @enddate = enddate
@@ -132,11 +132,11 @@ module FetchAsynch
                                             .group('prosumers.edms_id')
                                             .count if only_missing
 
-                  max_points = ((int_end.to_f - int_start .to_f) / Interval.find(interval).duration.seconds).to_i
                   prosumers.select{|p| p.prosumer_category_id == 4}.map {|p| p.edms_id}.sort.each_slice(max_prosumer_batch) do |pr_v|
                     pr_id = pr_v.join(",")
 
                     # Rails.logger.debug "#{pr_id}:  points: #{fms_forecasts_in_db[pr_id] rescue 0}, we want: #{max_points} "
+                    max_points = pr_v.size * ((int_end.to_f - int_start .to_f) / Interval.find(interval).duration.seconds).to_i
 
                     if !only_missing || (fms_forecasts_in_db[pr_id] || 0) < max_points
                       jobs.unshift params: params.merge(prosumers: pr_id, startdate: int_start, enddate: int_end, forecasttime: (db -1.day).middle_of_day, forecasttype: "DayAhead", aggregate: false), api: :fms
