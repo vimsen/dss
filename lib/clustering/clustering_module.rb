@@ -252,7 +252,7 @@ module ClusteringModule
        [ p.id ]
     end
 
-    dr_vector = Hash[Prosumer.category(cat).map {|p| [p.id, p.max_dr(range)]}]
+    dr_vector = Hash[Prosumer.category(cat).map {|p| [p.id, p.avg_dr(range)]}]
 
     dr_prosumers = Prosumer.category(cat).with_dr(range)
 

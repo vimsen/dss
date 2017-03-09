@@ -93,7 +93,7 @@ module FetchAsynch
                 # for real data:
 
               if !only_missing || real_data_points_in_db[pr_id].nil? || real_data_points_in_db[pr_id] < max_points
-                Rails.logger.debug "#{pr_id}:  points: #{real_data_points_in_db[pr_id] rescue 0}, we want: #{max_points} "
+                # Rails.logger.debug "#{pr_id}:  points: #{real_data_points_in_db[pr_id] rescue 0}, we want: #{max_points} "
                 jobs.unshift params: params.merge(prosumers: pr_id, pointer: 2, consumptionFlag: dont_divide(pr_id)), api: :new, forc: false
               end
 
@@ -113,35 +113,38 @@ module FetchAsynch
 
             # Try to download everything from FMS
             # puts "==================forecast:  #{forecasts}, interval: #{interval}, #{forecasts == "FMS-D"}, #{[1,2].include?(interval)}"
-#             Rails.logger.debug "points: #{fms_forecasts_in_db rescue 0}, we want: #{max_points} "
+            # Rails.logger.debug "points: #{fms_forecasts_in_db rescue 0}, we want: #{max_points} "
 
             if forecasts == "FMS-D" && [1,2].include?(interval)
               puts "I'm in !!! #{prosumers}"
-              int_end = startdate
-              begin
-                int_start = int_end
-                int_end = [int_start + (499 * @interval.duration).seconds, enddate].min
+              ((startdate - 1.day)...enddate).each do | d |
+                db = d.utc.beginning_of_day
+                int_end = db
+                begin
+                  int_start = int_end
+                  int_end = [int_start + (499 * @interval.duration).seconds, db + 1.day].min
 
-                fms_forecasts_in_db = Forecast
+                  fms_forecasts_in_db = Forecast
                                             .joins(:prosumer)
                                             .where(prosumer: prosumers, timestamp: int_start .. int_end, interval: interval, forecast_type: 0)
                                             .where('? IS NOT NULL OR ? IS NOT NULL', :production, :consumption)
                                             .group('prosumers.edms_id')
                                             .count if only_missing
 
-                max_points = ((int_end.to_f - int_start .to_f) / Interval.find(interval).duration.seconds).to_i
-                prosumers.select{|p| p.prosumer_category_id == 4}.map {|p| p.edms_id}.sort.each do |pr_id|
+                  max_points = ((int_end.to_f - int_start .to_f) / Interval.find(interval).duration.seconds).to_i
+                  prosumers.select{|p| p.prosumer_category_id == 4}.map {|p| p.edms_id}.sort.each do |pr_id|
 
 
-                  Rails.logger.debug "#{pr_id}:  points: #{fms_forecasts_in_db[pr_id] rescue 0}, we want: #{max_points} "
+                    # Rails.logger.debug "#{pr_id}:  points: #{fms_forecasts_in_db[pr_id] rescue 0}, we want: #{max_points} "
 
-                  if !only_missing || (fms_forecasts_in_db[pr_id] || 0) < max_points
-                    jobs.unshift params: params.merge(prosumers: pr_id, startdate: int_start, enddate: int_end, forecasttime: (startdate -1.day).middle_of_day, forecasttype: "DayAhead", aggregate: true), api: :fms
+                    if !only_missing || (fms_forecasts_in_db[pr_id] || 0) < max_points
+                      jobs.unshift params: params.merge(prosumers: pr_id, startdate: int_start, enddate: int_end, forecasttime: (db -1.day).middle_of_day, forecasttype: "DayAhead", aggregate: true), api: :fms
+                    end
+
+                    # jobs.unshift params: params.merge(prosumers: pr_id, startdate: startdate, enddate: enddate, forecasttime: startdate.beginning_of_day + 9.hours, forecasttype: "IntraDay", aggregate: true), api: :fms
                   end
-
-                  # jobs.unshift params: params.merge(prosumers: pr_id, startdate: startdate, enddate: enddate, forecasttime: startdate.beginning_of_day + 9.hours, forecasttype: "IntraDay", aggregate: true), api: :fms
-                end
-              end while int_end < enddate
+                end while int_end < db + 1.day
+              end
             end
           end
 
@@ -246,7 +249,11 @@ module FetchAsynch
           upsert_status = Upsert.batch(conn, Forecast.table_name) do |upsert|
             data["items"].each do | item |
 
-              ts = item['timestamp'].sub(/:0.$/,'00').to_datetime - ([20001..20033, 20089..20124].any? {|r| r.cover? @prosumer_reverse_hash[item['prosumer_id'].to_s][:id]} ? 3.hours : (@interval.id == 2? 1.hour: 0.hour))
+              # ts = item['timestamp'].sub(/:0.$/,'00').to_datetime - ([20001..20033, 20089..20124].any? {|r| r.cover? @prosumer_reverse_hash[item['prosumer_id'].to_s][:id]} ? 3.hours : (@interval.id == 2? 1.hour: 0.hour))
+
+              ts_received = item['timestamp'].to_datetime
+
+              ts = ts_received - (ts_received.to_time.dst? ? (@interval.id == 2? 3.hour: 4.hour) : (@interval.id == 2? 1.hour: 2.hour))# - 3.hour
 
               min_ts = [ts, min_ts].min
               max_ts = [ts, max_ts].max

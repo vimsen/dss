@@ -76,7 +76,11 @@ class Prosumer < ActiveRecord::Base
   end
 
   def max_dr(time_range)
-    self.data_points.where(timestamp: time_range).empty? ? nil : self.data_points.where(timestamp: time_range).maximum(:dr)
+    self.data_points.where(timestamp: time_range).empty? ? nil : self.data_points.where(timestamp: time_range, interval: 2).maximum(:dr)
   end
-  
+
+  def avg_dr(time_range)
+    self.data_points.where(timestamp: time_range).empty? ? nil : self.data_points.where(timestamp: time_range, interval: 2).where('dr IS NOT NULL AND dr > 0').average(:dr)
+  end
+
 end
