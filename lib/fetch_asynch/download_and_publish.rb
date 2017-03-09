@@ -122,7 +122,8 @@ module FetchAsynch
                 int_end = db
                 begin
                   int_start = int_end
-                  int_end = [int_start + (499 * @interval.duration).seconds, db + 1.day].min
+                  max_prosumer_batch = 5
+                  int_end = [int_start + ((499 / max_prosumer_batch) * @interval.duration).seconds, db + 1.day].min
 
                   fms_forecasts_in_db = Forecast
                                             .joins(:prosumer)
@@ -132,13 +133,13 @@ module FetchAsynch
                                             .count if only_missing
 
                   max_points = ((int_end.to_f - int_start .to_f) / Interval.find(interval).duration.seconds).to_i
-                  prosumers.select{|p| p.prosumer_category_id == 4}.map {|p| p.edms_id}.sort.each do |pr_id|
-
+                  prosumers.select{|p| p.prosumer_category_id == 4}.map {|p| p.edms_id}.sort.each_slice(max_prosumer_batch) do |pr_v|
+                    pr_id = pr_v.join(",")
 
                     # Rails.logger.debug "#{pr_id}:  points: #{fms_forecasts_in_db[pr_id] rescue 0}, we want: #{max_points} "
 
                     if !only_missing || (fms_forecasts_in_db[pr_id] || 0) < max_points
-                      jobs.unshift params: params.merge(prosumers: pr_id, startdate: int_start, enddate: int_end, forecasttime: (db -1.day).middle_of_day, forecasttype: "DayAhead", aggregate: true), api: :fms
+                      jobs.unshift params: params.merge(prosumers: pr_id, startdate: int_start, enddate: int_end, forecasttime: (db -1.day).middle_of_day, forecasttype: "DayAhead", aggregate: false), api: :fms
                     end
 
                     # jobs.unshift params: params.merge(prosumers: pr_id, startdate: startdate, enddate: enddate, forecasttime: startdate.beginning_of_day + 9.hours, forecasttype: "IntraDay", aggregate: true), api: :fms
