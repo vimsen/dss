@@ -48,17 +48,17 @@ module FetchAsynch
 
           ActiveRecord::Base.connection_pool.with_connection do
             Rails.logger.debug "startdate: #{startdate}, enddate: #{enddate}"
-            max_points = ((enddate.to_f - startdate.to_f) / Interval.find(interval).duration.seconds).to_i
-            max_forc = (1.day / Interval.find(interval).duration.seconds).to_i
+            max_points = ((enddate.to_f - startdate.to_f) / @interval.duration.seconds).to_i
+            max_forc = (1.day / @interval.duration.seconds).to_i
             real_data_points_in_db = DataPoint
                                          .joins(:prosumer)
-                                         .where(prosumer: prosumers, timestamp: startdate .. enddate, interval: interval)
+                                         .where(prosumer: prosumers, timestamp: startdate .. enddate, interval: @interval)
                                          .where('? IS NOT NULL OR ? IS NOT NULL', :production, :consumption)
                                          .group('prosumers.edms_id')
                                          .count if only_missing
             forecast_data_points_in_db = DataPoint
                                              .joins(:prosumer)
-                                             .where(prosumer: prosumers, timestamp: startdate .. enddate, interval: interval)
+                                             .where(prosumer: prosumers, timestamp: startdate .. enddate, interval: @interval)
                                              .where('? IS NOT NULL OR ? IS NOT NULL', :f_production, :f_consumption)
                                              .group('prosumers.edms_id', 'date(timestamp)')
                                              .count if forecasts == "edms" && only_missing
@@ -127,7 +127,7 @@ module FetchAsynch
 
                   fms_forecasts_in_db = Forecast
                                             .joins(:prosumer)
-                                            .where(prosumer: prosumers, timestamp: int_start .. int_end, interval: interval, forecast_type: 0)
+                                            .where(prosumer: prosumers, timestamp: int_start .. int_end, interval: @interval, forecast_type: 0)
                                             .where('? IS NOT NULL OR ? IS NOT NULL', :production, :consumption)
                                             .group('prosumers.edms_id')
                                             .count if only_missing
@@ -136,7 +136,7 @@ module FetchAsynch
                     pr_id = pr_v.join(",")
 
                     # Rails.logger.debug "#{pr_id}:  points: #{fms_forecasts_in_db[pr_id] rescue 0}, we want: #{max_points} "
-                    max_points = pr_v.size * ((int_end.to_f - int_start .to_f) / Interval.find(interval).duration.seconds).to_i
+                    max_points = pr_v.size * ((int_end.to_f - int_start .to_f) / @interval.duration.seconds).to_i
 
                     if !only_missing || (fms_forecasts_in_db[pr_id] || 0) < max_points
                       jobs.unshift params: params.merge(prosumers: pr_id, startdate: int_start, enddate: int_end, forecasttime: (db -1.day).middle_of_day, forecasttype: "DayAhead", aggregate: false), api: :fms
