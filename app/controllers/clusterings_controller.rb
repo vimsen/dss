@@ -28,7 +28,7 @@ class ClusteringsController < ApplicationController
 
 
 
-    @stats = @clustering.temp_clusters.map do |tc|
+    @stats = Parallel.map(@clustering.temp_clusters, in_threads: 10) do |tc|
                     [tc.id, Hash[Market::Calculator.new(prosumers: tc.prosumers, startDate: @startDate, endDate: @endDate)
                                      .calcCosts2(dr: @internalDr)[:disaggregated]
                                      .select { |d| d[:id] < 0 }
@@ -41,7 +41,7 @@ class ClusteringsController < ApplicationController
     @sum_aggr = @stats.sum { |k,v| v[-2][:real]}
     @pen_aggr = @stats.sum { |k,v| v[-2][:penalty]}
 
-    @idata = @clustering.temp_clusters.map do |tc|
+    @idata = Parallel.map(@clustering.temp_clusters, in_threads: 10) do |tc|
       v = @internalDr ? [{
           label: :dr,
           data: DataPoint.joins("LEFT JOIN forecasts ON forecasts.timestamp = data_points.timestamp AND data_points.prosumer_id = forecasts.prosumer_id AND data_points.interval_id = forecasts.interval_id")
