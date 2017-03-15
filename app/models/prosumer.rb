@@ -31,8 +31,9 @@ class Prosumer < ActiveRecord::Base
   scope :real_time, -> { joins(:prosumer_category).where("prosumer_categories.real_time": true) }
   scope :category, ->(cat) { where(prosumer_category: cat) if cat.present? }
   scope :with_locations, -> { where("location_x IS NOT NULL and location_y IS NOT NULL") }
-  scope :with_positive_dr, ->(time_range) { select { |p| p.max_dr(time_range) && p.max_dr(time_range) > 0 } }
-  scope :with_dr, ->(time_range) { select { |p| p.max_dr(time_range) } }
+  scope :with_positive_dr, ->(time_range) { joins(:data_points).where('data_points.timestamp': time_range, 'data_points.interval_id': 2).group('prosumers.id').having('max(data_points.dr) > 0') }
+  scope :with_dr, ->(time_range) { joins(:data_points).where('data_points.timestamp': time_range, 'data_points.interval_id': 2).group('prosumers.id').having('max(data_points.dr) IS NOT NULL') }
+  scope :avg_dr_all, ->(time_range) { joins(:data_points).where('data_points.timestamp': time_range, 'data_points.interval_id': 2).where('data_points.dr IS NOT NULL AND data_points.dr > 0').group('prosumers.id').average(:'data_points.dr') }
 
   def request_cached(interval, startdate, enddate, channel, forecasts: "edms")
 

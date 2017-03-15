@@ -252,14 +252,14 @@ module ClusteringModule
        [ p.id ]
     end
 
-    dr_vector = Hash[Prosumer.category(cat).map {|p| [p.id, p.avg_dr(range)]}]
+    dr_vector = Prosumer.category(cat).avg_dr_all(range)
 
     dr_prosumers = Prosumer.category(cat).with_dr(range)
 
     centroids = result.map { |cl| get_centroid_dr(cl, dr_vector) }
     loop do
       old_centroids = Array.new centroids
-      Rails.logger.debug "Old centroids: #{old_centroids}"
+      # Rails.logger.debug "Old centroids: #{old_centroids}"
       result.each { |cl| cl.clear }
       dr_prosumers.each do |p|
         cl = find_closest_dr(dr_vector[p.id], centroids)
@@ -277,13 +277,12 @@ module ClusteringModule
       cl << without_dr.map{|p| p.id}
       result.push cl
     end
+
     result.map.with_index do |c, i|
-      Rails.logger.debug "Prosumer ids are: #{c}"
+      # Rails.logger.debug "Prosumer ids are: #{c}"
       cl = TempCluster.new name: "Dr: #{i}",
                            description: "Demand Response based cluster #{i}"
-      c.each do |p|
-        cl.prosumers << Prosumer.find(p)
-      end
+      cl.prosumers = Prosumer.where(id: c)
       cl
     end
   end
