@@ -132,6 +132,8 @@ GEM
     public_suffix (2.0.5)
     puma (3.7.0)
     rack (1.6.5)
+    rack-mini-profiler (0.10.2)
+      rack (>= 1.2.0)
     rack-test (0.6.3)
       rack (>= 1.0)
     railroady (1.5.2)
@@ -267,6 +269,7 @@ DEPENDENCIES
   parallel
   pg
   puma
+  rack-mini-profiler
   railroady
   rails (= 4.2.5)
   rails-erd

@@ -112,7 +112,7 @@ module Market
                                                WHEN TRUE THEN
                                                   #{@penalty_satisfaction} * ((coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) - (coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))
                                                ELSE
-                                                  #{@penalty_violation} * GREATEST((((1.0 - coalesce(data_points.dr,0)) * coalesce(data_points.consumption,0) - coalesce(data_points.production,0)) - (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0))),0)
+                                                  #{@penalty_violation} * GREATEST(((coalesce(data_points.consumption,0) - coalesce(data_points.production,0)) - (coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0))),0)
                                                END)) as real_individual"
                           )
 
