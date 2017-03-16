@@ -59,7 +59,7 @@
 
 
 
-@media (min-width: 992px) {
+/*@media (min-width: 992px) {
   .equal > .col-md-6 > .panel > .panel-body {
     height: 270px;
     overflow-y: auto;
@@ -73,6 +73,11 @@
     overflow-y: auto;
 //    min-height: 270px;
   }
+}*/
+
+.equal > .col-lg-6 > .panel > .panel-body {
+  height: 270px;
+  overflow-y: auto;
 }
 
 .terminal {
