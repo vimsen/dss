@@ -254,16 +254,17 @@ module FetchAsynch
 
               ts_received = item['timestamp'].to_datetime
 
-              ts = ts_received - (ts_received.to_time.dst? ? (@interval.id == 2? 3.hour: 4.hour) : (@interval.id == 2? 1.hour: 2.hour))# - 3.hour
+              ts_cons = ts_received # - (ts_received.to_time.dst? ? (@interval.id == 2? 3.hour: 4.hour) : (@interval.id == 2? 1.hour: 2.hour))# - 3.hour
+              ts_prod = ts_received - (ts_received.to_time.dst? ? (@interval.id == 2? 3.hour: 4.hour) : (@interval.id == 2? 1.hour: 2.hour))# - 3.hour
 
-              min_ts = [ts, min_ts].min
-              max_ts = [ts, max_ts].max
+              min_ts = [ts_cons, ts_prod, min_ts].min
+              max_ts = [ts_cons, ts_prod, max_ts].max
 
-              if @prosumer_reverse_hash[item['prosumer_id'].to_s] && validate_timestamp(ts)
+              if @prosumer_reverse_hash[item['prosumer_id'].to_s] && validate_timestamp(ts_cons)
                 # puts "Received: #{d}"
                 received_prosumers[@prosumer_reverse_hash[item['prosumer_id'].to_s][:id]] = 1
                 selector = {
-                    timestamp: ts,
+                    timestamp: ts_cons,
                     prosumer_id: @prosumer_reverse_hash[item['prosumer_id'].to_s][:id],
                     interval_id: @interval.id,
                     forecast_time: nil,
@@ -271,7 +272,6 @@ module FetchAsynch
                 }
 
                 setter = {
-                    production: item['f_production'],
                     consumption: item['f_consumption'],
                     storage: item['f_storage'],
                     created_at: DateTime.now,
@@ -282,6 +282,29 @@ module FetchAsynch
 
                 upsert.row(selector, setter)
               end
+              if @prosumer_reverse_hash[item['prosumer_id'].to_s] && validate_timestamp(ts_prod)
+                # puts "Received: #{d}"
+                received_prosumers[@prosumer_reverse_hash[item['prosumer_id'].to_s][:id]] = 1
+                selector = {
+                    timestamp: ts_prod,
+                    prosumer_id: @prosumer_reverse_hash[item['prosumer_id'].to_s][:id],
+                    interval_id: @interval.id,
+                    forecast_time: nil,
+                    forecast_type: 0
+                }
+
+                setter = {
+                    production: item['f_production'],
+                    storage: item['f_storage'],
+                    created_at: DateTime.now,
+                    updated_at: DateTime.now
+                }
+
+                setter.reject!{|k,v| v.nil?}
+
+                upsert.row(selector, setter)
+              end
+
             end
           end
           x.publish({data:  "Interval #{@interval.name}: UPSERT status: #{upsert_status.count}, prosumers: #{received_prosumers.keys}, time: #{min_ts} .. #{max_ts}", event: "output"}.to_json) if x
