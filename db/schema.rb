@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160928141940) do
+ActiveRecord::Schema.define(version: 20161222143818) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -145,16 +145,30 @@ ActiveRecord::Schema.define(version: 20160928141940) do
 
   add_index "day_aheads", ["prosumer_id"], name: "index_day_aheads_on_prosumer_id", using: :btree
 
+  create_table "demand_response_prosumers", force: :cascade do |t|
+    t.integer  "demand_response_id"
+    t.integer  "prosumer_id"
+    t.integer  "drp_type"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  add_index "demand_response_prosumers", ["demand_response_id"], name: "index_demand_response_prosumers_on_demand_response_id", using: :btree
+  add_index "demand_response_prosumers", ["prosumer_id"], name: "index_demand_response_prosumers_on_prosumer_id", using: :btree
+
   create_table "demand_responses", force: :cascade do |t|
     t.integer  "interval_id"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
     t.integer  "plan_id"
-    t.integer  "feeder_id"
+    t.string   "feeder_id"
     t.string   "issuer"
+    t.integer  "prosumer_category_id"
+    t.integer  "event_type"
   end
 
   add_index "demand_responses", ["interval_id"], name: "index_demand_responses_on_interval_id", using: :btree
+  add_index "demand_responses", ["prosumer_category_id"], name: "index_demand_responses_on_prosumer_category_id", using: :btree
 
   create_table "dr_actuals", force: :cascade do |t|
     t.integer  "prosumer_id"
@@ -219,6 +233,23 @@ ActiveRecord::Schema.define(version: 20160928141940) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "forecasts", force: :cascade do |t|
+    t.integer  "prosumer_id"
+    t.integer  "interval_id"
+    t.datetime "timestamp"
+    t.datetime "forecast_time"
+    t.float    "production"
+    t.float    "consumption"
+    t.float    "storage"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.integer  "forecast_type"
+  end
+
+  add_index "forecasts", ["interval_id"], name: "index_forecasts_on_interval_id", using: :btree
+  add_index "forecasts", ["prosumer_id"], name: "index_forecasts_on_prosumer_id", using: :btree
+  add_index "forecasts", ["timestamp", "prosumer_id", "interval_id", "forecast_time", "forecast_type"], name: "forecastsuniqueindex", unique: true, using: :btree
 
   create_table "green_certificates", force: :cascade do |t|
     t.datetime "date"
@@ -335,7 +366,7 @@ ActiveRecord::Schema.define(version: 20160928141940) do
     t.integer  "connection_type_id"
     t.float    "location_x"
     t.float    "location_y"
-    t.integer  "feeder_id"
+    t.string   "feeder_id"
     t.integer  "prosumer_category_id"
   end
 
@@ -428,12 +459,17 @@ ActiveRecord::Schema.define(version: 20160928141940) do
   add_index "users_roles", ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id", using: :btree
 
   add_foreign_key "configurations", "users"
+  add_foreign_key "demand_response_prosumers", "demand_responses"
+  add_foreign_key "demand_response_prosumers", "prosumers"
   add_foreign_key "demand_responses", "intervals"
+  add_foreign_key "demand_responses", "prosumer_categories"
   add_foreign_key "dr_actuals", "demand_responses"
   add_foreign_key "dr_actuals", "prosumers"
   add_foreign_key "dr_planneds", "demand_responses"
   add_foreign_key "dr_planneds", "prosumers"
   add_foreign_key "dr_targets", "demand_responses"
+  add_foreign_key "forecasts", "intervals"
+  add_foreign_key "forecasts", "prosumers"
   add_foreign_key "prosumers", "prosumer_categories"
   add_foreign_key "sla_items", "bids"
   add_foreign_key "sla_items", "intervals"

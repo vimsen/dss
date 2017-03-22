@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  resources :forecasts
   resources :prosumer_categories
   get 'configurations/index'
 

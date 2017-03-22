@@ -6,16 +6,16 @@ class DataPoint < ActiveRecord::Base
       :timestamp => self.timestamp.to_i,
       :prosumer_id => self.prosumer_id,
       :prosumer_name => self.prosumer_id < 0 ? "" : self.prosumer.name,
-      :interval => self.interval.duration,
+      # :interval => self.interval.duration,
       :actual => {
-        :prosumption => (self.consumption || 0) - (self.production || 0),
+        :prosumption => self.consumption.nil? && self.production.nil? ? :nil : (self.consumption || 0) - (self.production || 0),
         :production => self.production,
         :consumption => self.consumption,
         :storage => self.storage
       },
       :forecast => {
         :timestamp => self.f_timestamp.to_i,
-        :prosumption => (self.f_consumption || 0) - (self.f_production || 0),
+        :prosumption => self.f_consumption.nil? && self.f_production.nil? ? :nil : (self.f_consumption || 0) - (self.f_production || 0),
         :production => self.f_production,
         :consumption => self.f_consumption,
         :storage => self.f_storage

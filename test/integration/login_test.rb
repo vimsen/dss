@@ -1,5 +1,7 @@
 require 'test_helper'
 require 'database_cleaner'
+require 'capybara'
+require 'capybara/dsl'
 
 Capybara.app = Rails.application.class
 Capybara.default_driver = :rack_test
@@ -11,7 +13,7 @@ class LoginTest < ActionDispatch::IntegrationTest
 
   setup do
     DatabaseCleaner.start
-    assert User.create! :password => 'password', :password_confirmation => 'password', :email => 'player@example.com'
+    assert User.create! :password => 'password2', :password_confirmation => 'password2', :email => 'player@example.com'
     # or Factory(:user....)
   end
 
@@ -21,11 +23,14 @@ class LoginTest < ActionDispatch::IntegrationTest
 
   test "login user" do
     Capybara.current_driver = :selenium
-    visit '/users/sign_in'
+    visit root_path
+    assert_equal('/users/sign_in', current_path)
     fill_in 'user_email', :with => 'player@example.com'
-    fill_in 'user_password', :with => 'password'
+    fill_in 'user_password', :with => 'password2'
     click_button 'Log in'
-    assert(current_path == root_path)
+
+    find("strong", text: "VMGA DSS Platform researches:")
+    assert_equal(root_path, current_path)
   end
 
 end

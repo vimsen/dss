@@ -10,12 +10,14 @@
           <table class="table table-striped table-bordered table-hover" id="dataTables-data-points">
             <thead>
             <tr>
+              <th>id</th>
               <th>plan id</th>
-              <th><%= "starttime"-%></th>
-              <th><%= "endtime" -%></th>
-              <th><%= "interval" -%></th>
-              <th><%= "issuer" -%></th>
-              <th><%= "feeder id" -%></th>
+              <th>starttime</th>
+              <th>endtime</th>
+              <th>interval</th>
+              <th>issuer</th>
+              <th>feeder id</th>
+              <th>Event type</th>
               <th colspan="2"></th>
             </tr>
             </thead>
@@ -23,12 +25,14 @@
             <tbody>
             <% @demand_responses.each do |demand_response| %>
                 <tr>
+                  <td><%= demand_response.id %></td>
                   <td><%= demand_response.plan_id %></td>
                   <td><%= demand_response.starttime %></td>
                   <td><%= demand_response.stoptime %></td>
                   <td><%= demand_response.interval.duration %></td>
                   <td><%= demand_response.issuer %></td>
                   <td><%= demand_response.feeder_id %></td>
+                  <td><%= demand_response.event_type %></td>
                   <td><%= link_to 'Show', demand_response, class: 'btn btn-success btn-xs' %></td>
                   <td><%= link_to 'Destroy', demand_response, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-xs' %></td>
                 </tr>

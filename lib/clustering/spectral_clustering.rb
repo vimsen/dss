@@ -7,7 +7,8 @@ module ClusteringModule
 
     def initialize(prosumers: Prosumer.all,
                    startDate: Time.now - 1.week,
-                   endDate: Time.now)
+                   endDate: Time.now,
+                   forecast_type: :edms)
       method(__method__).parameters.each do |type, k|
         next unless type == :key
         v = eval(k.to_s)
@@ -16,13 +17,22 @@ module ClusteringModule
         Rails.logger.debug("value: #{v}")
       end
 
-      @forecasts = Hash[DataPoint.where(prosumer: @prosumers,
-                                        interval: 2,
-                                        f_timestamp: @startDate .. @endDate)
-                            .select("f_timestamp, prosumer_id, COALESCE(f_consumption,0) - COALESCE(f_production,0) as f_prosumption")
-                            .map do |dp|
-        [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_prosumption]
-      end]
+      @forecasts = Hash[
+          forecast_type == :edms ?
+              DataPoint.where(prosumer: @prosumers,
+                              interval: 2,
+                              f_timestamp: @startDate .. @endDate)
+                  .select("f_timestamp, prosumer_id, COALESCE(f_consumption,0) - COALESCE(f_production,0) as f_prosumption")
+                  .map do |dp|
+                [[dp.prosumer_id, dp.f_timestamp.to_i], dp.f_prosumption]
+              end :
+              Forecast.day_ahead
+                  .where(prosumer: @prosumers, interval: 2, timestamp: @startDate .. @endDate)
+                  .select("timestamp, prosumer_id, COALESCE(consumption,0) - COALESCE(production,0) as prosumption")
+                  .map do |dp|
+                [[dp.prosumer_id, dp.timestamp.to_i], dp.prosumption]
+              end
+      ]
 
       @real =  Hash[DataPoint.where(prosumer: @prosumers,
                                     interval: 2,

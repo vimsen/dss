@@ -1,20 +1,10 @@
 id,name,description,created_at,updated_at
-28,Auto energy_type,Automatic cluster generated with energy_type algorithm.,2016-03-02 12:51:55 +0200,2016-03-02 12:51:55 +0200
-29,Auto building_type,Automatic cluster generated with building_type algorithm.,2016-03-02 12:52:13 +0200,2016-03-02 12:52:13 +0200
-30,Auto connection_type,Automatic cluster generated with connection_type algorithm.,2016-03-02 12:52:30 +0200,2016-03-02 12:52:30 +0200
-31,Auto location,Automatic cluster generated with location algorithm.,2016-03-02 12:53:00 +0200,2016-03-02 12:53:00 +0200
-32,Auto dr,Automatic cluster generated with dr algorithm.,2016-03-02 12:53:18 +0200,2016-03-02 12:53:18 +0200
-33,Auto genetic,Automatic cluster generated with genetic algorithm.,2016-03-02 13:18:37 +0200,2016-03-02 13:18:37 +0200
-34,Auto genetic_smart,Automatic cluster generated with genetic_smart algorithm.,2016-03-02 14:13:35 +0200,2016-03-02 14:13:35 +0200
-35,Auto positive_error_spectral_clustering,Automatic cluster generated with positive_error_spectral_clustering algorithm.,2016-03-02 14:13:57 +0200,2016-03-02 14:13:57 +0200
-36,Auto negative_error_spectral_clustering,Automatic cluster generated with negative_error_spectral_clustering algorithm.,2016-03-02 14:14:22 +0200,2016-03-02 14:14:22 +0200
-37,Auto positive_consumption_spectral_clustering,Automatic cluster generated with positive_consumption_spectral_clustering algorithm.,2016-03-02 14:14:49 +0200,2016-03-02 14:14:49 +0200
-38,Auto negative_consumption_spectral_clustering,Automatic cluster generated with negative_consumption_spectral_clustering algorithm.,2016-03-02 14:15:12 +0200,2016-03-02 14:15:12 +0200
-39,"","",2016-03-09 18:55:34 +0200,2016-03-09 18:55:34 +0200
-40,"","",2016-03-10 12:36:11 +0200,2016-03-10 12:36:11 +0200
-41,By type,Clustering generated from existing clusters at 2016-03-24 18:18:10 +0200,2016-03-24 20:18:26 +0200,2016-03-24 20:18:26 +0200
-42,Auto positive_consumption_spectral_clustering,Automatic cluster generated with positive_consumption_spectral_clustering algorithm.,2016-04-12 17:21:26 +0300,2016-04-12 17:21:26 +0300
-43,Auto positive_error_spectral_clustering,Automatic cluster generated with positive_error_spectral_clustering algorithm.,2016-04-14 14:04:54 +0300,2016-04-14 14:04:54 +0300
-44,Auto negative_consumption_spectral_clustering,Automatic cluster generated with negative_consumption_spectral_clustering algorithm.,2016-04-14 14:17:19 +0300,2016-04-14 14:17:19 +0300
-45,Auto positive_error_spectral_clustering,Automatic cluster generated with positive_error_spectral_clustering algorithm.,2016-04-19 20:24:53 +0300,2016-04-19 20:24:53 +0300
-46,Auto negative_error_spectral_clustering,Automatic cluster generated with negative_error_spectral_clustering algorithm.,2016-04-21 19:43:01 +0300,2016-04-21 19:43:01 +0300
+2,Validation genetic 2015/10/01 00:00 - 2015/10/07 23:00  ,Automatic cluster generated with genetic algorithm.,2016-12-12 15:41:50 UTC,2016-12-12 15:43:53 UTC
+3,validation genetic 2015/09/09 00:00 - 2015/09/15 23:00,Automatic cluster generated with genetic algorithm.,2016-12-16 10:34:59 UTC,2016-12-16 10:34:59 UTC
+4,"validation, smart genetic, 30/11/2015 - 7/12/2015",Automatic cluster generated with genetic algorithm.,2016-12-21 10:41:52 UTC,2016-12-21 10:42:22 UTC
+6,Vz Auto dr 2015/01/02 10:00 - 2015/01/09 10:00,Automatic cluster generated with dr algorithm.,2017-01-09 08:04:33 UTC,2017-03-10 10:15:18 UTC
+7,Pilot DR tests,These are the clusters that are used for test on DR signals,2017-02-22 09:59:35 UTC,2017-02-22 09:59:35 UTC
+8,Original Clustering,Clustering generated from existing clusters at 2017-02-22 12:04:25 +0200,2017-02-22 10:05:16 UTC,2017-02-22 10:05:16 UTC
+9,HEDNO installation type,A clustering of the HEDNO prosumers based on their installation type.,2017-03-06 10:50:04 UTC,2017-03-06 10:50:04 UTC
+10,HEDNO DR 7/6 - 13/6 2015,Automatic cluster generated with dr algorithm.,2017-03-15 12:46:59 UTC,2017-03-15 12:46:59 UTC
+11,HEDNO genetic  7/6 - 13/6 2015,Automatic cluster generated with genetic algorithm.,2017-03-15 12:54:46 UTC,2017-03-15 12:54:46 UTC

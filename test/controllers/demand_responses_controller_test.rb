@@ -21,7 +21,16 @@ class DemandResponsesControllerTest < ActionController::TestCaseWithProsumptionD
 
   test "should create demand_response" do
     assert_difference('DemandResponse.count') do
-      post :create, demand_response: { interval_id: @demand_response.interval_id, dr_targets_attributes: @demand_response.dr_targets.map{|t| {volume: t.volume, timestamp: t.timestamp}} }
+      post :create, demand_response: {
+          interval_id: @demand_response.interval_id,
+          prosumer_category_id: prosumer_categories(:one).id,
+          dr_targets_attributes: @demand_response.dr_targets.map do|t|
+            {
+                volume: t.volume, timestamp: t.timestamp
+            }
+          end
+
+      }
       # puts "AAAAAAAAAAAAAAAAA", @response
     end
 
@@ -78,6 +87,7 @@ class DemandResponsesControllerTest < ActionController::TestCaseWithProsumptionD
 
     newDRsignal = {
         interval_id: Interval.find_by_name("15 minutes").id,
+        prosumer_category_id: prosumer_categories(:one).id,
         dr_targets_attributes: 10.times.map do | i |
           {
               volume: rand(5.0...50.0),

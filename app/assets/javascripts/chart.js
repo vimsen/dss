@@ -5,11 +5,26 @@ var plotHelper = (function() {
 
   var replot = function(d) {
     var dataset = [];
+    var x_for_zero_point = null;
     if (d != null) {
+
+      var s = $("#startDate").length ? Date.parse($('#startDate').val()) : null;
+      var e = $('#realtime').prop('checked')
+            ? Date.now()
+            : $("#endDate").length
+            ? Date.parse($('#endDate').val())
+            : null;
+
+      // console.log("data received: ", d);
+
       $.each(d, function(index, value) {
         var single = [];
         $.each(value, function(ind, val) {
-          single.push(val);
+          if ((s== null && e == null) || (val[0] >= s && val[0] <= e)) {
+              // console.log("INDEX: ", ind, val);
+              x_for_zero_point = val[0];
+              single.push(val);
+          }
         });
         dataset.push({
           label : (unit == "KW" ? "Consumption" : index),
@@ -18,12 +33,13 @@ var plotHelper = (function() {
         });
       });
 
-      var s = $("#startDate").length ? Date.parse($('#startDate').val()) : null;
-      var e = $('#realtime').prop('checked')
-                  ? Date.now()
-                  : $("#endDate").length   
-                      ? Date.parse($('#endDate').val()) 
-                      : null;
+      // console.log("bounds: ", s, e);
+
+      dataset.push({
+        label: "",
+        data: [[x_for_zero_point,0]],
+        points: { show: false }
+      });
 
       // Reduce number of ticks when width is small, to avoid overlapping
       //var t = $("#placeholder").width() < 450 ? 3 : null;
@@ -58,7 +74,7 @@ var plotHelper = (function() {
              tickSize : [12, "hour"]*/
           },
           yaxis : {
-            tickDecimals: 2,
+            tickDecimals: 3,
             axisLabel: unit
           },
           legend:{
@@ -66,6 +82,25 @@ var plotHelper = (function() {
           }
         });
       }
+
+      $("#legend .legendLabel")
+          .each(function(i){
+              if (dataset[i] && dataset[i].data && dataset[i].data.length > 0) {
+                  var csvContent = "data:text/csv;charset=utf-8,";
+                  dataset[i].data.forEach(function(infoArray, index){
+                      var dataString = infoArray.join(",");
+                      csvContent += dataString + "\n";
+                  });
+                  var encodedUri = encodeURI(csvContent);
+                  $(this).append('<br>').append($('<a>',{
+                      class: 'btn btn-info btn-xs',
+                      text: 'Download',
+                      href: encodedUri,
+                      download: dataset[i].label + ".csv"
+                  }));
+              }
+          });
+
       if ( $( "#vio_div" ).length ) {
         fill_violation_table(d);
       }
@@ -80,7 +115,7 @@ var plotHelper = (function() {
   };
 
   var fill_violation_table = function(d) {
-    console.log(d);
+    // console.log(d);
 
     if (d["Aggregate: consumption, forecast"]) {
       var tableData = [];
@@ -127,23 +162,27 @@ var plotHelper = (function() {
     }
 
     // console.log("old value: " + res[label][d.timestamp] + "  new value: ");
-    // console.log(d);
-    if (d.actual[type] != null) {
-        res[label][d.timestamp] = [d.timestamp * 1000, d.actual[type]];
+
+    var value = d.actual[type] != null ? d.actual[type] : d[type];
+    //console.log("Value is: "+ value);
+    if (value != null) {
+        res[label][d.timestamp] = [d.timestamp * 1000, value];
     }
 
-    if (forecast) {
+    if (forecast == "edms") {
       var label = d.prosumer_name + ": " + type + ", forecast";
       if (res[label] == null) {
         res[label] = {};
       }
-      if (d.forecast[type]) {
+      if (d.forecast[type] !== null) {
         res[label][d.timestamp] = [d.forecast.timestamp * 1000, d.forecast[type]];
       }
     }
 
     return res;
   };
+
+  var read
 
   var readData = function(idata, type, forecast) {
     var result = {};
@@ -152,9 +191,18 @@ var plotHelper = (function() {
       return result;
     }
 
-    $.each(idata, function(index, value) {
+    $.each(idata["data_points"], function(index, value) {
       result = readSingle(value, type, forecast, result);
     });
+
+    if (forecast == "FMS-D") {
+        $.each(idata["fms"], function(index, value) {
+            if (index.includes(type.toLowerCase())) {
+                result[index] = value;
+            }
+        });
+    }
+
     return result;
   };
 
@@ -193,17 +241,45 @@ var plotHelper = (function() {
       });
 
       source.addEventListener('datapoint', function(e) {
-     //   console.log("Datapoint received ", e);
+        // console.log("Datapoint received ", e);
         var message = JSON.parse(e.data);
         data = readSingle(message, type, forecast, data);
         changed = true;
         window.setTimeout(redraw, 100, data);
+        $("#error_message").remove();
+      });
+
+
+      source.addEventListener('error_message', function(e) {
+        // console.log("Datapoint received ", e);
+        var message = JSON.parse(e.data);
+
+        console.log(message);
+
+        $("#error_message").remove();
+//        if (!$("#GDMRS_message").length) {
+            $("#plot_params").prepend( "<p id='error_message' class='alert alert-danger'>" + message["error"] + "</p>" );
+//        }
+
+
+      });
+
+      source.addEventListener('fms_data', function(e){
+          if (forecast == "FMS-D") {
+              var message = JSON.parse(e.data);
+              $.each(message, function(index, value) {
+                  if (index.includes(type.toLowerCase())) {
+                      data[index] = value;
+                  }
+              });
+              replot(data);
+          }
       });
 
         source.addEventListener('messages.demand_response_data', function(e) {
             var message = JSON.parse(e.data);
             console.log("Dr received ", message);
-            replot(message)
+            replot(message);
 
             if ($("#GDMRS_message").length) {
                 $("#GDMRS_message").remove();
@@ -223,8 +299,16 @@ var plotHelper = (function() {
 
         source.addEventListener('market', function(e) {
           var message = JSON.parse(e.data);
-          console.log("Received market data: ", message)
-          $.plot($("#cost_placeholder"), message.plot, {
+          // console.log("Received market data: ", message);
+
+          var plot = message.plot;
+          if ($('h3.page-header').html().startsWith('<small>Prosumer:</small>')) {
+              plot = plot.filter(function(el) {
+                  return el.label !== "cluster";
+              });
+          }
+
+          $.plot($("#cost_placeholder"), plot, {
               series: {
                   lines: {
                       show: true
@@ -257,7 +341,7 @@ var plotHelper = (function() {
                    tickSize : [12, "hour"]*/
               },
               yaxis : {
-                  tickDecimals: 2,
+                  tickDecimals: 3,
                   axisLabel: '&euro;'
               },
               legend:{
@@ -267,8 +351,8 @@ var plotHelper = (function() {
 
           $("#costs_div").html('<hr/><table id="costs_table" class="table table-responsive"><thead><th>Name</th><th data-dynatable-column="forecast">Forecasted Cost (&euro;)</th><th data-dynatable-column="ideal">Cost without penalties (&euro;)</th><th data-dynatable-column="real">Cost with penalties (&euro;)</th></thead><tbody></tbody></table>');
 
-          var sum = $.grep(message.dissagrgated, function(a) {return a.id == -1})[0];
-          var aggr = $.grep(message.dissagrgated, function(a) {return a.id == -2})[0];
+          var sum = $.grep(message.disaggregated, function(a) {return a.id == -1})[0];
+          var aggr = $.grep(message.disaggregated, function(a) {return a.id == -2})[0];
           var impr = ((sum.real -aggr.real)/sum.real*100).toFixed(2);
 
           var pen_sum = sum.real - sum.ideal;
@@ -278,8 +362,9 @@ var plotHelper = (function() {
 
           $("#perc_div").html('<hr/><strong>Cost reduction: </strong> ' + impr + '%<br/><strong>Penalty reduction: </strong> ' + pen_impr + '%');
           var costs_dynatable = $('#costs_table').dynatable({
+              features: { pushState: false},
               dataset: {
-                  records: message.dissagrgated,
+                  records: message.disaggregated,
                   sorts: {real: -1},
                   perPageDefault: 10
               }
@@ -291,6 +376,36 @@ var plotHelper = (function() {
       });
 
       redraw(data);
+
+      // Rewrite the url:
+
+      paramObj = {
+          startdate: (new Date($('#startDate').val())).toString(),
+          enddate: (new Date($('#endDate').val())).toString(),
+          interval: $('#interval_interval_id').val(),
+          type: $('#type').val(),
+          forecast: $('#forecast').val()
+      };
+      if (history.pushState) {
+        var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + $.param(paramObj);
+        var oldurl = window.location.href;
+        if (newurl !== oldurl) {
+            if (oldurl.includes("?")) {
+                window.history.pushState({path:newurl},'',newurl);
+            } else {
+                window.history.replaceState({path:newurl},'',newurl);
+            }
+        }
+      }
     }
   };
 })();
+
+window.onbeforeunload = function(){
+    console.log(source);
+    if (source.OPEN) {
+        source.close();
+        console.log("Closed source");
+    }
+
+};

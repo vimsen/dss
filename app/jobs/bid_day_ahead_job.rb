@@ -5,16 +5,26 @@ require 'fetch_asynch/download_and_publish'
 class BidDayAheadJob < ActiveJob::Base
   queue_as :default
 
-  def perform(*args)
+  def perform(prosumers: Prosumer.category(1),
+              interval: 2,
+              date: Date.tomorrow,
+              strategy_factor: 1.0,
+              forecasts: "edms")
 
     Rails.logger.debug "Arguments:  #{ENV["download"]}"
-    Rails.logger.debug "Downloading data:"
+    Rails.logger.debug "Downloading data for prosumers: #{prosumers}"
 
     if ENV["download"] != "false"
-      FetchAsynch::DownloadAndPublish.new(Prosumer.real_time, 2, DateTime.now - 2.days, DateTime.now + 48.hours, nil, true)
+      FetchAsynch::DownloadAndPublish.new prosumers: prosumers,
+                                          interval: interval,
+                                          startdate: (date - 48.hours).to_datetime,
+                                          enddate: (date + 48.hours).to_datetime,
+                                          channel: nil,
+                                          async: true,
+                                          forecasts: forecasts,
+                                          only_missing: true,
+                                          threads: 3
     end
-
-
 
     Rails.logger.debug "Downloaded data"
     config = YAML.load(ERB.new(File.read("#{Rails.root}/config/vimsen_hosts.yml")).result)
@@ -25,28 +35,36 @@ class BidDayAheadJob < ActiveJob::Base
     token = config[Rails.env]["market_operator"]["token"]
     base_uri = config[Rails.env]["market_operator"]["host"]
 
-    rest_resource = RestClient::Resource.new(base_uri)
+    rest_resource = RestClient::Resource.new(base_uri) # , verify_ssl: OpenSSL::SSL::VERIFY_NONE)
 
     markets = JSON.parse rest_resource['markets'].get params: {user_email: user, user_token: token, format: :json}
 
     Rails.logger.debug "Downloaded markets"
 
-    day_ahead_market = (markets.find do |m|
+    day_ahead_market = markets.find do |m|
       m["name"] == "Day Ahead"
-    end)
+    end
 
     Rails.logger.debug "found day ahead market"
     newbid = {
         market_id: day_ahead_market["id"],
-        date: Date.tomorrow.to_s,
+        date: date.to_s,
         bid_items_attributes: day_ahead_market["blocks"].map do |b|
-          volume = DataPoint.where(prosumer: Prosumer.real_time, interval_id: 2, f_timestamp: Date.tomorrow.beginning_of_day + b["starting"].seconds + 1.hour)
+          volume = forecasts == "edms" ? 
+              DataPoint.where(prosumer: prosumers, interval_id: interval, f_timestamp: date.beginning_of_day.to_datetime + b["starting"].seconds + 1.hour)
                        .select('sum(COALESCE(f_consumption,0) - COALESCE(f_production,0)) as f_prosumption')
-                       .group(:f_timestamp).map{|dp| dp.f_prosumption}.first || 0
+                       .group(:f_timestamp).map{|dp| dp.f_prosumption}.first || 0 : 
+              Forecast.day_ahead.where(prosumer: prosumers,
+                                            interval_id: interval,
+                                            timestamp: date.beginning_of_day.to_datetime +
+                                                b["starting"].seconds +
+                                                2.hour)
+                       .select('sum(COALESCE(consumption,0) - COALESCE(production,0)) as prosumption')
+                       .group(:timestamp).map(&:prosumption).first
           {
               block_id: b["id"].to_i,
-              volume: volume,
-              price: 50.0
+              volume: strategy_factor * (volume||0),
+              price: (volume > 0 ? 50.0 : 0.05)
           }
         end.reject do |b|
           b[:volume] == 0
@@ -59,7 +77,14 @@ class BidDayAheadJob < ActiveJob::Base
     Rails.logger.debug "created request object"
     Rails.logger.debug "#{day_ahead_market["blocks"]}, #{request_object.to_json}"
 
-    result = rest_resource['bids'].post(request_object.to_json, :content_type => :json, :accept => :json)
+    result =
+        begin
+          rest_resource['bids'].post(request_object.to_json, :content_type => :json, :accept => :json)
+        rescue RestClient::ExceptionWithResponse => e
+          e.response
+        end
+
+
     Rails.logger.debug "The result is #{result}"
 
     json_response = JSON.parse result

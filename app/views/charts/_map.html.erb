@@ -2,17 +2,15 @@
   <div id="map" style='width: 100%; height: <%= defined?(height) ? height : "400px" -%>;'></div>
 </div>
 <script>
-  $(function() {
-          
-    handler = Gmaps.build('Google');
-    handler.buildMap({
-      provider : {},
-      internal : {
-        id : 'map'
-      }
-    }, function() {
-      try {
-        markers = handler.addMarkers( <%= prosumers.select{|p| p.has_location}.map{|p| {
+
+    function initMap() {
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 9,
+            center: {lat: 37.9667, lng: 23.7167}
+        });
+
+        var marker_array = <%= prosumers.select{|p| p.has_location}.map{|p| {
                                     lat: p.location_x,
                                     lng: p.location_y,
                                     picture: {
@@ -20,20 +18,50 @@
                                       width: 36,
                                       height: 36
                                     },
-                                    infowindow: render(partial: "prosumers/prosumername", :locals => {:prosumer => p})
-                  } }.to_json.html_safe -%> )
+                                    infowindow: render(partial: "prosumers/prosumername", :locals => {:prosumer => p}),
+                  } }.to_json.html_safe -%>;
 
-        handler.bounds.extendWith(markers);
-        handler.fitMapToBounds();
-        <% if prosumers.count == 1 %>
-            handler.getMap().setZoom(9);
-        <% end %>
+        var markers = marker_array.map(function(item, i) {
+            var infowindow = new google.maps.InfoWindow({
+                content: item.infowindow
+            });
 
-      }
-      catch(err) {
-        console.log(err.message);
-      }
-    });
-  });
+            var new_marker = new google.maps.Marker({
+                position: new google.maps.LatLng(item.lat, item.lng),
+                icon: item.picture.url,
+                map: map
+            });
+            new_marker.addListener('click', function() {
+                infowindow.open(map, new_marker);
+            });
+            return new_marker;
+        });
+
+
+        var bounds = new google.maps.LatLngBounds();
+        markers.forEach(function(item, i){
+            bounds.extend(item.getPosition());
+        });
+        if (markers.length > 1) {
+            map.fitBounds(bounds);
+        } else {
+            map.setCenter(markers[0].getPosition());
+            map.setZoom(9);
+        }
+        // Add a marker clusterer to manage the markers.
+        var markerCluster = new MarkerClusterer(map, markers,
+            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+
+
+
+    }
+
 
 </script>
+
+<script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyASTr1Y4OdI6ftYa7-2Tg8eLnBummONONk&callback=initMap">
+</script>
+

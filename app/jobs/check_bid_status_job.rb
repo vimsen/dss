@@ -2,6 +2,8 @@ class CheckBidStatusJob < ActiveJob::Base
   queue_as :default
 
   def perform(*args)
+    puts "Running scheduled task"
+
     Bid.submitted.each do |b|
       config = YAML.load(ERB.new(File.read("#{Rails.root}/config/vimsen_hosts.yml")).result)
 
@@ -30,9 +32,18 @@ class CheckBidStatusJob < ActiveJob::Base
     end
 
     if ENV["download"] != "false"
-      FetchAsynch::DownloadAndPublish.new(Prosumer.real_time, 1, DateTime.now - 1.day, DateTime.now + 48.hours, nil, true)
-      FetchAsynch::DownloadAndPublish.new(Prosumer.real_time, 2, DateTime.now - 1.day, DateTime.now + 48.hours, nil, true)
-      FetchAsynch::DownloadAndPublish.new(Prosumer.real_time, 3, DateTime.now - 1.day, DateTime.now + 48.hours, nil, true)
+      options = {
+          prosumers: Prosumer.real_time,
+          startdate: DateTime.now - 1.day,
+          enddate: DateTime.now + 48.hours,
+          channel: nil,
+          async: true,
+          forecasts: "edms"
+      }
+      [1,2,3].each do |i|
+        FetchAsynch::DownloadAndPublish.new options.merge interval: i
+      end
+
     end
 
   end

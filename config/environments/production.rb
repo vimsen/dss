@@ -20,7 +20,7 @@ Rails.application.configure do
   # config.action_dispatch.rack_cache = true
 
   # Disable Rails's static asset server (Apache or nginx will already do this).
-  config.serve_static_files = true # changed this for heroku
+  config.serve_static_files = false # changed this for heroku
 
   # Compress JavaScripts and CSS.
   config.assets.js_compressor = :uglifier
@@ -62,7 +62,9 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
   
   # For devise:
-  config.action_mailer.default_url_options = { host: 'vimsen.herokuapp.com', port: 80 }
+  config.action_mailer.default_url_options = { host: 'dss.ict-vimsen.eu', port: 80 }
+
+  config.action_mailer.delivery_method = :sendmail
 
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to

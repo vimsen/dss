@@ -1,0 +1,376 @@
+<html><head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VMGA Portal - Dashboard</title>
+    <meta name="description" content="Dashboard">
+    <link rel="stylesheet" media="all" href="/assets/application.css" data-turbolinks-track="true">
+    <script type="text/javascript" async="" src="http://www.google-analytics.com/ga.js"></script><script src="/assets/application.js" data-turbolinks-track="true"></script>
+    <script src="//maps.google.com/maps/api/js?v=3.13&amp;sensor=false&amp;libraries=geometry&amp;key=AIzaSyASTr1Y4OdI6ftYa7-2Tg8eLnBummONONk" type="text/javascript"></script>
+
+    
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico">
+    <!-- <script src="http://code.jquery.com/jquery-migrate-1.0.0.js"></script> -->
+  </head>
+  <body>
+    <div id="wrapper">
+
+	    <!-- Start Header Section -->
+   			    <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <img class="navbar-header-img" src="/assets/vimsen_logo_small.png" alt="Vimsen logo small"> <span class="navbar-header-text"> Virtual Microgrids for Smart Energy Networks </span>
+            </div>
+            <!-- /.navbar-header -->
+
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-envelope fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-messages">
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <strong>John Smith</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>Yesterday</em>
+                                    </span>
+                                </div>
+                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <strong>John Smith</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>Yesterday</em>
+                                    </span>
+                                </div>
+                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <strong>John Smith</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>Yesterday</em>
+                                    </span>
+                                </div>
+                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a class="text-center" href="#">
+                                <strong>Read All Messages</strong>
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- /.dropdown-messages -->
+                </li>
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-tasks fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-tasks">
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <p>
+                                        <strong>Task 1</strong>
+                                        <span class="pull-right text-muted">40% Complete</span>
+                                    </p>
+                                    <div class="progress progress-striped active">
+                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+                                            <span class="sr-only">40% Complete (success)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <p>
+                                        <strong>Task 2</strong>
+                                        <span class="pull-right text-muted">20% Complete</span>
+                                    </p>
+                                    <div class="progress progress-striped active">
+                                        <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+                                            <span class="sr-only">20% Complete</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <p>
+                                        <strong>Task 3</strong>
+                                        <span class="pull-right text-muted">60% Complete</span>
+                                    </p>
+                                    <div class="progress progress-striped active">
+                                        <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+                                            <span class="sr-only">60% Complete (warning)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <p>
+                                        <strong>Task 4</strong>
+                                        <span class="pull-right text-muted">80% Complete</span>
+                                    </p>
+                                    <div class="progress progress-striped active">
+                                        <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                                            <span class="sr-only">80% Complete (danger)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a class="text-center" href="#">
+                                <strong>See All Tasks</strong>
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- /.dropdown-tasks -->
+                </li>
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-bell fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-alerts">
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-comment fa-fw"></i> New Comment
+                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-twitter fa-fw"></i> 3 New Followers
+                                    <span class="pull-right text-muted small">12 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-envelope fa-fw"></i> Message Sent
+                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-tasks fa-fw"></i> New Task
+                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-upload fa-fw"></i> Server Rebooted
+                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a class="text-center" href="#">
+                                <strong>See All Alerts</strong>
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- /.dropdown-alerts -->
+                </li>
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                    <li>
+                      <a href="#">
+                      Logged in as <strong>test2@test.com</strong></a>
+                    </li>
+                    <li>
+                      <a href="/users/298486374">
+                      <i class="fa fa-user fa-fw"></i> User profile
+</a>                    </li>
+                    <li>
+                      <a href="/users/edit">
+                      <i class="fa fa-gear fa-fw"></i>Settings
+</a>                    </li>
+                    <li class="divider"></li>
+                    <li>
+                      <a rel="nofollow" data-method="delete" href="/users/sign_out">
+                      <i class="fa fa-sign-out fa-fw"></i>Logout
+</a>                    </li>
+                    <li class="divider"></li>
+                    <li>
+                      <a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Help</a>
+                    </li>
+                    </ul>            
+                    <!-- /.dropdown-user -->
+                </li>
+                <!-- /.dropdown -->
+            </ul>
+            <!-- /.navbar-top-links -->
+
+   		<!-- End Header Section -->
+			
+		<!-- Start Navigation Section -->
+			 <div class="navbar-default sidebar" role="navigation">
+   <div class="sidebar-nav navbar-collapse">
+     <ul id="side-menu" class="nav nav-pills nav-stacked"><li id="menu_home"><a href="/"><i class="fa fa-home fa-fw"></i> Home</a></li><li id="menu_prosumers" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="/prosumers"><i class="fa fa-plug fa-fw"></i> Prosumers <b class="caret"></b></a><ul class="nav nav-second-level collapse"><li id="menu_prosumers_MyString" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="/prosumers?category=980190962">MyString <b class="caret"></b></a><ul class="nav nav-third-level collapse"><li id="menu_prosumers_sub"><a href="/prosumers?category=980190962">Prosumer list</a></li><li id="menu_prosumer_new"><a href="/prosumers/new?category=980190962">New Prosumer</a></li><li id="prosumers_hier_MyString_1" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="#">Prosumer 01..Prosumer 16 <b class="caret"></b></a><ul class="nav nav-fourth-level collapse"><li id="prosumers_hier_MyString_2" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="#">Prosumer 01..Prosumer 04 <b class="caret"></b></a><ul class="nav nav-fifth-level collapse"><li id="prosumers_hier_MyString_3"><a href="http://127.0.0.1:39467/prosumers/2001">Prosumer 01</a></li><li id="prosumers_hier_MyString_4"><a href="http://127.0.0.1:39467/prosumers/2002">Prosumer 02</a></li><li id="prosumers_hier_MyString_5"><a href="http://127.0.0.1:39467/prosumers/2003">Prosumer 03</a></li><li id="prosumers_hier_MyString_6"><a href="http://127.0.0.1:39467/prosumers/2004">Prosumer 04</a></li></ul></li><li id="prosumers_hier_MyString_7" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="#">Prosumer 05..Prosumer 08 <b class="caret"></b></a><ul class="nav nav-fifth-level collapse"><li id="prosumers_hier_MyString_8"><a href="http://127.0.0.1:39467/prosumers/2005">Prosumer 05</a></li><li id="prosumers_hier_MyString_9"><a href="http://127.0.0.1:39467/prosumers/2006">Prosumer 06</a></li><li id="prosumers_hier_MyString_10"><a href="http://127.0.0.1:39467/prosumers/2007">Prosumer 07</a></li><li id="prosumers_hier_MyString_11"><a href="http://127.0.0.1:39467/prosumers/2008">Prosumer 08</a></li></ul></li><li id="prosumers_hier_MyString_12" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="#">Prosumer 09..Prosumer 12 <b class="caret"></b></a><ul class="nav nav-fifth-level collapse"><li id="prosumers_hier_MyString_13"><a href="http://127.0.0.1:39467/prosumers/2009">Prosumer 09</a></li><li id="prosumers_hier_MyString_14"><a href="http://127.0.0.1:39467/prosumers/2010">Prosumer 10</a></li><li id="prosumers_hier_MyString_15"><a href="http://127.0.0.1:39467/prosumers/2011">Prosumer 11</a></li><li id="prosumers_hier_MyString_16"><a href="http://127.0.0.1:39467/prosumers/2012">Prosumer 12</a></li></ul></li><li id="prosumers_hier_MyString_17" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="#">Prosumer 13..Prosumer 16 <b class="caret"></b></a><ul class="nav nav-fifth-level collapse"><li id="prosumers_hier_MyString_18"><a href="http://127.0.0.1:39467/prosumers/2013">Prosumer 13</a></li><li id="prosumers_hier_MyString_19"><a href="http://127.0.0.1:39467/prosumers/2014">Prosumer 14</a></li><li id="prosumers_hier_MyString_20"><a href="http://127.0.0.1:39467/prosumers/2015">Prosumer 15</a></li><li id="prosumers_hier_MyString_21"><a href="http://127.0.0.1:39467/prosumers/2016">Prosumer 16</a></li></ul></li></ul></li><li id="prosumers_hier_MyString_22" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="#">Prosumer 17..Prosumer 32 <b class="caret"></b></a><ul class="nav nav-fourth-level collapse"><li id="prosumers_hier_MyString_23" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="#">Prosumer 17..Prosumer 20 <b class="caret"></b></a><ul class="nav nav-fifth-level collapse"><li id="prosumers_hier_MyString_24"><a href="http://127.0.0.1:39467/prosumers/2017">Prosumer 17</a></li><li id="prosumers_hier_MyString_25"><a href="http://127.0.0.1:39467/prosumers/2018">Prosumer 18</a></li><li id="prosumers_hier_MyString_26"><a href="http://127.0.0.1:39467/prosumers/2019">Prosumer 19</a></li><li id="prosumers_hier_MyString_27"><a href="http://127.0.0.1:39467/prosumers/2000">Prosumer 20</a></li></ul></li><li id="prosumers_hier_MyString_28" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="#">Prosumer 21..Prosumer 24 <b class="caret"></b></a><ul class="nav nav-fifth-level collapse"><li id="prosumers_hier_MyString_29"><a href="http://127.0.0.1:39467/prosumers/2021">Prosumer 21</a></li><li id="prosumers_hier_MyString_30"><a href="http://127.0.0.1:39467/prosumers/2022">Prosumer 22</a></li><li id="prosumers_hier_MyString_31"><a href="http://127.0.0.1:39467/prosumers/2023">Prosumer 23</a></li><li id="prosumers_hier_MyString_32"><a href="http://127.0.0.1:39467/prosumers/2024">Prosumer 24</a></li></ul></li><li id="prosumers_hier_MyString_33" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="#">Prosumer 25..Prosumer 28 <b class="caret"></b></a><ul class="nav nav-fifth-level collapse"><li id="prosumers_hier_MyString_34"><a href="http://127.0.0.1:39467/prosumers/2025">Prosumer 25</a></li><li id="prosumers_hier_MyString_35"><a href="http://127.0.0.1:39467/prosumers/2026">Prosumer 26</a></li><li id="prosumers_hier_MyString_36"><a href="http://127.0.0.1:39467/prosumers/2027">Prosumer 27</a></li><li id="prosumers_hier_MyString_37"><a href="http://127.0.0.1:39467/prosumers/2028">Prosumer 28</a></li></ul></li><li id="prosumers_hier_MyString_38" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="#">Prosumer 29..Prosumer 32 <b class="caret"></b></a><ul class="nav nav-fifth-level collapse"><li id="prosumers_hier_MyString_39"><a href="http://127.0.0.1:39467/prosumers/2029">Prosumer 29</a></li><li id="prosumers_hier_MyString_40"><a href="http://127.0.0.1:39467/prosumers/2030">Prosumer 30</a></li><li id="prosumers_hier_MyString_41"><a href="http://127.0.0.1:39467/prosumers/2031">Prosumer 31</a></li><li id="prosumers_hier_MyString_42"><a href="http://127.0.0.1:39467/prosumers/2032">Prosumer 32</a></li></ul></li></ul></li><li id="prosumers_hier_MyString_43" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="#">Prosumer 33..Prosumer 37 <b class="caret"></b></a><ul class="nav nav-fourth-level collapse"><li id="prosumers_hier_MyString_44" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="#">Prosumer 33..Prosumer 36 <b class="caret"></b></a><ul class="nav nav-fifth-level collapse"><li id="prosumers_hier_MyString_45"><a href="http://127.0.0.1:39467/prosumers/2033">Prosumer 33</a></li><li id="prosumers_hier_MyString_46"><a href="http://127.0.0.1:39467/prosumers/2034">Prosumer 34</a></li><li id="prosumers_hier_MyString_47"><a href="http://127.0.0.1:39467/prosumers/2035">Prosumer 35</a></li><li id="prosumers_hier_MyString_48"><a href="http://127.0.0.1:39467/prosumers/2036">Prosumer 36</a></li></ul></li><li id="prosumers_hier_MyString_49"><a href="http://127.0.0.1:39467/prosumers/2037">Prosumer 37</a></li></ul></li></ul></li></ul></li><li id="menu_clusters" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="/clusters"><i class="fa fa-sitemap fa-fw"></i> Clusters <b class="caret"></b></a><ul class="nav nav-second-level collapse"><li id="menu_clusters_sub"><a href="/clusters">Cluster list</a></li><li id="clusters_hier_1"><a href="http://127.0.0.1:39467/clusters/980190962">MyString</a></li><li id="clusters_hier_2"><a href="http://127.0.0.1:39467/clusters/298486374">MyString</a></li></ul></li><li id="menu_clusterings" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="#">Clusterings <b class="caret"></b></a><ul class="nav nav-second-level collapse"><li id="menu_clusterings_sub"><a href="/clusterings">Clusterings List</a></li><li id="menu_clustering_new"><a href="/clusterings/new">New Clustering</a></li><li id="menu_clustering_new_from_existing"><a href="/clusterings/new_from_existing">New Clustering from existing allocation</a></li><li id="clusterings_hier_1"><a href="http://127.0.0.1:39467/clusterings/980190962">MyString</a></li><li id="clusterings_hier_2"><a href="http://127.0.0.1:39467/clusterings/298486374">MyString</a></li></ul></li><li id="menu_demand_responses"><a href="/demand_responses">Demand Responses</a></li><li id="menu_bids"><a href="/bids">Bids</a></li><li id="menu_sla"><a href="/sla/monitor">Monitor SLA progress</a></li><li id="menu_algorithms" class="active dropdown"><a class="dropdown-toggle active" data-toggle="dropdown" data-target="#" href="#">Algorithms <b class="caret"></b></a><ul class="nav nav-second-level collapse in"><li id="menu_clustering" class="active simple-navigation-active-leaf"><a class="active" href="/clusterings/select">Clustering</a></li><li id="menu_dunamic_adaptation"><a href="/clusterings/new_from_existing">Dynamic Adaptation</a></li><li id="menu_target_clustering"><a href="/target_clustering">Target Clustering</a></li><li id="menu_RES_scheduling"><a href="#">RES scheduling</a></li><li id="menu_VMG_modeling"><a href="#">VMG production - consumption modeling</a></li><li id="menu_VMG_profiling"><a href="#">VMG profile maximization algorithms</a></li><li id="menu_comm_algos"><a href="#">Communication algorithms</a></li><li id="menu_virt_netw_micro"><a href="#">Virtual netwrok microgrid</a></li></ul></li><li id="menu_data_points"><a href="/data_points"><i class="fa fa-bar-chart-o fa-fw"></i> Data points</a></li><li id="menu_market_prices"><a href="/market_prices"><i class="fa fa-bar-chart-o fa-fw"></i> Market Prices</a></li><li id="menu_configurations"><a href="/configurations"><i class="fa fa-tasks fa-fw"></i> Configurations</a></li><li id="menu_cloud_platform" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" data-target="#" href="#">Cloud Platform <b class="caret"></b></a><ul class="nav nav-second-level collapse"><li id="menu_instances"><a href="/cloud_platform"><i class="fa fa-cog fa-fw"></i> Instances</a></li><li id="menu_cloud_resources"><a href="/cloud_platform/resources"><i class="fa fa-tachometer fa-fw"></i> Resources</a></li><li id="menu_engines"><a href="/cloud_platform/machines"><i class="fa fa-server fa-fw"></i> Machines</a></li><li id="menu_tasks"><a href="/cloud_platform/tasks"><i class="fa fa-list fa-fw"></i> Tasks</a></li></ul></li><li id="menu_users"><a href="/users"><i class="fa fa-user fa-fw"></i> Users</a></li></ul>
+       
+   </div>  <!-- /.sidebar-collapse -->
+  
+ </div> <!-- /.navbar-static-side -->
+
+</nav>
+
+<script>
+  $(function() {
+    // Hack to make the menu not a dropdown
+        
+    $('#side-menu').metisMenu();
+    $('.sidebar').find('.dropdown-menu').removeClass('dropdown-menu');
+    $('div.navbar-collapse').addClass('collapse') // This collapses the menu on mobile screen
+});	
+</script>
+
+		<!-- End Navigation Section -->
+
+		<!-- Start Main Content Section -->
+        	<div id="page-wrapper" style="min-height: 829px;">
+        		
+  
+  
+<div class="row">
+  <div class="col-lg-12">
+    <h3 class="page-header"><small>Automatic Clustering:</small> Select Algorithm</h3>
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        select algorithms
+      </div>
+      <div class="panel-body">
+        <form class="form-horizontal" action="/clusterings/confirm" accept-charset="UTF-8" method="post"><input name="utf8" value="✓" type="hidden">
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="algorithm">Algorithm</label>
+            <div class="col-sm-10">
+              <select name="algorithm" id="algorithm" class="form-control"><option selected="selected" value="energy_type">By renewable type</option>
+<option value="building_type">By building type</option>
+<option value="connection_type">By connection type</option>
+<option value="location">By location</option>
+<option value="dr">By demand response profile</option>
+<option value="genetic">Using genetic algorithms</option>
+<option value="genetic_smart">Genetic algorithm with smart reproduction</option>
+<option value="positive_error_spectral_clustering">Positive Error Spectral Clustering</option>
+<option value="negative_error_spectral_clustering">Negative Error Spectral Clustering</option>
+<option value="positive_consumption_spectral_clustering">Positive Consumption Spectral Clustering</option>
+<option value="negative_consumption_spectral_clustering">Negative Consumption Spectral Clustering</option></select>
+            </div>
+          </div>
+          <div id="k_parameter" class="form-group" style="display: none;">
+            <label class="col-sm-2 control-label" for="kappa">Number of clusters</label>
+            <div class="col-sm-10">
+              <input name="kappa" id="kappa" value="5" class="form-control" type="text">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="prosumer_category">Prosumer category</label>
+            <div class="col-sm-10">
+              <select class="form-control" name="category[]" id="category_"><option selected="selected" value="980190962">MyString</option></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="startDate">Starting date/time</label>
+            <div class="col-sm-10">
+              <input name="startDate" id="startDate" value="2015/03/23 03:00" class="form-control" type="text">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="endDate">Ending date/time</label>
+            <div class="col-sm-10">
+              <input name="endDate" id="endDate" value="2015/03/30 03:00" class="form-control" type="text">
+            </div>
+          </div>
+          <div class="actions">
+            <input name="commit" value="Select" class="btn btn-primary" type="submit">
+          </div>
+          <script>
+            $(function(){
+              $('#startDate').datetimepicker();
+              $('#endDate').datetimepicker();
+
+              var selected = $("#algorithm").find('option:selected').val();
+              if (selected == "energy_type" || selected == "building_type" || selected == "connection_type") {
+                $("#k_parameter").hide();
+              }
+              $("#algorithm").change(function() {
+                var selected = $(this).find('option:selected').val();
+                if (selected == "energy_type" || selected == "building_type" || selected == "connection_type") {
+                  $("#k_parameter").hide();
+                } else {
+                  $("#k_parameter").show();
+                }
+              });
+            });
+          </script>
+</form>      </div>
+    </div>
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+
+
+
+        	</div> <!-- /#page-wrapper -->
+
+		<!-- End Main Content Section -->
+
+    </div> <!-- /#wrapper -->
+  
+
+<div class="xdsoft_datetimepicker xdsoft_ xdsoft_noselect "><div class="xdsoft_datepicker active"><div class="xdsoft_mounthpicker"><button type="button" class="xdsoft_prev"></button><button type="button" class="xdsoft_today_button" style="visibility: visible;"></button><div class="xdsoft_label xdsoft_month"><span>March</span><div class="xdsoft_select xdsoft_monthselect xdsoft_scroller_box"><div style="margin-top: 0px;"><div class="xdsoft_option " data-value="0">January</div><div class="xdsoft_option " data-value="1">February</div><div class="xdsoft_option xdsoft_current" data-value="2">March</div><div class="xdsoft_option " data-value="3">April</div><div class="xdsoft_option " data-value="4">May</div><div class="xdsoft_option " data-value="5">June</div><div class="xdsoft_option " data-value="6">July</div><div class="xdsoft_option " data-value="7">August</div><div class="xdsoft_option " data-value="8">September</div><div class="xdsoft_option " data-value="9">October</div><div class="xdsoft_option " data-value="10">November</div><div class="xdsoft_option " data-value="11">December</div></div><div class="xdsoft_scrollbar"><div class="xdsoft_scroller" style="display: block; height: 10px; margin-top: 0px;"></div></div></div><i></i></div><div class="xdsoft_label xdsoft_year"><span>2015</span><div class="xdsoft_select xdsoft_yearselect xdsoft_scroller_box"><div style="margin-top: 0px;"><div class="xdsoft_option " data-value="1950">1950</div><div class="xdsoft_option " data-value="1951">1951</div><div class="xdsoft_option " data-value="1952">1952</div><div class="xdsoft_option " data-value="1953">1953</div><div class="xdsoft_option " data-value="1954">1954</div><div class="xdsoft_option " data-value="1955">1955</div><div class="xdsoft_option " data-value="1956">1956</div><div class="xdsoft_option " data-value="1957">1957</div><div class="xdsoft_option " data-value="1958">1958</div><div class="xdsoft_option " data-value="1959">1959</div><div class="xdsoft_option " data-value="1960">1960</div><div class="xdsoft_option " data-value="1961">1961</div><div class="xdsoft_option " data-value="1962">1962</div><div class="xdsoft_option " data-value="1963">1963</div><div class="xdsoft_option " data-value="1964">1964</div><div class="xdsoft_option " data-value="1965">1965</div><div class="xdsoft_option " data-value="1966">1966</div><div class="xdsoft_option " data-value="1967">1967</div><div class="xdsoft_option " data-value="1968">1968</div><div class="xdsoft_option " data-value="1969">1969</div><div class="xdsoft_option " data-value="1970">1970</div><div class="xdsoft_option " data-value="1971">1971</div><div class="xdsoft_option " data-value="1972">1972</div><div class="xdsoft_option " data-value="1973">1973</div><div class="xdsoft_option " data-value="1974">1974</div><div class="xdsoft_option " data-value="1975">1975</div><div class="xdsoft_option " data-value="1976">1976</div><div class="xdsoft_option " data-value="1977">1977</div><div class="xdsoft_option " data-value="1978">1978</div><div class="xdsoft_option " data-value="1979">1979</div><div class="xdsoft_option " data-value="1980">1980</div><div class="xdsoft_option " data-value="1981">1981</div><div class="xdsoft_option " data-value="1982">1982</div><div class="xdsoft_option " data-value="1983">1983</div><div class="xdsoft_option " data-value="1984">1984</div><div class="xdsoft_option " data-value="1985">1985</div><div class="xdsoft_option " data-value="1986">1986</div><div class="xdsoft_option " data-value="1987">1987</div><div class="xdsoft_option " data-value="1988">1988</div><div class="xdsoft_option " data-value="1989">1989</div><div class="xdsoft_option " data-value="1990">1990</div><div class="xdsoft_option " data-value="1991">1991</div><div class="xdsoft_option " data-value="1992">1992</div><div class="xdsoft_option " data-value="1993">1993</div><div class="xdsoft_option " data-value="1994">1994</div><div class="xdsoft_option " data-value="1995">1995</div><div class="xdsoft_option " data-value="1996">1996</div><div class="xdsoft_option " data-value="1997">1997</div><div class="xdsoft_option " data-value="1998">1998</div><div class="xdsoft_option " data-value="1999">1999</div><div class="xdsoft_option " data-value="2000">2000</div><div class="xdsoft_option " data-value="2001">2001</div><div class="xdsoft_option " data-value="2002">2002</div><div class="xdsoft_option " data-value="2003">2003</div><div class="xdsoft_option " data-value="2004">2004</div><div class="xdsoft_option " data-value="2005">2005</div><div class="xdsoft_option " data-value="2006">2006</div><div class="xdsoft_option " data-value="2007">2007</div><div class="xdsoft_option " data-value="2008">2008</div><div class="xdsoft_option " data-value="2009">2009</div><div class="xdsoft_option " data-value="2010">2010</div><div class="xdsoft_option " data-value="2011">2011</div><div class="xdsoft_option " data-value="2012">2012</div><div class="xdsoft_option " data-value="2013">2013</div><div class="xdsoft_option " data-value="2014">2014</div><div class="xdsoft_option xdsoft_current" data-value="2015">2015</div><div class="xdsoft_option " data-value="2016">2016</div><div class="xdsoft_option " data-value="2017">2017</div><div class="xdsoft_option " data-value="2018">2018</div><div class="xdsoft_option " data-value="2019">2019</div><div class="xdsoft_option " data-value="2020">2020</div><div class="xdsoft_option " data-value="2021">2021</div><div class="xdsoft_option " data-value="2022">2022</div><div class="xdsoft_option " data-value="2023">2023</div><div class="xdsoft_option " data-value="2024">2024</div><div class="xdsoft_option " data-value="2025">2025</div><div class="xdsoft_option " data-value="2026">2026</div><div class="xdsoft_option " data-value="2027">2027</div><div class="xdsoft_option " data-value="2028">2028</div><div class="xdsoft_option " data-value="2029">2029</div><div class="xdsoft_option " data-value="2030">2030</div><div class="xdsoft_option " data-value="2031">2031</div><div class="xdsoft_option " data-value="2032">2032</div><div class="xdsoft_option " data-value="2033">2033</div><div class="xdsoft_option " data-value="2034">2034</div><div class="xdsoft_option " data-value="2035">2035</div><div class="xdsoft_option " data-value="2036">2036</div><div class="xdsoft_option " data-value="2037">2037</div><div class="xdsoft_option " data-value="2038">2038</div><div class="xdsoft_option " data-value="2039">2039</div><div class="xdsoft_option " data-value="2040">2040</div><div class="xdsoft_option " data-value="2041">2041</div><div class="xdsoft_option " data-value="2042">2042</div><div class="xdsoft_option " data-value="2043">2043</div><div class="xdsoft_option " data-value="2044">2044</div><div class="xdsoft_option " data-value="2045">2045</div><div class="xdsoft_option " data-value="2046">2046</div><div class="xdsoft_option " data-value="2047">2047</div><div class="xdsoft_option " data-value="2048">2048</div><div class="xdsoft_option " data-value="2049">2049</div><div class="xdsoft_option " data-value="2050">2050</div></div><div class="xdsoft_scrollbar"><div class="xdsoft_scroller" style="display: block; height: 10px; margin-top: 0px;"></div></div></div><i></i></div><button type="button" class="xdsoft_next"></button></div><div class="xdsoft_calendar"><table><thead><tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr></thead><tbody><tr><td data-date="1" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week0 xdsoft_date xdsoft_weekend"><div>1</div></td><td data-date="2" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week1 xdsoft_date xdsoft_weekend"><div>2</div></td><td data-date="3" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week2 xdsoft_date xdsoft_weekend"><div>3</div></td><td data-date="4" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week3 xdsoft_date xdsoft_weekend"><div>4</div></td><td data-date="5" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week4 xdsoft_date xdsoft_weekend"><div>5</div></td><td data-date="6" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week5 xdsoft_date xdsoft_weekend"><div>6</div></td><td data-date="7" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week6 xdsoft_date xdsoft_weekend"><div>7</div></td></tr><tr><td data-date="8" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week0 xdsoft_date xdsoft_weekend"><div>8</div></td><td data-date="9" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week1 xdsoft_date xdsoft_weekend"><div>9</div></td><td data-date="10" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week2 xdsoft_date xdsoft_weekend"><div>10</div></td><td data-date="11" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week3 xdsoft_date xdsoft_weekend"><div>11</div></td><td data-date="12" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week4 xdsoft_date xdsoft_weekend"><div>12</div></td><td data-date="13" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week5 xdsoft_date xdsoft_weekend"><div>13</div></td><td data-date="14" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week6 xdsoft_date xdsoft_weekend"><div>14</div></td></tr><tr><td data-date="15" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week0 xdsoft_date xdsoft_weekend"><div>15</div></td><td data-date="16" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week1 xdsoft_date xdsoft_weekend"><div>16</div></td><td data-date="17" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week2 xdsoft_date xdsoft_weekend"><div>17</div></td><td data-date="18" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week3 xdsoft_date xdsoft_weekend"><div>18</div></td><td data-date="19" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week4 xdsoft_date xdsoft_weekend"><div>19</div></td><td data-date="20" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week5 xdsoft_date xdsoft_weekend"><div>20</div></td><td data-date="21" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week6 xdsoft_date xdsoft_weekend"><div>21</div></td></tr><tr><td data-date="22" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week0 xdsoft_date xdsoft_weekend"><div>22</div></td><td data-date="23" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week1 xdsoft_date xdsoft_current xdsoft_weekend"><div>23</div></td><td data-date="24" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week2 xdsoft_date xdsoft_weekend"><div>24</div></td><td data-date="25" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week3 xdsoft_date xdsoft_weekend"><div>25</div></td><td data-date="26" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week4 xdsoft_date xdsoft_weekend"><div>26</div></td><td data-date="27" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week5 xdsoft_date xdsoft_weekend"><div>27</div></td><td data-date="28" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week6 xdsoft_date xdsoft_weekend"><div>28</div></td></tr><tr><td data-date="29" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week0 xdsoft_date xdsoft_weekend"><div>29</div></td><td data-date="30" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week1 xdsoft_date xdsoft_weekend"><div>30</div></td><td data-date="31" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week2 xdsoft_date xdsoft_weekend"><div>31</div></td><td data-date="1" data-month="3" data-year="2015" class="xdsoft_date xdsoft_day_of_week3 xdsoft_date xdsoft_other_month xdsoft_weekend"><div>1</div></td><td data-date="2" data-month="3" data-year="2015" class="xdsoft_date xdsoft_day_of_week4 xdsoft_date xdsoft_other_month xdsoft_weekend"><div>2</div></td><td data-date="3" data-month="3" data-year="2015" class="xdsoft_date xdsoft_day_of_week5 xdsoft_date xdsoft_other_month xdsoft_weekend"><div>3</div></td><td data-date="4" data-month="3" data-year="2015" class="xdsoft_date xdsoft_day_of_week6 xdsoft_date xdsoft_other_month xdsoft_weekend"><div>4</div></td></tr></tbody></table></div></div><div class="xdsoft_timepicker active"><button type="button" class="xdsoft_prev"></button><div class="xdsoft_time_box xdsoft_scroller_box"><div class="xdsoft_time_variant" style="margin-top: 0px;"><div class="xdsoft_time " data-hour="0" data-minute="0">00:00</div><div class="xdsoft_time " data-hour="1" data-minute="0">01:00</div><div class="xdsoft_time " data-hour="2" data-minute="0">02:00</div><div class="xdsoft_time xdsoft_current" data-hour="3" data-minute="0">03:00</div><div class="xdsoft_time " data-hour="4" data-minute="0">04:00</div><div class="xdsoft_time " data-hour="5" data-minute="0">05:00</div><div class="xdsoft_time " data-hour="6" data-minute="0">06:00</div><div class="xdsoft_time " data-hour="7" data-minute="0">07:00</div><div class="xdsoft_time " data-hour="8" data-minute="0">08:00</div><div class="xdsoft_time " data-hour="9" data-minute="0">09:00</div><div class="xdsoft_time " data-hour="10" data-minute="0">10:00</div><div class="xdsoft_time " data-hour="11" data-minute="0">11:00</div><div class="xdsoft_time " data-hour="12" data-minute="0">12:00</div><div class="xdsoft_time " data-hour="13" data-minute="0">13:00</div><div class="xdsoft_time " data-hour="14" data-minute="0">14:00</div><div class="xdsoft_time " data-hour="15" data-minute="0">15:00</div><div class="xdsoft_time " data-hour="16" data-minute="0">16:00</div><div class="xdsoft_time " data-hour="17" data-minute="0">17:00</div><div class="xdsoft_time " data-hour="18" data-minute="0">18:00</div><div class="xdsoft_time " data-hour="19" data-minute="0">19:00</div><div class="xdsoft_time " data-hour="20" data-minute="0">20:00</div><div class="xdsoft_time " data-hour="21" data-minute="0">21:00</div><div class="xdsoft_time " data-hour="22" data-minute="0">22:00</div><div class="xdsoft_time " data-hour="23" data-minute="0">23:00</div></div><div class="xdsoft_scrollbar"><div class="xdsoft_scroller" style="display: block; height: 10px; margin-top: 0px;"></div></div></div><button type="button" class="xdsoft_next"></button></div></div><div class="xdsoft_datetimepicker xdsoft_ xdsoft_noselect "><div class="xdsoft_datepicker active"><div class="xdsoft_mounthpicker"><button type="button" class="xdsoft_prev"></button><button type="button" class="xdsoft_today_button" style="visibility: visible;"></button><div class="xdsoft_label xdsoft_month"><span>March</span><div class="xdsoft_select xdsoft_monthselect xdsoft_scroller_box"><div style="margin-top: 0px;"><div class="xdsoft_option " data-value="0">January</div><div class="xdsoft_option " data-value="1">February</div><div class="xdsoft_option xdsoft_current" data-value="2">March</div><div class="xdsoft_option " data-value="3">April</div><div class="xdsoft_option " data-value="4">May</div><div class="xdsoft_option " data-value="5">June</div><div class="xdsoft_option " data-value="6">July</div><div class="xdsoft_option " data-value="7">August</div><div class="xdsoft_option " data-value="8">September</div><div class="xdsoft_option " data-value="9">October</div><div class="xdsoft_option " data-value="10">November</div><div class="xdsoft_option " data-value="11">December</div></div><div class="xdsoft_scrollbar"><div class="xdsoft_scroller" style="display: block; height: 10px; margin-top: 0px;"></div></div></div><i></i></div><div class="xdsoft_label xdsoft_year"><span>2015</span><div class="xdsoft_select xdsoft_yearselect xdsoft_scroller_box"><div style="margin-top: 0px;"><div class="xdsoft_option " data-value="1950">1950</div><div class="xdsoft_option " data-value="1951">1951</div><div class="xdsoft_option " data-value="1952">1952</div><div class="xdsoft_option " data-value="1953">1953</div><div class="xdsoft_option " data-value="1954">1954</div><div class="xdsoft_option " data-value="1955">1955</div><div class="xdsoft_option " data-value="1956">1956</div><div class="xdsoft_option " data-value="1957">1957</div><div class="xdsoft_option " data-value="1958">1958</div><div class="xdsoft_option " data-value="1959">1959</div><div class="xdsoft_option " data-value="1960">1960</div><div class="xdsoft_option " data-value="1961">1961</div><div class="xdsoft_option " data-value="1962">1962</div><div class="xdsoft_option " data-value="1963">1963</div><div class="xdsoft_option " data-value="1964">1964</div><div class="xdsoft_option " data-value="1965">1965</div><div class="xdsoft_option " data-value="1966">1966</div><div class="xdsoft_option " data-value="1967">1967</div><div class="xdsoft_option " data-value="1968">1968</div><div class="xdsoft_option " data-value="1969">1969</div><div class="xdsoft_option " data-value="1970">1970</div><div class="xdsoft_option " data-value="1971">1971</div><div class="xdsoft_option " data-value="1972">1972</div><div class="xdsoft_option " data-value="1973">1973</div><div class="xdsoft_option " data-value="1974">1974</div><div class="xdsoft_option " data-value="1975">1975</div><div class="xdsoft_option " data-value="1976">1976</div><div class="xdsoft_option " data-value="1977">1977</div><div class="xdsoft_option " data-value="1978">1978</div><div class="xdsoft_option " data-value="1979">1979</div><div class="xdsoft_option " data-value="1980">1980</div><div class="xdsoft_option " data-value="1981">1981</div><div class="xdsoft_option " data-value="1982">1982</div><div class="xdsoft_option " data-value="1983">1983</div><div class="xdsoft_option " data-value="1984">1984</div><div class="xdsoft_option " data-value="1985">1985</div><div class="xdsoft_option " data-value="1986">1986</div><div class="xdsoft_option " data-value="1987">1987</div><div class="xdsoft_option " data-value="1988">1988</div><div class="xdsoft_option " data-value="1989">1989</div><div class="xdsoft_option " data-value="1990">1990</div><div class="xdsoft_option " data-value="1991">1991</div><div class="xdsoft_option " data-value="1992">1992</div><div class="xdsoft_option " data-value="1993">1993</div><div class="xdsoft_option " data-value="1994">1994</div><div class="xdsoft_option " data-value="1995">1995</div><div class="xdsoft_option " data-value="1996">1996</div><div class="xdsoft_option " data-value="1997">1997</div><div class="xdsoft_option " data-value="1998">1998</div><div class="xdsoft_option " data-value="1999">1999</div><div class="xdsoft_option " data-value="2000">2000</div><div class="xdsoft_option " data-value="2001">2001</div><div class="xdsoft_option " data-value="2002">2002</div><div class="xdsoft_option " data-value="2003">2003</div><div class="xdsoft_option " data-value="2004">2004</div><div class="xdsoft_option " data-value="2005">2005</div><div class="xdsoft_option " data-value="2006">2006</div><div class="xdsoft_option " data-value="2007">2007</div><div class="xdsoft_option " data-value="2008">2008</div><div class="xdsoft_option " data-value="2009">2009</div><div class="xdsoft_option " data-value="2010">2010</div><div class="xdsoft_option " data-value="2011">2011</div><div class="xdsoft_option " data-value="2012">2012</div><div class="xdsoft_option " data-value="2013">2013</div><div class="xdsoft_option " data-value="2014">2014</div><div class="xdsoft_option xdsoft_current" data-value="2015">2015</div><div class="xdsoft_option " data-value="2016">2016</div><div class="xdsoft_option " data-value="2017">2017</div><div class="xdsoft_option " data-value="2018">2018</div><div class="xdsoft_option " data-value="2019">2019</div><div class="xdsoft_option " data-value="2020">2020</div><div class="xdsoft_option " data-value="2021">2021</div><div class="xdsoft_option " data-value="2022">2022</div><div class="xdsoft_option " data-value="2023">2023</div><div class="xdsoft_option " data-value="2024">2024</div><div class="xdsoft_option " data-value="2025">2025</div><div class="xdsoft_option " data-value="2026">2026</div><div class="xdsoft_option " data-value="2027">2027</div><div class="xdsoft_option " data-value="2028">2028</div><div class="xdsoft_option " data-value="2029">2029</div><div class="xdsoft_option " data-value="2030">2030</div><div class="xdsoft_option " data-value="2031">2031</div><div class="xdsoft_option " data-value="2032">2032</div><div class="xdsoft_option " data-value="2033">2033</div><div class="xdsoft_option " data-value="2034">2034</div><div class="xdsoft_option " data-value="2035">2035</div><div class="xdsoft_option " data-value="2036">2036</div><div class="xdsoft_option " data-value="2037">2037</div><div class="xdsoft_option " data-value="2038">2038</div><div class="xdsoft_option " data-value="2039">2039</div><div class="xdsoft_option " data-value="2040">2040</div><div class="xdsoft_option " data-value="2041">2041</div><div class="xdsoft_option " data-value="2042">2042</div><div class="xdsoft_option " data-value="2043">2043</div><div class="xdsoft_option " data-value="2044">2044</div><div class="xdsoft_option " data-value="2045">2045</div><div class="xdsoft_option " data-value="2046">2046</div><div class="xdsoft_option " data-value="2047">2047</div><div class="xdsoft_option " data-value="2048">2048</div><div class="xdsoft_option " data-value="2049">2049</div><div class="xdsoft_option " data-value="2050">2050</div></div><div class="xdsoft_scrollbar"><div class="xdsoft_scroller" style="display: block; height: 10px; margin-top: 0px;"></div></div></div><i></i></div><button type="button" class="xdsoft_next"></button></div><div class="xdsoft_calendar"><table><thead><tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr></thead><tbody><tr><td data-date="1" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week0 xdsoft_date xdsoft_weekend"><div>1</div></td><td data-date="2" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week1 xdsoft_date xdsoft_weekend"><div>2</div></td><td data-date="3" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week2 xdsoft_date xdsoft_weekend"><div>3</div></td><td data-date="4" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week3 xdsoft_date xdsoft_weekend"><div>4</div></td><td data-date="5" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week4 xdsoft_date xdsoft_weekend"><div>5</div></td><td data-date="6" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week5 xdsoft_date xdsoft_weekend"><div>6</div></td><td data-date="7" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week6 xdsoft_date xdsoft_weekend"><div>7</div></td></tr><tr><td data-date="8" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week0 xdsoft_date xdsoft_weekend"><div>8</div></td><td data-date="9" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week1 xdsoft_date xdsoft_weekend"><div>9</div></td><td data-date="10" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week2 xdsoft_date xdsoft_weekend"><div>10</div></td><td data-date="11" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week3 xdsoft_date xdsoft_weekend"><div>11</div></td><td data-date="12" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week4 xdsoft_date xdsoft_weekend"><div>12</div></td><td data-date="13" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week5 xdsoft_date xdsoft_weekend"><div>13</div></td><td data-date="14" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week6 xdsoft_date xdsoft_weekend"><div>14</div></td></tr><tr><td data-date="15" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week0 xdsoft_date xdsoft_weekend"><div>15</div></td><td data-date="16" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week1 xdsoft_date xdsoft_weekend"><div>16</div></td><td data-date="17" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week2 xdsoft_date xdsoft_weekend"><div>17</div></td><td data-date="18" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week3 xdsoft_date xdsoft_weekend"><div>18</div></td><td data-date="19" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week4 xdsoft_date xdsoft_weekend"><div>19</div></td><td data-date="20" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week5 xdsoft_date xdsoft_weekend"><div>20</div></td><td data-date="21" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week6 xdsoft_date xdsoft_weekend"><div>21</div></td></tr><tr><td data-date="22" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week0 xdsoft_date xdsoft_weekend"><div>22</div></td><td data-date="23" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week1 xdsoft_date xdsoft_weekend"><div>23</div></td><td data-date="24" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week2 xdsoft_date xdsoft_weekend"><div>24</div></td><td data-date="25" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week3 xdsoft_date xdsoft_weekend"><div>25</div></td><td data-date="26" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week4 xdsoft_date xdsoft_weekend"><div>26</div></td><td data-date="27" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week5 xdsoft_date xdsoft_weekend"><div>27</div></td><td data-date="28" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week6 xdsoft_date xdsoft_weekend"><div>28</div></td></tr><tr><td data-date="29" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week0 xdsoft_date xdsoft_weekend"><div>29</div></td><td data-date="30" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week1 xdsoft_date xdsoft_current xdsoft_weekend"><div>30</div></td><td data-date="31" data-month="2" data-year="2015" class="xdsoft_date xdsoft_day_of_week2 xdsoft_date xdsoft_weekend"><div>31</div></td><td data-date="1" data-month="3" data-year="2015" class="xdsoft_date xdsoft_day_of_week3 xdsoft_date xdsoft_other_month xdsoft_weekend"><div>1</div></td><td data-date="2" data-month="3" data-year="2015" class="xdsoft_date xdsoft_day_of_week4 xdsoft_date xdsoft_other_month xdsoft_weekend"><div>2</div></td><td data-date="3" data-month="3" data-year="2015" class="xdsoft_date xdsoft_day_of_week5 xdsoft_date xdsoft_other_month xdsoft_weekend"><div>3</div></td><td data-date="4" data-month="3" data-year="2015" class="xdsoft_date xdsoft_day_of_week6 xdsoft_date xdsoft_other_month xdsoft_weekend"><div>4</div></td></tr></tbody></table></div></div><div class="xdsoft_timepicker active"><button type="button" class="xdsoft_prev"></button><div class="xdsoft_time_box xdsoft_scroller_box"><div class="xdsoft_time_variant" style="margin-top: 0px;"><div class="xdsoft_time " data-hour="0" data-minute="0">00:00</div><div class="xdsoft_time " data-hour="1" data-minute="0">01:00</div><div class="xdsoft_time " data-hour="2" data-minute="0">02:00</div><div class="xdsoft_time xdsoft_current" data-hour="3" data-minute="0">03:00</div><div class="xdsoft_time " data-hour="4" data-minute="0">04:00</div><div class="xdsoft_time " data-hour="5" data-minute="0">05:00</div><div class="xdsoft_time " data-hour="6" data-minute="0">06:00</div><div class="xdsoft_time " data-hour="7" data-minute="0">07:00</div><div class="xdsoft_time " data-hour="8" data-minute="0">08:00</div><div class="xdsoft_time " data-hour="9" data-minute="0">09:00</div><div class="xdsoft_time " data-hour="10" data-minute="0">10:00</div><div class="xdsoft_time " data-hour="11" data-minute="0">11:00</div><div class="xdsoft_time " data-hour="12" data-minute="0">12:00</div><div class="xdsoft_time " data-hour="13" data-minute="0">13:00</div><div class="xdsoft_time " data-hour="14" data-minute="0">14:00</div><div class="xdsoft_time " data-hour="15" data-minute="0">15:00</div><div class="xdsoft_time " data-hour="16" data-minute="0">16:00</div><div class="xdsoft_time " data-hour="17" data-minute="0">17:00</div><div class="xdsoft_time " data-hour="18" data-minute="0">18:00</div><div class="xdsoft_time " data-hour="19" data-minute="0">19:00</div><div class="xdsoft_time " data-hour="20" data-minute="0">20:00</div><div class="xdsoft_time " data-hour="21" data-minute="0">21:00</div><div class="xdsoft_time " data-hour="22" data-minute="0">22:00</div><div class="xdsoft_time " data-hour="23" data-minute="0">23:00</div></div><div class="xdsoft_scrollbar"><div class="xdsoft_scroller" style="display: block; height: 10px; margin-top: 0px;"></div></div></div><button type="button" class="xdsoft_next"></button></div></div></body></html>

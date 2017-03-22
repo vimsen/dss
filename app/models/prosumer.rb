@@ -6,6 +6,7 @@ class Prosumer < ActiveRecord::Base
   has_many :data_points, dependent: :delete_all
   has_many :day_aheads, dependent: :destroy
   has_many :meters, dependent: :destroy
+  has_many :forecasts, dependent: :destroy
 
   belongs_to :cluster
   belongs_to :building_type
@@ -30,32 +31,57 @@ class Prosumer < ActiveRecord::Base
   scope :real_time, -> { joins(:prosumer_category).where("prosumer_categories.real_time": true) }
   scope :category, ->(cat) { where(prosumer_category: cat) if cat.present? }
   scope :with_locations, -> { where("location_x IS NOT NULL and location_y IS NOT NULL") }
-  scope :with_positive_dr, ->(time_range) { select { |p| p.max_dr(time_range) && p.max_dr(time_range) > 0 } }
-  scope :with_dr, ->(time_range) { select { |p| p.max_dr(time_range) } }
+  scope :with_positive_dr, ->(time_range) { joins(:data_points).where('data_points.timestamp': time_range, 'data_points.interval_id': 2).group('prosumers.id').having('max(data_points.dr) > 0') }
+  scope :with_dr, ->(time_range) { joins(:data_points).where('data_points.timestamp': time_range, 'data_points.interval_id': 2).group('prosumers.id').having('max(data_points.dr) IS NOT NULL') }
+  scope :avg_dr_all, ->(time_range) { joins(:data_points).where('data_points.timestamp': time_range, 'data_points.interval_id': 2).where('data_points.dr IS NOT NULL AND data_points.dr > 0').group('prosumers.id').average(:'data_points.dr') }
 
-  def request_cached(interval, startdate, enddate, channel)
+  def request_cached(interval, startdate, enddate, channel, forecasts: "edms")
 
     gaps = true
     result = []
     ActiveRecord::Base.connection_pool.with_connection do
+      return {data_points: [], fms: []} if ((enddate - startdate)  * 24 * 60 * 60).to_f / Interval.find(interval).duration > 1000
       dps = self.data_points.where(timestamp: startdate..enddate, interval: interval).order(timestamp: :asc)
-      result = dps.map { |dp| dp.clientFormat }
-      gaps = find_gaps(dps, startdate, enddate, Interval.find(interval).duration)
+      result = {
+          data_points: dps.map { |dp| dp.clientFormat },
+          fms: new_forecast(interval, startdate, enddate)
+      }
+      # gaps = find_gaps(dps, startdate, enddate, Interval.find(interval).duration)
     end
     
     # if gaps    # Download anyway, we may have an extra datapoint due to forecasts
-    FetchAsynch::DownloadAndPublish.new([self], interval, startdate, enddate, channel, false, false)
+    FetchAsynch::DownloadAndPublish.new prosumers: [self],
+                                        interval: interval,
+                                        startdate: startdate,
+                                        enddate: enddate,
+                                        channel: channel,
+                                        async: false,
+                                        forecasts: forecasts
     # end
     
     return result      
   end
-  
+
+  def new_forecast(interval, startdate, enddate)
+    fms = self.forecasts.day_ahead.where(timestamp: startdate..enddate, interval: interval).order(timestamp: :asc)
+    fms.count > 0 ? {
+        "#{name} prosumption forecast": fms.map{|t| [t.timestamp.to_i , [t.timestamp.to_i * 1000, (t.consumption||0) - (t.production||0)]] }.to_h,
+        "#{name} production forecast": fms.map{|t| [t.timestamp.to_i , [t.timestamp.to_i * 1000, t.production]] }.to_h,
+        "#{name} consumption forecast": fms.map{|t| [t.timestamp.to_i, [t.timestamp.to_i * 1000, t.consumption]] }.to_h,
+        "#{name} storage forecast": fms.map{|t| [t.timestamp.to_i , [t.timestamp.to_i * 1000, t.storage]] }.to_h
+    } : {}
+  end
+
   def has_location
     ! (location_x.nil? || location_y.nil?)
   end
 
   def max_dr(time_range)
-    self.data_points.where(timestamp: time_range).empty? ? nil : self.data_points.where(timestamp: time_range).maximum(:dr)
+    self.data_points.where(timestamp: time_range).empty? ? nil : self.data_points.where(timestamp: time_range, interval: 2).maximum(:dr)
   end
-  
+
+  def avg_dr(time_range)
+    self.data_points.where(timestamp: time_range).empty? ? nil : self.data_points.where(timestamp: time_range, interval: 2).where('dr IS NOT NULL AND dr > 0').average(:dr)
+  end
+
 end

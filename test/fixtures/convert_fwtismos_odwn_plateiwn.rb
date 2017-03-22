@@ -4,7 +4,7 @@ require 'csv'
 require 'time'
 require 'active_support/all'
 
-csv1 = CSV.open("fwtismos_odwn_plateiwn.csv", col_sep: ";", headers: true, encoding: "ISO8859-7")
+csv1 = CSV.open("fwtismos_odwn_plateiwn.csv", col_sep: ";", headers: true)
 
 time = DateTime.parse("2015-01-01T00:15:00+02:00")
 
@@ -33,6 +33,6 @@ end
 
 CSV.open("prosumers_fwtismos_odwn_plateiwn.sql", "wb", col_sep: "\t") do |csv_out|
   prosumers.each do |id, location|
-    csv_out << [id, id + 100000, "fwtismos_odwn_plateiwn_#{id}", location]
+    csv_out << [id, id, "HEDNO_fwtismos_odwn_plateiwn_#{id}", location, 104]
   end
 end

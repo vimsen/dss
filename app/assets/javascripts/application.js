@@ -14,7 +14,6 @@
 //= require jquery_ujs
 //= require bootstrap.min
 //= require bootstrap-table
-//= require turbolinks
 //= require sb-admin-2
 //=	require jquery-migrate-1.0.0
 //= require plugins/EventSourcePolyfil/EventSource
@@ -35,7 +34,5 @@
 //= require plugins/dynatable/jquery.dynatable
 //= require jquery.datetimepicker
 //= require underscore
-//= require gmaps/google
-//= require markerclusterer
 //= require_tree .
 

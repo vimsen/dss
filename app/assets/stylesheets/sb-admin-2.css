@@ -389,3 +389,7 @@ table.dataTable thead .sorting:after {
 .devise-spacer{
 	margin-bottom:5px;
 }
+
+.table-responsive {
+    overflow-x: scroll;
+}

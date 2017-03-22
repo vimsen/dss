@@ -125,7 +125,7 @@ class ProsumersController < ApplicationController
   end
 
   def sort_column
-    if (Prosumer.column_names + ['clusters.name', 'building_types.name', 'connection_types.name']
+    if (Prosumer.column_names + ['clusters.name', 'building_types.name', 'connection_types.name', 'feeder_id']
     ).include?(params[:sort])
       params[:sort]
     else

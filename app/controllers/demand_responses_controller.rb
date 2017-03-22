@@ -6,7 +6,7 @@ class DemandResponsesController < ApplicationController
   # GET /demand_responses
   # GET /demand_responses.json
   def index
-    @demand_responses = DemandResponse.order(plan_id: :desc).paginate(page: params[:page])
+    @demand_responses = DemandResponse.order(id: :desc).paginate(page: params[:page])
   end
 
   # GET /demand_responses/1
@@ -78,6 +78,6 @@ class DemandResponsesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def demand_response_params
-      params.require(:demand_response).permit(:interval_id, :issuer, :feeder_id,  dr_targets_attributes: [:id, :volume, :timestamp])
+      params.require(:demand_response).permit(:interval_id, :issuer, :feeder_id, :prosumer_category_id, :event_type, dr_targets_attributes: [:id, :volume, :timestamp])
     end
 end

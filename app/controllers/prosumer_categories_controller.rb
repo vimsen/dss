@@ -56,6 +56,10 @@ class ProsumerCategoriesController < ApplicationController
   # DELETE /prosumer_categories/1
   # DELETE /prosumer_categories/1.json
   def destroy
+    @prosumer_category.prosumers.each do |p|
+      p.prosumer_category = nil
+      p.save
+    end
     @prosumer_category.destroy
     respond_to do |format|
       format.html { redirect_to prosumer_categories_url, notice: 'Prosumer category was successfully destroyed.' }

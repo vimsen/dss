@@ -8,12 +8,13 @@ module ClusteringModule
     attr_accessor :prosumers
 
     def initialize(prosumers: Prosumer.all,
-                   startDate: Time.now - 1.day,
-                   endDate: Time.now,
+                   startDate: DateTime.now - 1.day,
+                   endDate: DateTime.now,
                    interval: 1.hour,
                    targets: 25.times.map {|ts| 0},
                    rb_channel: nil,
-                   prosumption_vector: nil
+                   prosumption_vector: nil,
+                   download: :missing
       )
 
       method(__method__).parameters.each do |type, k|
@@ -26,6 +27,9 @@ module ClusteringModule
 
       raise "Wrong targets size. targets: #{@targets.length }, time: #{timestamps.length}" if @targets.length != timestamps.length
 
+      if @prosumption_vector == :flex
+        @prosumption_vector = availability
+      end
       @prosumption_vector ||= real_prosumption
 
       @prosumers = reject_zeros(@prosumers, @prosumption_vector)
@@ -96,6 +100,19 @@ module ClusteringModule
     end
 
     def real_prosumption
+
+      if @download
+        FetchAsynch::DownloadAndPublish.new prosumers: @prosumers,
+                                            interval: Interval.find_by(duration: @interval).id,
+                                            startdate: @startDate,
+                                            enddate: @endDate + @interval.seconds,
+                                            channel: @rb_channel,
+                                            async: true,
+                                            forecasts: "none",
+                                            only_missing: @download == :missing
+
+      end
+
       result = Hash[@prosumers.map {|p| [p.id, timestamps.map{|ts| 0}]}]
 
       timestamps.map do |ts|
@@ -104,6 +121,35 @@ module ClusteringModule
                         timestamp: ts).select(:prosumer_id, 'COALESCE(consumption,0) - COALESCE(production,0) as prosumption')
             .map do |dp|
           result[dp.prosumer_id][timestamps.index(ts)] = dp[:prosumption]
+
+          [dp.prosumer_id, dp[:prosumption]]
+        end
+      end
+      result
+    end
+
+    def availability
+
+      if @download
+        FetchAsynch::DownloadAndPublish.new prosumers: @prosumers,
+                                            interval: Interval.find_by(duration: @interval).id,
+                                            startdate: @startDate,
+                                            enddate: @endDate + @interval.seconds,
+                                            channel: @rb_channel,
+                                            async: true,
+                                            forecasts: "none",
+                                            only_missing: @download == :missing
+
+      end
+
+      result = Hash[@prosumers.map {|p| [p.id, timestamps.map{|ts| 0}]}]
+
+      timestamps.map do |ts|
+        DataPoint.where(prosumer: @prosumers,
+                        interval: Interval.find_by(duration: @interval),
+                        timestamp: ts).select(:prosumer_id, 'COALESCE(dr,0) * COALESCE(consumption,0) as flexibility')
+            .map do |dp|
+          result[dp.prosumer_id][timestamps.index(ts)] = dp[:flexibility]
 
           [dp.prosumer_id, dp[:prosumption]]
         end

@@ -14,14 +14,47 @@
       </div><!-- /.panel-heading -->
       <div class="panel-body">
 
-        <form action="#" id="maxvalueform">
-          <label>Graph scale</label>
-          <input type="text" name="max" value="100" id="maxvalue"/>
-        </form>
-
-        <form action="#" id="targetvalueform">
-          <label>Target value</label>
-          <input type="text" name="target" value="50" id="targetvalue"/>
+        <form action="#" id="plot_params" class="form-inline">
+          <div class="form-group form-group-sm">
+            <label for="maxvalue">Graph max</label>
+            <input type="text" name="max" value="100" class="form-control input-sm" id="maxvalue" size="6">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="minvalue">Graph min</label>
+            <input type="text" name="min" value="-100" class="form-control input-sm" id="minvalue" size="6">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="targetvalue">Target value</label>
+            <input type="text" name="target" value="50" class="form-control input-sm" id="targetvalue" size="6">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="startdatevalue">Start date</label>
+            <input type="text" name="startdate" value="<%= @startDate.strftime("%Y/%m/%d %H:00") -%>" class="form-control input-sm" id="startdatevalue" size="17">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="enddatevalue">End date</label>
+            <input type="text" name="enddate" value="<%= @endDate.strftime("%Y/%m/%d %H:00") -%>" class="form-control input-sm" id="enddatevalue" size="17">
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="interval_interval_id">Interval</label>
+            <%= collection_select(:interval, :interval_id,
+                                  Interval.all.order("duration asc"), :duration, :name,
+                                  {include_blank: false, :selected => @interval}, class: :'form-control input-sm') %>
+          </div>
+          <div class="form-group form-group-sm">
+            <label for="prosumer_category_prosumer_category_id">Prosumer category</label>
+            <%= collection_select(:prosumer_category, :prosumer_category_id,
+                                  ProsumerCategory.all.order("id asc"), :id, :name,
+                                  {include_blank: false, :selected => @prosumer_category}, class: :'form-control input-sm') %>
+          </div>
+          <div class="form-group form-groum-sm">
+            <label for="download">Download datapoints</label>
+            <%= select_tag(:download, options_for_select(["missing", "all", "none"]), class: :'form-control input-sm') %>
+          </div>
+          <br>
+          <div class="form-group form-group-sm">
+            <input type="submit" value="update graph" class="form-control input-sm">
+          </div>
         </form>
 
         <form action="#" id="startdateform">
@@ -41,7 +74,7 @@
 
         <div id="placeholder" style="width:600px;height:300px"></div>
 
-        <hr/>
+        <hr>
         <div id="prosumer_results"></div>
 
       </div> <!-- /.panel-body -->
@@ -56,8 +89,8 @@
         Run matching algorithm
       </div>
       <div class="panel-body">
-        <form action="#" id="run_algorithm">
-          <input type="submit" value="Run Algorithm"/>
+        <form action="#" id="run_algorithm" class="form-inline">
+          <input type="submit" value="Run Algorithm" class="btn btn-primary">
         </form>
         <div id="progress" class="terminal">
 
@@ -94,7 +127,7 @@
       },
       tooltip: true,
       tooltipOpts: {
-        content: "'%s'<br/>%x<br/>%y.2",
+        content: "'%s'<br>%x<br>%y.2",
         shifts: {
           x: -60,
           y: 25
@@ -102,7 +135,7 @@
       },
       xaxis: {
         mode: "time",
-        timeformat: "%d/%m/%Y<br/>%h:%M:%S",
+        timeformat: "%d/%m/%Y<br>%h:%M:%S",
         timezone: "browser",
         ticks: 2 /*,
          timeformat : "%y/%m/%d-%h:%M:%S",
@@ -110,7 +143,7 @@
       },
       yaxis: {
         tickDecimals: 0,
-        min: 0,
+        min: $("#minvalue").val(),
         max: $("#maxvalue").val()
       },
       legend:{
@@ -126,18 +159,27 @@
         plot = $.plot($("#placeholder"), data, options);
     });
 
-    $("#maxvalueform").submit(function () {
-      options.yaxis.max = $("#maxvalue").val();
-      plot = $.plot($("#placeholder"), data, options);
-      return false;
-    });
 
-    $("#targetvalueform").submit(function () {
+    $("#plot_params").submit(function (){
+      options.yaxis.max = $("#maxvalue").val();
+      options.yaxis.min = $("#minvalue").val();
       var target = parseFloat($("#targetvalue").val());
-      for (var i = 0; i < data[0].data.length; i++) {
-        data[0].data[i][1] = target;
+
+      var start_timestamp = (new Date($("#startdatevalue").val()).getTime());
+      var end_timestamp = (new Date($("#enddatevalue").val()).getTime());
+      var duration = 1000 * parseInt($("#interval_interval_id").val());
+
+      data = [ {
+        data: [],
+        label: "Targets",
+        editable: true
+      }];
+      for (var i = 0; i <= (end_timestamp - start_timestamp) / duration; i++) {
+        data[0].data[i] = [start_timestamp + i * duration, target];
       }
       plot = $.plot($("#placeholder"), data, options);
+      $("#progress").empty();
+      $("#prosumer_results").empty();
       return false;
     });
 
@@ -150,10 +192,12 @@
       $("#run_algorithm :input").prop("disabled", true);
 
       var params = {
-        startDate: "<%= @startDate -%>",
-        endDate: "<%= @endDate -%>",
-        interval: "<%= @interval -%>",
-        targets: JSON.stringify(data[0].data)
+        startDate: new Date($("#startdatevalue").val()),
+        endDate: new Date($("#enddatevalue").val()),
+        interval: $("#interval_interval_id").val(),
+        targets: JSON.stringify(data[0].data),
+        prosumer_category_id: $("#prosumer_category_prosumer_category_id").val(),
+        download: $("#download").val()
       }
 
      // alert("/stream/run_algorithm&" + $.param(params));
@@ -163,13 +207,13 @@
       source.addEventListener('output', function(e) {
         //   console.log("Datapoint received ", e);
         var message = JSON.parse(e.data);
-        $("#progress").append("<BR/>" + message).animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
+        $("#progress").append("<BR>" + message).animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
       });
 
       source.addEventListener('result', function(e) {
         var message = JSON.parse(e.data);
         source.close();
-        $("#progress").append("<BR/>" + message).animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
+        $("#progress").append("<BR>" + message).animate({scrollTop: $('#progress').prop("scrollHeight")}, 5);
         $("#run_algorithm :input").prop("disabled", false);
         data[0].editable = true;
         data[1] = {

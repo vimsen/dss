@@ -59,7 +59,7 @@
 
 
 
-@media (min-width: 992px) {
+/*@media (min-width: 992px) {
   .equal > .col-md-6 > .panel > .panel-body {
     height: 270px;
     overflow-y: auto;
@@ -73,10 +73,27 @@
     overflow-y: auto;
 //    min-height: 270px;
   }
+}*/
+
+.equal > .col-lg-6 > .panel > .panel-body {
+  height: 270px;
+  overflow-y: auto;
 }
 
 .terminal {
   font-family: courier;
   overflow: auto;
   max-height:200px;
+}
+
+.my_bar .flot-x-axis .flot-tick-label{
+  word-wrap: break-word;
+  z-index: 40;
+  // padding: 10px 30px;
+  /*-ms-transform:rotate(300deg); !* IE 9 *!
+  -moz-transform:rotate(300deg); !* Firefox *!
+  -webkit-transform:rotate(300deg); !* Safari and Chrome *!
+  -o-transform:rotate(300deg); !* Opera *!
+  line-height: 1.0;*/
+  //text-align: right;
 }

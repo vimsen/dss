@@ -71,6 +71,7 @@ class HomeController < ApplicationController
         end
         
       chartData.push({"data"=>totalconsumption,"label"=>"Total Consumption"},{"data"=>totalproduction,"label"=>"Total Production"})
+      Rails.logger.debug("Chard data is #{chartData}")
       
       render :json => chartData
     end
@@ -81,20 +82,23 @@ class HomeController < ApplicationController
       top5producersNames=Array.new
      
   #  @top5prosumers=DataPoint.joins(:prosumer).order(consumption: :desc).where(timestamp: currentTime.strftime("%Y-%m-%d")).limit(5)
-        @top5prosumers=DataPoint
+        @top5prosumers=DataPoint.order('sum(production) DESC')
                            .joins(:prosumer)
-                           .order(production: :desc)
-                           .where(interval: 3)
+                           .where(interval: 2)
+                           .where(prosumer: Prosumer.category(1))
                            .where("production IS NOT NULL")
-                           .where("timestamp >= ?",Time.zone.now - 1.day).limit(5)
+                           .where(timestamp: Time.zone.now - 1.day .. Time.zone.now)
+                           .group('prosumers.id')
+                           .select('sum(production) as s_production, prosumers.id as id, prosumers.name as name')
+                           .limit(5)
         data = []
         names= []
         i=0
         @top5prosumers.each do |production|
            #data.push([production.prosumer.name, production.consumption])
            i=i+1
-           data.push([i, production.production])
-           names.push([i,production.prosumer.name])
+           data.push([i, production.s_production])
+           names.push([i, view_context.link_to(production.name, prosumer_path(production.id)).html_safe])
         end
       
           chartData.push({"data"=>data,"label"=>"Total Energy Production"},{"names"=>names,"label"=>"Producers Names"})
@@ -108,10 +112,13 @@ class HomeController < ApplicationController
      
         @top5consumers=DataPoint
                            .joins(:prosumer)
-                           .order(consumption: :desc)
-                           .where(interval: 3)
+                           .order('sum(consumption) DESC')
+                           .where(interval: 2)
+                           .where(prosumer: Prosumer.category(1))
                            .where("consumption IS NOT NULL")
-                           .where("timestamp >= ?",Time.zone.now - 1.day)
+                           .where(timestamp: Time.zone.now - 1.day .. Time.zone.now)
+                           .group('prosumers.id')
+                           .select('sum(consumption) as s_consumption, prosumers.id as id, prosumers.name as name')
                            .limit(5)
         data = []
         names= []
@@ -119,8 +126,8 @@ class HomeController < ApplicationController
         @top5consumers.each do |consumption|
            #data.push([production.prosumer.name, production.consumption])
            i=i+1
-           data.push([i, consumption.consumption])
-           names.push([i,consumption.prosumer.name])
+           data.push([i, consumption.s_consumption])
+           names.push([i, view_context.link_to(consumption.name, prosumer_path(consumption.id)).html_safe])
         end
       
           chartData.push({"data"=>data,"label"=>"Total Energy Consumption"},{"names"=>names,"label"=>"Consumers Names"})

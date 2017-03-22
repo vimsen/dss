@@ -8,7 +8,9 @@ class Cluster < ActiveRecord::Base
     return Prosumer.where("cluster_id IS ? OR cluster_id != ?", nil, self.id)
   end
   
-  def request_cached(interval, startdate, enddate, channel)
+  def request_cached(interval, startdate, enddate, channel, forecasts: "edms")
+
+
     result = []
     aggregate = {}
     count = {}
@@ -17,6 +19,7 @@ class Cluster < ActiveRecord::Base
     prosumerlist = []
 
     ActiveRecord::Base.connection_pool.with_connection do
+      return {data_points: [], fms: []} if (self.prosumers.count * (enddate - startdate)  * 24 * 60 * 60).to_f / Interval.find(interval).duration > 1000
       self.prosumers.each do |p|
         dps = p.data_points.where(timestamp: startdate..enddate, interval: interval).order(timestamp: :asc)
 
@@ -50,17 +53,43 @@ class Cluster < ActiveRecord::Base
 
 
       prosumerlist = self.prosumers
-    end
 
-    if (missing_data)
-      FetchAsynch::DownloadAndPublish.new(prosumerlist, interval, startdate, enddate, channel, false, false)
-    end   
-   
-    return result      
+      # if (missing_data)
+        FetchAsynch::DownloadAndPublish.new prosumers: prosumerlist,
+                                            interval: interval,
+                                            startdate: startdate,
+                                            enddate: enddate,
+                                            channel: channel,
+                                            async: false,
+                                            forecasts: forecasts,
+                                            only_missing: true
+      # end
+
+      return {
+          data_points: result,
+          fms: self.prosumers
+                   .map{|p| p.new_forecast(interval, startdate, enddate)}
+                   .reduce(:merge)&.merge(self.new_forecast(interval, startdate, enddate))
+      }
+    end
   end
   
   def get_icon_index
     Cluster.all.index(self)
+  end
+
+  def new_forecast(interval, startdate, enddate)
+    fms_nos = Forecast.day_ahead.where(prosumer: self.prosumers, timestamp: startdate..enddate, interval: interval)
+
+    fms = fms_nos.select('timestamp, sum(production) as s_production, sum(consumption) as s_consumption, sum(storage) as s_storage')
+              .group(:timestamp)
+              .order(timestamp: :asc)
+    fms_nos.count > 0 ? {
+        "Aggregate prosumption forecast": fms.map{|t| [t.timestamp.to_i , [t.timestamp.to_i * 1000, t.s_consumption - t.s_production]] }.to_h,
+        "Aggregate production forecast": fms.map{|t| [t.timestamp.to_i , [t.timestamp.to_i * 1000, t.s_production]] }.to_h,
+        "Aggregate consumption forecast": fms.map{|t| [t.timestamp.to_i, [t.timestamp.to_i * 1000, t.s_consumption]] }.to_h,
+        "Aggregate storage forecast": fms.map{|t| [t.timestamp.to_i , [t.timestamp.to_i * 1000, t.s_storage]] }.to_h
+    } : {}
   end
 
 end

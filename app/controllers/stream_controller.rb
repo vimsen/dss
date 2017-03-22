@@ -41,12 +41,24 @@ class StreamController < ApplicationController
     cluster = Cluster.find(params[:id])
     startdate = ((params[:startdate].nil?) ? (DateTime.now - 7.days) : params[:startdate].to_datetime)
     enddate = (params[:enddate].nil?) ? (DateTime.now) : params[:enddate].to_datetime
-    interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
+    interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval].to_i
     channel = params[:channel]
+    type = (params[:type].nil? ? :prosumption : params[:type])
+    forecast = (params[:forecast].nil? ? :none : params[:forecast])
+
+    if (cluster.prosumers.count * (enddate - startdate)  * 24 * 60 * 60).to_f / Interval.find(interval).duration > 1000
+
+      #  head 403
+      sse.write({error: "Too many datapoints. Select a smaller range"}.to_json, event: 'error_message')
+      return
+    end
 
     session[:startdate] = startdate
     session[:enddate] = enddate
     session[:interval] = interval
+    session[:type] = type
+    session[:forecast] = forecast
+
 
     ActiveRecord::Base.clear_active_connections!
     bunny_channel = $bunny.create_channel
@@ -80,14 +92,17 @@ class StreamController < ApplicationController
       end
     end
 
-    idata = cluster.request_cached(interval, startdate - 1.day, enddate, channel)
-    idata.each do |d|
+    idata = cluster.request_cached(interval, startdate - (forecast == "edms" ? 1.day : 0.day), enddate, channel, forecasts: forecast)
+    idata[:data_points].each do |d|
       sse.write(d.to_json, event: 'datapoint')
     end
+
+    sse.write(idata[:fms].to_json, event: 'fms_data')
+
     ActiveRecord::Base.clear_active_connections!
     sse.write(Market::Calculator.new(prosumers: cluster.prosumers,
-                                     startDate: startdate - 1.day,
-                                     endDate: enddate).calcCosts.to_json,
+                                     startDate: startdate - (forecast == "edms" ? 1.day : 0.day),
+                                     endDate: enddate).calcCosts2.to_json,
               event: 'market')
 
     ActiveRecord::Base.clear_active_connections!
@@ -114,14 +129,29 @@ class StreamController < ApplicationController
     prosumer = Prosumer.find(params[:id])
     startdate = ((params[:startdate].nil?) ? (DateTime.now - 7.days) : params[:startdate].to_datetime)
     enddate = (params[:enddate].nil?) ? (DateTime.now) : params[:enddate].to_datetime
-    interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval]
+    interval = (params[:interval].nil?) ? Interval.find(3).id : params[:interval].to_i
     channel = params[:channel]
+    type = (params[:type].nil? ? :prosumption : params[:type])
+    forecast = (params[:forecast].nil? ? :none : params[:forecast])
 
     puts "Data for #{startdate} .. #{enddate}"
 
-    session[:startdate] = startdate
-    session[:enddate] = enddate
+    if ((enddate - startdate)  * 24 * 60 * 60).to_f / Interval.find(interval).duration > 1000
+
+      p "-------------------------------------------------------------------------------", startdate, enddate, interval
+
+      #  head 403
+      sse.write({error: "Too many datapoints. Select a smaller range"}.to_json, event: 'error_message')
+      return
+    end
+
+    session[:startdate] = startdate.to_s
+    session[:enddate] = enddate.to_s
     session[:interval] = interval
+    session[:type] = type
+    session[:forecast] = forecast
+
+    puts "Data for #{ session[:startdate]} .. #{session[:enddate]}"
 
     ActiveRecord::Base.clear_active_connections!
     bunny_channel = $bunny.create_channel
@@ -153,15 +183,18 @@ class StreamController < ApplicationController
       end
     end
 
-    idata = prosumer.request_cached(interval, startdate - 1.day, enddate, channel)
+    idata = prosumer.request_cached(interval, startdate - (forecast == "edms" ? 1.day : 0.day), enddate, channel, forecasts: forecast)
 
-    idata.each do |d|
+    idata[:data_points].each do |d|
       sse.write(d.to_json, event: 'datapoint')
     end
+
+    sse.write(idata[:fms].to_json, event: 'fms_data')
+
     ActiveRecord::Base.clear_active_connections!
     sse.write(Market::Calculator.new(prosumers: [prosumer],
-                                     startDate: startdate - 1.day,
-                                     endDate: enddate).calcCosts.to_json,
+                                     startDate: startdate - (forecast == "edms" ? 1.day : 0.day),
+                                     endDate: enddate).calcCosts2.to_json,
               event: 'market')
  
     ActiveRecord::Base.clear_active_connections!
@@ -254,15 +287,40 @@ class StreamController < ApplicationController
       end
     end
 
-    startdate = DateTime.now - 2.weeks
-    enddate = DateTime.now
 
     remaining = 2
-    # FetchAsynch::DownloadAndPublish.new(Prosumer.all, 1, startdate, enddate, channel_name)
-    FetchAsynch::DownloadAndPublish.new(Prosumer.real_time, 2, startdate, enddate, channel_name)
-    FetchAsynch::DownloadAndPublish.new(Prosumer.real_time, 3, startdate, enddate, channel_name)
+    session[:algo_params] = JSON.generate params
+    prosumers = Prosumer.category(params[:prosumer_category_id].to_i) || Prosumer.real_time
+    startdate = params[:startDate].to_datetime || DateTime.now - 2.weeks
+    enddate = params[:endDate].to_datetime || DateTime.now
+    forecasts = params[:forecasts] || "none"
 
 
+    FetchAsynch::DownloadAndPublish.new prosumers: prosumers,
+                                        interval: 1,
+                                        startdate: startdate,
+                                        enddate: enddate,
+                                        channel: channel_name,
+                                        only_missing: true,
+                                        forecasts: forecasts
+
+    FetchAsynch::DownloadAndPublish.new prosumers: prosumers,
+                                        interval: 2,
+                                        startdate: startdate,
+                                        enddate: enddate,
+                                        channel: channel_name,
+                                        only_missing: true,
+                                        forecasts: forecasts
+
+=begin
+    FetchAsynch::DownloadAndPublish.new prosumers: prosumers,
+                                        interval: 3,
+                                        startdate: startdate,
+                                        enddate: enddate,
+                                        channel: channel_name,
+                                        only_missing: true,
+                                        forecasts: "FMS-D"
+=end
 
     until remaining == 0
       sleep 1;
@@ -316,11 +374,13 @@ class StreamController < ApplicationController
         ActiveRecord::Base.connection_pool.with_connection do
           puts "Running algorithm"
           tm = ClusteringModule::TargetMatcher.new(
+              prosumers: Prosumer.where(prosumer_category: params[:prosumer_category_id]),
               startDate: DateTime.parse(params[:startDate]),
               endDate: DateTime.parse(params[:endDate]),
               interval: params[:interval].to_i,
               targets: JSON.parse(params[:targets]).map{|v| v[1]},
-              rb_channel: channel_name
+              rb_channel: channel_name,
+              download: params[:download] == "none" ? nil : params[:download].to_sym
           )
           puts "Object created"
           results = tm.run

@@ -131,9 +131,23 @@
 <script>
   $(function () {
 
-    var energy_consumption = <%= JSON.pretty_generate(Prosumer.all.map { |p| {id: p.id, dr: p.max_dr(params["startDate"]..params["endDate"]), dps: p.data_points.where(interval: 3, timestamp: params["startDate"]..params["endDate"])
-                                                                                                                        .select("timestamp, prosumer_id, COALESCE(consumption,0) - COALESCE(production,0) as prosumption")
-                                                                                                                        .map { |dp| {time: dp.timestamp.to_i, value: dp.prosumption} } } }).html_safe -%>;
+
+
+
+    var energy_consumption = <%= JSON.pretty_generate(DataPoint
+                                     .where(
+                                       interval: 2,
+                                       timestamp: ((params["startDate"] || (JSON.parse session[:algo_params] || "{}")["startDate"])&.to_datetime || DateTime.now - 7.days) ..
+                                                  ((params["endDate"] || (JSON.parse session[:algo_params] || "{}")["endDate"])&.to_datetime || DateTime.now))
+                                     .order(prosumer_id: :asc)
+                                     .select("prosumer_id, array_agg(timestamp) as timestamps, avg(dr) as adr, array_agg(COALESCE(consumption,0) - COALESCE(production,0)) as prosumption")
+                                     .group(:prosumer_id).map do |dp|
+                                        {
+                                            id: dp.prosumer_id,
+                                            dr: dp.adr,
+                                            dps: dp.timestamps.zip(dp.prosumption).map{|t,p| {time: t.to_i, value: p} }
+                                        }
+                                     end).html_safe -%>;
 
     var threshold = parseFloat($("#threshold_input").val());
 
@@ -204,7 +218,7 @@
               show: true
             },
             points: {
-              show: true
+              show: false
             }
           },
           grid: {

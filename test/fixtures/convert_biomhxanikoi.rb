@@ -14,6 +14,7 @@ CSV.open("biomhxanikoi.sql", "wb", col_sep: "\t") do |csv_out|
     has_non_zero = false
     new_rows = []
     row.each_with_index do |value, column|
+# p "#{linenum}, #{column}, #{value}, #{value[1]}"
       id = column + 6000
       if linenum == 0
         prosumers[id] = value[1] if column > 0
@@ -33,6 +34,6 @@ end
 
 CSV.open("prosumers_biomhxanikoi.sql", "wb", col_sep: "\t") do |csv_out|
   prosumers.each do |id, location|
-    csv_out << [id, id + 100000, "biomhxanikoi_#{id}", location]
+    csv_out << [id, id, "HEDNO_biomhxanikoi_#{id}", location, 101]
   end
 end

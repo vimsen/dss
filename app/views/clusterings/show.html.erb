@@ -10,6 +10,36 @@
   <!-- /.col-lg-12 -->
 </div>
 
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Date range
+      </div>
+      <div class="panel-body">
+        <%= form_tag('#', id: "plot_params", remote: false, class: "form-inline", method: :get) do %>
+            <div class="form-group form-group-sm">
+              <%= label_tag :startDate, "Start datetime:" %>
+              <%= text_field_tag :startDate, @startDate.to_datetime.strftime("%Y/%m/%d %H:00"), id: :startDate, class: 'form-control input-sm datetime' %>
+            </div>
+            <div class="form-group form-group-sm">
+              <%= label_tag :endDate, "End datetime:" %>
+              <%= text_field_tag :endDate, @endDate.to_datetime.strftime("%Y/%m/%d %H:00"), id: :endDate, class: 'form-control input-sm datetime' %>
+            </div>
+            <div class="form-group form-group-sm">
+              <%= label_tag :internalDr, "Internal Demand Response" %>
+              <%= select_tag :internalDr, options_for_select([["No", false],["Yes", true]], @internalDr), class: "form-control input-sm" %>
+            </div>
+            <input type="submit" value="Set" class="form-control input-sm btn btn-primary btn-xs">
+            <button id="resetDates" class="form-control input-sm btn btn-info btn-xs"> Reset filter </button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <div class="row equal">
   <div class="col-lg-6">
     <div class="panel panel-default">
@@ -31,8 +61,8 @@
           <dd><%= @sum_aggr.round(2) -%> - Penalties: <%= @pen_aggr.round(2) -%> </dd>
 
           <dt>Improvement:</dt>
-          <dd><%= ((@sum_sum - @sum_aggr) / @sum_sum * 100).round(2) if @sum_sum > 0-%>%
-            - Penalties: <%= ((@pen_sum - @pen_aggr) / @pen_sum * 100).round(2) if @pen_sum > 0-%>%</dd>
+          <dd><%= ((@sum_sum - @sum_aggr) / @sum_sum.abs * 100).round(2) if @sum_sum != 0-%>%
+            - Penalties: <%= ((@pen_sum - @pen_aggr) / @pen_sum * 100).round(2) if @pen_sum != 0-%>%</dd>
 
           <dt>Clusters:</dt>
           <dd>
@@ -61,9 +91,10 @@
   </div>
 </div>
 
+
 <div class="row">
   <% @clustering.temp_clusters.order(name: :asc).each do |tc| %>
-    <div class="col-lg-3 col-md-4 col-sm-6 cols-xs-12">
+    <div class="col-lg-4 col-md-6 col-sm-12">
       <div class="panel panel-default">
         <div class="panel-heading">
           <%= tc.name %>
@@ -74,10 +105,10 @@
               <thead>
                 <tr>
                   <th></th>
-                  <th class="text-right">For. (&euro;)</th>
-                  <th class="text-right">Ideal (&euro;)</th>
-                  <th class="text-right">Real (&euro;)</th>
-                  <th class="text-right">Pen. (&euro;)</th>
+                  <th class="text-right">For.&nbsp;(&euro;)</th>
+                  <th class="text-right">Ideal&nbsp;(&euro;)</th>
+                  <th class="text-right">Real&nbsp;(&euro;)</th>
+                  <th class="text-right">Pen.&nbsp;(&euro;)</th>
                 </tr>
               </thead>
               <tbody>
@@ -94,10 +125,10 @@
                   <th>Perc.</th>
                   <td></td><td></td>
                   <td class="text-right"><%= ( ( @stats[tc.id][-1][:real] - @stats[tc.id][-2][:real] ) /
-                          @stats[tc.id][-1][:real] * 100).round(2) if @stats[tc.id][-1][:real] > 0
+                          @stats[tc.id][-1][:real].abs * 100).round(2) if @stats[tc.id][-1][:real] != 0
                       -%>%</td>
                   <td class="text-right"><%= ( ( @stats[tc.id][-1][:penalty] - @stats[tc.id][-2][:penalty] ) /
-                          @stats[tc.id][-1][:penalty] * 100).round(2) if @stats[tc.id][-1][:penalty] > 0
+                          @stats[tc.id][-1][:penalty] * 100).round(2) if @stats[tc.id][-1][:penalty] != 0
                   -%>%</td>
                 </tr>
 
@@ -118,35 +149,8 @@
 
 <script>
   $(function () {
-    var idata = <%=
-        JSON.pretty_generate(@clustering.temp_clusters.map do |tc|
-            {
-                id: tc.id,
-                vals: [{
-                    label: :prosumption,
-                    data: DataPoint.where(prosumer: tc.prosumers,
-                                      interval: 3,
-                                      timestamp: @startDate..@endDate)
-                               .order("ts ASC")
-                               .group(:ts)
-                               .select("timestamp::date  as ts, sum(COALESCE(consumption,0) - COALESCE(production,0)) as s")
-                               .map{|p| [p.ts.to_datetime.to_i * 1000, p.s] }
-                },{
-                    label: :forecast,
-                    data: DataPoint.where(prosumer: tc.prosumers,
-                                      interval: 3,
-                                      f_timestamp: @startDate..@endDate)
-                               .order("ts ASC")
-                               .group(:ts)
-                               .select("f_timestamp::date  as ts, sum(COALESCE(f_consumption,0) - COALESCE(f_production,0)) as s")
-                               .map{|p| [p.ts.to_datetime.to_i * 1000, p.s] }
-                },{
-                    label: "",
-                    data: [[@startDate.to_i * 1000,0]],
-                    points: { show: false }
-                }]
-            }
-        end).html_safe -%>;
+    $(".datetime").datetimepicker();
+    var idata = <%= JSON.pretty_generate(@idata).html_safe -%>;
 
     console.log(idata);
     for (var i = 0; i < idata.length; i++) {
@@ -156,7 +160,7 @@
             show: true
           },
           points: {
-            show: true
+            show: false
           }
         },
         grid: {
@@ -190,6 +194,17 @@
       console.log({data: idata[i].vals, label: "test"});
 
     }
+
+
+      $('#resetDates').click(function () {
+
+          $('#startDate').val("<%= (DateTime.now - 7.days).strftime("%Y/%m/%d %H:00") -%>");
+          $('#endDate').val("<%= DateTime.now.strftime("%Y/%m/%d %H:00") -%>");
+          $('#internalDr').val(false);
+
+          $('#plot_params').submit();
+      });
+
   });
 
 </script>

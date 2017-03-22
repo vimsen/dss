@@ -1,85 +1,56 @@
 id,name,description,clustering_id,created_at,updated_at
-129,No ren.,No info about renewable energy.,28,2016-03-02 12:51:55 +0200,2016-03-02 12:51:55 +0200
-130,CL: solar,Prosumers with primarily solar energy production,28,2016-03-02 12:51:55 +0200,2016-03-02 12:51:55 +0200
-131,CL: wind,Prosumers with primarily wind energy production,28,2016-03-02 12:51:55 +0200,2016-03-02 12:51:55 +0200
-132,CL: hydro,Prosumers with primarily hydro energy production,28,2016-03-02 12:51:55 +0200,2016-03-02 12:51:55 +0200
-133,CL: geothermal,Prosumers with primarily geothermal energy production,28,2016-03-02 12:51:55 +0200,2016-03-02 12:51:55 +0200
-134,No buil. info,No building type info.,29,2016-03-02 12:52:13 +0200,2016-03-02 12:52:13 +0200
-135,CL: SME,Prosumers with SME building type.,29,2016-03-02 12:52:13 +0200,2016-03-02 12:52:13 +0200
-136,CL: Industry,Prosumers with Industry building type.,29,2016-03-02 12:52:13 +0200,2016-03-02 12:52:13 +0200
-137,CL: Factory,Prosumers with Factory building type.,29,2016-03-02 12:52:13 +0200,2016-03-02 12:52:13 +0200
-138,No con. info.,No connection info.,30,2016-03-02 12:52:30 +0200,2016-03-02 12:52:30 +0200
-139,CL: ADSL,Prosumers with ADSL connection.,30,2016-03-02 12:52:30 +0200,2016-03-02 12:52:30 +0200
-151,Genetic 0,Genetic clustering 0,33,2016-03-02 13:18:37 +0200,2016-03-02 13:18:37 +0200
-152,Genetic 1,Genetic clustering 1,33,2016-03-02 13:18:37 +0200,2016-03-02 13:18:37 +0200
-153,Genetic 2,Genetic clustering 2,33,2016-03-02 13:18:37 +0200,2016-03-02 13:18:37 +0200
-154,Genetic 3,Genetic clustering 3,33,2016-03-02 13:18:37 +0200,2016-03-02 13:18:37 +0200
-155,Genetic 4,Genetic clustering 4,33,2016-03-02 13:18:37 +0200,2016-03-02 13:18:37 +0200
-156,Genetic 0,Genetic clustering 0,34,2016-03-02 14:13:35 +0200,2016-03-02 14:13:35 +0200
-157,Genetic 1,Genetic clustering 1,34,2016-03-02 14:13:35 +0200,2016-03-02 14:13:35 +0200
-158,Genetic 2,Genetic clustering 2,34,2016-03-02 14:13:35 +0200,2016-03-02 14:13:35 +0200
-159,Genetic 3,Genetic clustering 3,34,2016-03-02 14:13:36 +0200,2016-03-02 14:13:36 +0200
-160,Genetic 4,Genetic clustering 4,34,2016-03-02 14:13:36 +0200,2016-03-02 14:13:36 +0200
-166,Spectral 0,Spectral error clustering 0,36,2016-03-02 14:14:22 +0200,2016-03-02 14:14:22 +0200
-167,Spectral 1,Spectral error clustering 1,36,2016-03-02 14:14:23 +0200,2016-03-02 14:14:23 +0200
-168,Spectral 2,Spectral error clustering 2,36,2016-03-02 14:14:23 +0200,2016-03-02 14:14:23 +0200
-169,Spectral 3,Spectral error clustering 3,36,2016-03-02 14:14:23 +0200,2016-03-02 14:14:23 +0200
-170,Spectral 4,Spectral error clustering 4,36,2016-03-02 14:14:23 +0200,2016-03-02 14:14:23 +0200
-171,Spectral 0,Spectral error clustering 0,37,2016-03-02 14:14:49 +0200,2016-03-02 14:14:49 +0200
-172,Spectral 1,Spectral error clustering 1,37,2016-03-02 14:14:49 +0200,2016-03-02 14:14:49 +0200
-173,Spectral 2,Spectral error clustering 2,37,2016-03-02 14:14:49 +0200,2016-03-02 14:14:49 +0200
-174,Spectral 3,Spectral error clustering 3,37,2016-03-02 14:14:49 +0200,2016-03-02 14:14:49 +0200
-175,Spectral 4,Spectral error clustering 4,37,2016-03-02 14:14:49 +0200,2016-03-02 14:14:49 +0200
-176,Spectral 0,Spectral error clustering 0,38,2016-03-02 14:15:12 +0200,2016-03-02 14:15:12 +0200
-177,Spectral 1,Spectral error clustering 1,38,2016-03-02 14:15:12 +0200,2016-03-02 14:15:12 +0200
-178,Spectral 2,Spectral error clustering 2,38,2016-03-02 14:15:12 +0200,2016-03-02 14:15:12 +0200
-179,Spectral 3,Spectral error clustering 3,38,2016-03-02 14:15:12 +0200,2016-03-02 14:15:12 +0200
-180,Spectral 4,Spectral error clustering 4,38,2016-03-02 14:15:12 +0200,2016-03-02 14:15:12 +0200
-181,"","",39,2016-03-09 18:55:34 +0200,2016-03-09 18:55:34 +0200
-183,No buil. info,No building type info.,41,2016-03-24 20:18:26 +0200,2016-03-24 20:18:26 +0200
-184,CL: SME,Prosumers with SME building type.,41,2016-03-24 20:18:26 +0200,2016-03-24 20:18:26 +0200
-185,CL: Industry,Prosumers with Industry building type.,41,2016-03-24 20:18:26 +0200,2016-03-24 20:18:26 +0200
-186,CL: Factory,Prosumers with Factory building type.,41,2016-03-24 20:18:26 +0200,2016-03-24 20:18:26 +0200
-187,CL: VIMSEN Gateways,A cluster that consists of the VIMSEN prosumers,41,2016-03-24 20:18:26 +0200,2016-03-24 20:18:26 +0200
-193,Spectral 0,Spectral error clustering 0,43,2016-04-14 14:04:54 +0300,2016-04-14 14:04:54 +0300
-194,Spectral 1,Spectral error clustering 1,43,2016-04-14 14:04:54 +0300,2016-04-14 14:04:54 +0300
-195,Spectral 2,Spectral error clustering 2,43,2016-04-14 14:04:54 +0300,2016-04-14 14:04:54 +0300
-196,Spectral 3,Spectral error clustering 3,43,2016-04-14 14:04:54 +0300,2016-04-14 14:04:54 +0300
-197,Spectral 4,Spectral error clustering 4,43,2016-04-14 14:04:54 +0300,2016-04-14 14:04:54 +0300
-203,Spectral 0,Spectral error clustering 0,45,2016-04-19 20:24:53 +0300,2016-04-19 20:24:53 +0300
-204,Spectral 1,Spectral error clustering 1,45,2016-04-19 20:24:53 +0300,2016-04-19 20:24:53 +0300
-205,Spectral 2,Spectral error clustering 2,45,2016-04-19 20:24:53 +0300,2016-04-19 20:24:53 +0300
-206,Spectral 3,Spectral error clustering 3,45,2016-04-19 20:24:53 +0300,2016-04-19 20:24:53 +0300
-207,Spectral 4,Spectral error clustering 4,45,2016-04-19 20:24:53 +0300,2016-04-19 20:24:53 +0300
-140,Loc: 0,Location based cluster 0.,31,2016-03-02 12:53:00 +0200,2016-03-02 12:53:00 +0200
-141,Loc: 1,Location based cluster 1.,31,2016-03-02 12:53:00 +0200,2016-03-02 12:53:00 +0200
-142,Loc: 2,Location based cluster 2.,31,2016-03-02 12:53:00 +0200,2016-03-02 12:53:00 +0200
-143,Loc: 3,Location based cluster 3.,31,2016-03-02 12:53:00 +0200,2016-03-02 12:53:00 +0200
-144,Loc: 4,Location based cluster 4.,31,2016-03-02 12:53:00 +0200,2016-03-02 12:53:00 +0200
-145,No loc.,Prosumers with no Location info available.,31,2016-03-02 12:53:00 +0200,2016-03-02 12:53:00 +0200
-146,Dr: 0,Demand Response based cluster 0,32,2016-03-02 12:53:18 +0200,2016-03-02 12:53:18 +0200
-147,Dr: 1,Demand Response based cluster 1,32,2016-03-02 12:53:18 +0200,2016-03-02 12:53:18 +0200
-148,Dr: 2,Demand Response based cluster 2,32,2016-03-02 12:53:18 +0200,2016-03-02 12:53:18 +0200
-149,Dr: 3,Demand Response based cluster 3,32,2016-03-02 12:53:18 +0200,2016-03-02 12:53:18 +0200
-150,Dr: 4,Demand Response based cluster 4,32,2016-03-02 12:53:18 +0200,2016-03-02 12:53:18 +0200
-161,Spectral 0,Spectral error clustering 0,35,2016-03-02 14:13:57 +0200,2016-03-02 14:13:57 +0200
-162,Spectral 1,Spectral error clustering 1,35,2016-03-02 14:13:57 +0200,2016-03-02 14:13:57 +0200
-163,Spectral 2,Spectral error clustering 2,35,2016-03-02 14:13:57 +0200,2016-03-02 14:13:57 +0200
-164,Spectral 3,Spectral error clustering 3,35,2016-03-02 14:13:57 +0200,2016-03-02 14:13:57 +0200
-165,Spectral 4,Spectral error clustering 4,35,2016-03-02 14:13:57 +0200,2016-03-02 14:13:57 +0200
-182,"","",40,2016-03-10 12:36:11 +0200,2016-03-10 12:36:11 +0200
-188,Spectral 0,Spectral error clustering 0,42,2016-04-12 17:21:26 +0300,2016-04-12 17:21:26 +0300
-189,Spectral 1,Spectral error clustering 1,42,2016-04-12 17:21:26 +0300,2016-04-12 17:21:26 +0300
-190,Spectral 2,Spectral error clustering 2,42,2016-04-12 17:21:26 +0300,2016-04-12 17:21:26 +0300
-191,Spectral 3,Spectral error clustering 3,42,2016-04-12 17:21:26 +0300,2016-04-12 17:21:26 +0300
-192,Spectral 4,Spectral error clustering 4,42,2016-04-12 17:21:26 +0300,2016-04-12 17:21:26 +0300
-198,Spectral 0,Spectral error clustering 0,44,2016-04-14 14:17:19 +0300,2016-04-14 14:17:19 +0300
-199,Spectral 1,Spectral error clustering 1,44,2016-04-14 14:17:19 +0300,2016-04-14 14:17:19 +0300
-200,Spectral 2,Spectral error clustering 2,44,2016-04-14 14:17:19 +0300,2016-04-14 14:17:19 +0300
-201,Spectral 3,Spectral error clustering 3,44,2016-04-14 14:17:19 +0300,2016-04-14 14:17:19 +0300
-202,Spectral 4,Spectral error clustering 4,44,2016-04-14 14:17:19 +0300,2016-04-14 14:17:19 +0300
-208,Spectral 0,Spectral error clustering 0,46,2016-04-21 19:43:01 +0300,2016-04-21 19:43:01 +0300
-209,Spectral 1,Spectral error clustering 1,46,2016-04-21 19:43:01 +0300,2016-04-21 19:43:01 +0300
-210,Spectral 2,Spectral error clustering 2,46,2016-04-21 19:43:01 +0300,2016-04-21 19:43:01 +0300
-211,Spectral 3,Spectral error clustering 3,46,2016-04-21 19:43:01 +0300,2016-04-21 19:43:01 +0300
-212,Spectral 4,Spectral error clustering 4,46,2016-04-21 19:43:01 +0300,2016-04-21 19:43:01 +0300
+5,Genetic 0,Genetic clustering 0,2,2016-12-12 15:41:50 UTC,2016-12-12 15:41:50 UTC
+6,Genetic 1,Genetic clustering 1,2,2016-12-12 15:41:50 UTC,2016-12-12 15:41:50 UTC
+7,Genetic 2,Genetic clustering 2,2,2016-12-12 15:41:50 UTC,2016-12-12 15:41:50 UTC
+8,Genetic 3,Genetic clustering 3,2,2016-12-12 15:41:50 UTC,2016-12-12 15:41:50 UTC
+9,Genetic 4,Genetic clustering 4,2,2016-12-12 15:41:51 UTC,2016-12-12 15:41:51 UTC
+10,Genetic 0,Genetic clustering 0,3,2016-12-16 10:34:59 UTC,2016-12-16 10:34:59 UTC
+11,Genetic 1,Genetic clustering 1,3,2016-12-16 10:34:59 UTC,2016-12-16 10:34:59 UTC
+12,Genetic 2,Genetic clustering 2,3,2016-12-16 10:34:59 UTC,2016-12-16 10:34:59 UTC
+13,Genetic 3,Genetic clustering 3,3,2016-12-16 10:34:59 UTC,2016-12-16 10:34:59 UTC
+14,Genetic 4,Genetic clustering 4,3,2016-12-16 10:34:59 UTC,2016-12-16 10:34:59 UTC
+15,Genetic 0,Genetic clustering 0,4,2016-12-21 10:41:52 UTC,2016-12-21 10:41:52 UTC
+16,Genetic 1,Genetic clustering 1,4,2016-12-21 10:41:52 UTC,2016-12-21 10:41:52 UTC
+17,Genetic 2,Genetic clustering 2,4,2016-12-21 10:41:53 UTC,2016-12-21 10:41:53 UTC
+18,Genetic 3,Genetic clustering 3,4,2016-12-21 10:41:53 UTC,2016-12-21 10:41:53 UTC
+19,Genetic 4,Genetic clustering 4,4,2016-12-21 10:41:53 UTC,2016-12-21 10:41:53 UTC
+24,Dr: 0,Demand Response based cluster 0,6,2017-01-09 08:04:33 UTC,2017-01-09 08:04:33 UTC
+25,Dr: 1,Demand Response based cluster 1,6,2017-01-09 08:04:33 UTC,2017-01-09 08:04:33 UTC
+26,Dr: 2,Demand Response based cluster 2,6,2017-01-09 08:04:33 UTC,2017-01-09 08:04:33 UTC
+27,Dr: 3,Demand Response based cluster 3,6,2017-01-09 08:04:33 UTC,2017-01-09 08:04:33 UTC
+28,Dr: 4,Demand Response based cluster 4,6,2017-01-09 08:04:33 UTC,2017-01-09 08:04:33 UTC
+29,Dr: 5,Demand Response based cluster 5,6,2017-01-09 08:04:33 UTC,2017-01-09 08:04:33 UTC
+30,Sedini,The sedini circuits,7,2017-02-22 09:59:35 UTC,2017-02-22 09:59:35 UTC
+31,CL: School,Prosumers with School building type.,8,2017-02-22 10:05:16 UTC,2017-02-22 10:05:16 UTC
+32,CL: Domestic,Prosumers with Domestic building type.,8,2017-02-22 10:05:16 UTC,2017-02-22 10:05:16 UTC
+33,CL: SME,Prosumers with SME building type.,8,2017-02-22 10:05:16 UTC,2017-02-22 10:05:16 UTC
+34,CL: Industry,Prosumers with Industry building type.,8,2017-02-22 10:05:16 UTC,2017-02-22 10:05:16 UTC
+35,CL: Factory,"",8,2017-02-22 10:05:16 UTC,2017-02-22 10:05:16 UTC
+36,CL: VIMSEN (Greece),The VIMSEN prosumers located in Greece,8,2017-02-22 10:05:16 UTC,2017-02-22 10:05:16 UTC
+37,CL: VIMSEN (Sedini),The VIMSEN prosumers located in Sedini,8,2017-02-22 10:05:16 UTC,2017-02-22 10:05:16 UTC
+38,CL: HEDNO_windfarms_MV," HEDNO prosumers used for scalability tests, wind farms",8,2017-02-22 10:05:16 UTC,2017-02-22 10:05:16 UTC
+39,CL: HEDNO_industrial_MV," HEDNO prosumers used for scalability tests, industrial MV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
+40,CL: HEDNO_industrial_LV," HEDNO prosumers used for scalability tests, industrail LV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
+41,CL: HEDNO_commercial_MV," HEDNO prosumers used for scalability tests, commercial_MV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
+42,CL: HEDNO_proffessional_LV," HEDNO prosumers used for scalability tests, wind proffesional_LV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
+43,CL: HEDNO_steetlights_LV," HEDNO prosumers used for scalability tests, street lights LV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
+44,CL: HEDNO_residential_LV," HEDNO prosumers used for scalability tests, residential LV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
+45,CL: HEDNO_solar_MV," HEDNO prosumers used for scalability tests, solar MV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
+46,CL: HEDNO_solar_LV," HEDNO prosumers used for scalability tests, solar LV",8,2017-02-22 10:05:17 UTC,2017-02-22 10:05:17 UTC
+47,Greece,"",7,2017-02-22 12:29:02 UTC,2017-02-28 12:31:21 UTC
+48,Residential,"",9,2017-03-06 10:50:04 UTC,2017-03-06 10:50:04 UTC
+49,Combo/blocks of buildings,,9,2017-03-06 10:50:05 UTC,2017-03-06 10:50:05 UTC
+50,Industrial & large commercial,,9,2017-03-06 10:50:05 UTC,2017-03-06 10:50:05 UTC
+51,Solar/wind parks,,9,2017-03-06 10:50:05 UTC,2017-03-06 10:50:05 UTC
+52,Public lighting,,9,2017-03-06 10:50:05 UTC,2017-03-06 10:50:05 UTC
+53,Dr: 0,Demand Response based cluster 0,10,2017-03-15 12:46:59 UTC,2017-03-15 12:46:59 UTC
+54,Dr: 1,Demand Response based cluster 1,10,2017-03-15 12:46:59 UTC,2017-03-15 12:46:59 UTC
+55,Dr: 2,Demand Response based cluster 2,10,2017-03-15 12:46:59 UTC,2017-03-15 12:46:59 UTC
+56,Dr: 3,Demand Response based cluster 3,10,2017-03-15 12:46:59 UTC,2017-03-15 12:46:59 UTC
+57,Dr: 4,Demand Response based cluster 4,10,2017-03-15 12:46:59 UTC,2017-03-15 12:46:59 UTC
+58,Dr: 5,Demand Response based cluster 5,10,2017-03-15 12:46:59 UTC,2017-03-15 12:46:59 UTC
+59,Genetic 0,Genetic clustering 0,11,2017-03-15 12:54:46 UTC,2017-03-15 12:54:46 UTC
+60,Genetic 1,Genetic clustering 1,11,2017-03-15 12:54:46 UTC,2017-03-15 12:54:46 UTC
+61,Genetic 2,Genetic clustering 2,11,2017-03-15 12:54:46 UTC,2017-03-15 12:54:46 UTC
+62,Genetic 3,Genetic clustering 3,11,2017-03-15 12:54:46 UTC,2017-03-15 12:54:46 UTC
+63,Genetic 4,Genetic clustering 4,11,2017-03-15 12:54:46 UTC,2017-03-15 12:54:46 UTC

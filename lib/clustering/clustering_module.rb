@@ -33,7 +33,8 @@ module ClusteringModule
               ClusteringModule::GeneticErrorClustering.new(
                   prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
                   startDate: params["startDate"],
-                  endDate: params["endDate"]
+                  endDate: params["endDate"],
+                  forecast_type: (params["category"].first.to_i == 4 ? :fms : :edms)
               ).run params["kappa"].to_i
             }
         },
@@ -44,7 +45,8 @@ module ClusteringModule
                   prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
                   startDate: params["startDate"],
                   endDate: params["endDate"],
-                  algorithm: Ai4r::GeneticAlgorithm::StaticChromosomeWithSmartCrossover
+                  algorithm: Ai4r::GeneticAlgorithm::StaticChromosomeWithSmartCrossover,
+                  forecast: params["category"].first.to_i == 4 ? :fms : :edms
               ).run params["kappa"].to_i
             }
         },
@@ -54,7 +56,8 @@ module ClusteringModule
               ClusteringModule::PositiveErrorSpectralClustering.new(
                   prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
                   startDate: params["startDate"],
-                  endDate: params["endDate"]
+                  endDate: params["endDate"],
+                  forecast: params["category"].first.to_i == 4 ? :fms : :edms
               ).run params["kappa"].to_i
             }
         },
@@ -64,7 +67,8 @@ module ClusteringModule
               ClusteringModule::NegativeErrorSpectralClustering.new(
                   prosumers: ProsumerCategory.find(params["category"].first.to_i).prosumers,
                   startDate: params["startDate"],
-                  endDate: params["endDate"]
+                  endDate: params["endDate"],
+                  forecast: params["category"].first.to_i == 4 ? :fms : :edms
               ).run params["kappa"].to_i
             }
         },
@@ -248,14 +252,14 @@ module ClusteringModule
        [ p.id ]
     end
 
-    dr_vector = Hash[Prosumer.category(cat).map {|p| [p.id, p.max_dr(range)]}]
+    dr_vector = Prosumer.category(cat).avg_dr_all(range)
 
     dr_prosumers = Prosumer.category(cat).with_dr(range)
 
     centroids = result.map { |cl| get_centroid_dr(cl, dr_vector) }
     loop do
       old_centroids = Array.new centroids
-      Rails.logger.debug "Old centroids: #{old_centroids}"
+      # Rails.logger.debug "Old centroids: #{old_centroids}"
       result.each { |cl| cl.clear }
       dr_prosumers.each do |p|
         cl = find_closest_dr(dr_vector[p.id], centroids)
@@ -273,13 +277,12 @@ module ClusteringModule
       cl << without_dr.map{|p| p.id}
       result.push cl
     end
+
     result.map.with_index do |c, i|
-      Rails.logger.debug "Prosumer ids are: #{c}"
+      # Rails.logger.debug "Prosumer ids are: #{c}"
       cl = TempCluster.new name: "Dr: #{i}",
                            description: "Demand Response based cluster #{i}"
-      c.each do |p|
-        cl.prosumers << Prosumer.find(p)
-      end
+      cl.prosumers = Prosumer.where(id: c)
       cl
     end
   end

@@ -6,7 +6,7 @@ class BidsController < ApplicationController
   # GET /bids
   # GET /bids.json
   def index
-    @bids = Bid.all.order(date: :desc)
+    @bids = Bid.all.order(date: :desc).paginate(page: params[:page])
   end
 
   # GET /bids/1

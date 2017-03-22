@@ -18,23 +18,78 @@ class ClusteringsController < ApplicationController
   end
 
   def show
-    @startDate = Time.now - 7.days
-    @endDate = Time.now
 
-    @stats = Hash[@clustering.temp_clusters.map do |tc|
-                    [tc.id, Hash[Market::Calculator.new(prosumers: tc.prosumers,
-                                                        startDate: @startDate,
-                                                        endDate: @endDate)
-                                     .calcCosts[:dissagrgated]
-                                     .select { |d| d[:id] < 0 }
-                                     .map { |d| [d[:id], d.dup.update(penalty: d[:real] - d[:ideal])] }]]
+    session_obj = JSON.parse session[:algo_params] || "{}"
+    session_obj["startDate"] = @startDate = (params["startDate"] || session_obj["startDate"])&.to_datetime || DateTime.now - 7.days
+    session_obj["endDate"] = @endDate = (params["endDate"] || session_obj["endDate"])&.to_datetime || DateTime.now
+    session_obj["internalDr"] = @internalDr = ((params["internalDr"] || session_obj["internalDr"]) == "true") || false
 
-                  end]
+    session[:algo_params] = session_obj.to_json
+
+
+
+    @stats = Parallel.map(@clustering.temp_clusters, in_threads: 10) do |tc|
+      ActiveRecord::Base.connection_pool.with_connection do
+        [tc.id, Hash[Market::Calculator.new(prosumers: tc.prosumers, startDate: @startDate, endDate: @endDate)
+                         .calcCosts2(dr: @internalDr)[:disaggregated]
+                         .select { |d| d[:id] < 0 }
+                         .map { |d| [d[:id], d.dup.update(penalty: d[:real] - d[:ideal])] }]]
+      end
+    end.to_h
 
     @sum_sum = @stats.sum { |k,v| v[-1][:real]}
     @pen_sum = @stats.sum { |k,v| v[-1][:penalty]}
     @sum_aggr = @stats.sum { |k,v| v[-2][:real]}
     @pen_aggr = @stats.sum { |k,v| v[-2][:penalty]}
+
+    @idata = Parallel.map(@clustering.temp_clusters, in_threads: 10) do |tc|
+      ActiveRecord::Base.connection_pool.with_connection do
+        v = @internalDr ? [{
+                               label: :dr,
+                               data: DataPoint
+                                         .joins("LEFT JOIN forecasts ON forecasts.timestamp = data_points.timestamp AND data_points.prosumer_id = forecasts.prosumer_id AND data_points.interval_id = forecasts.interval_id")
+                                         .where(timestamp: @startDate .. @endDate, interval: 2, prosumer: tc.prosumers)
+                                         .group(:timestamp)
+                                         .order(timestamp: :asc)
+                                         .select(
+                                             :timestamp,
+                                             "CASE (sum(coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)) > sum(coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))
+                                                WHEN TRUE THEN
+                                                  sum(coalesce(data_points.consumption,0) - coalesce(data_points.production,0))
+                                                ELSE
+                                                  GREATEST(sum((( (1.0-coalesce(data_points.dr,0))*coalesce(data_points.consumption,0) - coalesce(data_points.production,0)))),sum(coalesce(forecasts.consumption,0) - coalesce(forecasts.production,0)))
+                                                END as dr_curve"
+                                         ).map{|d| [d.timestamp.to_i * 1000, d.dr_curve]}
+                           }]: []
+        {
+            id: tc.id,
+            vals: [{
+                       label: :prosumption,
+                       data: DataPoint.where(prosumer: tc.prosumers,
+                                             interval: 2,
+                                             timestamp: @startDate..@endDate)
+                                 .order("ts ASC")
+                                 .group(:ts)
+                                 .select("timestamp as ts, sum(COALESCE(consumption,0) - COALESCE(production,0)) as s")
+                                 .map{|p| [p.ts.to_datetime.to_i * 1000, p.s] }
+                   },{
+                       label: :forecast,
+                       data: Forecast.day_ahead.where(prosumer: tc.prosumers,
+                                                      interval: 2,
+                                                      timestamp: @startDate..@endDate)
+                                 .order("ts ASC")
+                                 .group(:ts)
+                                 .select("timestamp as ts, sum(COALESCE(consumption,0) - COALESCE(production,0)) as s")
+                                 .map{|p| [p.ts.to_datetime.to_i * 1000, p.s] }
+                   },{
+                       label: "",
+                       data: [[@startDate.to_i * 1000,0]],
+                       points: { show: false }
+                   }] + v
+        }
+      end
+    end
+
   end
 
   def new

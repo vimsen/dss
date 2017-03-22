@@ -19,33 +19,20 @@ ActiveRecord::Base.connection.disable_referential_integrity do
     head = csv.first
 
     begin
+      tbl_name.constantize.delete_all
       raw.copy_data "COPY #{tbl_name.constantize.table_name} (#{head}) FROM stdin DELIMITER ',' CSV;" do
         csv.each_with_index { |row, i| raw.put_copy_data(row) }
       end
+      dbconn.reset_pk_sequence!(tbl_name.constantize.table_name)
     rescue Exception => e
       puts "Error during processing: #{$!}"
       puts "Backtrace:\n\t#{e.backtrace.join("\n\t")}"
     ensure
       csv.close
       dbconn.close
-
     end
-
-=begin
-
-
-    status = Upsert.batch(tbl_name.constantize.connection, tbl_name.constantize.table_name) do |upsert|
-      CSV.foreach "db/initdata/#{tbl_name}.csv", headers: true do |row|
-#      puts "#{tbl_name}: #{row['id']}"
-        if row.key? 'id'
-          upsert.row({id: row['id']}, row.to_h)
-        else
-          upsert.row row.to_h
-        end
-      end
-    end
-=end
     puts "#{tbl_name}: inserted"
+
   end
 end
 
