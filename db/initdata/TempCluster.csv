@@ -43,3 +43,14 @@ id,name,description,clustering_id,created_at,updated_at
 50,Industrial & large commercial,,9,2017-03-06 10:50:05 UTC,2017-03-06 10:50:05 UTC
 51,Solar/wind parks,,9,2017-03-06 10:50:05 UTC,2017-03-06 10:50:05 UTC
 52,Public lighting,,9,2017-03-06 10:50:05 UTC,2017-03-06 10:50:05 UTC
+53,Dr: 0,Demand Response based cluster 0,10,2017-03-15 12:46:59 UTC,2017-03-15 12:46:59 UTC
+54,Dr: 1,Demand Response based cluster 1,10,2017-03-15 12:46:59 UTC,2017-03-15 12:46:59 UTC
+55,Dr: 2,Demand Response based cluster 2,10,2017-03-15 12:46:59 UTC,2017-03-15 12:46:59 UTC
+56,Dr: 3,Demand Response based cluster 3,10,2017-03-15 12:46:59 UTC,2017-03-15 12:46:59 UTC
+57,Dr: 4,Demand Response based cluster 4,10,2017-03-15 12:46:59 UTC,2017-03-15 12:46:59 UTC
+58,Dr: 5,Demand Response based cluster 5,10,2017-03-15 12:46:59 UTC,2017-03-15 12:46:59 UTC
+59,Genetic 0,Genetic clustering 0,11,2017-03-15 12:54:46 UTC,2017-03-15 12:54:46 UTC
+60,Genetic 1,Genetic clustering 1,11,2017-03-15 12:54:46 UTC,2017-03-15 12:54:46 UTC
+61,Genetic 2,Genetic clustering 2,11,2017-03-15 12:54:46 UTC,2017-03-15 12:54:46 UTC
+62,Genetic 3,Genetic clustering 3,11,2017-03-15 12:54:46 UTC,2017-03-15 12:54:46 UTC
+63,Genetic 4,Genetic clustering 4,11,2017-03-15 12:54:46 UTC,2017-03-15 12:54:46 UTC
